@@ -1,0 +1,16 @@
+alpha
+beta
+chi
+delta
+epsilon
+gamma
+iota
+kappa
+lambda
+omega
+phi
+pi
+sigma
+theta
+xi
+zeta

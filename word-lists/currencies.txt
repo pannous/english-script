@@ -1,0 +1,569 @@
+¤ 
+₳
+฿
+₵
+¢
+₡
+₢
+₠
+$
+₫
+৳
+ ₯
+€
+ƒ
+₣
+₲
+₴
+₭
+ ℳ
+₥
+₦
+₧
+₱
+₰
+£
+₹
+₨
+₪
+ ₸
+₮
+₩
+¥
+៛
+Dollar
+Dollars
+Albania Lek
+ALL
+Lek
+Lek
+Afghanistan Afghani
+AFN
+؋
+؋
+Argentina Peso
+ARS
+$
+$
+info
+Aruba Guilder
+AWG
+ƒ
+ƒ
+Australia Dollar
+AUD
+$AUD
+AUD$
+Azerbaijan New Manat
+AZN
+ман
+ман
+Bahamas Dollar
+BSD
+$
+$
+Barbados Dollar
+BBD
+$
+$
+Belarus Ruble
+BYR
+Belize Dollar
+BZD
+BZ$
+BZ$
+Bermuda Dollar
+BMD
+$
+$
+Bolivia Boliviano
+BOB
+$b
+$b
+Bosnia and Herzegovina Convertible Marka
+Marka
+BAM
+KM
+Botswana Pula
+BWP
+P
+P
+Bulgaria Lev
+BGN
+лв
+лв
+Brazil Real
+BRL
+R$
+R$
+info
+Brunei Darussalam Dollar
+BND
+$
+$
+Cambodia Riel
+KHR
+៛
+៛
+Canada Dollar
+CAD
+$
+$
+Cayman Islands Dollar
+KYD
+$
+$
+Chile Peso
+CLP
+$
+$
+info
+China Yuan Renminbi
+Renminbi
+CNY
+¥
+¥
+a
+info
+Colombia Peso
+COP
+$
+$
+Costa Rica Colon
+CRC
+₡
+₡
+Croatia Kuna
+Kuna
+HRK
+kn
+kn
+Cuba Peso
+CUP
+₱
+₱
+Czech Republic Koruna
+Koruna
+CZK
+Kč
+Kč
+Denmark Krone
+DKK
+kr
+kr
+info
+Dominican Republic Peso
+DOP
+RD$
+RD$
+East Caribbean Dollar
+XCD
+$
+$
+Egypt Pound
+EGP
+£
+£
+a
+El Salvador Colon
+Colon
+SVC
+$
+$
+Estonia Kroon
+Kroon
+EEK
+kr
+kr
+Euro Member Countries
+EUR
+€
+Falkland Islands (Malvinas) Pound
+FKP
+£
+£
+a
+Fiji Dollar
+FJD
+$
+$
+Ghana Cedis
+GHC
+¢
+¢
+a
+Gibraltar Pound
+GIP
+£
+£
+a
+Guatemala Quetzal
+GTQ
+Q
+Q
+Guernsey Pound
+GGP
+£
+£
+a
+Guyana Dollar
+GYD
+$
+$
+Honduras Lempira
+Lempira
+HNL
+L
+L
+Hong Kong Dollar
+HKD
+$
+$
+info
+Hungary Forint
+Forint
+HUF
+Ft
+Ft
+Iceland Krona
+ISK
+kr
+kr
+India Rupee
+INR
+info
+Indonesia Rupiah
+Rupiah
+Rupia
+Rupie
+Rupien
+IDR
+Rp
+Rp
+Iran Rial
+IRR
+﷼
+﷼
+fdfc
+Isle of Man Pound
+IMP
+£
+£
+a
+Israel Shekel
+Shekel
+ILS
+₪
+₪
+Jamaica Dollar
+JMD
+J$
+J$
+Japan Yen
+Yen
+JPY
+¥
+¥
+a
+info
+Jersey Pound
+JEP
+£
+£
+a
+Kazakhstan Tenge
+KZT
+лв
+лв
+Korea (North) Won
+KPW
+₩
+₩
+Korea (South) Won
+KRW
+₩
+₩
+Kyrgyzstan Som
+KGS
+лв
+лв
+Laos Kip
+LAK
+₭
+₭
+Latvia Lat
+LVL
+Ls
+Ls
+Lebanon Pound
+LBP
+£
+£
+a
+Liberia Dollar
+LRD
+$
+$
+Lithuania Litas
+LTL
+Lt
+Lt
+Macedonia Denar
+Denar
+Dinar
+MKD
+ден
+ден
+Malaysia Ringgit
+Ringgit
+Ringit
+Ringhit
+MYR
+RM
+RM
+Mauritius Rupee
+MUR
+₨
+₨
+Mexico Peso
+MXN
+$
+$
+info
+Mongolia Tughrik
+MNT
+₮
+₮
+Mozambique Metical
+MZN
+MT
+MT
+Namibia Dollar
+NAD
+$
+$
+Nepal Rupee
+NPR
+₨
+₨
+Netherlands Antilles Guilder
+Guilder
+ANG
+ƒ
+ƒ
+New Zealand Dollar
+NZD
+$
+$
+Nicaragua Cordoba
+NIO
+C$
+C$
+Nigeria Naira
+NGN
+₦
+₦
+Korea (North) Won
+KPW
+₩
+₩
+Norway Krone
+NOK
+kr
+kr
+Oman Rial
+OMR
+﷼
+﷼
+fdfc
+Pakistan Rupee
+PKR
+₨
+₨
+Panama Balboa
+PAB
+B/.
+B/.
+Paraguay Guarani
+PYG
+Gs
+Gs
+Peru Nuevo Sol
+PEN
+S/.
+S/.
+info
+Philippines Peso
+PHP
+₱
+₱
+Poland Zloty
+Zloty
+PLN
+zł
+zł
+Qatar Riyal
+QAR
+﷼
+﷼
+fdfc
+Romania New Leu
+Leu
+RON
+lei
+lei
+Russia Ruble
+Ruble
+Rubel
+RUB
+руб
+руб
+info
+Saint Helena Pound
+SHP
+£
+£
+a
+Saudi Arabia Riyal
+SAR
+﷼
+﷼
+fdfc
+Serbia Dinar
+Dinar
+RSD
+Дин.
+Дин.
+Seychelles Rupee
+SCR
+₨
+₨
+Singapore Dollar
+SGD
+$
+$
+Solomon Islands Dollar
+SBD
+$
+$
+Somalia Shilling
+Shilling
+SOS
+S
+S
+South Africa Rand
+Rand
+ZAR
+R
+R
+Korea (South) Won
+KRW
+₩
+₩
+Sri Lanka Rupee
+Rupee
+LKR
+₨
+₨
+Sweden Krona
+Krona
+Krone
+Kronen
+SEK
+kr
+kr
+info
+Switzerland Franc
+Franc
+CHF
+Suriname Dollar
+SRD
+$
+$
+Syria Pound
+SYP
+£
+£
+a
+Taiwan New Dollar
+TWD
+NT$
+NT$
+info
+Thailand Baht
+Baht
+THB
+฿
+฿
+e
+Trinidad and Tobago Dollar
+TTD
+TT$
+TT$
+Turkey Lira
+TRY
+TL
+TL
+Turkey Lira
+Lira
+Lire
+TRL
+₤
+₤
+Tuvalu Dollar
+TVD
+$
+$
+Ukraine Hryvna
+UAH
+₴
+₴
+United Kingdom Pound
+Brittish Pound
+Brittischer Pfund
+Brittische Pfund
+Pfund
+Pound
+GBP
+£
+a
+United States Dollar
+US Dollar
+USD
+$USD
+USD$
+Uruguay Peso
+UYU
+$U
+$U
+Uzbekistan Som
+Som
+UZS
+лв
+лв
+Venezuela Bolivar Fuerte
+VEF
+Bs
+Bs
+Viet Nam Dong
+VND
+₫
+Yemen Rial
+Rial
+YER
+﷼
+fdfc
+Zimbabwe Dollar
+ZWD
+Z$
+Z$
+¢
+ct
+cent
+centimes
+mark
+DM
+pfennig
+pfennige
+penny
+pennies
