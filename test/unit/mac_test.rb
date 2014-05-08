@@ -4,13 +4,24 @@ $use_tree=false
 require_relative '../test_helper'
 
 class MacTestParser<EnglishParser
+
   def current
-    test_contains_file
-    test_variable_transitivity
+    test_applescript
+    # test_contains_file
+    # test_variable_transitivity
   end
 
   def test_mail
 
+  end
+
+  def test_applescript
+    s 'tell app "Finder"\rdisplay dialog "Hello, world!"\rend'
+    applescript
+    # parse "Tell application \"Finder\" to open home"
+    # s "Tell application \"Finder\" to open home"
+    # applescript
+    # parse "Tell application 'Finder' to close every window"
   end
 
   def test_files

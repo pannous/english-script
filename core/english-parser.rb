@@ -151,6 +151,7 @@ class EnglishParser < Parser
   #direct_token : WITH space!
   def token t
     #return nil if checkEnd
+    t=t[0] if t.is_a?Array #HOW TH ?? method_missing
     @string.strip!
     raiseEnd
     if starts_with? t
@@ -539,6 +540,22 @@ class EnglishParser < Parser
     #_? "know" # what is
   end
 
+  def applescript
+    tokens "tell application","tell app"
+    app=quote
+    to= _? "to"
+    @result="tell application \"#{app}\""
+    @result+= " to "+ @string if to
+    if not to #Multiline
+      while @string and not @string.contains "end tell" and not @string.contains "end" #TODO deep blocks!
+        @result+= rest_of_line() +"\n"
+    end
+    @result+=token "end tell"
+    end
+    # -s o /path/to/the/script.scpt
+    @current_value = %x{/usr/bin/osascript -ss -e $'#{@result}'} if @interpret
+    return @result
+  end
 
   #	||'say' x=(.*) -> 'bash "say $quote"'
   def action
@@ -546,6 +563,7 @@ class EnglishParser < Parser
     bla?
     result=any {#action
       try { javascript } ||
+      try{ applescript } ||
           try { bash_action } ||
           try { setter } ||
           try { ruby_method_call } ||
