@@ -104,7 +104,7 @@ class NumberTest < Test::Unit::TestCase
   end
 
 
-  # test "ALL" do
+  # def test_all
   #   @testParser.methods.each{|m|
   #     if m.to_s.start_with?"test"
   #       @testParser.send(m)

@@ -28,7 +28,7 @@ class EnglishParser < Parser
     @svg=[]
     @ruby_methods=["puts", "print", "svg"] #"puts"=>x_puts !!!
     @core_methods=["show"] #"puts"=>x_puts !!!
-    @methods=[]
+    @methods={} # name->method-node
     @OK="OK"
     @result=""
   end
@@ -88,7 +88,7 @@ class EnglishParser < Parser
   end
 
   def operator
-    tokens("+", "*", "-", "/")
+    tokens operators
   end
 
   # Strange method
@@ -100,21 +100,22 @@ class EnglishParser < Parser
   end
 
   def algebra
-    must_contain operator
+    must_contain operators
     result=any { try { value } or try{bracelet} }
     star {
       op=operator #operator KEYWORD!?! ==> @string="" BUG
       no_rollback!
-      @string=""+@string2 #==> @string="" BUG WHY??
+      # @string=""+@string2 #==> @string="" BUG WHY??
       y=try { value } || bracelet
       if not $use_tree and @interpret
         result=do_send(result, op, y) rescue SyntaxError
       end
       true
     }
-    return result
     if @interpret
-      @result=parent_node.eval_node @variables if $use_tree #wasteful!!
+      @result=result
+      tree=parent_node
+      @result=tree.eval_node @variables if $use_tree #wasteful!!
     end
     $use_tree ? parent_node : @result
   end

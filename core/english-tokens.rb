@@ -16,7 +16,9 @@ module EnglishParserTokens #< MethodInterception
       ten nine eight seven six five four three two one ]
   end
 
-
+  def operators
+    ["+", "*", "-", "/"]
+  end
 
   def initialize
     super

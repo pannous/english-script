@@ -48,13 +48,25 @@ class TreeParserTestParser<EnglishParser
 
 
 
-  def test_block
-    s "let the initial value of I be x;\nstep size is the length of the interval,
-divided by the number of steps\nvar x = 8;"
+  def _test_block
+    s "let the initial value of I be x;\n
+      step size is the length of the interval,
+      divided by the number of steps\n
+      var x = 8;"
     block
   end
 
-  def test_while
+  def _test_while
+    allow_rollback
+    @variables[:i]=0;
+    @variables[:y]=5;
+    parse "while i is smaller or less then y do
+        increase i by 4;
+      done"
+    assert_equals @variables[:i],8
+  end
+
+  def _test_while2
     allow_rollback
     s "while i is smaller or less then y do
  evaluate the function at point I
@@ -64,7 +76,7 @@ done"
     looper
   end
 
-  def test_setter3
+  def _test_setter3
     s "step size is the length of the interval, divided by the number of steps"
     setter
   end
@@ -81,10 +93,11 @@ done"
   end
 
   def test_algebra
-    s "2* ( 3 + 10 ) "
-    #s "2*(3+10)"
+    # s "2* ( 3 + 10 )"
+    s "2*(3+10)"
     puts "Parse #{@string} as algebra?"
     ok=algebra
+    puts "Parsed input as #{ok}!"
     assert_equals @result,26
     assert @current_node!=nil
     #assert @current_node==@root
@@ -110,7 +123,7 @@ class TreeParserTest < Test::Unit::TestCase
     puts "NOT testing "+x.to_s
   end
 
-  test "ALL" do
+  def _test_all
     puts "$use_tree must be true in tree tests!" if not $use_tree
     @testParser.methods.each{|m|
       if m.to_s.start_with?"test"

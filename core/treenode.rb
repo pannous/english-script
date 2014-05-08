@@ -17,6 +17,10 @@ class TreeNode
     @valid and @nodes.empty? and @value or not @nodes.empty? # if node.valid
   end
 
+  def blank?
+    @valid and @nodes.empty? and @value or not @nodes.empty? # if node.valid
+  end
+
   def is_leaf
     nodes.empty?
   end
