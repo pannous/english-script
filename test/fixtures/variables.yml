@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  default: MyString
+  context_id: 1
+  kind_id: 1
+  method_id: 1
+
+two:
+  name: MyString
+  default: MyString
+  context_id: 1
+  kind_id: 1
+  method_id: 1

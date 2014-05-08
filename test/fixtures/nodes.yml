@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  context_id: 1
+  kind_id: 1
+#  value: MyText
+  parent_id: 1
+  isvalid: true
+  user_id: 1
+#  parsed:
+#  executable:
+
+two:
+  name: MyString
+  context_id: 1
+  kind_id: 1
+#  value: MyText
+  parent_id: 1
+  isvalid: false
+  user_id: 1
+#  parsed:
+#  executable:

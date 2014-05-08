@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  context_id: 1
+  kind_id: 1
+  return_kind_id: 1
+  body: MyText
+  class_id: 1
+  object_id: 1
+  user_id: 1
+
+two:
+  name: MyString
+  context_id: 1
+  kind_id: 1
+  return_kind_id: 1
+  body: MyText
+  class_id: 1
+  object_id: 1
+  user_id: 1
