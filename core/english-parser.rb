@@ -1215,7 +1215,7 @@ class EnglishParser < Parser
     block_depth=0
     lines=[]
     star {
-      raise EndOfBlock.new if (start_with? "end") and block_depth==0
+      raise EndOfBlock.new if (starts_with? "end") and block_depth==0
       line=any_ruby_line
       lines<<line
       line
@@ -1437,7 +1437,18 @@ class EnglishParser < Parser
 
   def self.start_shell
       if ARGV.count==0 #and not ARGF
-        puts "usage: \n ./english-script.sh eval 6 plus six\n ./english-script.sh examples/test.e"
+        puts "usage:"
+        puts "\t./english-script.sh eval 6 plus six"
+        puts "\t./english-script.sh examples/test.e"
+        puts "\t./english-script.sh (no args for shell)"
+        while true
+          print "english> "
+          input = STDIN.gets.strip
+          interpretation= EnglishParser.new.parse input
+          $verbose=true
+          puts interpretation.tree
+          puts interpretation.result
+        end
         exit
      end
     a=ARGV[0].to_s

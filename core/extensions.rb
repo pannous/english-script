@@ -111,16 +111,16 @@ class Object
 end
 
 
-def Numeric.blank?
-  return false
-end
-
 
 class Number < Numeric
 end
 
 def nil.blank?
   return true
+end
+
+def nil.test
+  "nil.test OK"
 end
 
 #def nil.to_s
@@ -388,6 +388,10 @@ end
 
 #class Fixnum Float
 class Numeric
+
+  def blank?
+    return false
+  end
 
   def is_a clazz
     className=clazz.to_s.downcase

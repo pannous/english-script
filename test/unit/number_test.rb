@@ -11,7 +11,7 @@ require_relative '../test_helper'
 class NumberTestParser<EnglishParser
 
   def initialize
-    @@testing=true
+
     super
   end
 
@@ -112,7 +112,7 @@ class NumberTest < Test::Unit::TestCase
   #   }
   # end
   #
-  # test "current" do
+  # def test_current
   #   @testParser.current
   # end
 

@@ -1,17 +1,14 @@
 #!/usr/bin/env ruby
-require 'test_helper'
-#require '../test_helper'
 
 $use_tree=false
 #$use_tree=true
 
-#require_relative "../core/english-parser"
-require_relative "../../core/english-parser"
+require_relative '../test_helper'
 
 class StringTestParser<EnglishParser
 
   def initialize
-    @@testing=true
+
     super
   end
 
@@ -164,7 +161,7 @@ class StringTest < Test::Unit::TestCase
     super args
   end
 
-  _test "ALL" do
+  def test_all
     @testParser.methods.each{|m|
       if m.to_s.start_with?"test"
         @testParser.send(m)
@@ -172,7 +169,7 @@ class StringTest < Test::Unit::TestCase
     }
   end
 
-  test "current" do
+  def test_current
     @testParser.current
   end
 

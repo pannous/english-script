@@ -1,16 +1,14 @@
 #!/usr/bin/env ruby
-require 'test_helper'
-#require '../test_helper'
 
 $use_tree=false
-#require_relative "../core/english-parser"
-require_relative "../../core/english-parser"
+
+require_relative '../test_helper'
 
 class EnglishParserTestParser<EnglishParser
   #@@parser=EnglishParser.new
 
   def initialize
-    @@testing=true
+
     super
     #@@parser=EnglishParser.new
   end
@@ -341,7 +339,7 @@ class EnglishParserTest < Test::Unit::TestCase
     puts "NOT testing "+x.to_s
   end
 
-  _test "ALL" do
+  def test_all
     @testParser.methods.each{|m|
       if m.to_s.start_with?"test"
         @testParser.send(m)
@@ -349,7 +347,7 @@ class EnglishParserTest < Test::Unit::TestCase
     }
   end
 
-  test "current" do
+  def test_current
     @testParser.test_algebra
     #@testParser.test
   end

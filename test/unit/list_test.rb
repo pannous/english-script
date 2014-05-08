@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
-require 'test_helper'
+
 $use_tree=false
-require_relative "../../core/english-parser"
+require_relative '../test_helper'
 
 class ListTestParser<EnglishParser
   def current
@@ -21,7 +21,7 @@ class ListTestParser<EnglishParser
   end
 
   def initialize
-    @@testing=true
+
     super
   end
 
@@ -167,7 +167,7 @@ class ListTest < Test::Unit::TestCase
     super args
   end
 
-  _test "ALL" do
+  def test_all
     @testParser.methods.each { |m|
       if m.to_s.start_with? "test"
         begin
@@ -180,7 +180,7 @@ class ListTest < Test::Unit::TestCase
     }
   end
 
-  test "current" do
+  def test_current
     @testParser.current
   end
 

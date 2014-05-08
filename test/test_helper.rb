@@ -1,9 +1,9 @@
 ENV["RAILS_ENV"] = "test"
-@@testing=true
 $testing=true
+
 require "test/unit"
-# require_relative "../core/extensions"
 require_relative "../core/english-parser"
+puts nil.test
 # require File.expand_path('../../config/environment', __FILE__)
 # require 'rails/test_help'
 # class Test::Unit::TestCase

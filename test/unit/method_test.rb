@@ -1,16 +1,13 @@
 #!/usr/bin/env ruby
-require 'test_helper'
-#require '../test_helper'
 
 #$use_tree=true
 
-#require_relative "../core/english-parser"
-require_relative "../../core/english-parser"
+require_relative '../test_helper'
 
 class StringTestParser<EnglishParser
 
   def initialize
-    @@testing=true
+
     super
   end
 

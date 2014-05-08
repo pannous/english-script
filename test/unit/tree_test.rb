@@ -1,17 +1,14 @@
 #!/usr/bin/env ruby
-require 'test_helper'
-#require '../test_helper'
 
-#$use_tree=true
+$use_tree=true
 
-#require_relative "../core/english-parser"
-require_relative "../../core/english-parser"
+require_relative '../test_helper'
 
 class TreeParserTestParser<EnglishParser
   #@@parser=EnglishParser.new
 
   def initialize
-    @@testing=true
+
     super
     #@@parser=EnglishParser.new
   end
@@ -122,7 +119,7 @@ class TreeParserTest < Test::Unit::TestCase
     }
   end
 
-  test "current" do
+  def test_current
     @testParser.test_algebra
     #@testParser.test
   end
