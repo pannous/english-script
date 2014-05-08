@@ -549,8 +549,9 @@ class EnglishParser < Parser
     if not to #Multiline
       while @string and not @string.contains "end tell" and not @string.contains "end" #TODO deep blocks!
         @result+= rest_of_line() +"\n"
-    end
-    @result+=token "end tell"
+      end
+      # tokens? "end tell","end"
+      @result+=rest_of_line() # "end tell"
     end
     # -s o /path/to/the/script.scpt
     @current_value = %x{/usr/bin/osascript -ss -e $'#{@result}'} if @interpret

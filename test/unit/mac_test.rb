@@ -16,10 +16,12 @@ class MacTestParser<EnglishParser
   end
 
   def test_applescript
-    s 'tell app "Finder"\rdisplay dialog "Hello, world!"\rend'
-    applescript
-    # parse "Tell application \"Finder\" to open home"
+    parse "Tell application \"Finder\" to open home"
     # s "Tell application \"Finder\" to open home"
+    # s 'tell app "Finder"\rdisplay dialog "Hello, world!"\rend'
+    # result=applescript
+    # assert_equals result,@result
+    # assert result.contains "OK"
     # applescript
     # parse "Tell application 'Finder' to close every window"
   end
