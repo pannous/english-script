@@ -15,7 +15,21 @@ class VariableTestParser < EnglishParser
     # assert "x=2"
   end
 
+  def test_vars # NEEEEDS blocks!! Parser.new(block)
+    @variables['counter']=3
+    s "counter =3"
+    condition
+    assert "counter =3"
+    # @variables[:counter]=3
+    # assert "counter =3"
+    parse "counter =2"
+    assert_equals @variables['counter'],2
+    # fix_variables string->symbol
+    # assert_equals @variables[:counter],2
+  end
+
   def current
+    test_vars
     test_local_variables_changed_by_subblocks
   end
 end

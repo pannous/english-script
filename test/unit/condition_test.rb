@@ -6,13 +6,28 @@ $use_tree=false
 require_relative '../test_helper'
 
 class ConditionTestParser<EnglishParser
+
   def current
-    test_if_in_loop
+    test_eq
+    # test_if_in_loop
     #test_loops
     #test_forever
     #test_expressions
     #test_if
   end
+
+  def test_eq
+    @variables['counter']=3
+    # assert "counter == 3"
+    s "counter = 3"
+    condition
+    assert "counter = 3"
+    assert "counter =3"
+    assert "counter is 3"
+    assert "counter equals 3"
+    assert "counter is the same as 3"
+  end
+
   def test_if_in_loop
     parse "c=0;while c<3:c++;if c>1 then beep;done"
   end
@@ -35,6 +50,7 @@ class ConditionTestParser<EnglishParser
     #assert @result=="beeped"
   end
 
+
 end
 
 
@@ -49,7 +65,7 @@ class ConditionTest < Test::Unit::TestCase
     super args
   end
 
-  def test_all
+  def _test_all
     @testParser.methods.each { |m|
       if m.to_s.start_with? "test"
         @testParser.send(m)
@@ -57,8 +73,8 @@ class ConditionTest < Test::Unit::TestCase
     }
   end
 
-  # def test_current
-  #   @testParser.current
-  # end
+  def test_current
+    @testParser.current
+  end
 
 end

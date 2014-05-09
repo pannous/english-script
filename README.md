@@ -8,9 +8,13 @@ Examples
 --------
 Here are some of our favorite examples from the tests, **working today**:                      
 
+
 `assert "first item in 'hi','you' is equal to 'hi'"`
 
 `assert "3rd word in 'hi my friend !!!' is 'friend'"`
+
+`beep three times`
+(There will be a generation of programmers who will shake their heads that there ever was a programming language which did not interpret that sentence correctly.)
 
 `assert "square of 1,2 and 3 == 1,4,9"`
 

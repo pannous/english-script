@@ -565,7 +565,7 @@ class Parser #<MethodInterception
       @last_pattern=cut
       x= try { send(cut) } if args.count==0
       x= try { send(cut,args[0]) } if args.count==1
-      x= try { send(cut, args) } if args.count>0
+      x= try { send(cut, args) } if args.count>1
       @last_pattern=old_last
       return x
     end

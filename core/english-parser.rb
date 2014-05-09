@@ -101,7 +101,7 @@ class EnglishParser < Parser
 
   def algebra
     must_contain operators
-    result=any { try { value } or try{bracelet} }
+    result=any { try { value } or try { bracelet } }
     star {
       op=operator #operator KEYWORD!?! ==> @string="" BUG
       no_rollback!
@@ -117,11 +117,11 @@ class EnglishParser < Parser
       tree=parent_node
       @result=tree.eval_node @variables if $use_tree #wasteful!!
     end
-    $use_tree ? parent_node : @result
+    $use_tree ? parent_node: @result
   end
 
   def javascript
-    __ @context=="javascript" ? "script" : "java script", "javascript", "js"
+    __ @context=="javascript" ? "script": "java script", "javascript", "js"
     no_rollback! 10
     @javascript+=rest_of_line+";"
     newline?
@@ -148,10 +148,10 @@ class EnglishParser < Parser
     return pointer-start if not $use_tree
   end
 
-  #direct_token : WITH space!
+  #direct_token: WITH space!
   def token t
     #return nil if checkEnd
-    t=t[0] if t.is_a?Array #HOW TH ?? method_missing
+    t=t[0] if t.is_a? Array #HOW TH ?? method_missing
     @string.strip!
     raiseEnd
     if starts_with? t
@@ -271,11 +271,11 @@ class EnglishParser < Parser
     start=pointer
     ex=any {#expression}
       try { listSelector } ||
-      try { evaluate_property } ||
-      try { selfModify } ||
-      try { list } ||
-      try { algebra } ||
-      try { endNode }
+          try { evaluate_property } ||
+          try { selfModify } ||
+          try { list } ||
+          try { algebra } ||
+          try { endNode }
     }
     return pointer-start if not @interpret
     @result=do_evaluate ex if ex and @interpret rescue SyntaxError
@@ -325,7 +325,7 @@ class EnglishParser < Parser
     remove_tokens 'execute', 'command', 'commandline', 'run', 'shell', 'shellscript', 'script', 'bash'
     @command = try { quote } # danger bash "hi">echo
     @command = rest_of_line if not @command
-                             #any{ try{  } ||  statements }
+    #any{ try{  } ||  statements }
     begin
       puts "going to execute " + @command
       result=%x{#{@command}}
@@ -339,18 +339,16 @@ class EnglishParser < Parser
   end
 
 
-
   def condition_tree
     brace=_? "("
     condition_tree if brace
     condition if not brace
-    star{
-      __ "and","or","xor","nand"
+    star {
+      __ "and", "or", "xor", "nand"
       condition_tree
     }
     _ ")" if brace
   end
-
 
 
   def if_then
@@ -376,7 +374,7 @@ class EnglishParser < Parser
     use_block=start_block?
     b=action and end_expression if not use_block
     b=block and done if use_block
-    add_trigger c,b
+    add_trigger c, b
   end
 
 
@@ -389,14 +387,14 @@ class EnglishParser < Parser
     __ once_words
     c=condition
     end_expression
-    add_trigger c,b
+    add_trigger c, b
   end
 
 
   def once
 #	|| 'as soon as' condition \n block 'ok'
 #	|| 'as soon as' condition 'then' action;
-    try{once_trigger}||
+    try { once_trigger }||
         action_once
 #	|| action 'as soon as' condition
   end
@@ -424,7 +422,7 @@ class EnglishParser < Parser
     for variable in @variables.keys
       variable=variable.join(" ") if variable.is_a? Array #HOW!?!?!
       value=@variables[variable]||"nil"
-                                                          #args.gsub!(/\$#{variable}/, "#{variable}") # $x => x !!
+      #args.gsub!(/\$#{variable}/, "#{variable}") # $x => x !!
       args.gsub!(/.\{#{variable}\}/, "#{value}") #  ruby style #{x} ;}
       args.gsub!(/\$#{variable}$/, "#{value}") # php style $x
       args.gsub!(/\$#{variable}([^\w])/, "#{value}\\\1")
@@ -484,15 +482,15 @@ class EnglishParser < Parser
     object_method = Object.method(m) rescue false
     if object_method # Bad approach:  that might be another method Tree.beep!
       return false
-                     #method=Object.method(m) # todo : find OTHER! not just Object.
+      #method=Object.method(m) # todo: find OTHER! not just Object.
     end
     true
   end
 
-  def has_args m,clazz=Object
+  def has_args m, clazz=Object
     object_method = clazz.method(m) rescue false
     clazz=clazz.class if not clazz.is_a? Class #lol
-    # todo : better
+    # todo: better
     object_method = clazz.method(m) if not object_method rescue false
     object_method = clazz.public_instance_method(m) if not object_method rescue false
     if object_method # Bad approach:  that might be another method Tree.beep!
@@ -515,15 +513,19 @@ class EnglishParser < Parser
     if has_object(method)
       obj=try { nod }
     end
-    if has_args(method,obj)
+    if has_args(method, obj)
       @current_value=nil
       args=star { arg }
     end
+    return method if not @interpret
     #end_expression
-    if @interpret
-      return do_send(obj, method, args)
+    if @variables[obj]
+      @result=do_send(@variables[obj], method, args)
+      @variables[obj]=@result if method=="increase" # => selfModify
+    else
+      @result=do_send(obj, method, args)
     end
-    return method
+    return @result
   end
 
   def bla
@@ -541,7 +543,7 @@ class EnglishParser < Parser
   end
 
   def applescript
-    tokens "tell application","tell app"
+    tokens "tell application", "tell app"
     app=quote
     to= _? "to"
     @result="tell application \"#{app}\""
@@ -564,7 +566,7 @@ class EnglishParser < Parser
     bla?
     result=any {#action
       try { javascript } ||
-      try{ applescript } ||
+          try { applescript } ||
           try { bash_action } ||
           try { setter } ||
           try { ruby_method_call } ||
@@ -573,8 +575,8 @@ class EnglishParser < Parser
           try { evaluate_property } ||
           try { evaluate } ||
           try { spo }
-                #try { verb_node } ||
-                #try { verb }
+      #try { verb_node } ||
+      #try { verb }
     }
     raise NoResult.new if not result
     newline? #cut rest, BUT:
@@ -585,11 +587,10 @@ class EnglishParser < Parser
   def while_loop
     _ 'while'
     dont_interpret
-    no_rollback!
+    no_rollback! #no_rollback! 13 # arbitrary value ! :{
     c=condition
     start_block
-    #no_rollback! 13 # arbitrary value ! :{
-    a=block
+    a=block #Danger when interpreting it might contain conditions and breaks
     end_block
     r=do_execute_block a while (check_condition c) if check_interpret
     r
@@ -626,7 +627,7 @@ class EnglishParser < Parser
     do_execute_block a while (check_condition c) if check_interpret
   end
 
-  # notodo : LTR parser just here!
+  # notodo: LTR parser just here!
   def times
     must_contain 'times'
     dont_interpret
@@ -640,7 +641,7 @@ class EnglishParser < Parser
   end
 
 
-# todo : node cache : skip action(X) -> _'forever'  if action was (not) parsed before
+# todo: node cache: skip action(X) -> _'forever'  if action was (not) parsed before
   def forever
     must_contain 'forever'
     dont_interpret
@@ -687,6 +688,20 @@ class EnglishParser < Parser
     #parent_node if $use_tree
   end
 
+  def repeat_while
+    _ 'repeat'
+    _while =_? 'while'
+    c=condition
+    _ 'while' if not _while
+    b=block
+    while evaluate_condition c
+      @result=do_execute_block b
+    end if @interpret
+    return parent_node if $use_tree
+    return @result
+  end
+
+
   def loops
     any {#loops }
       try { repeat_n_times }||
@@ -720,21 +735,21 @@ class EnglishParser < Parser
     no_rollback!
     val=expression0
     val=[val].flatten if setta=="are" or setta=="consist of" or setta=="consists of"
-    if @interpret and (mod!="default" ) or not @variables.contains(var)
+    if @interpret and (mod!="default") or not @variables.contains(var)
       @variables[var]=val
     end
     end_expression
     return var if @interpret
     return parent_node if $use_tree
     return old-@string if not @interpret # for repeatable, BAD
-                                         # ||'to'
-                                         #'initial'?	let? the? ('initial'||'var'||'val'||'value of')? variable (be||'to') value
+    # ||'to'
+    #'initial'?	let? the? ('initial'||'var'||'val'||'value of')? variable (be||'to') value
   end
 
   def variable
     article?
     p=pronoun?
-    all=p ? [p] : []
+    all=p ? [p]: []
     all+=one_or_more { word }
     all.join(" ")
   end
@@ -791,7 +806,7 @@ class EnglishParser < Parser
     try { number } ||
         try { quote } ||
         try { the_noun_that } #||
-        #try { variables_that } # see selectable
+    #try { variables_that } # see selectable
   end
 
   def article
@@ -915,7 +930,7 @@ class EnglishParser < Parser
           try { token('of') and endNode }|| # friends of africa
           try { preposition and nod } # friends in africa
     }
-    $use_tree ? parent_node : @current_value
+    $use_tree ? parent_node: @current_value
   end
 
 
@@ -975,10 +990,10 @@ class EnglishParser < Parser
   def check_condition cond=nil #later:node?
     begin
       if cond #HAAACK DANGARRR
-      #@a,@comp,@b= extract_condition c if c
-      evals=""
-      @variables.each{|var,val|evals+= "#{var}=#{val};"}
-      return @result=eval(evals+cond.join(" "))
+        #@a,@comp,@b= extract_condition c if c
+        evals=""
+        @variables.each { |var, val| evals+= "#{var}=#{val};" }
+        return @result=eval(evals+cond.join(" "))
       end
       @result=do_compare(@a, @comp, @b) if is_comparator @comp
       @result=do_send(@a, @comp, @b) if not is_comparator @comp
@@ -1012,10 +1027,10 @@ class EnglishParser < Parser
     negate = (no||@not)&& !(no and @not)
     subnode negate: negate
     if @interpret
-      return negate ? !check_condition  : check_condition # nil
+      return negate ? (!check_condition): check_condition # nil
     end
     return start-pointer if not $use_tree
-    return parent_node  if $use_tree
+    return parent_node if $use_tree
   end
 
 # todo  I hate to ...
@@ -1042,7 +1057,6 @@ class EnglishParser < Parser
     noun
     star { selector }
   end
-
 
 
   #def plural
@@ -1083,7 +1097,7 @@ class EnglishParser < Parser
       return resolve x if x.is_a? String and match_path(x)
       return x.call if x.is_a? Method
       return eval(x) rescue x # system.jpg  DANGER? OK ^^
-                              # ... todo METHOD / Function!
+        # ... todo METHOD / Function!
     rescue SyntaxError
       return x
     end
@@ -1096,7 +1110,7 @@ class EnglishParser < Parser
   end
 
   def do_evaluate_property x, y
-    # todo : eval NODE !@!!
+    # todo: eval NODE !@!!
     verbose "do_evaluate_property "+x.to_s+" "+y.to_s
     @result=nil #delete old!
     x="class" if x=="type" # !@!@*)($&@) NOO
@@ -1108,7 +1122,7 @@ class EnglishParser < Parser
     begin
       @result=eval(y+"."+x) rescue nil
       @result=eval("'"+y+"'."+x) if not @result rescue SyntaxError #string method
-                  #@result=eval('"'+y+'".'+x) if not @result  rescue SyntaxError #string method
+      #@result=eval('"'+y+'".'+x) if not @result  rescue SyntaxError #string method
       @result=eval(all) if not @result rescue SyntaxError
     end
     @result
@@ -1128,9 +1142,9 @@ class EnglishParser < Parser
       op=op.gsub(/s$/, "")
     end
     obj=Object if not obj or not has_object op
-    #todo : call FUNCTIONS!
-    return @result=obj.send(op) if not has_args op,obj #rescue SyntaxError
-    return @result=obj.send(op, args) if has_args op,obj #rescue SyntaxError
+    #todo: call FUNCTIONS!
+    return @result=obj.send(op) if not has_args op, obj #rescue SyntaxError
+    return @result=obj.send(op, args) if has_args op, obj #rescue SyntaxError
   end
 
   def do_compare a, comp, b
@@ -1171,7 +1185,7 @@ class EnglishParser < Parser
   end
 
   def selectable
-    must_contain "that","whose","which"
+    must_contain "that", "whose", "which"
     tokens? "every", "all", "those"
     xs=try { endNoun } || true_variable
     s=try { selector }
@@ -1183,8 +1197,8 @@ class EnglishParser < Parser
   def endNode
     raiseEnd
     x=any {# NODE }
-           #try { plural} ||
-          try { rubyThing } ||
+      #try { plural} ||
+      try { rubyThing } ||
           try { fileName } ||
           try { linuxPath } ||
           try { evaluate_property }||
@@ -1208,7 +1222,7 @@ class EnglishParser < Parser
     obj=noun include
     return parent_node if $use_tree
     adjs=' ' + adjs.join(" ") if adjs and adjs.is_a? Array
-                            #return adjs.to_s+" "+obj.to_s # hmmm
+    #return adjs.to_s+" "+obj.to_s # hmmm
     return obj.to_s + adjs.to_s # hmmm
   end
 
@@ -1264,7 +1278,7 @@ class EnglishParser < Parser
       the_script=lines.join("\n").gsub("puts", "x_puts")
       eval the_script
       @ruby_methods<<method
-      @methods<<@current_node # to do : more
+      @methods<<@current_node # to do: more
       verbose method + " defined successfully !"
     rescue
       error "error in ruby_def block"
@@ -1317,7 +1331,7 @@ class EnglishParser < Parser
       do_evaluate_property(x, y)
     rescue SyntaxError => e
       verbose "ERROR do_evaluate_property"
-      #@result=jeannie all if not @result
+        #@result=jeannie all if not @result
     rescue => e
       verbose "ERROR do_evaluate_property"
       verbose e
@@ -1339,7 +1353,7 @@ class EnglishParser < Parser
   #  those attributes. hacky? do better / don't use
   def subnode attributes={}
     return if not $use_tree
-     return if not @current_node #raise!
+    return if not @current_node #raise!
     attributes.each do |name, value|
       @current_node.nodes<<TreeNode.new(name: name, value: value)
       @current_value=value
@@ -1378,7 +1392,7 @@ class EnglishParser < Parser
       @line_number=@line_number+1 if @line_number<@lines.count
       @original_string="" if @line_number>=@lines.count #!
       return @NEWLINE if @line_number>=@lines.count
-                                                        #raise EndOfDocument.new if @line_number==@lines.count
+      #raise EndOfDocument.new if @line_number==@lines.count
       @string=@lines[@line_number];
       @original_string=@string
       checkNewline
@@ -1456,21 +1470,21 @@ class EnglishParser < Parser
   end
 
   def self.start_shell
-      if ARGV.count==0 #and not ARGF
-        puts "usage:"
-        puts "\t./english-script.sh eval 6 plus six"
-        puts "\t./english-script.sh examples/test.e"
-        puts "\t./english-script.sh (no args for shell)"
-        while true
-          print "english> "
-          input = STDIN.gets.strip
-          interpretation= EnglishParser.new.parse input
-          $verbose=true
-          puts interpretation.tree
-          puts interpretation.result
-        end
-        exit
-     end
+    if ARGV.count==0 #and not ARGF
+      puts "usage:"
+      puts "\t./english-script.sh eval 6 plus six"
+      puts "\t./english-script.sh examples/test.e"
+      puts "\t./english-script.sh (no args for shell)"
+      while true
+        print "english> "
+        input = STDIN.gets.strip
+        interpretation= EnglishParser.new.parse input
+        $verbose=true
+        puts interpretation.tree
+        puts interpretation.result
+      end
+      exit
+    end
     a=ARGV[0].to_s
     # read from commandline argument or pipe!!
     @all=ARGF.read||File.read(a) rescue a

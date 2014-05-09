@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="condition_test" type="TestUnitRunConfigurationType" factoryName="Test::Unit/Shoulda/Minitest" singleton="true">
+  <configuration default="false" name="test_current: english-script" type="TestUnitRunConfigurationType" factoryName="Test::Unit/Shoulda/Minitest" singleton="false">
     <predefined_log_file id="RUBY_TESTUNIT" enabled="true" />
     <module name="english-script" />
     <RTEST_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift) -Itest" />
@@ -20,10 +20,10 @@
     </EXTENSION>
     <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
     <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="" />
-    <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="$MODULE_DIR$/test/unit/condition_test.rb" />
+    <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="$MODULE_DIR$/test/unit/mac_test.rb" />
     <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="" />
-    <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_METHOD_NAME" VALUE="" />
-    <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
+    <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_METHOD_NAME" VALUE="test_current" />
+    <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_METHOD" />
     <RTEST_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
     <RTEST_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
     <RTEST_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
