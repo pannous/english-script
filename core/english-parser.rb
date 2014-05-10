@@ -217,7 +217,7 @@ class EnglishParser < Parser
     _? '.'
     __ ['word','item','element','object'] # noun
     __ ['in','of']
-    l=list
+    l=list?||quote
     @result=l.item(n)
     return @result
   end

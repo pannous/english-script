@@ -12,6 +12,7 @@ module EnglishParserTokens #< MethodInterception
 
   def numbers
     %w[1 2 3 4 5 6 7 8 9 0
+      1st 2nd 3rd 4th 5th 6th 7th 8th 9th 0th 10th
       tenth ninth eighth seventh sixth fifth fourth third second first
       ten nine eight seven six five four three two one zero]
   end

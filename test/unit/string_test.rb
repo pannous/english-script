@@ -14,6 +14,11 @@ class StringTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals @result,"ih"
   end
 
+  def test_nth_word
+    assert "3rd word in 'hi my friend !!!' is 'friend'"
+  end
+
+
   def _test_advanced_string_methods
     parse "x='hi' inverted"
     assert @result=="ih"
