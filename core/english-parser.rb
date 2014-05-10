@@ -111,7 +111,7 @@ class EnglishParser < Parser
       if not $use_tree and @interpret
         result=do_send(result, op, y) rescue SyntaxError
       end
-      result||true
+      result||true # star OK
     }
     if @interpret
       @result=result
@@ -212,18 +212,18 @@ class EnglishParser < Parser
     return false
   end
 
-  def nth_item
+  def nth_item  # Also redundant with property evaluation (But okay as a shortcut)
     n=__ numbers+['first','last','middle']
     _? '.'
     __ ['word','item','element','object'] # noun
     __ ['in','of']
     l=list
-    return @result=l.item(n)
+    @result=l.item(n)
+    return @result
   end
 
   def listSelector
-    nth_item?
-    functionalSelector
+    return nth_item? || functionalSelector
   end
 
   # DANGER: INTERFERES WITH LIST?, NAH, NO COMMA: {x > 3}
@@ -1188,7 +1188,8 @@ class EnglishParser < Parser
     #todo: call FUNCTIONS!
     return @result=obj.send(op) if not has_args op, obj rescue NoMethodError #.new("#{obj}.#{op}") #SyntaxError,
     return @result=obj.send(op, args) if has_args op, obj rescue NoMethodError #SyntaxError,
-    raise SyntaxError.new("ERROR CALLING #{obj}.#{op}(#{args}) : NoMethodError")
+    puts "ERROR CALLING #{obj}.#{op}(#{args}) : NoMethodError"
+    # raise SyntaxError.new("ERROR CALLING #{obj}.#{op}(#{args}) : NoMethodError")
   end
 
   def do_compare a, comp, b
