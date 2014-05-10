@@ -3,14 +3,11 @@
 $use_tree=false
 #$use_tree=true
 
-require_relative '../test_helper'
+require_relative '../parser_test_helper'
 
-class ObserverTestParser<EnglishParser
+class ObserverTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
-  def initialize
-
-    super
-  end
+  include ParserTestHelper
 
   def test_whenever
     parse "beep whenever x is 5"
@@ -22,45 +19,6 @@ class ObserverTestParser<EnglishParser
     parse "whenever that clock shows five seconds do beep"
     #parse "whenever that clock shows five seconds beep"
     assert @result=="1/3"
-  end
-
-  def current
-  end
-
-end
-
-class ObserverTest < Test::Unit::TestCase
-
-  def NOmethod_missing(sym, *args, &block) # <- NoMethodError use node.blah to get blah!
-    syms=sym.to_s
-    if @testParser and @testParser.methods.contains(sym)#(syms.end_with?"?")
-      x= try { @testParser.send(sym) } if args.count==0
-      x= try { @testParser.send(sym,args[0]) } if args.count==1
-      x= try { @testParser.send(sym, args) } if args.count>0
-      return x
-    end
-    super(sym, *args, &block)
-  end
-
-  def self._test x
-    puts "NOT testing "+x.to_s
-  end
-
-  def initialize args
-    @testParser=ObserverTestParser.new
-    super args
-  end
-
-  def test_all
-    @testParser.methods.each{|m|
-      if m.to_s.start_with?"test"
-        @testParser.send(m)
-      end
-    }
-  end
-
-  def test_current
-    @testParser.current
   end
 
 end

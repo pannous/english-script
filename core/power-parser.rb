@@ -149,7 +149,7 @@ class Parser #<MethodInterception
   end
 
   def _? *x
-    try { tokens x }
+    maybe { tokens x }
   end
 
 
@@ -288,7 +288,7 @@ class Parser #<MethodInterception
     res
   end
 
-  def try(&block)
+  def maybe(&block)
     #return if checkEnd
     allow_rollback 1
     old=@string
@@ -564,9 +564,9 @@ class Parser #<MethodInterception
     if (syms.end_with? "?")
       old_last=@last_pattern
       @last_pattern=cut
-      x= try { send(cut) } if args.count==0
-      x= try { send(cut,args[0]) } if args.count==1
-      x= try { send(cut, args) } if args.count>1
+      x= maybe { send(cut) } if args.count==0
+      x= maybe { send(cut,args[0]) } if args.count==1
+      x= maybe { send(cut, args) } if args.count>1
       @last_pattern=old_last
       return x
     end

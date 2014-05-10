@@ -1,8 +1,15 @@
 #!/usr/bin/env ruby
 
-require_relative '../test_helper'
+require_relative '../parser_test_helper'
 
-class VariableTestParser < EnglishParser
+class VariableTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+
+  include ParserTestHelper
+
+  def test_property_setter
+    parse "circle.color=green"
+    assert_equals("circle.color","green")
+  end
 
   def test_local_variables_changed_by_subblocks
     parse "x=2;def test\nx=1\nend\ntest"
@@ -28,33 +35,5 @@ class VariableTestParser < EnglishParser
     # assert_equals @variables[:counter],2
   end
 
-  def current
-    test_vars
-    test_local_variables_changed_by_subblocks
-  end
 end
 
-
-class VariableTest < Test::Unit::TestCase
-
-  def initialize args
-    @testParser=VariableTestParser.new
-    super args
-  end
-
-  def self._test x
-    puts "NOT testing "+x.to_s
-  end
-
-  def test_all
-    @testParser.methods.each { |m|
-      if m.to_s.start_with? "test"
-        @testParser.send(m)
-      end
-    }
-  end
-
-  def test_current
-    @testParser.current
-  end
-end

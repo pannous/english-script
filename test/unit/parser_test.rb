@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
-
 $use_tree=false
 
 require_relative '../test_helper'
 
+#DIFFERENT TO OTHER TEST: TEST DIRECTLY!
 class EnglishParserTestParser<EnglishParser
   #@@parser=EnglishParser.new
 
@@ -16,9 +16,9 @@ class EnglishParserTestParser<EnglishParser
   def NOmethod_missing(sym, *args, &block) # <- NoMethodError use node.blah to get blah!
     syms=sym.to_s
     if @@parser and @@parser.methods.contains(sym)#(syms.end_with?"?")
-      x= try { @@parser.send(sym) } if args.count==0
-      x= try { @@parser.send(sym,args[0]) } if args.count==1
-      x= try { @@parser.send(sym, args) } if args.count>0
+      x= maybe { @@parser.send(sym) } if args.count==0
+      x= maybe { @@parser.send(sym,args[0]) } if args.count==1
+      x= maybe { @@parser.send(sym, args) } if args.count>0
       return x
     end
     super(sym, *args, &block)
@@ -53,7 +53,7 @@ class EnglishParserTestParser<EnglishParser
     token "hello"
     question
     star {
-      try { token 'does' } || try { question }
+      maybe { token 'does' } || maybe { question }
     }
     _? 'the world'
     assert verb
@@ -83,12 +83,12 @@ class EnglishParserTestParser<EnglishParser
     s "a b c d"
     one :aa, :bb, :cc
     assert any {
-      try { puts "a" }
-      try { puts "b" }
-      try { raise NotMatching.new }
-      try { puts "c" }
-      try { throw "b" }
-      try { puts "b" }
+      maybe { puts "a" }
+      maybe { puts "b" }
+      maybe { raise NotMatching.new }
+      maybe { puts "c" }
+      maybe { throw "b" }
+      maybe { puts "b" }
     }
 
   end
@@ -326,12 +326,12 @@ end"
 end
 
 
-class EnglishParserTest < Test::Unit::TestCase
+class EnglishParserTest < ParserBaseTest
 
   @@testParser=EnglishParserTestParser.new
 
   def initialize args
-    @testParser=EnglishParserTestParser.new
+    @parser=EnglishParserTestParser.new
     super args
   end
 
@@ -340,33 +340,33 @@ class EnglishParserTest < Test::Unit::TestCase
   end
 
   def test_all
-    @testParser.methods.each{|m|
+    @parser.methods.each{|m|
       if m.to_s.start_with?"test"
-        @testParser.send(m)
+        @parser.send(m)
       end
     }
   end
 
   def test_current
-    @testParser.test_algebra
+    @parser.test_algebra
     #@testParser.test
   end
 
 
   _test "setter" do
-    @testParser.test_default_setter
-    @testParser.test_default_setter_dont_overwrite
+    @parser.test_default_setter
+    @parser.test_default_setter_dont_overwrite
   end
 
 
   _test "substitute_variables" do
-    @testParser.test_substitute_variables
+    @parser.test_substitute_variables
     #@@testParser.test_substitute_variables
     assert "yay"
   end
 
   _test "jeannie" do
-    r= @testParser.jeannie ("3 plus 3")
+    r= @parser.jeannie ("3 plus 3")
     puts "jeannie : 3 plus 3 = "+r.to_s
     assert(r=="6")
     puts "OK!!!!!!"

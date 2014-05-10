@@ -3,9 +3,15 @@ def grep xs, x
 end
 
 def beep
-  print "\a"
+  print "\aPEEP"
   system "say 'beep'"
   'beeped'
+end
+
+class Class
+  def blank?
+    false
+  end
 end
 
 class File
@@ -72,48 +78,9 @@ class Dir
   end
 end
 
-class Object
-  def extensions
-    "blah"
-  end
 
-  def log *x
-    puts x
-  end
-
-  def debug *x
-    puts x
-  end
-
-  def is_a clazz
-    className = clazz.to_s.downcase
-    begin
-      ok=self.is_a? clazz
-      return true if ok
-    rescue
-      puts $!
-    end
-    return true if className==self.to_s.downcase #KINDA
-    return true if self.is clazz
-    return false
-  end
-
-  def is x
-    return true if x.blank? and self.blank?
-    return true if x==self
-    return true if x===self
-    return true if x.to_s.downcase==self.to_s.downcase #KINDA
-    return true if x.is self[0] if self.is_a? Array and self.length==1
-    return true if self.is x[0] if x.is_a? Array and x.length==1
-    return false
-  end
-
-end
-
-
-
-class Number < Numeric
-end
+# class Number < Numeric
+# end
 
 def nil.blank?
   return true
@@ -136,6 +103,11 @@ class Hash
 end
 
 class Array
+
+  #EVIL!!
+  def blank?
+    nil? or empty?
+  end
   #def = x  unexpected '='
   #  is x
   #end
@@ -165,9 +137,8 @@ class Array
     self[fix_int nr]
   end
 
-  #EVIL!!
-  def blank?
-    nil? or empty?
+  def invert
+    reverse
   end
 
   def get x
@@ -203,6 +174,17 @@ class FalseClass
 end
 
 class String
+
+  def join x
+    self
+  end
+  # def < x
+  #   i=x.is_a?Numeric
+  #   if i
+  #     return self.to_i<x
+  #   end
+  #   super.< x
+  # end
 
   def starts_with? x
     puts "WARNING: start_with? missspelled as starts_with?"
@@ -390,6 +372,11 @@ end
 #class Fixnum Float
 class Numeric
 
+  def < x
+    return self<x.to_i if x.is_a?String
+    super.< x
+  end
+
   def blank?
     return false
   end
@@ -446,3 +433,48 @@ end
 
 #return true if self==false
 #return false if self==true
+
+
+class Object
+
+  def type
+    self.class
+  end
+
+  def kind
+    self.class
+  end
+
+  def log *x
+    puts x
+  end
+
+  def debug *x
+    puts x
+  end
+
+  def is_a clazz
+    className = clazz.to_s.downcase
+    begin
+      ok=self.is_a? clazz
+      return true if ok
+    rescue
+      puts $!
+    end
+    return true if className==self.to_s.downcase #KINDA
+    return true if self.is clazz
+    return false
+  end
+
+  def is x
+    return true if x.blank? and self.blank?
+    return true if x==self
+    return true if x===self
+    return true if x.to_s.downcase==self.to_s.downcase #KINDA
+    return true if x.is self[0] if self.is_a? Array and self.length==1
+    return true if self.is x[0] if x.is_a? Array and x.length==1
+    return false
+  end
+
+end
+

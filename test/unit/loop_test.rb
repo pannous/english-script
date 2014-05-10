@@ -1,25 +1,22 @@
 #!/usr/bin/env ruby
 $use_tree=false
 #$use_tree=true
-require_relative '../test_helper'
 
-class LoopTestParser<EnglishParser
-  def current
-    test_repeat
-    test_try_until
-    #test_loops
-    #test_forever
-    #test_expressions
-  end
+require_relative '../parser_test_helper'
+
+class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+
+  include ParserTestHelper
+
 
   def _test_forever # OK ;{TRUST ME;}
-    s 'beep forever'
+    init 'beep forever'
     loops
     parse 'beep forever' # OK ;{TRUST ME;}
   end
 
 
-  def _test_loops  #OK
+  def test_loops  #OK
     parse 'beep three times' #OK
     parse "repeat three times: beep; okay" #OK
     parse "repeat three times: beep"       #OK
@@ -95,34 +92,9 @@ class LoopTestParser<EnglishParser
     #parse "counter =0; repeat three times: increase the counter by two; okay"
     #assert "counter =10"
   end
-end
 
-class LoopTest < Test::Unit::TestCase
-
-  def self._test x
-    puts 'NOT testing '+x.to_s
+  def _test_forever # OK ;{TRUST ME;}
+    @parser.s 'beep forever'
+    @parser.loops
   end
-
-  def initialize args
-    @testParser=LoopTestParser.new
-    super args
-  end
-
-  def _test_all
-    @testParser.methods.each { |m|
-      if m.to_s.start_with? 'test'
-        @testParser.send(m)
-      end
-    }
-  end
-
-  def test_current
-    @testParser.current
-  end
-
-  def test_forever # OK ;{TRUST ME;}
-    @testParser.s 'beep forever'
-    @testParser.loops
-  end
-
 end

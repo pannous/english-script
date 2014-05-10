@@ -1,15 +1,12 @@
 #!/usr/bin/env ruby
 
 $use_tree=false
-require_relative '../test_helper'
 
-class MacTestParser<EnglishParser
+require_relative '../parser_test_helper'
 
-  def current
-    test_applescript
-    # test_contains_file
-    # test_variable_transitivity
-  end
+class MacTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+
+  include ParserTestHelper
 
   def test_mail
 
@@ -35,13 +32,13 @@ class MacTestParser<EnglishParser
   end
 
   def test_files3
-    s "my home folder = Dir.home"
+    init "my home folder = Dir.home"
     setter
-    s "my home folder == /Users/me"
+    init "my home folder == /Users/me"
     condition
-    s "/Users/me/photo.JPG ok"
+    init "/Users/me/photo.JPG ok"
     p=linuxPath
-    s "Dir.home"
+    init "Dir.home"
     r=rubyThing
     parse "x := /Users/me "
     assert "my home folder == /Users/me"
@@ -72,29 +69,4 @@ class MacTestParser<EnglishParser
     assert "xs contains photo.JPG"
 
   end
-end
-
-class MacTest < Test::Unit::TestCase
-
-  def self._test x
-    puts "NOT testing "+x.to_s
-  end
-
-  def initialize args
-    @testParser=MacTestParser.new
-    super args
-  end
-
-  def test_all
-    @testParser.methods.each { |m|
-      if m.to_s.start_with? "test"
-        @testParser.send(m)
-      end
-    }
-  end
-
-  def test_current
-    @testParser.current
-  end
-
 end

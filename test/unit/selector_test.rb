@@ -1,35 +1,29 @@
 #!/usr/bin/env ruby
 
 $use_tree=false
+# $verbose=false
 
-require_relative '../test_helper'
+require_relative '../parser_test_helper'
 
-class SelectorTestParser<EnglishParser
-  def current
-    test_selector0
-  end
+class SelectorTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
-  def initialize
-
-    super
-  end
-
+  include ParserTestHelper
 
   def test_every
-    parse "friendly numbers= [1,2,3]; show every friendly number"
     parse "friendly numbers= [1,2,3]; show all friendly numbers"
+    parse "friendly numbers= [1,2,3]; show every friendly number"
     #p "print every item in [1,2,3]"
     #p "print every number in [1,2,3]"
     #p "friendly numbers= [1,2,3]; friendly numbers which are smaller than three "
   end
 
   def test_selector0
-    s "2,3,8,9"
+    init "2,3,8,9"
     list
     #s "xs= 2,3,8,9"
     #setter
     parse "xs= 2,3,8,9"
-    s " xs that are smaller than 7 "
+    init " xs that are smaller than 7 "
     z=selectable
     assert_equals z,[2,3]
     z=parse "let z be xs that are smaller than 7 "
@@ -48,7 +42,7 @@ class SelectorTestParser<EnglishParser
   def  test_selector1
     parse "xs= 1,2,3"
     assert " xs that are bigger than one == [2,3]"
-    s " xs that are bigger than one"
+    init " xs that are bigger than one"
     z=selectable
     assert_equals z,[2,3]
     #s " xs that are bigger than one == [2,3]"
@@ -68,36 +62,6 @@ class SelectorTestParser<EnglishParser
     assert("all numbers in 1,'a',3 ==1,3")
     assert("all negative numbers in 1,-2,3,-4 ==-2,-4")
     assert("all numbers in 1,-2,3,-4 that are negative == -2,-4")
-  end
-
-end
-
-class SelectorTest < Test::Unit::TestCase
-
-  def self._test x
-    puts "NOT testing "+x.to_s
-  end
-
-  def initialize args
-    @testParser=SelectorTestParser.new
-    super args
-  end
-
-  def test_all
-    @testParser.methods.each { |m|
-      if m.to_s.start_with? "test"
-        begin
-          @testParser.send(m)
-        rescue => e
-          puts "NOT PASSING: "+m.to_s
-          @testParser.error e
-        end
-      end
-    }
-  end
-
-  def test_current
-    @testParser.current
   end
 
 end

@@ -273,7 +273,7 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def the?
-    try{the}
+    maybe{the}
   end
 
   def number # complex ||

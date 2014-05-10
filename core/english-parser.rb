@@ -61,13 +61,13 @@ class EnglishParser < Parser
 
   def root
     many {#root}
-      try { newline } ||
-          try { method_definition } ||
-          try { statement } ||
-          try { ruby_def } ||
-          try { block }||
-          try { expression0 } ||
-          try { context }
+      maybe { newline } ||
+          maybe { method_definition } ||
+          maybe { statement } ||
+          maybe { ruby_def } ||
+          maybe { block }||
+          maybe { expression0 } ||
+          maybe { context }
     }
   end
 
@@ -101,12 +101,12 @@ class EnglishParser < Parser
 
   def algebra
     must_contain operators
-    result=any { try { value } or try { bracelet } }
+    result=any { maybe { value } or maybe { bracelet } }
     star {
       op=operator #operator KEYWORD!?! ==> @string="" BUG
       no_rollback!
       # @string=""+@string2 #==> @string="" BUG WHY??
-      y=try { value } || bracelet
+      y=maybe { value } || bracelet
       if not $use_tree and @interpret
         result=do_send(result, op, y) rescue SyntaxError
       end
@@ -115,7 +115,7 @@ class EnglishParser < Parser
     if @interpret
       @result=result
       tree=parent_node
-      @result=tree.eval_node @variables if $use_tree #wasteful!!
+      @result=tree.eval_node @variables if tree and $use_tree #wasteful!!
     end
     $use_tree ? parent_node : @result
   end
@@ -139,26 +139,32 @@ class EnglishParser < Parser
   # EXCLUDING start_block & end_block !!!
   def block
     start=pointer
-    statement
+    s=statement
     star {
       newlines
       statement
     }
     newline? # danger might act as block end!
     return parent_node if $use_tree
-    return pointer-start if not $use_tree
+    return (pointer-start).map &:strip if not $use_tree
   end
+
 
   #direct_token: WITH space!
   def token t
     #return nil if checkEnd
-    t=t[0] if t.is_a? Array #HOW TH ?? method_missing
+    # t=t[0] if t.is_a? Array #HOW TH ?? method_missing
     @string.strip!
     raiseEnd
     if starts_with? t
       @current_value=t.strip
-      @string=@string[t.length..-1].strip
-      return @current_value
+      @string=@string[t.length..-1]
+      if /^\w/.match(@string) and /^\w/.match(t)
+        raise NotMatching.new(t+" (strings needs whitespace, special chars don't)")
+      else
+        @string.strip!
+        return @current_value
+      end
     else
       verbose "expected "+t.to_s # if @throwing
       raise NotMatching.new(t)
@@ -170,14 +176,14 @@ class EnglishParser < Parser
     string=@string.strip+" "
     for t in tokenz.flatten
       return true if (t=="\n" and @string.empty?)
-      if t.match(/\w/)
+      if t.match(/^\w/)
         match=string.match(/^\s*#{t}/im)
-        next if match and not match.post_match.match /[^\w]/ # next must be space or so!
+        next if match and match.post_match.match /^\w/ # next must be space or so!
       else #special char
         match=string.match(/^\s*#{escape_token t}/im)
       end
       if match
-        x=@current_value=t
+        x=@result=@current_value=t
         @string=match.post_match.strip
         @string2=@string
         return x
@@ -219,7 +225,7 @@ class EnglishParser < Parser
 
   def list
     must_contain ","
-    start_brace= try { token "[" }
+    start_brace= maybe { token "[" }
     start_brace= _? "{" if not start_brace
     raise NotMatching.new "not a deep list" if not start_brace and (@inside_list)
     @inside_list=true
@@ -234,6 +240,7 @@ class EnglishParser < Parser
     @inside_list=false
     _ "]" if start_brace=="["
     _ "}" if start_brace=="{"
+    @current_value=all
     all
   end
 
@@ -249,7 +256,7 @@ class EnglishParser < Parser
   def plusPlus
     v=variable
     _ "++"
-    @variables[v]=@result=do_evaluate(v)+1 if @interpret
+    @variables[v]=@result=do_evaluate(v).to_i+1 if @interpret
     v
   end
 
@@ -262,21 +269,21 @@ class EnglishParser < Parser
   end
 
   def selfModify
-    try { plusEqual } ||
-        try { plusPlus } ||
-        try { orEqual }
+    maybe { plusEqual } ||
+        maybe { plusPlus } ||
+        maybe { orEqual }
     #orEqual
   end
 
   def expression0
     start=pointer
     ex=any {#expression}
-      try { listSelector } ||
-          try { evaluate_property } ||
-          try { selfModify } ||
-          try { list } ||
-          try { algebra } ||
-          try { endNode }
+          maybe { listSelector } ||
+          maybe { evaluate_property } ||
+          maybe { selfModify } ||
+          maybe { list } ||
+          maybe { algebra } ||
+          maybe { endNode }
     }
     return pointer-start if not @interpret
     @result=do_evaluate ex if ex and @interpret rescue SyntaxError
@@ -288,11 +295,11 @@ class EnglishParser < Parser
     raiseNewline
     x=any {#statement}
       return @NEWLINE if checkNewline
-      try { loops }||
-          try { if_then } ||
-          try { once } ||
-          try { action } ||
-          try { expression0 } # AS RETURN VALUE! DANGER!
+          maybe { loops }||
+          maybe { if_then } ||
+          maybe { once } ||
+          maybe { action } ||
+          maybe { expression0 } # AS RETURN VALUE! DANGER!
     }
     x
     #one :action, :if_then ,:once , :looper
@@ -303,7 +310,7 @@ class EnglishParser < Parser
     method #  how to
     no_rollback!
     name=verb #  integrate
-    obj=try { endNode } # a sine wave
+    obj=maybe { endNode } # a sine wave
     args=star { arg } # over an interval
     start_block # :
     no_rollback! 10
@@ -324,7 +331,7 @@ class EnglishParser < Parser
   def bash_action
     must_contain 'bash'
     remove_tokens 'execute', 'command', 'commandline', 'run', 'shell', 'shellscript', 'script', 'bash'
-    @command = try { quote } # danger bash "hi">echo
+    @command = maybe { quote } # danger bash "hi">echo
     @command = rest_of_line if not @command
     #any{ try{  } ||  statements }
     begin
@@ -396,7 +403,7 @@ class EnglishParser < Parser
   def once
 #	|| 'as soon as' condition \n block 'ok'
 #	|| 'as soon as' condition 'then' action;
-    try { once_trigger }||
+    maybe { once_trigger }||
         action_once
 #	|| action 'as soon as' condition
   end
@@ -478,6 +485,13 @@ class EnglishParser < Parser
     return ruby_method
   end
 
+  def is_object_method m
+    object_method = Object.method(m) rescue false
+    if object_method
+      return object_method
+    end
+      return false
+  end
 
   # Object.constants  :IO, :STDIN, :STDOUT, :STDERR ...:Complex, :RUBY_VERSION ...
   def has_object m
@@ -513,8 +527,10 @@ class EnglishParser < Parser
     #verb_node
     method=true_method
     obj=nil
-    if has_object(method)
-      obj=try { nod }
+    if is_object_method(method) #todo !has_object(method) is_class_method
+      obj=Object
+    else
+      obj=maybe { nod || list}  # todo: expression
     end
     if has_args(method, obj)
       @current_value=nil
@@ -568,16 +584,16 @@ class EnglishParser < Parser
     start=pointer
     bla?
     result=any {#action
-      try { javascript } ||
-          try { applescript } ||
-          try { bash_action } ||
-          try { setter } ||
-          try { ruby_method_call } ||
-          try { selfModify } ||
-          try { method_call } ||
-          try { evaluate_property } ||
-          try { evaluate } ||
-          try { spo }
+       maybe { javascript } ||
+       maybe { applescript } ||
+       maybe { bash_action } ||
+       maybe { setter } ||
+       maybe { ruby_method_call } ||
+       maybe { selfModify } ||
+       maybe { method_call } ||
+       maybe { evaluate_property } ||
+       maybe { evaluate } ||
+       maybe { spo }
       #try { verb_node } ||
       #try { verb }
     }
@@ -593,9 +609,9 @@ class EnglishParser < Parser
     no_rollback! #no_rollback! 13 # arbitrary value ! :{
     c=condition
     start_block
-    a=block #Danger when interpreting it might contain conditions and breaks
+    b=block #Danger when interpreting it might contain conditions and breaks
     end_block
-    r=do_execute_block a while (check_condition c) if check_interpret
+    r=do_execute_block b while (check_condition c) if check_interpret
     r
   end
 
@@ -683,7 +699,7 @@ class EnglishParser < Parser
     _ 'times'
     dont_interpret
     start_block
-    b=try { action }
+    b=maybe { action }
     #b=block if not b
     end_block
     n.times { do_execute_block b } if check_interpret
@@ -707,12 +723,12 @@ class EnglishParser < Parser
 
   def loops
     any {#loops }
-      try { repeat_n_times }||
-          try { while_loop }||
-          try { looped_action }||
-          try { times }||
-          try { as_long_condition_block }||
-          try { forever }
+      maybe { repeat_n_times }||
+          maybe { while_loop }||
+          maybe { looped_action }||
+          maybe { times }||
+          maybe { as_long_condition_block }||
+          maybe { forever }
     }
   end
 
@@ -734,9 +750,9 @@ class EnglishParser < Parser
     old=@string
     var=variable
     # _?("always") => pointer
-    setta=_?("to")or be # or not_to_be 	contain -> add or create
+    setta=_?("to") || be # or not_to_be 	contain -> add or create
     no_rollback!
-    val=expression0
+    val=adjective? || expression0
     val=[val].flatten if setta=="are" or setta=="consist of" or setta=="consists of"
     if @interpret and (mod!="default") or not @variables.contains(var)
       @variables[var]=val
@@ -793,12 +809,12 @@ class EnglishParser < Parser
     @current_value=nil
     no_keyword_except constants+numbers
     @current_value=x=any {
-      try { quote }||
-          try { number } ||
-          try { true_variable } ||
-          try { constant }||
-          try { nod } ||
-          try { nill }
+        maybe { quote }||
+        maybe { number } ||
+        maybe { true_variable } ||
+        maybe { constant }||
+        maybe { nod } ||
+        maybe { nill }
       #rest_of_line # TOOBIG HERE!
     }
     x
@@ -806,9 +822,9 @@ class EnglishParser < Parser
 
 
   def nod #options{generateAmbigWarnings=false}
-    try { number } ||
-        try { quote } ||
-        try { the_noun_that } #||
+     maybe { number } ||
+     maybe { quote } ||
+     maybe { the_noun_that } #||
     #try { variables_that } # see selectable
   end
 
@@ -892,7 +908,7 @@ class EnglishParser < Parser
   def that_are
     __ 'that', 'which', 'who'
     be
-    try { compareNode }|| # bigger than live
+    maybe { compareNode }|| # bigger than live
         @comp= adjective? || # simple
             gerund #  whining
   end
@@ -910,9 +926,9 @@ class EnglishParser < Parser
 
   def that
     filter=any {
-      try { that_do } ||
-          try { that_are }||
-          try { whose }
+      maybe { that_do } ||
+          maybe { that_are }||
+          maybe { whose }
     }
   end
 
@@ -927,11 +943,11 @@ class EnglishParser < Parser
   def selector
     return if checkEnd
     x=any {
-      try { compareNode }||
-          try { where }|| # sql style
-          try { that } || # friends that live in africa
-          try { token('of') and endNode }|| # friends of africa
-          try { preposition and nod } # friends in africa
+      maybe { compareNode }||
+          maybe { where }|| # sql style
+          maybe { that } || # friends that live in africa
+          maybe { token('of') and endNode }|| # friends of africa
+          maybe { preposition and nod } # friends in africa
     }
     $use_tree ? parent_node : @current_value
   end
@@ -951,8 +967,8 @@ class EnglishParser < Parser
 
 
   def comparison # WEAK pattern?
-    @comp=try { verb_comparison }|| # run like , contains
-        try { comparation } # are bigger than
+    @comp=maybe { verb_comparison }|| # run like , contains
+        maybe { comparation } # are bigger than
   end
 
 
@@ -963,7 +979,7 @@ class EnglishParser < Parser
     eq=tokens? be_words
     tokens? 'either', 'neither'
     @not=tokens? 'not'
-    try { adverb } #'quite','nearly','almost','definitely','by any means','without a doubt'
+    maybe { adverb } #'quite','nearly','almost','definitely','by any means','without a doubt'
     if (eq) # is (equal) optional
       comp=tokens? true_comparitons
     else
@@ -1003,7 +1019,7 @@ class EnglishParser < Parser
       @result=do_send(@a, @comp, @b) if not is_comparator @comp
       @result=!@result if @not
       if not @result
-        debug "condition not met"
+        debug "condition not met #{cond} #{@a} #{@comp} #{@b}"
       end
       return @result
     rescue => e
@@ -1021,8 +1037,8 @@ class EnglishParser < Parser
     @a=endNode
     #a=expression
     @not=false
-    @comp=use_verb=try { verb_comparison } # run like , contains
-    @comp=try { comparation } if not use_verb # are bigger than
+    @comp=use_verb=maybe { verb_comparison } # run like , contains
+    @comp=maybe { comparation } if not use_verb # are bigger than
     #allow_rollback # upto where??
     #b=expression
     @b=endNode
@@ -1115,6 +1131,7 @@ class EnglishParser < Parser
 
   def do_evaluate_property x, y
     # todo: eval NODE !@!!
+    return false if x.nil?
     verbose "do_evaluate_property "+x.to_s+" "+y.to_s
     @result=nil #delete old!
     x="class" if x=="type" # !@!@*)($&@) NOO
@@ -1148,13 +1165,15 @@ class EnglishParser < Parser
     end
     obj=Object if not obj or not has_object op
     #todo: call FUNCTIONS!
-    return @result=obj.send(op) if not has_args op, obj #rescue SyntaxError
-    return @result=obj.send(op, args) if has_args op, obj #rescue SyntaxError
+    return @result=obj.send(op) if not has_args op, obj rescue NoMethodError #SyntaxError,
+    return @result=obj.send(op, args) if has_args op, obj rescue NoMethodError #SyntaxError,
   end
 
   def do_compare a, comp, b
     a=eval_string(a)
     b=eval_string(b)
+    a=a.to_f if b.is_a? Numeric
+    b=b.to_f if a.is_a? Numeric
     if comp=="smaller"||comp=="tinier"||comp=="<"
       return a<b
     elsif comp=="bigger"||comp=="larger"||comp==">"
@@ -1192,8 +1211,8 @@ class EnglishParser < Parser
   def selectable
     must_contain "that", "whose", "which"
     tokens? "every", "all", "those"
-    xs=try { endNoun } || true_variable
-    s=try { selector }
+    xs=maybe { endNoun } || true_variable
+    s=maybe { selector }
     x=filter(xs, s) if @interpret rescue xs
     x
   end
@@ -1203,17 +1222,18 @@ class EnglishParser < Parser
     raiseEnd
     x=any {# NODE }
       #try { plural} ||
-      try { rubyThing } ||
-          try { fileName } ||
-          try { linuxPath } ||
-          try { evaluate_property }||
-          try { selectable } ||
-          try { true_variable } ||
-          try { article?; word } ||
-          try { article?; typeName } ||
-          try { value }
+      maybe { rubyThing } ||
+          maybe { fileName } ||
+          maybe { linuxPath } ||
+          maybe { quote } || #redundant with value !
+          maybe { evaluate_property }||
+          maybe { selectable } ||
+          maybe { true_variable } ||
+          maybe { article?; word } ||
+          maybe { article?; typeName } ||
+          maybe { value }
     }
-    po=try { postjective } # inverted
+    po=maybe { postjective } # inverted
     if po and @interpret
       x=@current_value=x.send(po) rescue x #DANGAR!!
     end
@@ -1270,8 +1290,8 @@ class EnglishParser < Parser
     lines=["def "+@string]
     method=word "method"
     #@current_node.value=method #has ruby_block leaf!
-    try { arg=word; }
-    try { _ "="; defaulter=(quote? or word?) } # or ...!?
+    maybe { arg=word; }
+    maybe { _ "="; defaulter=(quote? or word?) } # or ...!?
     star { _ ","; arg=word; }
     newline
     lines+=ruby_block
@@ -1297,7 +1317,7 @@ class EnglishParser < Parser
 
   def start_block
     return @OK if checkNewline
-    try { tokens ":", "do", "{", "first you ", "second you ", "then you ", "finally you " }
+    maybe { tokens ":", "do", "{", "first you ", "second you ", "then you ", "finally you " }
   end
 
 
@@ -1384,7 +1404,7 @@ class EnglishParser < Parser
 
 
   def newline?
-    try { newline }
+    maybe { newline }
   end
 
   def raiseNewline
@@ -1501,6 +1521,13 @@ class EnglishParser < Parser
     end
   end
 
+  # def variables
+  #   @variables
+  # end
+  #
+  # def result
+  #   @result
+  # end
 
 end
 

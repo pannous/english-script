@@ -2,15 +2,12 @@
 
 $use_tree=false
 #$use_tree=true
+require_relative '../parser_test_helper'
 
-require_relative '../test_helper'
+class StringTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
-class StringTestParser<EnglishParser
+  include ParserTestHelper
 
-  def initialize
-
-    super
-  end
 
   def test_string_methods
     parse "invert 'hi'"
@@ -37,18 +34,18 @@ class StringTestParser<EnglishParser
   end
 
   def test_gerunds
-    s "gerunding"
+    init "gerunding"
     x=gerund
-    s "gerunded"
+    init "gerunded"
     x=postjective
     x
   end
 
   def test_concatenation
-    s "x is 'hi'"
+    init "x is 'hi'"
     setter
     assert(@variables['x']== 'hi');
-    s "x + 'world'"
+    init "x + 'world'"
     #algebra
     #statement
     root
@@ -81,10 +78,10 @@ class StringTestParser<EnglishParser
 
 
   def test_type1
-    s "class of 'hi'"
+    init "class of 'hi'"
     evaluate_property
     assert @result==String
-    s "class of 'hi'"
+    init "class of 'hi'"
     expression0
     assert @result==String
     parse "class of 'hi'"
@@ -123,54 +120,6 @@ class StringTestParser<EnglishParser
     assert("kind of x is string")
     parse "y is type of x"
     assert("y is string")
-  end
-
-  def current
-    #test_type1
-    #test_type2
-    #test_type
-    #test_type3
-    #test_concatenation
-    #test_gerunds
-    test_string_methods
-    #test_select
-    #test_concatenation
-  end
-
-end
-
-class StringTest < Test::Unit::TestCase
-
-  def NOmethod_missing(sym, *args, &block) # <- NoMethodError use node.blah to get blah!
-    syms=sym.to_s
-    if @testParser and @testParser.methods.contains(sym)#(syms.end_with?"?")
-      x= try { @testParser.send(sym) } if args.count==0
-      x= try { @testParser.send(sym,args[0]) } if args.count==1
-      x= try { @testParser.send(sym, args) } if args.count>0
-      return x
-    end
-    super(sym, *args, &block)
-  end
-
-  def self._test x
-    puts "NOT testing "+x.to_s
-  end
-
-  def initialize args
-    @testParser=StringTestParser.new
-    super args
-  end
-
-  def test_all
-    @testParser.methods.each{|m|
-      if m.to_s.start_with?"test"
-        @testParser.send(m)
-      end
-    }
-  end
-
-  def test_current
-    @testParser.current
   end
 
 end
