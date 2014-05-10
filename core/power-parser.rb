@@ -417,7 +417,8 @@ class Parser #<MethodInterception
         all<<@parser.lines[line]
         line=line+1
       end
-      all<<@parser.lines[line][0..end_pointer.offset-1] if line<@parser.lines.count
+      chars=end_pointer.offset-1
+      all<<@parser.lines[line][0..chars] if line<@parser.lines.count and chars>0
       all
     end
 

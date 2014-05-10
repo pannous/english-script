@@ -318,6 +318,7 @@ class String
     gsub!("third", "3")
     gsub!("second", "2")
     gsub!("first", "1")
+    gsub!("zero", "0")
 
     gsub!("4th", "4")
     gsub!("3rd", "3")

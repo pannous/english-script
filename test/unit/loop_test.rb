@@ -120,4 +120,9 @@ class LoopTest < Test::Unit::TestCase
     @testParser.current
   end
 
+  def test_forever # OK ;{TRUST ME;}
+    @testParser.s 'beep forever'
+    @testParser.loops
+  end
+
 end

@@ -8,11 +8,9 @@ require_relative '../test_helper'
 class ConditionTestParser<EnglishParser
 
   def current
-    test_eq
+    test_if
+    # test_eq
     # test_if_in_loop
-    #test_loops
-    #test_forever
-    #test_expressions
     #test_if
   end
 
@@ -33,6 +31,12 @@ class ConditionTestParser<EnglishParser
   end
 
   def test_if
+    s "one is bigger than zero"
+    ok=condition
+    assert_equals ok,true
+    assert "one is bigger than zero"
+    parse "if one is bigger than zero then beep"
+    assert @result=="beeped"
     parse "if 1>0 then beep"
     assert @result=="beeped"
     parse "if 1>0 then: beep"
@@ -43,11 +47,8 @@ class ConditionTestParser<EnglishParser
     assert @result=="beeped"
     parse "if 1>0\n beep\nend"
     assert @result=="beeped"
-
-    parse "if one is bigger than zero then beep"
+    parse "if 1>0 beep" #optional, remove if test fails
     assert @result=="beeped"
-    #parse "if 1>0 beep"
-    #assert @result=="beeped"
   end
 
 
@@ -65,7 +66,7 @@ class ConditionTest < Test::Unit::TestCase
     super args
   end
 
-  def _test_all
+  def test_all
     @testParser.methods.each { |m|
       if m.to_s.start_with? "test"
         @testParser.send(m)

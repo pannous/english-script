@@ -117,11 +117,11 @@ class EnglishParser < Parser
       tree=parent_node
       @result=tree.eval_node @variables if $use_tree #wasteful!!
     end
-    $use_tree ? parent_node: @result
+    $use_tree ? parent_node : @result
   end
 
   def javascript
-    __ @context=="javascript" ? "script": "java script", "javascript", "js"
+    __ @context=="javascript" ? "script" : "java script", "javascript", "js"
     no_rollback! 10
     @javascript+=rest_of_line+";"
     newline?
@@ -136,6 +136,7 @@ class EnglishParser < Parser
   end
 
 
+  # EXCLUDING start_block & end_block !!!
   def block
     start=pointer
     statement
@@ -354,10 +355,11 @@ class EnglishParser < Parser
   def if_then
     __ if_words
     no_rollback!
-    dont_interpret
     c=condition
     _? 'then'
+    dont_interpret #if not c  else dont do_execute_block twice!
     use_block=start_block?
+    # no_rollback! 2 #20
     b=block if use_block # interferes with @comp/condition
     b=action if not use_block
     done
@@ -481,10 +483,11 @@ class EnglishParser < Parser
   def has_object m
     object_method = Object.method(m) rescue false
     if object_method # Bad approach:  that might be another method Tree.beep!
+      method=Object.method(m) # todo: find OTHER! not just Object.
+      # return method # false:  if Object has method assume no object has method BAAAD!!!!
       return false
-      #method=Object.method(m) # todo: find OTHER! not just Object.
     end
-    true
+    return true
   end
 
   def has_args m, clazz=Object
@@ -749,7 +752,7 @@ class EnglishParser < Parser
   def variable
     article?
     p=pronoun?
-    all=p ? [p]: []
+    all=p ? [p] : []
     all+=one_or_more { word }
     all.join(" ")
   end
@@ -930,7 +933,7 @@ class EnglishParser < Parser
           try { token('of') and endNode }|| # friends of africa
           try { preposition and nod } # friends in africa
     }
-    $use_tree ? parent_node: @current_value
+    $use_tree ? parent_node : @current_value
   end
 
 
@@ -988,6 +991,7 @@ class EnglishParser < Parser
   end
 
   def check_condition cond=nil #later:node?
+    return true if cond==true #EVALUATED BEFORE!!!
     begin
       if cond #HAAACK DANGARRR
         #@a,@comp,@b= extract_condition c if c
@@ -1027,7 +1031,7 @@ class EnglishParser < Parser
     negate = (no||@not)&& !(no and @not)
     subnode negate: negate
     if @interpret
-      return negate ? (!check_condition): check_condition # nil
+      return negate ? (!check_condition) : check_condition # nil
     end
     return start-pointer if not $use_tree
     return parent_node if $use_tree
@@ -1132,7 +1136,8 @@ class EnglishParser < Parser
   def do_send x, op, y
     obj=resolve(x)
     args=eval_string(y)
-    return false if not obj
+    obj=Object if not obj
+    # return false if not obj
     return false if not op
     if obj.respond_to? op
       # OK
