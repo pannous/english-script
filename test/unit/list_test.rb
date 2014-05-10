@@ -113,10 +113,13 @@ class ListTestParser < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert("x + y == 1,2,3,4");
     assert("x plus y == [1,2,3,4]");
     assert("x and y == [1,2,3,4]")
+  end
+
+  def test_concatenation4
     # Ambiguous: 'and' also indicates I don't know what 1 and 1 = 2, NOT [1,1] OK?
     assert("1,2 and 3 == 1,2,3")
+    assert_equals(parse("1 and 1"),2)
     assert("1 and 1 == 2")
-    assert("x and y == 1,2,3,4");
   end
 
   def test_type1

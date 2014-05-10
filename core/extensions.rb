@@ -105,6 +105,16 @@ end
 
 class Array
 
+  def matches text
+    for i in self.flatten
+      m=text.match(i.gsub(/([^\w])/, "\\\\\\1")) #escape_token(i))
+      if m
+        return m
+      end
+    end
+    return false
+  end
+
   def and x
     self+[x] if not x.is_a?Array
     self+x
@@ -185,6 +195,11 @@ class FalseClass
 end
 
 class String
+
+  def matches regex
+    match regex
+  end
+
   def stripNewline
     strip.sub(/;$/,'')
   end
@@ -223,7 +238,6 @@ class String
     i=i.to_s.replace_numerals!.to_i #if i.is_a? String
     i-1
   end
-
 
   def sentence i
     i=fix_int i
@@ -301,7 +315,7 @@ class String
 
   def replace_numerals!
 
-    gsub!(/([a-z])-([a-z])/, "\\1+\\2")
+    gsub!(/([a-z])-([a-z])/, "\\1+\\2")# WHOOOT???
     gsub!("last", "0") # index trick
 
     gsub!("tenth", "10")
@@ -386,6 +400,19 @@ end
 #class Fixnum Float
 class Numeric
 
+  def and x
+    self+x
+  end
+  def plus x
+    self+x
+  end
+  def minus x
+    self-x
+  end
+  def times x
+    self*x
+  end
+
   def < x
     return self<x.to_i if x.is_a?String
     super.< x
@@ -450,6 +477,10 @@ end
 
 
 class Object
+
+  def self.throw x
+    raise x
+  end
 
   def type
     self.class

@@ -121,14 +121,24 @@ class Parser #<MethodInterception
     remove_tokens x
   end
 
-  def must_contain *args
+
+
+  def must_contain *args#,before:nil
+    must_contain_before nil,args
+  end
+
+  def must_contain_before before, *args#,before:nil
     good=false
+    before.flatten! if before
     for x in args.flatten
       if x.match(/^\w+$/)
         good||=(" "+@string+" ").match(/[^\w]#{x}[^\w]/)
+        good=nil if good and before and before.matches(good.pre_match)
       else
         good||=@string.index(x)
+        good=nil if good and before and before.matches(@string[0..good])
       end
+      break if good
     end
     raise(NotMatching.new(x)) if not good
     raise(NotMatching.new(x)) if good.to_s.contains newline_tokens # ;while

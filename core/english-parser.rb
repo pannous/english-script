@@ -101,7 +101,7 @@ class EnglishParser < Parser
   end
 
   def algebra
-    must_contain operators
+    must_contain_before [be_words,','], operators
     result=any { maybe { value } or maybe { bracelet } }
     star {
       op=operator #operator KEYWORD!?! ==> @string="" BUG
@@ -212,10 +212,21 @@ class EnglishParser < Parser
     return false
   end
 
+  def nth_item
+    n=__ numbers+['first','last','middle']
+    _? '.'
+    __ ['word','item','element','object'] # noun
+    __ ['in','of']
+    l=list
+    return @result=l.item(n)
+  end
+
   def listSelector
+    nth_item?
     functionalSelector
   end
 
+  # DANGER: INTERFERES WITH LIST?, NAH, NO COMMA: {x > 3}
   def functionalSelector
     _ "{"
     xs=true_variable
@@ -225,13 +236,15 @@ class EnglishParser < Parser
   end
 
   def list
-    must_contain ","
+    raise NotMatching.new if @string[0]==','
+    must_contain_before [be_words+[" "],operators-["and"]], "," #,before:
     start_brace= maybe { token "[" }
     start_brace= _? "{" if not start_brace
     raise NotMatching.new "not a deep list" if not start_brace and (@inside_list)
     @inside_list=true
     all=[]
     #all<<expression(start_brace)
+    $verbose=true #debug
     all<<endNode
     star {
       tokens(",", "and") # danger: and as plus! BAD IDEA!!!
@@ -279,8 +292,8 @@ class EnglishParser < Parser
   def expression0
     start=pointer
     ex=any {#expression}
-          maybe { list } ||
           maybe { algebra } ||
+          maybe { list } ||
           maybe { listSelector } ||
           maybe { evaluate_property } ||
           maybe { selfModify } ||
@@ -1173,8 +1186,9 @@ class EnglishParser < Parser
     end
     obj=Object if not obj or not has_object op
     #todo: call FUNCTIONS!
-    return @result=obj.send(op) if not has_args op, obj rescue NoMethodError #SyntaxError,
+    return @result=obj.send(op) if not has_args op, obj rescue NoMethodError #.new("#{obj}.#{op}") #SyntaxError,
     return @result=obj.send(op, args) if has_args op, obj rescue NoMethodError #SyntaxError,
+    raise SyntaxError.new("ERROR CALLING #{obj}.#{op}(#{args}) : NoMethodError")
   end
 
   def do_compare a, comp, b
@@ -1231,15 +1245,15 @@ class EnglishParser < Parser
     x=any {# NODE }
       #try { plural} ||
       maybe { rubyThing } ||
-          maybe { fileName } ||
-          maybe { linuxPath } ||
-          maybe { quote } || #redundant with value !
-          maybe { evaluate_property }||
-          maybe { selectable } ||
-          maybe { true_variable } ||
-          maybe { article?; word } ||
-          maybe { article?; typeName } ||
-          maybe { value }
+      maybe { fileName } ||
+      maybe { linuxPath } ||
+      maybe { quote } || #redundant with value !
+      maybe { evaluate_property }||
+      maybe { selectable } ||
+      maybe { true_variable } ||
+      maybe { article?; word } ||
+      maybe { article?; typeName } ||
+      maybe { value }
     }
     po=maybe { postjective } # inverted
     if po and @interpret
