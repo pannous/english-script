@@ -383,6 +383,7 @@ class Parser #<MethodInterception
     attr_accessor :line_number, :offset, :parser
 
     def - start
+      return offset-=start.length if start.is_a?String
       return content_between self, start if start>self
       return content_between start, self
     end

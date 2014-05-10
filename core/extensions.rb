@@ -8,6 +8,7 @@ def beep
   'beeped'
 end
 
+
 class Class
   def blank?
     false
@@ -174,6 +175,9 @@ class FalseClass
 end
 
 class String
+  def stripNewline
+    strip.sub(/;$/,'')
+  end
 
   def join x
     self

@@ -146,7 +146,7 @@ class EnglishParser < Parser
     }
     newline? # danger might act as block end!
     return parent_node if $use_tree
-    return (pointer-start).map &:strip if not $use_tree
+    return (pointer-start).map &:stripNewline if not $use_tree
   end
 
 
@@ -526,7 +526,6 @@ class EnglishParser < Parser
   def method_call
     #verb_node
     method=true_method
-    obj=nil
     if is_object_method(method) #todo !has_object(method) is_class_method
       obj=Object
     else
@@ -598,8 +597,9 @@ class EnglishParser < Parser
       #try { verb }
     }
     raise NoResult.new if not result
+    ende=pointer
     newline? #cut rest, BUT:
-    return pointer-start if not $use_tree and not @interpret
+    return ende-start if not $use_tree and not @interpret
     return result
   end
 
