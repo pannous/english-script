@@ -296,7 +296,7 @@ class Parser #<MethodInterception
        raise SystemStackError.new "if(@nodes.count>@max_depth)"
     end
 
-    @original_string=@string if @original_string.blank?
+    @original_string=@string||"" if @original_string.blank?
     begin
       old_nodes=@nodes.clone
       result = yield
@@ -376,7 +376,7 @@ class Parser #<MethodInterception
 
   def pointer
     #@line_number copy by ref?????????
-    Pointer.new @line_number, @original_string.length-@string.length, self
+    Pointer.new @line_number, @original_string.length-(@string||"").length, self
   end
 
   class Pointer

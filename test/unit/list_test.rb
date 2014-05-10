@@ -10,20 +10,19 @@ class ListTestParser < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_type0
     init "1 , 2 , 3"
-    @parser.list
+    assert_equals @parser.list,[1, 2, 3]
     init "1,2,3"
-    @parser.list
+    assert_equals @parser.list,[1, 2, 3]
     init "[1,2,3]"
-    @parser.list
+    assert_equals @parser.list,[1, 2, 3]
     init "{1,2,3}"
-    @parser.list
+    assert_equals @parser.list,[1, 2, 3]
     init "1,2 and 3"
-    @parser.list
+    assert_equals @parser.list,[1, 2, 3]
     init "[1,2 and 3]"
-    @parser.list
+    assert_equals @parser.list,[1, 2, 3]
     init "{1,2 and 3}"
-    l=@parser.list
-    assert l==[1, 2, 3]
+    assert_equals @parser.list,[1, 2, 3]
   end
 
 
@@ -71,19 +70,28 @@ class ListTestParser < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   def test_list_syntax
     assert("1,2 is [1,2]")
     assert("1,2 is {1,2}")
+    assert("1,2 = [1,2]")
+    assert("1,2 == [1,2]")
     assert("[1,2] is {1,2}")
+  end
+
+  def test_list_syntax2
     assert("1,2 and 3 is [1,2,3]")
     assert("1,2,3 is the same as [1,2,3]")
     assert("1,2 and 3 is the same as [1,2,3]")
+    assert("1,2 and 3 are the same as [1,2,3]")
   end
 
   def test_concatenation
     parse "x is 1,2,3;y=4,5,6"
     assert(variables['x']== [1, 2, 3]);
     assert(variables['y'].count== 3);
-    init "x + y"
-    z=@parser.algebra
-    assert @result.length==6
+    # init "x + y"
+    init "x and y"
+    @parser.algebra
+    z=parse "x + y"
+    assert_equals z.length,6
+    assert_equals @result.length,6
   end
 
   def test_concatenation2
@@ -94,10 +102,21 @@ class ListTestParser < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
        y is 3,4
        z is x + y"
     assert(variables['z']== [1, 2, 3, 4]);
-    assert("x and y == [1,2,3,4]")
-    assert("x and y == 1,2,3,4");
+  end
+
+
+  def test_concatenation3
+    variables['x']= [1, 2];
+    variables['y']= [3, 4];
+    init "x + y == 1,2,3,4"
+    @parser.condition
     assert("x + y == 1,2,3,4");
     assert("x plus y == [1,2,3,4]");
+    assert("x and y == [1,2,3,4]")
+    # Ambiguous: 'and' also indicates I don't know what 1 and 1 = 2, NOT [1,1] OK?
+    assert("1,2 and 3 == 1,2,3")
+    assert("1 and 1 == 2")
+    assert("x and y == 1,2,3,4");
   end
 
   def test_type1
@@ -131,6 +150,16 @@ class ListTestParser < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals variables['x'].class,Array
     assert_equals variables['x'].kind,Array
     assert("y is Array")
+    assert("y is a Array")
+    assert("y is an Array")
+    assert("Array == class of x")
+    assert("class of x is Array")
+    assert("kind of x is Array")
+    assert("type of x is Array")
+  end
+
+  def test_type4
+    variables['x']=[1,2,3]
     assert("class of x is Array")
     assert("kind of x is Array")
     assert("type of x is Array")

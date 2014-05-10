@@ -105,6 +105,16 @@ end
 
 class Array
 
+  def and x
+    self+[x] if not x.is_a?Array
+    self+x
+  end
+
+  def plus x
+    self+[x] if not x.is_a?Array
+    self+x
+  end
+
   #EVIL!!
   def blank?
     nil? or empty?

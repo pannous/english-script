@@ -95,7 +95,8 @@ class EnglishParser < Parser
   def eval_string x #hackety hack for non-tree mode
     return x.to_path if x.is_a? File
     return x if x.is_a? String and x.index("/") #file, not regex!  ... notodo ...  x.match(/^\/.*[^\/]$/)
-    x=x.join(" ") if x.is_a? Array
+    # x=x.join(" ") if x.is_a? Array
+    return x.to_s if x.is_a? Array
     do_evaluate x
   end
 
@@ -110,7 +111,7 @@ class EnglishParser < Parser
       if not $use_tree and @interpret
         result=do_send(result, op, y) rescue SyntaxError
       end
-      true
+      result||true
     }
     if @interpret
       @result=result
@@ -183,7 +184,7 @@ class EnglishParser < Parser
         match=string.match(/^\s*#{escape_token t}/im)
       end
       if match
-        x=@result=@current_value=t
+        x=@current_value=t
         @string=match.post_match.strip
         @string2=@string
         return x
@@ -233,7 +234,7 @@ class EnglishParser < Parser
     #all<<expression(start_brace)
     all<<endNode
     star {
-      tokens(",", "and") # danger: and as plus
+      tokens(",", "and") # danger: and as plus! BAD IDEA!!!
       all<<endNode
       #all<<expression
     }
@@ -278,16 +279,16 @@ class EnglishParser < Parser
   def expression0
     start=pointer
     ex=any {#expression}
+          maybe { list } ||
+          maybe { algebra } ||
           maybe { listSelector } ||
           maybe { evaluate_property } ||
           maybe { selfModify } ||
-          maybe { list } ||
-          maybe { algebra } ||
           maybe { endNode }
     }
     return pointer-start if not @interpret
     @result=do_evaluate ex if ex and @interpret rescue SyntaxError
-    @result=ex if not @result or @result==SyntaxError and not ex==SyntaxError # keep false
+    @result=ex if @result.blank? or @result==SyntaxError and not ex==SyntaxError # keep false
     return @result
   end
 
@@ -295,7 +296,7 @@ class EnglishParser < Parser
     raiseNewline
     x=any {#statement}
       return @NEWLINE if checkNewline
-          maybe { loops }||
+      maybe { loops }||
           maybe { if_then } ||
           maybe { once } ||
           maybe { action } ||
@@ -490,7 +491,7 @@ class EnglishParser < Parser
     if object_method
       return object_method
     end
-      return false
+    return false
   end
 
   # Object.constants  :IO, :STDIN, :STDOUT, :STDERR ...:Complex, :RUBY_VERSION ...
@@ -529,7 +530,7 @@ class EnglishParser < Parser
     if is_object_method(method) #todo !has_object(method) is_class_method
       obj=Object
     else
-      obj=maybe { nod || list}  # todo: expression
+      obj=maybe { nod || list } # todo: expression
     end
     if has_args(method, obj)
       @current_value=nil
@@ -583,16 +584,16 @@ class EnglishParser < Parser
     start=pointer
     bla?
     result=any {#action
-       maybe { javascript } ||
-       maybe { applescript } ||
-       maybe { bash_action } ||
-       maybe { setter } ||
-       maybe { ruby_method_call } ||
-       maybe { selfModify } ||
-       maybe { method_call } ||
-       maybe { evaluate_property } ||
-       maybe { evaluate } ||
-       maybe { spo }
+      maybe { javascript } ||
+          maybe { applescript } ||
+          maybe { bash_action } ||
+          maybe { setter } ||
+          maybe { ruby_method_call } ||
+          maybe { selfModify } ||
+          maybe { method_call } ||
+          maybe { evaluate_property } ||
+          maybe { evaluate } ||
+          maybe { spo }
       #try { verb_node } ||
       #try { verb }
     }
@@ -809,12 +810,12 @@ class EnglishParser < Parser
     @current_value=nil
     no_keyword_except constants+numbers
     @current_value=x=any {
-        maybe { quote }||
-        maybe { number } ||
-        maybe { true_variable } ||
-        maybe { constant }||
-        maybe { nod } ||
-        maybe { nill }
+      maybe { quote }||
+      maybe { number } ||
+      maybe { true_variable } ||
+      maybe { constant }||
+      maybe { nod } ||
+      maybe { nill }
       #rest_of_line # TOOBIG HERE!
     }
     x
@@ -822,9 +823,9 @@ class EnglishParser < Parser
 
 
   def nod #options{generateAmbigWarnings=false}
-     maybe { number } ||
-     maybe { quote } ||
-     maybe { the_noun_that } #||
+    maybe { number } ||
+        maybe { quote } ||
+        maybe { the_noun_that } #||
     #try { variables_that } # see selectable
   end
 
@@ -1034,14 +1035,14 @@ class EnglishParser < Parser
     brace=_? "("
     no=_? "not"
     not_brace=_? "("
-    @a=endNode
-    #a=expression
+    # @a=endNode # NO LISTS (YET)! :(
+    @a=expression0
     @not=false
     @comp=use_verb=maybe { verb_comparison } # run like , contains
     @comp=maybe { comparation } if not use_verb # are bigger than
     #allow_rollback # upto where??
-    #b=expression
-    @b=endNode
+    @b=expression0
+    # @b=endNode
     _ ")" if brace
     _ ")" if not_brace
     negate = (no||@not)&& !(no and @not)
@@ -1151,6 +1152,13 @@ class EnglishParser < Parser
 
 
   def do_send x, op, y
+    # try direct first!
+    begin
+      @result=x.send(op) if not y
+      @result=x.send(op, y) if y
+      return @result
+    rescue
+    end
     obj=resolve(x)
     args=eval_string(y)
     obj=Object if not obj
@@ -1244,11 +1252,18 @@ class EnglishParser < Parser
   def endNoun include=[]
     article?
     adjs=star { adjective } #  first second ... included
-    obj=noun include
+    obj=maybe { noun include }
+    if not obj
+      if adjs and adjs.join(" ").is_noun # KIND as adjective or noun??
+        return adjs.join(" ")
+      else
+        raise NotMatching.new "no endNoun"
+      end
+    end
     return parent_node if $use_tree
+    #return adjs.to_s+" "+obj.to_s # hmmm  hmmm   hmmm  W.T.F.!!!!!!!!!!!!!?????
     adjs=' ' + adjs.join(" ") if adjs and adjs.is_a? Array
-    #return adjs.to_s+" "+obj.to_s # hmmm
-    return obj.to_s + adjs.to_s # hmmm
+    return obj.to_s + adjs.to_s # hmmm hmmm   hmmm  W.T.F.!!!!!!!!!!!!!????? ( == todo )
   end
 
   def any_ruby_line
@@ -1419,7 +1434,7 @@ class EnglishParser < Parser
       return @NEWLINE if @line_number>=@lines.count
       #raise EndOfDocument.new if @line_number==@lines.count
       @string=@lines[@line_number];
-      @original_string=@string
+      @original_string=@string||""
       checkNewline
       return @NEWLINE
     end
