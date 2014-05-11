@@ -216,7 +216,7 @@ class String
   # end
 
   def starts_with? x
-    puts "WARNING: start_with? missspelled as starts_with?"
+    # puts "WARNING: start_with? missspelled as starts_with?"
     return start_with? x
   end
 

@@ -13,11 +13,11 @@ done
 finally return the sum divided by the number of steps
 // All comment styles are OK
 #  All comment styles are OK
-/* OK */
 -- All comment styles are (Applescript style)
+/* All comment styles are OK */
 /* Not
-OK
-yet */
+OK to have linebreaks
+yet?? */
 
 	
 /* reductions:

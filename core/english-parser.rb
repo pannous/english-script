@@ -156,6 +156,7 @@ class EnglishParser < Parser
     #return nil if checkEnd
     # t=t[0] if t.is_a? Array #HOW TH ?? method_missing
     @string.strip!
+    comment_block if @string.start_with? "/*"
     raiseEnd
     if starts_with? t
       @current_value=t.strip
@@ -173,6 +174,7 @@ class EnglishParser < Parser
   end
 
   def tokens *tokenz
+    comment_block if @string.starts_with? "/*"
     raiseEnd
     string=@string.strip+" "
     for t in tokenz.flatten
@@ -901,7 +903,7 @@ class EnglishParser < Parser
     verb
     comparative
     endNode?
-    return c if c.starts_with? "more" or c.ends_with? "er"
+    return c if c.start_with? "more" or c.ends_with? "er"
   end
 
   #  faster than ever
@@ -915,7 +917,7 @@ class EnglishParser < Parser
 
   def comparative
     c=more_comparative? or adverb
-    @comp=c if c.starts_with? "more" or c.ends_with? "er"
+    @comp=c if c.start_with? "more" or c.ends_with? "er"
   end
 
 
@@ -1501,9 +1503,13 @@ class EnglishParser < Parser
 
   def comment_block
     token '/*'
+    while not @string.match /\*\//
+      rest_of_line
+      newline? #weg?
+    end
     @string.gsub('.*?\*\/', '')
     #token '*/'
-    add_tree_node
+    # add_tree_node
   end
 
   def comment

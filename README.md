@@ -55,17 +55,18 @@ Run it and see yourself!
 `./install.sh`	
 	
 **experiment** by typing  
+`./english-script.sh` (no args for shell)
+`./english-script.sh 6 plus six`
 `./english-script.sh "xs be 2,3,7,9; xs that are smaller than 7"`  
 `./english-script.sh examples/test.e`
 
-The Ruby on rails project is really just a wrapper for the core [submodule](https://github.com/pannous/natural-english-script/tree/master/lib/english-script). The idea was to store share all code on servers, to avoid reinventing the wheel. So when someone writes `do a fast fourier transformation of this input` the system would look up definitions of 'fast fourier transformation' globally and offer to download/fork this function/module/... The server and the client will be divided into two proper projects soon.
-
-This language might soon be used in our successful beloved Jeannie assistant, which has over 3 million downloads so far:
-http://www.voice-actions.com
 
 Also check out cool similar projects:
 [kal](https://github.com/rzimmerman/kal)
 [dogescript](https://github.com/remixz/dogescript)
+
+This language might soon be used in our successful beloved Jeannie assistant, which has over 4 million downloads so far:
+http://www.voice-actions.com
 
 For a background story/vision/philosophy/future of this project read the [DOSSIER](https://github.com/pannous/natural-english-script/tree/master/DOSSIER.md)
 
