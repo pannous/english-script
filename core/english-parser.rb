@@ -367,26 +367,31 @@ class EnglishParser < Parser
     brace=_? "("
     _? "either" # todo don't match 'either of'!!!
     # negate=_? "neither"
-    condition_tree if brace
-    condition if not brace
+    c=condition_tree if brace
+    c=condition if not brace
     star {
-      __ "and", "or", "nor", "xor", "nand"
-      condition_tree
+      op=__ "and", "or", "nor", "xor", "nand"
+      c2=condition_tree
+      c=c&c2 if op=="and"
+      c=c|c2 if op=="or"
     }
     _ ")" if brace
+    c
   end
 
 
   def if_then
     __ if_words
     no_rollback!
-    c=condition
+    c=condition_tree
+    # c=condition
     _? 'then'
     dont_interpret #if not c  else dont do_execute_block twice!
     use_block=start_block?
     # no_rollback! 2 #20
     b=block if use_block # interferes with @comp/condition
-    b=action if not use_block
+    b=statement if not use_block
+    # b=action if not use_block
     done
     if check_interpret
       if check_condition c
@@ -607,7 +612,7 @@ class EnglishParser < Parser
     start=pointer
     bla?
     result=any {#action
-      maybe { javascript } ||
+          maybe { javascript } ||
           maybe { applescript } ||
           maybe { bash_action } ||
           maybe { setter } ||
@@ -1582,7 +1587,7 @@ class EnglishParser < Parser
     $verbose=false
     if ARGV.count==0 #and not ARGF
       puts "usage:"
-      puts "\t./english-script.sh eval 6 plus six"
+      puts "\t./english-script.sh 6 plus six"
       puts "\t./english-script.sh examples/test.e"
       puts "\t./english-script.sh (no args for shell)"
       @parser=EnglishParser.new

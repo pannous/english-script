@@ -51,6 +51,21 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals check,false
   end
 
+
+  def test_and
+    assert parse 'x=2;if x is smaller 3 and x is bigger 1 then true'
+    assert parse 'x=2;if x is smaller 3 and x is bigger 2 then true'==false
+  end
+
+  def test_or
+    assert parse 'x=2;if x is smaller 1 or x is bigger 1 then true'
+  end
+
+  def test_either_or
+    assert parse 'x=2;if either x is smaller 1 or x is bigger 1 then true'
+    # assert parse 'x=2;if x is either smaller 1 or bigger 8 then true'
+  end
+
   def test_if_smaller
     parse 'x=2;if x is smaller 3 then x++'
     assert_equals variables['x'], 3

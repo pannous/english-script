@@ -57,10 +57,13 @@ Run it and see yourself!
 `./install.sh`	
 	
 **experiment** by typing  
-`./english-script.sh` (no args for shell)
+
 `./english-script.sh 6 plus six`
 `./english-script.sh "xs be 2,3,7,9; xs that are smaller than 7"`  
 `./english-script.sh examples/test.e`
+`./english-script.sh` (no args for shell)
+`english> 6 plus six`
+`6`
 `english> x is 2; if all 0,2,4 are smaller 5 then increase x`
 `3`
 

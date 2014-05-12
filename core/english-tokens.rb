@@ -38,8 +38,9 @@ module EnglishParserTokens #< MethodInterception
     ['a','an','the','these','those','any','all','some','teh','that','every','each','this']# 'that' * 2 !!!
   end
 
+  # "either", VS either of VS either or !!!!!
   def quantifiers
-    articles+ ["any","all","every","one","either","each","some","most","many","nothing","neither","none","no",
+    articles+ ["any","all","every","one","each","some","most","many","nothing","neither","none","no",
                "everything","the whole","at least one","at most two"]#+number
   end
 
@@ -283,7 +284,7 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def integer
-    match=@string.match(/^\s*\d+/)
+    match=@string.match(/^\s*-?\d+/)
     if match
       @current_value=match[0].to_i
       @string=match.post_match.strip
@@ -296,7 +297,7 @@ module EnglishParserTokens #< MethodInterception
 
   def real
     raiseEnd
-    match=@string.match(/^\d*\\.\d+/)
+    match=@string.match(/^-?\d*\\.\d+/)
     if match
       @current_value=match[0].to_f
       @string=match.post_match.strip
