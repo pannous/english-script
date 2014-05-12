@@ -96,6 +96,7 @@ class EnglishParser < Parser
     return x.to_path if x.is_a? File
     return x if x.is_a? String and x.index("/") #file, not regex!  ... notodo ...  x.match(/^\/.*[^\/]$/)
     # x=x.join(" ") if x.is_a? Array
+    return x[0] if x.is_a? Array and x.count==1
     return x.to_s if x.is_a? Array
     do_evaluate x
   end
@@ -1219,8 +1220,10 @@ class EnglishParser < Parser
   end
 
 
+  # todo cleanup method + argument matching + concept
   def do_send x, op, y
     # try direct first!
+    y=y[0] if y.is_a?Array and y.count==0 # SURE???????
     begin
       @result=x.send(op) if not y
       @result=x.send(op, y) if y
@@ -1240,6 +1243,7 @@ class EnglishParser < Parser
       op=op.gsub(/s$/, "")
     end
     obj=Object if not obj or not has_object op
+    args.replace_numerals! if args and args.is_a?String
     #todo: call FUNCTIONS!
     return @result=obj.send(op) if not has_args op, obj rescue NoMethodError #.new("#{obj}.#{op}") #SyntaxError,
     return @result=obj.send(op, args) if has_args op, obj rescue NoMethodError #SyntaxError,

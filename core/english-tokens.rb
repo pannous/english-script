@@ -37,16 +37,26 @@ module EnglishParserTokens #< MethodInterception
   def articles
     ['a','an','the','these','those','any','all','some','teh','that','every','each','this']# 'that' * 2 !!!
   end
-
-  # "either", VS either of VS either or !!!!!
-  def quantifiers
-    articles+ ["any","all","every","one","each","some","most","many","nothing","neither","none","no",
-               "everything","the whole","at least one","at most two"]#+number
+  def no_quantifiers
+      ["nothing","neither","none","no"]
   end
+  def all_quantifiers
+    ["all","every","everything","the whole"]
+  end
+  def any_quantifiers
+    ["any","one","some","most","many","exists","exist","there is","there are","at least one","at most two"]
+  end
+# "either", VS either of VS either or !!!!!
+  def quantifiers #articles+
+     ["any","all","every","one","each","some","most","many","nothing","neither","none","no",
+               "everything","the whole"]#+number
+  end
+
 
   def type_keywords
     ["class","interface","module","type","kind"]
   end
+
 
   def type_names
     ["string","int","integer","bool","boolean","list","array","hash"]
