@@ -39,7 +39,8 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def quantifiers
-    articles+ ["any","all","no","every"]#+number
+    articles+ ["any","all","every","one","either","each","some","most","many","nothing","neither","none","no",
+               "everything","the whole","at least one","at most two"]#+number
   end
 
   def type_keywords

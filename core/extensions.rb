@@ -105,9 +105,14 @@ end
 
 class Array
 
-  def matches text
+  # def matches item
+  #   contains item
+  # end
+
+  # remove: confusing!!
+  def matches regex
     for i in self.flatten
-      m=text.match(i.gsub(/([^\w])/, "\\\\\\1")) #escape_token(i))
+      m=regex.match(i.gsub(/([^\w])/, "\\\\\\1")) #escape_token(i))
       if m
         return m
       end

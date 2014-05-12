@@ -101,7 +101,7 @@ class EnglishParser < Parser
   end
 
   def algebra
-    must_contain_before [be_words,','], operators
+    must_contain_before [be_words, ','], operators
     result=any { maybe { value } or maybe { bracelet } }
     star {
       op=operator #operator KEYWORD!?! ==> @string="" BUG
@@ -214,11 +214,11 @@ class EnglishParser < Parser
     return false
   end
 
-  def nth_item  # Also redundant with property evaluation (But okay as a shortcut)
-    n=__ numbers+['first','last','middle']
+  def nth_item # Also redundant with property evaluation (But okay as a shortcut)
+    n=__ numbers+['first', 'last', 'middle']
     _? '.'
-    __ ['word','item','element','object'] # noun
-    __ ['in','of']
+    __ ['word', 'item', 'element', 'object'] # noun
+    __ ['in', 'of']
     l=list?||quote
     @result=l.item(n)
     return @result
@@ -239,7 +239,7 @@ class EnglishParser < Parser
 
   def list
     raise NotMatching.new if @string[0]==','
-    must_contain_before [be_words+[" "],operators-["and"]], "," #,before:
+    must_contain_before [be_words+[" "], operators-["and"]], "," #,before:
     start_brace= maybe { token "[" }
     start_brace= _? "{" if not start_brace
     raise NotMatching.new "not a deep list" if not start_brace and (@inside_list)
@@ -294,7 +294,7 @@ class EnglishParser < Parser
   def expression0
     start=pointer
     ex=any {#expression}
-          maybe { algebra } ||
+      maybe { algebra } ||
           maybe { list } ||
           maybe { listSelector } ||
           maybe { evaluate_property } ||
@@ -365,10 +365,12 @@ class EnglishParser < Parser
 
   def condition_tree
     brace=_? "("
+    _? "either" # todo don't match 'either of'!!!
+    # negate=_? "neither"
     condition_tree if brace
     condition if not brace
     star {
-      __ "and", "or", "xor", "nand"
+      __ "and", "or", "nor", "xor", "nand"
       condition_tree
     }
     _ ")" if brace
@@ -386,7 +388,13 @@ class EnglishParser < Parser
     b=block if use_block # interferes with @comp/condition
     b=action if not use_block
     done
-    return do_execute_block b if check_interpret and check_condition c
+    if check_interpret
+      if check_condition c
+        return do_execute_block b
+      else
+        return @OK #false but block ok!
+      end
+    end
     return b
   end
 
@@ -826,11 +834,11 @@ class EnglishParser < Parser
     no_keyword_except constants+numbers
     @current_value=x=any {
       maybe { quote }||
-      maybe { number } ||
-      maybe { true_variable } ||
-      maybe { constant }||
-      maybe { nod } ||
-      maybe { nill }
+          maybe { number } ||
+          maybe { true_variable } ||
+          maybe { constant }||
+          maybe { nod } ||
+          maybe { nill }
       #rest_of_line # TOOBIG HERE!
     }
     x
@@ -1022,8 +1030,43 @@ class EnglishParser < Parser
     true_comparitons.contains(c) || class_words.contains(c)
   end
 
+
+  def check_list_condition quantifier
+    # see quantifiers
+    begin
+      count=0
+      for item in @a
+        @result=do_compare(item, @comp, @b) if is_comparator @comp
+        @result=do_send(item, @comp, @b) if not is_comparator @comp
+        break if !@result and ["all", "each", "every", "everything", "the whole"].matches quantifier
+        break if @result and ["either", "one", "some","few","any"].contains quantifier
+        if @result and ["no", "not", "none", "nothing"].contains quantifier
+          @not=!@not
+          break
+        end
+        count=count+1 if @result # "many", "most" : continue count
+      end
+
+      min=@a.length/2
+      @result=count>min if quantifier=="most"||quantifier=="many"
+      @result=count>=1 if quantifier=="at least one"
+      # todo "at least two","at most two","more than 3","less than 8","all but 8"
+      @result=!@result if @not
+      if not @result
+        debug "condition not met #{@a} #{@comp} #{@b}"
+      end
+      return @result
+    rescue => e
+      #debug x #soft message
+      error e #exit!
+    end
+
+    return false
+  end
+
   def check_condition cond=nil #later:node?
     return true if cond==true #EVALUATED BEFORE!!!
+    return false if cond==false #EVALUATED BEFORE!!!
     begin
       if cond #HAAACK DANGARRR
         #@a,@comp,@b= extract_condition c if c
@@ -1031,6 +1074,7 @@ class EnglishParser < Parser
         @variables.each { |var, val| evals+= "#{var}=#{val};" }
         return @result=eval(evals+cond.join(" "))
       end
+      # else use state variables todo better!
       @result=do_compare(@a, @comp, @b) if is_comparator @comp
       @result=do_send(@a, @comp, @b) if not is_comparator @comp
       @result=!@result if @not
@@ -1051,6 +1095,9 @@ class EnglishParser < Parser
     no=_? "not"
     not_brace=_? "("
     # @a=endNode # NO LISTS (YET)! :(
+    quantifier=maybe { tokens quantifiers } # vs selector!
+    # __? noun _? "in" all even numbers in [1,2,3,4] -> selector!
+    _? "of" if quantifier # all of
     @a=expression0
     @not=false
     @comp=use_verb=maybe { verb_comparison } # run like , contains
@@ -1063,6 +1110,7 @@ class EnglishParser < Parser
     negate = (no||@not)&& !(no and @not)
     subnode negate: negate
     if @interpret
+      return negate ? (!check_list_condition(quantifier)) : check_list_condition(quantifier) if quantifier
       return negate ? (!check_condition) : check_condition # nil
     end
     return start-pointer if not $use_tree
@@ -1095,9 +1143,9 @@ class EnglishParser < Parser
   end
 
 
-  #def plural
-  #  word #todo
-  #end
+#def plural
+#  word #todo
+#end
 
   def typeName
     tokens type_names
@@ -1242,21 +1290,21 @@ class EnglishParser < Parser
     x
   end
 
-  # # || endNode have adjective || endNode attribute || endNode verbTo verb #||endNode auxiliary gerundium
+# # || endNode have adjective || endNode attribute || endNode verbTo verb #||endNode auxiliary gerundium
   def endNode
     raiseEnd
     x=any {# NODE }
       #try { plural} ||
       maybe { rubyThing } ||
-      maybe { fileName } ||
-      maybe { linuxPath } ||
-      maybe { quote } || #redundant with value !
-      maybe { evaluate_property }||
-      maybe { selectable } ||
-      maybe { true_variable } ||
-      maybe { article?; word } ||
-      maybe { article?; typeName } ||
-      maybe { value }
+          maybe { fileName } ||
+          maybe { linuxPath } ||
+          maybe { quote } || #redundant with value !
+          maybe { evaluate_property }||
+          maybe { selectable } ||
+          maybe { true_variable } ||
+          maybe { article?; word } ||
+          maybe { article?; typeName } ||
+          maybe { value }
     }
     po=maybe { postjective } # inverted
     if po and @interpret
@@ -1407,7 +1455,7 @@ class EnglishParser < Parser
     download jeannie_api+params+URI.encode(request)
   end
 
-  #  those attributes. hacky? do better / don't use
+#  those attributes. hacky? do better / don't use
   def subnode attributes={}
     return if not $use_tree
     return if not @current_node #raise!
@@ -1557,13 +1605,13 @@ class EnglishParser < Parser
     end
   end
 
-  # def variables
-  #   @variables
-  # end
-  #
-  # def result
-  #   @result
-  # end
+# def variables
+#   @variables
+# end
+#
+# def result
+#   @result
+# end
 
 end
 

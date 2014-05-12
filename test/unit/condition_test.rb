@@ -6,7 +6,7 @@ $use_tree=false
 
 require_relative '../parser_test_helper'
 
-class ConditionTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   include ParserTestHelper
 
@@ -27,7 +27,7 @@ class ConditionTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     ok=@parser.block
     assert ok
     p variables
-    assert_equals variables['everything'],'fine'
+    assert_equals variables['everything'], 'fine'
     init 'if x is smaller than three then everything is fine;'
     @parser.if_then
     parse 'x=2;if x is smaller than three then everything is fine;'
@@ -36,17 +36,32 @@ class ConditionTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     # assert "everything is fine"
   end
 
+  def test_list_quantifiers
+    check=parse 'x is 2; if all 0,1,2 are smaller 3 then increase x'
+    assert_equals check, 3
+    check=parse 'x=2;if all 0,1,2 are smaller 2 then x++'
+    assert_equals check,false # if false then true returns false !
+    check=parse 'x=2;if one of 0,1,2 is smaller 3 then x++'
+    assert_equals check, 3
+    check=parse 'x=2;if many of 0,1,2 are smaller 3 then x++'
+    assert_equals check, 3
+    check=parse 'x=2;if many of 0,1,2 are smaller 1 then x++'
+    assert_equals check,false
+    check=parse 'x=2;if none of 0,1,2 is smaller 3 then x++'
+    assert_equals check,false
+  end
+
   def test_if_smaller
     parse 'x=2;if x is smaller 3 then x++'
-    assert_equals variables['x'],3
+    assert_equals variables['x'], 3
     parse 'x=2;if x is smaller three then x++'
-    assert_equals variables['x'],3
+    assert_equals variables['x'], 3
     parse 'x=2;if x is smaller three then x++'
-    assert_equals variables['x'],3
+    assert_equals variables['x'], 3
     parse 'x=2;if x is smaller than three then x++'
-    assert_equals variables['x'],3
+    assert_equals variables['x'], 3
     parse 'x=2;if x is smaller than three x++'
-    assert_equals variables['x'],3
+    assert_equals variables['x'], 3
   end
 
   def test_if_in_loop
@@ -61,7 +76,7 @@ class ConditionTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals @result, 'beeped'
     init 'one is bigger than zero'
     ok=@parser.condition
-    assert_equals ok,true
+    assert_equals ok, true
     assert 'one is bigger than zero'
     parse 'if one is bigger than zero then beep'
     assert_equals @result, 'beeped'
