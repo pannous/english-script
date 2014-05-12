@@ -1579,25 +1579,31 @@ class EnglishParser < Parser
   end
 
   def self.start_shell
+    $verbose=false
     if ARGV.count==0 #and not ARGF
       puts "usage:"
       puts "\t./english-script.sh eval 6 plus six"
       puts "\t./english-script.sh examples/test.e"
       puts "\t./english-script.sh (no args for shell)"
-      while true
-        print "english> "
-        input = STDIN.gets.strip
-        interpretation= EnglishParser.new.parse input
-        $verbose=true
+      @parser=EnglishParser.new
+      require 'readline'
+      while input = Readline.readline('english> ', true)
+
+      # while true
+      #   print "> "
+      #   input = STDIN.gets.strip
+        interpretation= @parser.parse input
         puts interpretation.tree
         puts interpretation.result
       end
       exit
     end
+    @all=ARGV.join(" ")
     a=ARGV[0].to_s
     # read from commandline argument or pipe!!
-    @all=ARGF.read||File.read(a) rescue a
+    @all=ARGF.read||File.read(a) rescue
     @all=@all.split("\n") if @all.is_a?(String)
+    # puts "parsing #{@all}"
     for line in @all
       next if line.blank?
       interpretation=EnglishParser.new.parse line

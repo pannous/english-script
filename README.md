@@ -20,6 +20,8 @@ Here are some of our favorite examples from the tests, **working today**:
 
 `assert "add one to every odd number in 1,2,3 == 2,2,4"`
 
+`assert parse 'x is 2; if all 0,2,4 are smaller 5 then increase x' == 3 `
+
 `parse "beep every three seconds"`
 
 `parse "counter is zero; repeat three times: add 1 to counter; done repeating; assert that the counter is 3"`
@@ -59,7 +61,8 @@ Run it and see yourself!
 `./english-script.sh 6 plus six`
 `./english-script.sh "xs be 2,3,7,9; xs that are smaller than 7"`  
 `./english-script.sh examples/test.e`
-
+`english> x is 2; if all 0,2,4 are smaller 5 then increase x`
+`3`
 
 Also check out cool similar projects:
 [kal](https://github.com/rzimmerman/kal)
