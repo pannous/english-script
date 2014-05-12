@@ -613,7 +613,7 @@ class EnglishParser < Parser
     start=pointer
     bla?
     result=any {#action
-          maybe { javascript } ||
+      maybe { javascript } ||
           maybe { applescript } ||
           maybe { bash_action } ||
           maybe { setter } ||
@@ -1045,7 +1045,7 @@ class EnglishParser < Parser
         @result=do_compare(item, @comp, @b) if is_comparator @comp
         @result=do_send(item, @comp, @b) if not is_comparator @comp
         break if !@result and ["all", "each", "every", "everything", "the whole"].matches quantifier
-        break if @result and ["either", "one", "some","few","any"].contains quantifier
+        break if @result and ["either", "one", "some", "few", "any"].contains quantifier
         if @result and ["no", "not", "none", "nothing"].contains quantifier
           @not=!@not
           break
@@ -1223,7 +1223,7 @@ class EnglishParser < Parser
   # todo cleanup method + argument matching + concept
   def do_send x, op, y
     # try direct first!
-    y=y[0] if y.is_a?Array and y.count==0 # SURE???????
+    y=y[0] if y.is_a? Array and y.count==0 # SURE???????
     begin
       @result=x.send(op) if not y
       @result=x.send(op, y) if y
@@ -1243,7 +1243,7 @@ class EnglishParser < Parser
       op=op.gsub(/s$/, "")
     end
     obj=Object if not obj or not has_object op
-    args.replace_numerals! if args and args.is_a?String
+    args.replace_numerals! if args and args.is_a? String
     #todo: call FUNCTIONS!
     return @result=obj.send(op) if not has_args op, obj rescue NoMethodError #.new("#{obj}.#{op}") #SyntaxError,
     return @result=obj.send(op, args) if has_args op, obj rescue NoMethodError #SyntaxError,
@@ -1587,6 +1587,25 @@ class EnglishParser < Parser
     @svg<<x
   end
 
+
+  MAXHISTSIZE = 100
+  def self.load_history_why? history_file
+    begin
+      history_file = File::expand_path(history_file)
+      if File::exists?(history_file)
+        lines = IO::readlines(history_file).collect { |line| line.chomp }
+        Readline::HISTORY.push(*lines)
+      end
+      Kernel::at_exit do
+        lines = Readline::HISTORY.to_a.reverse.uniq.reverse
+        lines = lines[-MAXHISTSIZE, MAXHISTSIZE] if lines.count > MAXHISTSIZE
+        File::open(history_file, File::WRONLY|File::CREAT|File::TRUNC) { |io| io.puts lines.join("\n") }
+      end
+    rescue => e
+      puts "Error when configuring history: #{e}"
+    end
+  end
+
   def self.start_shell
     $verbose=false
     if ARGV.count==0 #and not ARGF
@@ -1596,11 +1615,12 @@ class EnglishParser < Parser
       puts "\t./english-script.sh (no args for shell)"
       @parser=EnglishParser.new
       require 'readline'
+      load_history_why?("~/.english_history")
       while input = Readline.readline('english> ', true)
-
-      # while true
-      #   print "> "
-      #   input = STDIN.gets.strip
+        # Readline.write_history_file("~/.english_history")
+        # while true
+        #   print "> "
+        #   input = STDIN.gets.strip
         interpretation= @parser.parse input
         puts interpretation.tree
         puts interpretation.result
@@ -1611,7 +1631,7 @@ class EnglishParser < Parser
     a=ARGV[0].to_s
     # read from commandline argument or pipe!!
     @all=ARGF.read||File.read(a) rescue
-    @all=@all.split("\n") if @all.is_a?(String)
+        @all=@all.split("\n") if @all.is_a?(String)
     # puts "parsing #{@all}"
     for line in @all
       next if line.blank?
