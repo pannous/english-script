@@ -181,7 +181,8 @@ class Parser #<MethodInterception
 
 
   def no_rollback! n=0
-    for i in 0..(caller.count+n)
+    depth=caller.count
+    for i in 0..(depth+n)
       @rollback[i] ="NO"
     end
     @method=caller #_name
@@ -241,6 +242,8 @@ class Parser #<MethodInterception
       verbose "EndOfDocument"
     rescue EndOfLine
       verbose "EndOfLine"
+    rescue GivingUp => e
+      raise e
     rescue NotMatching
       verbose "NotMatching"
         #retry
@@ -334,10 +337,11 @@ class Parser #<MethodInterception
       #puts rollback
       if not check_rollback_allowed
         error "NO ROLLBACK, GIVING UP!!!"
+        string_pointer # ALWAYS! if @verbose
         show_tree #Not reached
-        error e #exit
-        raise SyntaxError.new(e)
-        #raise GivingUp.new(e)
+        raise GivingUp.new(e)
+        # error e #exit
+        # raise SyntaxError.new(e)
       end
     rescue EndOfDocument => e
       (@nodes-old_nodes).each { |n|
@@ -350,8 +354,6 @@ class Parser #<MethodInterception
         #return true
     rescue => e
       error e
-      raise e #SyntaxError.new(e)
-      #exit
     end
     @string=old #if rollback
     @nodes=old_nodes # restore
@@ -526,7 +528,8 @@ class Parser #<MethodInterception
     x
   end
 
-  def error e
+  def error e,force=false
+    raise e if e.is_a? GivingUp # hand through!
     puts e if e.is_a? String
     if e.is_a? Exception
       puts e.class.to_s+" "+e.message.to_s
@@ -534,7 +537,7 @@ class Parser #<MethodInterception
       puts e.class.to_s+" "+e.message.to_s
       string_pointer
       show_tree
-      raise e # SyntaxError.new(e)
+      raise e if not $verbose# SyntaxError.new(e)
       #exit
     end
   end

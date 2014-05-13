@@ -389,7 +389,7 @@ class EnglishParser < Parser
     _? 'then'
     dont_interpret #if not c  else dont do_execute_block twice!
     use_block=start_block?
-    # no_rollback! 2 #20
+    no_rollback! 20
     b=block if use_block # interferes with @comp/condition
     b=statement if not use_block
     # b=action if not use_block
@@ -1627,9 +1627,15 @@ class EnglishParser < Parser
         # while true
         #   print "> "
         #   input = STDIN.gets.strip
-        interpretation= @parser.parse input
-        puts interpretation.tree  if $use_tree
-        puts interpretation.result
+        begin
+          interpretation= @parser.parse input
+          puts interpretation.tree  if $use_tree
+          puts interpretation.result
+        rescue GivingUp
+          puts "Syntax Error"
+        rescue
+          puts $!
+        end
       end
       exit
     end
