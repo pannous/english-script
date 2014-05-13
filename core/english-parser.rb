@@ -1631,6 +1631,8 @@ class EnglishParser < Parser
           interpretation= @parser.parse input
           puts interpretation.tree  if $use_tree
           puts interpretation.result
+        rescue NotMatching
+          puts "Syntax Error"
         rescue GivingUp
           puts "Syntax Error"
         rescue

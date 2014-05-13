@@ -530,6 +530,7 @@ class Parser #<MethodInterception
 
   def error e,force=false
     raise e if e.is_a? GivingUp # hand through!
+    raise e if e.is_a? NotMatching
     puts e if e.is_a? String
     if e.is_a? Exception
       puts e.class.to_s+" "+e.message.to_s
