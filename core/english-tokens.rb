@@ -52,6 +52,9 @@ module EnglishParserTokens #< MethodInterception
                "everything","the whole"]#+number
   end
 
+  def result_words
+    ['it','they','result']
+  end
 
   def type_keywords
     ["class","interface","module","type","kind"]
@@ -378,9 +381,14 @@ module EnglishParserTokens #< MethodInterception
     match=@string.match(/^[A-Z]\w+\.\w+/)
     if match
       thing=match[0]
-      verbose "rubyThing: "+thing
-      @current_value=eval(thing) if @interpret
       @string=match.post_match.strip
+      args=@string.match(/^\(.*?\)/)
+      @string=args.post_match.strip if args
+      args=args||" #{value?||''}"
+      thing=thing+"#{args}"
+      verbose "rubyThing: "+thing
+      # todo: better than eval!
+      @current_value=eval(thing) if @interpret
       return @current_value
     end
     return false

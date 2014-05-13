@@ -35,6 +35,13 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     parse "1.add(0)"
   end
 
+  def test_rubyThing
+    parse "Math.hypot (3,3)"
+    parse "Math.sqrt 8"
+    parse "Math.sqrt( 8 )"
+    parse "Math.ancestors"
+  end
+
   def test_add_to_zero
     # 0->false->"" ERROR!!!
     parse "counter is zero; repeat three times: increase counter by 1; done repeating;"

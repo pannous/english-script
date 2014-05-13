@@ -62,12 +62,12 @@ class EnglishParser < Parser
   def root
     many {#root}
       maybe { newline } ||
-          maybe { method_definition } ||
-          maybe { statement } ||
-          maybe { ruby_def } ||
-          maybe { block }||
-          maybe { expression0 } ||
-          maybe { context }
+      maybe { method_definition } ||
+      maybe { statement } ||
+      maybe { ruby_def } ||
+      maybe { block }||
+      maybe { expression0 } ||
+      maybe { context }
     }
   end
 
@@ -835,14 +835,20 @@ class EnglishParser < Parser
     tokens constants
   end
 
+  def it
+    __ result_words
+    return @result
+  end
+
   def value
     @current_value=nil
-    no_keyword_except constants+numbers
+    no_keyword_except constants+numbers+result_words
     @current_value=x=any {
-      maybe { quote }||
+          maybe { quote }||
           maybe { number } ||
           maybe { true_variable } ||
           maybe { constant }||
+          maybe { it }||
           maybe { nod } ||
           maybe { nill }
       #rest_of_line # TOOBIG HERE!
@@ -1622,7 +1628,7 @@ class EnglishParser < Parser
         #   print "> "
         #   input = STDIN.gets.strip
         interpretation= @parser.parse input
-        puts interpretation.tree
+        puts interpretation.tree  if $use_tree
         puts interpretation.result
       end
       exit

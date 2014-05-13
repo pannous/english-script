@@ -464,6 +464,30 @@ class Numeric
     self**x
   end
 
+  def logarithm
+    Math.log self
+  end
+
+  def e
+    Math.exp self
+  end
+
+  def exponential
+    Math.exp self
+  end
+
+  def sine
+    Math.sin self
+  end
+
+  def cosine
+    Math.cos self
+  end
+
+  def root
+    Math.sqrt self
+  end
+
   def power x
     self**x
   end
