@@ -2,8 +2,13 @@ def grep xs, x
   xs.select { |y| y.to_s.match(x) }
 end
 
+def say x
+  puts x
+  system "say '#{x}'" #mac only!
+end
+
 def beep
-  print "\aPEEP"
+  print "\aBEEP "
   system "say 'beep'"
   'beeped'
 end

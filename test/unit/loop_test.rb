@@ -43,11 +43,6 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals @variables[:x],5
   end
 
-  def test_every_date
-    parse 'beep every three seconds'
-    parse 'every three seconds make a beep'
-  end
-
   def test_expressions
     #s "counter=0"
     #setter

@@ -9,6 +9,23 @@ class ObserverTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   include ParserTestHelper
 
+  def _test_every_date1 #trust me ;)
+    parse 'every 1 seconds { say "Ja!" }'
+    parse 'every 2 seconds do say "OK"'
+    sleep 10000
+  end
+
+  def _test_every_date  #trust me ;)
+    parse 'every 1 seconds do say "OK"'
+    parse 'beep every three seconds'
+    parse 'every two seconds puts "YAY"'
+    # parse 'every second puts "HURRAY"' # WAH! every second  VS  every second hour WTF ! lol
+    parse 'every minute puts "HURRAY"' # WAH! every second  VS  every second hour WTF ! lol
+    parse 'every five seconds do say "OK"'
+    # parse 'every three seconds make a beep'
+    sleep 10000
+  end
+
   def test_whenever
     parse "beep whenever x is 5"
     parse "beep once x is 5"

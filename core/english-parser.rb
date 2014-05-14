@@ -6,6 +6,7 @@ require_relative "CoreFunctions"
 require_relative "english-tokens"
 require_relative "power-parser"
 require_relative "extensions"
+require_relative "events"
 require 'linguistics'
 require 'wordnet'
 #require 'wordnet-defaultdb'
@@ -26,6 +27,7 @@ class EnglishParser < Parser
     @context=""
     @variables={}
     @svg=[]
+    # @bash_methods=["say"]
     @ruby_methods=["puts", "print", "svg"] #"puts"=>x_puts !!!
     @core_methods=["show"] #"puts"=>x_puts !!!
     @methods={} # name->method-node
@@ -34,9 +36,10 @@ class EnglishParser < Parser
   end
 
   # world this method here to resolve the @string
-  def init string0
+  def init strings
     @line_number=0
-    @lines=string0.split("\n")
+    @lines=strings if strings.is_a? Array
+    @lines=strings.split("\n") if strings.is_a? String
     @string=@lines[0]
     @original_string=@string
     @root=nil
@@ -59,15 +62,21 @@ class EnglishParser < Parser
     i
   end
 
+  # beep when it rains
+  # listener
+  def add_trigger condition, action
+    @listeners<<Observer.new(condition, action)
+  end
+
   def root
     many {#root}
       maybe { newline } ||
-      maybe { method_definition } ||
-      maybe { statement } ||
-      maybe { ruby_def } ||
-      maybe { block }||
-      maybe { expression0 } ||
-      maybe { context }
+          maybe { method_definition } ||
+          maybe { statement } ||
+          maybe { ruby_def } ||
+          maybe { block }||
+          maybe { expression0 } ||
+          maybe { context }
     }
   end
 
@@ -416,7 +425,6 @@ class EnglishParser < Parser
     add_trigger c, b
   end
 
-
   def action_once
     must_contain once_words # if not _do and newline
     _do=_? "do"
@@ -433,15 +441,13 @@ class EnglishParser < Parser
   def once
 #	|| 'as soon as' condition \n block 'ok'
 #	|| 'as soon as' condition 'then' action;
-    maybe { once_trigger }||
-        action_once
+    maybe { once_trigger } || action_once
 #	|| action 'as soon as' condition
   end
 
 #/*n_times
 #	 verb number 'times' preposition nod -> "<verb> <preposition> <nod> for <number> times" 	*/
 #/*	 verb number 'times' preposition nod -> ^(number times (verb preposition nod)) # Tree ~= lisp	*/
-
   def verb_node
     v=verb
     nod
@@ -547,12 +553,15 @@ class EnglishParser < Parser
   end
 
   def true_method
+    no_keyword
+    should_not_match auxiliary_verbs
     v=verb? || tokens?(@methods.names)|| Object.method(word) rescue nil
     raise NotMatching.new "no method found" if not v
     v
   end
 
 
+  # vs ruby_method_call !!
   def method_call
     #verb_node
     method=true_method
@@ -565,7 +574,7 @@ class EnglishParser < Parser
       @current_value=nil
       args=star { arg }
     end
-    return method if not @interpret
+    return method if not check_interpret
     #end_expression
     if @variables[obj]
       @result=do_send(@variables[obj], method, args)
@@ -723,6 +732,54 @@ class EnglishParser < Parser
     #do_evaluate b
   end
 
+  def time_words
+    ["seconds", "second", "minutes", "minute", "a.m.", "p.m.", "pm", "o'clock", "hours", "hour"] #etc... !
+  end
+
+  def event_kinds
+    ['in', 'at', 'every', 'from', 'between', 'after', 'before', 'until', 'till']
+  end
+
+  def datetime
+    # Complicated stuff!
+    # later: 5 secs from now  , _ 5pm == AT 5pm
+    must_contain time_words
+    _kind = tokens event_kinds
+    no_rollback!
+    __? 'around', 'about'
+    # WAH! every second  VS  every second hour WTF ! lol
+    n=number? || 1 # every [1] second
+    _to= maybe { tokens 'to', 'and' }
+    _to=number if _to
+    _unit=__ time_words # +["am"]
+    _to||= __? 'to', 'and'
+    _to||=number? if _to
+    return Interval.new(_kind, n, _to, _unit)
+  end
+
+  # beep every 4 seconds
+  # every 4 seconds beep
+  # at 5pm send message to john
+  # send message to john at 5pm
+  def repeat_every_times
+    must_contain time_words
+    dont_interpret #'cause later
+    _? 'repeat'
+    b=maybe { action }
+    interval=datetime
+    no_rollback!
+    if not b
+      start_block
+      dont_interpret
+      b=maybe { action } || block
+      end_block
+    end
+    # event=Event.new interval:interval,event:b
+    event=Event.new interval, b
+    event
+    #parent_node if $use_tree
+  end
+
   def repeat_n_times
     _ 'repeat'
     n=number
@@ -753,7 +810,8 @@ class EnglishParser < Parser
 
   def loops
     any {#loops }
-      maybe { repeat_n_times }||
+      maybe { repeat_every_times }||
+          maybe { repeat_n_times }||
           maybe { while_loop }||
           maybe { looped_action }||
           maybe { times }||
@@ -821,10 +879,14 @@ class EnglishParser < Parser
     noun
   end
 
-  def no_keyword_except except=[]
-    bad=starts_with? keywords-except
+  def should_not_match words
+    bad=starts_with? words
     raise ShouldNotMatchKeyword.new bad if bad
-    return bad
+    return @OK
+  end
+
+  def no_keyword_except except=[]
+    should_not_match keywords-except
   end
 
   def no_keyword
@@ -844,7 +906,7 @@ class EnglishParser < Parser
     @current_value=nil
     no_keyword_except constants+numbers+result_words
     @current_value=x=any {
-          maybe { quote }||
+      maybe { quote }||
           maybe { number } ||
           maybe { true_variable } ||
           maybe { constant }||
@@ -869,7 +931,7 @@ class EnglishParser < Parser
   end
 
   def arg
-    preposition #  might be superfluous if CALLING!
+    preposition? #  might be superfluous if CALLING!
     endNode # about sex
   end
 
@@ -1595,6 +1657,7 @@ class EnglishParser < Parser
 
 
   MAXHISTSIZE = 100
+
   def self.load_history_why? history_file
     begin
       history_file = File::expand_path(history_file)
@@ -1629,7 +1692,7 @@ class EnglishParser < Parser
         #   input = STDIN.gets.strip
         begin
           interpretation= @parser.parse input
-          puts interpretation.tree  if $use_tree
+          puts interpretation.tree if $use_tree
           puts interpretation.result
         rescue NotMatching
           puts "Syntax Error"
@@ -1661,8 +1724,15 @@ class EnglishParser < Parser
 # def result
 #   @result
 # end
+end
 
+module EnglishScript
+  class Application < EnglishParser
+    def self.load_tasks
+    end
+    #for rake
+  end
 end
 
 $testing||=false
-EnglishParser.start_shell if ARGV and not $testing
+EnglishParser.start_shell if ARGV and not $testing #and not $raking

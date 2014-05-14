@@ -116,9 +116,11 @@ class Parser #<MethodInterception
   end
 
 
-# shortcut
+  # shortcut: method missing (and maybe{}?)
   def __? *x
-    remove_tokens x
+    # DANGER!! Obviously very different semantics from maybe{tokens}!!
+    # remove_tokens x # shortcut
+    maybe{tokens x}
   end
 
 

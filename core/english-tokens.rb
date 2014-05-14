@@ -127,7 +127,7 @@ module EnglishParserTokens #< MethodInterception
   def auxiliary_verbs
     #['isnt','isn\'t','is not','wasn\'t','was not',]
       ['is','be','was','cannot','can not','can','could','has', 'have','had','may','might','must','shall','should',
-      'will','would']
+      'will','would','do']
   end
 
   def pronouns
@@ -487,7 +487,7 @@ module EnglishParserTokens #< MethodInterception
   def verb
     system_verbs=['contains','contain']+special_verbs+auxiliary_verbs
     no_keyword_except system_verbs-be_words
-    found_verb= tokens? system_verbs-be_words #@verbs,
+    found_verb= tokens? system_verbs-be_words-['do'] #@verbs,
     @current_value=found_verb||wordnet_is_verb # call_is_verb
   end
 
