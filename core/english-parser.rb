@@ -686,16 +686,19 @@ class EnglishParser < Parser
   end
 
   # notodo: LTR parser just here!
+  # say hello 6 times
+  # say hello 6 times 5 #=> hello 30 ??? SyntaxError! say hello (6 times 5)
   def times
     must_contain 'times'
     dont_interpret
     _? "do"
     #_? "repeat"
     a=action
-    n=number
+    a,n=a.join(" ").split(/(\d)\s*$/) #if a.matches /\d\s*$/ # greedy action hack "say hello 6"
+    n=number if not n
     _ 'times'
     end_block
-    n.times { do_evaluate a } if check_interpret
+    n.to_i.times { do_evaluate a } if check_interpret
   end
 
 
@@ -747,6 +750,7 @@ class EnglishParser < Parser
     _kind = tokens event_kinds
     no_rollback!
     __? 'around', 'about'
+    # require 'chronic_duration'
     # WAH! every second  VS  every second hour WTF ! lol
     n=number? || 1 # every [1] second
     _to= maybe { tokens 'to', 'and' }

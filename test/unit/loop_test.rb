@@ -22,6 +22,10 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     parse "repeat three times: beep"       #OK
   end
 
+  def test_action_n_times
+    parse "say 'hello' 6 times"
+  end
+
   def test_try_until
     parse 'repeat while x<4: x++'
     assert_equals @variables[:x],4
