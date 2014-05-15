@@ -508,9 +508,13 @@ end
 
 #return true if self==false
 #return false if self==true
-
+# class Enumerator
 
 class Object
+
+  def blank?
+    false
+  end
 
   def self.throw x
     raise x

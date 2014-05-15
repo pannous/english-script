@@ -396,7 +396,7 @@ class EnglishParser < Parser
     c=condition_tree
     # c=condition
     _? 'then'
-    dont_interpret #if not c  else dont do_execute_block twice!
+    dont_interpret! #if not c  else dont do_execute_block twice!
     use_block=start_block?
     no_rollback! 20
     b=block if use_block # interferes with @comp/condition
@@ -415,7 +415,7 @@ class EnglishParser < Parser
 
   def once_trigger
     __ once_words
-    dont_interpret
+    dont_interpret!
     c=condition
     no_rollback!
     _? 'then'
@@ -428,7 +428,7 @@ class EnglishParser < Parser
   def action_once
     must_contain once_words # if not _do and newline
     _do=_? "do"
-    dont_interpret
+    dont_interpret!
     b=action if not _do
     b=block and done? if _do
     __ once_words
@@ -644,7 +644,7 @@ class EnglishParser < Parser
 
   def while_loop
     _ 'while'
-    dont_interpret
+    dont_interpret!
     no_rollback! #no_rollback! 13 # arbitrary value ! :{
     c=condition
     start_block
@@ -676,7 +676,7 @@ class EnglishParser < Parser
 
   def looped_action
     must_contain 'as long', 'while', 'until'
-    dont_interpret
+    dont_interpret!
     _? "do"
     _? "repeat"
     a=action
@@ -685,12 +685,23 @@ class EnglishParser < Parser
     do_execute_block a while (check_condition c) if check_interpret
   end
 
+
+  def action_or_block
+    # dont_interpret  # always?
+    a=maybe { action }
+    return a if a
+    start_block
+    b=block if not a
+    end_block
+    return b
+  end
+
   # notodo: LTR parser just here!
   # say hello 6 times
   # say hello 6 times 5 #=> hello 30 ??? SyntaxError! say hello (6 times 5)
-  def times
+  def action_n_times
     must_contain 'times'
-    dont_interpret
+    dont_interpret!
     _? "do"
     #_? "repeat"
     a=action
@@ -701,11 +712,36 @@ class EnglishParser < Parser
     n.to_i.times { do_evaluate a } if check_interpret
   end
 
+  def n_times_action
+    must_contain 'times'
+    n=number #or int_variable
+    _ 'times'
+    no_rollback!
+    _? "do"
+    _? "repeat"
+    dont_interpret!
+    a=action_or_block
+    n.to_i.times { do_evaluate a } if check_interpret
+  end
+
+  def repeat_n_times
+    _ 'repeat'
+    n=number
+    _ 'times'
+    no_rollback!
+    dont_interpret!
+    b=action_or_block
+    n.times { do_execute_block b } if check_interpret
+    b
+    #parent_node if $use_tree
+  end
+
+
 
 # todo: node cache: skip action(X) -> _'forever'  if action was (not) parsed before
   def forever
     must_contain 'forever'
-    dont_interpret
+    dont_interpret!
     allow_rollback
     a= action
     _ 'forever'
@@ -767,34 +803,20 @@ class EnglishParser < Parser
   # send message to john at 5pm
   def repeat_every_times
     must_contain time_words
-    dont_interpret #'cause later
+    dont_interpret! #'cause later
     _? 'repeat'
     b=maybe { action }
     interval=datetime
     no_rollback!
     if not b
       start_block
-      dont_interpret
+      dont_interpret!
       b=maybe { action } || block
       end_block
     end
     # event=Event.new interval:interval,event:b
     event=Event.new interval, b
     event
-    #parent_node if $use_tree
-  end
-
-  def repeat_n_times
-    _ 'repeat'
-    n=number
-    _ 'times'
-    dont_interpret
-    start_block
-    b=maybe { action }
-    #b=block if not b
-    end_block
-    n.times { do_execute_block b } if check_interpret
-    b
     #parent_node if $use_tree
   end
 
@@ -816,9 +838,10 @@ class EnglishParser < Parser
     any {#loops }
       maybe { repeat_every_times }||
           maybe { repeat_n_times }||
+          maybe { n_times_action }||
+          maybe { action_n_times }||
           maybe { while_loop }||
           maybe { looped_action }||
-          maybe { times }||
           maybe { as_long_condition_block }||
           maybe { forever }
     }
@@ -1253,7 +1276,8 @@ class EnglishParser < Parser
 
   def do_evaluate x
     begin
-      return x if x.is_a? Array
+      return eval(x[0]) if x.is_a? Array and x.length==1
+      return x if x.is_a? Array and x.length!=1
       return @variables[x] if @variables.contains x
       return x.eval_node @variables if x.is_a? TreeNode
       return resolve x if x.is_a? String and match_path(x)
@@ -1303,7 +1327,7 @@ class EnglishParser < Parser
     rescue
     end
     obj=resolve(x)
-    args=eval_string(y)
+    args=eval_string(y) rescue NoMethodError
     obj=Object if not obj
     # return false if not obj
     return false if not op
@@ -1346,9 +1370,9 @@ class EnglishParser < Parser
     end
   end
 
-  def filter list, criterion
-    return list if not criterion
-    list=eval_string(list)
+  def filter liste, criterion
+    return liste if not criterion
+    list=eval_string(liste)
     list=get_iterator(list) if not list.is_a? Array
     if $use_tree
       method=criterion[:comparative]||criterion[:comparison]||criterion[:adjective]

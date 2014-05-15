@@ -23,6 +23,7 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_action_n_times
+    parse "6 times say 'hello'"
     parse "say 'hello' 6 times"
   end
 

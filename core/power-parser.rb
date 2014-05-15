@@ -191,7 +191,7 @@ class Parser #<MethodInterception
   end
 
 
-  def dont_interpret
+  def dont_interpret!
     if @interpret_border<0
       @interpret_border= caller.count
       @did_interpret=@interpret
@@ -354,7 +354,7 @@ class Parser #<MethodInterception
       #raise e
       return false
         #return true
-    rescue => e
+    rescue => e # NoMethodError etc
       error e
     end
     @string=old #if rollback
