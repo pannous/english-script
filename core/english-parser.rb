@@ -18,7 +18,7 @@ class EnglishParser < Parser
   include TreeBuilder
   include CoreFunctions
   include EnglishParserTokens # module
-  attr_accessor :variables
+  attr_accessor :variables,:methods,:result
 
   def initialize
     super
@@ -274,7 +274,7 @@ class EnglishParser < Parser
     v=variable
     _ "+="
     e=expression0
-    @variables[v]=@result=do_evaluate(v)+e if @interpret
+    @variables[v]=@result=do_send(do_evaluate(v),"+",e) if @interpret
     v
   end
 

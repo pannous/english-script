@@ -30,7 +30,7 @@ module ParserTestHelper
     end
   end
 
-  def assert x=nil, &block
+  def assert x=nil, msg=nil, &block
     return puts "\nTEST PASSED! " if x==true
     x=yield if not x and block
     #raise Exception.new (to_source(block)) if not x
@@ -45,14 +45,14 @@ module ParserTestHelper
       rescue SyntaxError => e
         raise e # ScriptError.new "NOT PASSING: SyntaxError : "+x+" \t("+e.class.to_s+") "+e.to_s
       rescue => e
-        raise NotPassing.new "NOT PASSING: "+x.to_s+" \t("+e.class.to_s+") "+e.to_s
+        raise NotPassing.new "NOT PASSING: #{x} #{msg} \t(#{e.class}) #{e}"
       end
       if not ok
-        raise NotPassing.new "NOT PASSING: "+x.to_s
+        raise NotPassing.new "NOT PASSING: #{x} #{msg}"
       end
       puts x
     end
-    puts "\nTEST PASSED! " +x.to_s+" \t" +@parser.to_source(block).to_s
+    puts "\nTEST PASSED!  #{x} \t" +@parser.to_source(block).to_s
   end
 
 
@@ -75,6 +75,16 @@ module ParserTestHelper
   def variables
     @parser.variables
   end
+
+  def functions
+    @parser.methods
+  end
+
+  def methods
+    @parser.methods
+  end
+
+
 
   def parse x
     @parser.parse x

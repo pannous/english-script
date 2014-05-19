@@ -14,7 +14,12 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_complex syntax
-    init " hear is how to define a method: done"
+    init "here is how to define a method: done"
+  end
+
+  def test_params
+    parse("how to increase x by y: x+y;")
+    assert_not_nil functions["increase"],"sdfsdf"
   end
 
   def test_simple parameters
@@ -24,6 +29,7 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   def test_to_do_something #at a given point
     #s <name of the test>
   end
+
 
 
   def test_svg

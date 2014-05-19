@@ -11,20 +11,20 @@ Here are some of our favorite examples from the tests, **working today**:
 
 `assert "first item in 'hi','you' is equal to 'hi'"`
 
-`assert "3rd word in 'hi my friend !!!' is 'friend'"`
+`assert 3rd word in 'hi my friend !!!' is 'friend'`
 
 `beep three times`
 (There will be a generation of programmers who will shake their heads that there ever was a programming language which did not interpret that sentence correctly.)
 
-`assert "square of 1,2 and 3 == 1,4,9"`
+`square of 1,2 and 3 == 1,4,9`
 
-`assert "add one to every odd number in 1,2,3 == 2,2,4"`
+`add one to every odd number in 1,2,3 == 2,2,4`
 
-`assert parse 'x is 2; if all 0,2,4 are smaller 5 then increase x' == 3 `
+`x is 2; if all 0,2,4 are smaller 5 then increase x; assert x equals 3 `
 
-`parse "beep every three seconds"`
+`beep every three seconds`
 
-`parse "counter is zero; repeat three times: add 1 to counter; done repeating; assert that the counter is 3"`
+`counter is zero; repeat three times: add 1 to counter; done repeating; assert that the counter is 3`
 
 
 ```
@@ -64,6 +64,7 @@ Run it and see yourself!
 `./english-script.sh` (no args for shell)
 `english> 6 plus six`
 `6`
+`english> 
 `english> x is 2; if all 0,2,4 are smaller 5 then increase x`
 `3`
 
