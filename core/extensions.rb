@@ -103,6 +103,8 @@ end
 
 
 class Hash
+  # filter ==  x.select{|z|z>1}
+
   def contains key
     keys.contains key
   end

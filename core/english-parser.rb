@@ -858,12 +858,12 @@ class EnglishParser < Parser
 #/*	 let nod be nods */
   def setter
     no_rollback! if let?
-    the?
+    a=the?
     mod=modifier?
     tokens? 'var', 'val', 'value of'
     mod||=modifier? # ??
     old=@string
-    var=variable
+    var=variable a
     # _?("always") => pointer
     setta=_?("to") || be # or not_to_be 	contain -> add or create
     no_rollback!
@@ -880,11 +880,16 @@ class EnglishParser < Parser
     #'initial'?	let? the? ('initial'||'var'||'val'||'value of')? variable (be||'to') value
   end
 
-  def variable
-    article?
+  # a=7
+  # a dog=7
+  # my dog=7
+  # a green dog=7
+  def variable a=nil
+    a||=article?
+    a=nil if a!="a" #hack for a variable
     p=pronoun?
     all=p ? [p] : []
-    all+=one_or_more { word }
+    all+=one_or_more { word } rescue ( a=="a" ? all=[a] : ( raise NotMatching ))
     all.join(" ")
   end
 
@@ -1409,7 +1414,8 @@ class EnglishParser < Parser
           maybe { true_variable } ||
           maybe { article?; word } ||
           maybe { article?; typeName } ||
-          maybe { value }
+          maybe { value } ||
+          maybe { token "a" } # not article DANGER!
     }
     po=maybe { postjective } # inverted
     if po and @interpret

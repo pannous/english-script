@@ -6,6 +6,15 @@ class VariableTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   include ParserTestHelper
 
+  def test_a_setter_article_vs_variable #
+    parse "a=green"
+    assert_equals(variables["a"],"green")
+    parse "a dog=green"
+    assert_equals(variables["dog"],"green")
+  end
+
+
+
   def test_property_setter
     parse "circle.color=green"
     assert_equals("circle.color","green")
