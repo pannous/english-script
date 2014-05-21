@@ -8,6 +8,14 @@ class ListTestParser < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   include ParserTestHelper
 
+  def test_hasht
+    init "{1,2,3}"
+    assert_equals @parser.list,[1, 2, 3]
+    init "{a:1,b:2,c:3}"
+    assert_equals @parser.json_hash,{a:1,b:2,c:3}
+  end
+
+
   def test_type0
     init "1 , 2 , 3"
     assert_equals @parser.list,[1, 2, 3]

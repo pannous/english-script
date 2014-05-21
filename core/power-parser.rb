@@ -130,11 +130,12 @@ class Parser #<MethodInterception
   end
 
   def must_contain_before before, *args#,before:nil
+    raiseEnd
     good=false
     before.flatten! if before
     for x in args.flatten
       if x.match(/^\w+$/)
-        good||=(" "+@string+" ").match(/[^\w]#{x}[^\w]/)
+        good||=(" #{@string} ").match(/[^\w]#{x}[^\w]/)
         good=nil if good and before and before.matches(good.pre_match)
       else
         good||=@string.index(x)
@@ -321,6 +322,7 @@ class Parser #<MethodInterception
       result = yield
       if result
         @rollback[caller.count..-1]="YES" #Succeeded
+        @result=result
       else
         #DANGER RETURNING false as VALUE!! use RAISE ONLY todo
         (@nodes-old_nodes).each { |n| n.valid=false }
@@ -492,6 +494,7 @@ class Parser #<MethodInterception
       error "error in star "+ to_source(block)
       #warn e
     end
+    return good[0] if good.length==1
     return good if not good.blank?
     #else restore!
     @throwing=was_throwing

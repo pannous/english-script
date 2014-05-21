@@ -31,7 +31,7 @@ class ParserBaseTest < Test::Unit::TestCase
       raise NotPassing.new "NOT PASSING: "+x.to_s if not ok
       puts x
     end
-    puts "\nTEST PASSED! " +x.to_s+" \t" +@parser.to_source(block).to_s
+    puts "\nTEST PASSED   " +x.to_s+" \t" +@parser.to_source(block).to_s
   end
 
 

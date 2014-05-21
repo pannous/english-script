@@ -18,7 +18,7 @@ class EnglishParser < Parser
   include TreeBuilder
   include CoreFunctions
   include EnglishParserTokens # module
-  attr_accessor :variables,:methods,:result
+  attr_accessor :variables, :methods, :result
 
   def initialize
     super
@@ -28,12 +28,21 @@ class EnglishParser < Parser
     @variables={}
     @svg=[]
     # @bash_methods=["say"]
-    @ruby_methods=["puts", "print", "svg"] #"puts"=>x_puts !!!
-    @core_methods=["show"] #"puts"=>x_puts !!!
+    @ruby_methods=["puts", "print", "svg", "now", "yesterday"] #"puts"=>x_puts !!!
+    @core_methods=["show", "now"] #"puts"=>x_puts !!!
     @methods={} # name->method-node
     @OK="OK"
     @result=""
   end
+
+  def now
+    Time.now
+  end
+
+  def yesterday
+    Time.now-24*60*60
+  end
+
 
   # world this method here to resolve the @string
   def init strings
@@ -184,8 +193,8 @@ class EnglishParser < Parser
   end
 
   def tokens *tokenz
-    comment_block if @string.starts_with? "/*"
     raiseEnd
+    comment_block if @string.starts_with? "/*"
     string=@string.strip+" "
     for t in tokenz.flatten
       return true if (t=="\n" and @string.empty?)
@@ -274,7 +283,7 @@ class EnglishParser < Parser
     v=variable
     _ "+="
     e=expression0
-    @variables[v]=@result=do_send(do_evaluate(v),"+",e) if @interpret
+    @variables[v]=@result=do_send(do_evaluate(v), "+", e) if @interpret
     v
   end
 
@@ -301,12 +310,30 @@ class EnglishParser < Parser
     #orEqual
   end
 
+  def json_hash
+    _ '{'
+    h={}
+    star {
+      _ "," if h.length>0 # not h.blank?
+      key=word
+      _ ":"
+      @inside_list=true
+      # h[key] = expression0 # no
+      h[key.to_s.to_sym] = expression0 # no
+    }
+    _ '}'
+    @inside_list=false
+    h
+  end
+
   def expression0
     start=pointer
     ex=any {#expression}
       maybe { algebra } ||
+          maybe { json_hash } ||
           maybe { list } ||
           maybe { listSelector } ||
+          maybe { evaluate_index } ||
           maybe { evaluate_property } ||
           maybe { selfModify } ||
           maybe { endNode }
@@ -333,18 +360,23 @@ class EnglishParser < Parser
   end
 
   def method_definition
-    method #  how to
+    tokens method_tokens #  how to
     no_rollback!
     name=verb #  integrate
     obj=maybe { endNode } # a sine wave
-    args=star { arg } # over an interval
+    args=star {
+      @in_params=true
+      arg
+      _? ","
+    } # over an interval
+    @in_params=false
     start_block # :
     no_rollback! 10
     @interpret=false
     block
     done
     @interpret=true
-    @methods[name]=parent_node rescue nil
+    @methods[name]=parent_node rescue nil # with args! only in tree mode!!
     name
   end
 
@@ -380,7 +412,7 @@ class EnglishParser < Parser
     c=condition_tree false if brace and recurse
     c=condition if not brace
     star {
-      op=__ "and", "or", "nor", "xor", "nand","but"
+      op=__ "and", "or", "nor", "xor", "nand", "but"
       c2=condition_tree false if recurse
       c=c&c2 if op=="and" || op=="but"
       c=c&!c2 if op=="nor"
@@ -400,7 +432,7 @@ class EnglishParser < Parser
     _? 'then'
     dont_interpret! #if not c  else dont do_execute_block twice!
     use_block=start_block?
-    no_rollback! 9# wy??
+    no_rollback! 9 # wy??
     b=block if use_block # interferes with @comp/condition
     b=statement if not use_block
     # b=action if not use_block
@@ -500,9 +532,7 @@ class EnglishParser < Parser
 
   def ruby_method_call
     call=tokens? "call", "execute", "run", "start", "evaluate", "invoke"
-    if call # remove later
-      no_rollback! if call # remove later
-    end
+    no_rollback! if call # remove later
     ruby_method=tokens? @ruby_methods
     raise UndefinedRubyMethod.new word if not ruby_method
     ruby_method.gsub!("puts", "x_puts")
@@ -511,8 +541,10 @@ class EnglishParser < Parser
       the_call=ruby_method+" "+args.to_s
       @result=eval(the_call)||""
       verbose the_call+"  called successfully with result "+@result.to_s
+    rescue SyntaxError => e
+      puts "\n!!!!!!!!!!!!\n ERROR calling #{the_call}\n!!!!!!!!!!!! #{e}\n "
     rescue => e
-      puts "\n!!!!!!!!!!!!\n ERROR calling #{the_call}\n!!!!!!!!!!!!\n "
+      puts "\n!!!!!!!!!!!!\n ERROR calling #{the_call}\n!!!!!!!!!!!! #{e}\n "
       error $!
       puts "!!!! ERROR calling "+the_call
     end
@@ -562,13 +594,29 @@ class EnglishParser < Parser
     v
   end
 
+  def strange_eval obj
+    _? '('
+    args=star { arg }
+    _")"
+    return eval_string("#{obj}(#{args})")
+  end
 
-  # vs ruby_method_call !!
-  def method_call
+  def thing_dot_method_call
+    must_contain '.' # before...?
+    obj=endNode
+    return strange_eval obj if _? '(' and check_interpret
+    _'.'
+    method_call obj
+  end
+
+  # read mail or bla(1) or a.bla(1)  vs ruby_method_call !!
+  def method_call obj=nil
     #verb_node
     method=true_method
+    brace=_?'('
+    no_rollback! if brace
     if is_object_method(method) #todo !has_object(method) is_class_method
-      obj=Object
+      obj||=Object
     else
       obj=maybe { nod || list } # todo: expression
     end
@@ -576,6 +624,7 @@ class EnglishParser < Parser
       @current_value=nil
       args=star { arg }
     end
+    _')' if brace
     return method if not check_interpret
     #end_expression
     if @variables[obj]
@@ -630,6 +679,7 @@ class EnglishParser < Parser
           maybe { setter } ||
           maybe { ruby_method_call } ||
           maybe { selfModify } ||
+          maybe { thing_dot_method_call } ||
           maybe { method_call } ||
           maybe { evaluate_property } ||
           maybe { evaluate } ||
@@ -707,7 +757,7 @@ class EnglishParser < Parser
     _? "do"
     #_? "repeat"
     a=action
-    a,n=a.join(" ").split(/(\d)\s*$/) #if a.matches /\d\s*$/ # greedy action hack "say hello 6"
+    a, n=a.join(" ").split(/(\d)\s*$/) #if a.matches /\d\s*$/ # greedy action hack "say hello 6"
     n=number if not n
     _ 'times'
     end_block
@@ -737,7 +787,6 @@ class EnglishParser < Parser
     b
     #parent_node if $use_tree
   end
-
 
 
 # todo: node cache: skip action(X) -> _'forever'  if action was (not) parsed before
@@ -835,6 +884,26 @@ class EnglishParser < Parser
     return @result
   end
 
+  def collection
+    any {#collection }
+      maybe { range } ||
+          maybe { variable }
+    }
+  end
+
+
+  def for_i_in_collection
+    _? 'repeat'
+    __('for', 'with')
+    _? 'all'
+    v=variable # selector !
+    __('in', 'from')
+    c=collection
+    b=action_or_block
+    for i in c
+      do_execute_block b
+    end if check_interpret
+  end
 
   def loops
     any {#loops }
@@ -842,6 +911,7 @@ class EnglishParser < Parser
           maybe { repeat_n_times }||
           maybe { n_times_action }||
           maybe { action_n_times }||
+          maybe { for_i_in_collection }||
           maybe { while_loop }||
           maybe { looped_action }||
           maybe { as_long_condition_block }||
@@ -891,7 +961,7 @@ class EnglishParser < Parser
     a=nil if a!="a" #hack for a variable
     p=pronoun?
     all=p ? [p] : []
-    all+=one_or_more { word } rescue ( a=="a" ? all=[a] : ( raise NotMatching ))
+    all+=one_or_more { word } rescue (a=="a" ? all=[a] : (raise NotMatching))
     all.join(" ")
   end
 
@@ -1289,9 +1359,11 @@ class EnglishParser < Parser
       return x.eval_node @variables if x.is_a? TreeNode
       return resolve x if x.is_a? String and match_path(x)
       return x.call if x.is_a? Method
-      return eval(x) rescue x # system.jpg  DANGER? OK ^^
+      return eval(x) # rescue x # system.jpg  DANGER? OK ^^
         # ... todo METHOD / Function!
-    rescue SyntaxError
+    rescue TypeError, SyntaxError=>e
+      puts x
+      puts e
       return x
     end
   end
@@ -1359,9 +1431,9 @@ class EnglishParser < Parser
     b=eval_string(b)
     a=a.to_f if b.is_a? Numeric
     b=b.to_f if a.is_a? Numeric
-    if comp=="smaller"||comp=="tinier"||comp=="<"
+    if comp=="smaller"||comp=="tinier"||comp=="comes before"||comp=="<"
       return a<b
-    elsif comp=="bigger"||comp=="larger"||comp==">"
+    elsif comp=="bigger"||comp=="larger"||comp=="comes after"||comp==">"
       return a>b
     elsif class_words.index comp or comp.match(/same/)
       return a.is_a b
@@ -1402,6 +1474,16 @@ class EnglishParser < Parser
     x
   end
 
+  def range
+    return false if @in_params
+    must_contain 'to'
+    _? 'from'
+    a=number
+    _ 'to'
+    b=number
+    a..b # (a..b).to_a
+  end
+
 # # || endNode have adjective || endNode attribute || endNode verbTo verb #||endNode auxiliary gerundium
   def endNode
     raiseEnd
@@ -1416,6 +1498,7 @@ class EnglishParser < Parser
           maybe { true_variable } ||
           maybe { article?; word } ||
           maybe { article?; typeName } ||
+          maybe { range } || # not params!
           maybe { value } ||
           maybe { token "a" } # not article DANGER!
     }
@@ -1537,9 +1620,18 @@ class EnglishParser < Parser
     return s
   end
 
+  def evaluate_index
+    must_contain '[', ']'
+    v=true_variable
+    _ '['
+    i=endNode
+    _ ']'
+    do_evaluate "#{v}[#{i}]" if check_interpret
+  end
+
   def evaluate_property
     _? "all" # list properties (all files in x)
-    must_contain "of", "in"
+    must_contain_before ["of", "in","."],"("
     raiseNewline
     x=endNoun type_keywords
     __ "of", "in"

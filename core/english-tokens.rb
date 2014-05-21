@@ -74,11 +74,11 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def prepositions
-    ['above','after','against','apart from','around','as','aside from','at','before','behind','below',
+    ['above','with or without','after','against','apart from','around','as','aside from','at','before','behind','below',
                  'beneath','beside','between','beyond','by','considering','down','during','for','from','in',
                  'instead of','inside of','inside','into','like','near','on','onto','out of','over', 'outside',
                  'since','through','thru','to','till','with','up','upon','under','underneath','versus', 'via','with',
-                 'within','without','toward','towards']
+                 'within','without','toward','towards','with_or_without'] #wow
   end
 
 
@@ -167,7 +167,8 @@ module EnglishParserTokens #< MethodInterception
   # OR class_words
   def true_comparitons
     ['be','is','are','were','=','>','>=','==','<=','<','=<','gt','lt','eq','bigger','greater','equals',
-     'identical to','smaller','less','equal to','more','less','the same as','same as','similar']
+     'identical to','smaller','less','equal to','more','less','the same as','same as','similar','comes after',
+     'comes before']
   end
 
 
@@ -273,9 +274,9 @@ module EnglishParserTokens #< MethodInterception
   end
 
 
-  def method
-    tokens 'how to','function','definition for','definition of','define','method for','method',
-           'in order to','^to' # <<< TO == DANGER!! to be or not to be
+  def method_tokens
+    [ 'how to','function','definition for','definition of','define','method for','method',
+           'in order to','^to'] # <<< TO == DANGER!! to be or not to be
     # is defined as
     #
   end

@@ -56,6 +56,10 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert "the counter is 3"
   end
 
+  def test_add_time
+    # parse "now plus 1 minute"
+  end
+
   def test_add
     parse "counter is one; repeat three times: increase counter; done repeating;"
     assert_equals variables['counter'], 4
