@@ -54,7 +54,9 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_and
     assert parse 'x=2;if x is smaller 3 and x is bigger 1 then true'
+    assert parse 'x=2;if x is smaller 3 but not x is smaller 1 then true'
     assert parse 'x=2;if x is smaller 3 and x is bigger 2 then true'==false
+    assert parse 'x=2;if x is smaller 3 and x is bigger 2 then "DONT REACH" else true'==true
   end
 
   def test_no_rollback

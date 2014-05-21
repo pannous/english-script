@@ -187,6 +187,10 @@ class Parser #<MethodInterception
     for i in 0..(depth+n)
       @rollback[i] ="NO"
     end
+    @no_rollback_depth=depth
+    # for i in (depth+n+i)...@rollback.length
+    #   @rollback[i] ="YES"
+    # end
     @method=caller #_name
   end
 
@@ -341,7 +345,9 @@ class Parser #<MethodInterception
         error "NO ROLLBACK, GIVING UP!!!"
         string_pointer # ALWAYS! if @verbose
         show_tree #Not reached
-        raise GivingUp.new(e)
+        ex=GivingUp.new(e)
+        ex.set_backtrace(e.backtrace[e.backtrace.count-@no_rollback_depth..-23])
+        raise ex
         # error e #exit
         # raise SyntaxError.new(e)
       end

@@ -18,7 +18,7 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def operators
-    ["+", "*", "-", "/","and","plus","minus","times"] # DANGER! ambivalent!!
+    ["+", "*", "-", "/","plus","minus","times"] # DANGER! ambivalent!!   ,"and" 4 and 5 == TROUBLE!!!
   end
 
   def initialize

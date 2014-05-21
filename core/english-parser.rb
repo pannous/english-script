@@ -114,8 +114,8 @@ class EnglishParser < Parser
     must_contain_before [be_words, ','], operators
     result=any { maybe { value } or maybe { bracelet } }
     star {
-      op=operator #operator KEYWORD!?! ==> @string="" BUG
-      no_rollback!
+      op=operator #operator KEYWORD!?! ==> @string="" BUG     4 and 5 == TROUBLE!!!
+      no_rollback! if not op=="and"
       # @string=""+@string2 #==> @string="" BUG WHY??
       y=maybe { value } || bracelet
       if not $use_tree and @interpret
@@ -373,17 +373,19 @@ class EnglishParser < Parser
   end
 
 
-  def condition_tree
+  def condition_tree recurse=true
     brace=_? "("
     _? "either" # todo don't match 'either of'!!!
     # negate=_? "neither"
-    c=condition_tree if brace
+    c=condition_tree false if brace and recurse
     c=condition if not brace
     star {
-      op=__ "and", "or", "nor", "xor", "nand"
-      c2=condition_tree
-      c=c&c2 if op=="and"
+      op=__ "and", "or", "nor", "xor", "nand","but"
+      c2=condition_tree false if recurse
+      c=c&c2 if op=="and" || op=="but"
+      c=c&!c2 if op=="nor"
       c=c|c2 if op=="or"
+      return c
     }
     _ ")" if brace
     c
@@ -398,7 +400,7 @@ class EnglishParser < Parser
     _? 'then'
     dont_interpret! #if not c  else dont do_execute_block twice!
     use_block=start_block?
-    no_rollback! 20
+    no_rollback! 9# wy??
     b=block if use_block # interferes with @comp/condition
     b=statement if not use_block
     # b=action if not use_block
@@ -1195,7 +1197,7 @@ class EnglishParser < Parser
     return false
   end
 
-  def condition
+  def condition tree=true
     start=pointer
     brace=_? "("
     no=_? "not"
