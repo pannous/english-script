@@ -6,7 +6,7 @@ The grammar is not meant to be linguistically complete, but [functionality compl
 
 Examples
 --------
-Here are some of our favorite examples from the tests, **working today**:                      
+Here are some of our favorite examples from the tests, **working today**:
 
 
 `assert "first item in 'hi','you' is equal to 'hi'"`
@@ -54,19 +54,27 @@ EXPERIMENT
 Run it and see yourself!
 
 `git clone git@github.com:pannous/english-script.git`
-`./install.sh`	
-	
-**experiment** by typing  
+`./install.sh`
+
+**experiment** by typing
 
 `./english-script.sh 6 plus six`
-`./english-script.sh "xs be 2,3,7,9; xs that are smaller than 7"`  
+`./english-script.sh "xs be 2,3,7,9; xs that are smaller than 7"`
 `./english-script.sh examples/test.e`
 `./english-script.sh` (no args for shell)
 `english> 6 plus six`
 `6`
-`english> 
+`english>
 `english> x is 2; if all 0,2,4 are smaller 5 then increase x`
 `3`
+
+Todos
+-----
+* Use the abstract syntax tree to compile instead of interpret.
+* Better (real) function argument matching: Integrate the sine curve in the interval 1 to 10 with step size .1
+* Implement event system: Beep three times whenever the disc space is over 80%
+* Hook into more existing libraries (java,ifttt,rubyosa?,...)
+
 
 Also check out cool similar projects:
 [kal](https://github.com/rzimmerman/kal)
