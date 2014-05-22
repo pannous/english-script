@@ -1876,13 +1876,5 @@ class EnglishParser < Parser
 # end
 end
 
-module EnglishScript
-  class Application < EnglishParser
-    def self.load_tasks
-    end
-    #for rake
-  end
-end
-
 $testing||=false
 EnglishParser.start_shell if ARGV and not $testing #and not $raking
