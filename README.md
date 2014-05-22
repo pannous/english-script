@@ -5,7 +5,7 @@ The main purpose of this language is to make programming accessible to many more
 
 Examples
 --------
-Here are some of our favorite examples from the tests, **working today**:
+Here are some of our favorite examples from the [tests](test), **working today**:
 
 `beep three times`
 (There will be a generation of programmers who will shake their heads that there ever was a programming language which did not interpret that sentence correctly.)
@@ -42,10 +42,10 @@ Done
 
 Language Specification
 ----------------------
-Read the [DOSSIER](https://github.com/pannous/natural-english-script/tree/master/DOSSIER.md) for a more complete **language specification**, vision and some background. The grammar is not meant to be linguistically complete, but [functionality complete](https://en.wikipedia.org/wiki/Functional_completeness) and easily extendable. It is currently running in the [ruby](https://www.ruby-lang.org/en/) environment, but will soon compile to the [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine) and as a final aim run natively.
+Read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md) for a more complete **language specification**, vision and some background. The grammar is not meant to be linguistically complete, but [functionality complete](https://en.wikipedia.org/wiki/Functional_completeness) and easily extendable. It is currently running in the [ruby](https://www.ruby-lang.org/en/) environment, but will soon compile to the [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine) and as a final aim run natively.
 
-To check out the current capabilities of this language have a look at the [tests](https://github.com/pannous/natural-english-script/tree/master/test/unit), at the [grammar](https://github.com/pannous/natural-english-script/blob/master/lib/english-script/english-parser.rb) and at the
-[keywords](https://github.com/pannous/natural-english-script/blob/master/lib/english-script/english-tokens.rb)
+To check out the current capabilities of this language have a look at the [tests](https://github.com/pannous/natural-english/tree/master/test/unit), at the [grammar](https://github.com/pannous/natural-english/blob/master/lib/english-script/english-parser.rb) and at the
+[keywords](https://github.com/pannous/natural-english/blob/master/lib/english-script/english-tokens.rb)
 
 EXPERIMENT
 ----------
@@ -81,5 +81,5 @@ Also check out cool similar projects:
 This language might soon be used in our successful beloved Jeannie assistant, which has over 4 million downloads so far:
 http://www.voice-actions.com
 
-For a background story/vision/philosophy/future of this project read the [DOSSIER](https://github.com/pannous/natural-english-script/tree/master/DOSSIER.md)
+For a background story/vision/philosophy/future of this project read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md)
 
