@@ -70,11 +70,11 @@ Run it and see yourself!
 
 Todos
 -----
-* Use the abstract syntax tree to compile instead of interpret.
+* Use the abstract syntax tree to compile instead of interpret (export via XML and Lisp s-expressions)
 * Better (real) function argument matching: Integrate the sine curve in the interval 1 to 10 with step size .1
 * Implement event system: Beep three times whenever the disc space is over 80%
 * Hook into more existing libraries (java,ifttt,rubyosa?,...)
-
+* IntelliJ plugin
 
 Also check out cool similar projects:
 [kal](https://github.com/rzimmerman/kal)

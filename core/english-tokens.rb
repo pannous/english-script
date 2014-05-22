@@ -268,6 +268,15 @@ module EnglishParserTokens #< MethodInterception
   end
 
 
+  def time_words
+    ['seconds', 'second', 'minutes', 'minute', 'a.m.', 'p.m.', 'pm', "o'clock", 'hours', 'hour'] #etc... !
+  end
+
+  def event_kinds
+    ['in', 'at', 'every', 'from', 'between', 'after', 'before', 'until', 'till']
+  end
+
+
 
   def question
     tokens question_words

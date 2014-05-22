@@ -1,0 +1,6 @@
+[submodule "dev"]
+	path = dev
+	url = git@github.com:pickhardt/betty.git
+[submodule "betty"]
+	path = betty
+	url = git@github.com:pickhardt/betty.git
