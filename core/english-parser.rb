@@ -1877,4 +1877,4 @@ class EnglishParser < Parser
 end
 
 $testing||=false
-EnglishParser.start_shell if ARGV and not $testing #and not $raking
+EnglishParser.start_shell if ARGV and not $testing and not $commands_server #and not $raking
