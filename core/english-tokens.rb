@@ -53,7 +53,7 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def result_words
-    ['it','they','result']
+    ['it','they','result','its']
   end
 
   def type_keywords

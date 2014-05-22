@@ -151,6 +151,10 @@ class Array
     map &:to_s
   end
 
+  def rest
+    self[1..-1] # last..-1 after index!!!
+  end
+
   def fix_int i
     i=count/2 if i.to_s=="middle"
     return i-1 if i.is_a? Numeric

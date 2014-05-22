@@ -111,6 +111,7 @@ class EnglishParser < Parser
 
   # Strange method
   def eval_string x #hackety hack for non-tree mode
+    return nil if not x
     return x.to_path if x.is_a? File
     return x if x.is_a? String and x.index("/") #file, not regex!  ... notodo ...  x.match(/^\/.*[^\/]$/)
     # x=x.join(" ") if x.is_a? Array
@@ -331,9 +332,9 @@ class EnglishParser < Parser
     ex=any {#expression}
       maybe { algebra } ||
           maybe { json_hash } ||
+          maybe { evaluate_index } ||
           maybe { list } ||
           maybe { listSelector } ||
-          maybe { evaluate_index } ||
           maybe { evaluate_property } ||
           maybe { selfModify } ||
           maybe { endNode }
@@ -423,6 +424,12 @@ class EnglishParser < Parser
     c
   end
 
+  def if_then_else
+    if_then
+    _else=_?'else'
+    statement if _else
+    @result
+  end
 
   def if_then
     __ if_words
@@ -598,7 +605,8 @@ class EnglishParser < Parser
     _? '('
     args=star { arg }
     _")"
-    return eval_string("#{obj}(#{args})")
+    @result=eval_string("#{obj}(#{args})")
+    @result
   end
 
   def thing_dot_method_call
@@ -625,8 +633,10 @@ class EnglishParser < Parser
       args=star { arg }
     end
     _')' if brace
-    return method if not check_interpret
+    return method if not check_interpret #parent node!!!
     #end_expression
+
+    # args=Hash[[args]] if ...
     if @variables[obj]
       @result=do_send(@variables[obj], method, args)
       @variables[obj]=@result if method=="increase" # => selfModify
@@ -680,8 +690,8 @@ class EnglishParser < Parser
           maybe { ruby_method_call } ||
           maybe { selfModify } ||
           maybe { thing_dot_method_call } ||
-          maybe { method_call } ||
           maybe { evaluate_property } ||
+          maybe { method_call } ||
           maybe { evaluate } ||
           maybe { spo }
       #try { verb_node } ||
@@ -761,7 +771,7 @@ class EnglishParser < Parser
     n=number if not n
     _ 'times'
     end_block
-    n.to_i.times { do_evaluate a } if check_interpret
+    n.to_i.times { @result=do_evaluate a } if check_interpret
   end
 
   def n_times_action
@@ -773,7 +783,7 @@ class EnglishParser < Parser
     _? "repeat"
     dont_interpret!
     a=action_or_block
-    n.to_i.times { do_evaluate a } if check_interpret
+    n.to_i.times { @result=do_evaluate a } if check_interpret
   end
 
   def repeat_n_times
@@ -944,6 +954,7 @@ class EnglishParser < Parser
     if @interpret and (mod!="default") or not @variables.contains(var)
       @variables[var]=val
     end
+    @result=val
     end_expression
     return var if @interpret
     return parent_node if $use_tree
@@ -1267,11 +1278,11 @@ class EnglishParser < Parser
     return false
   end
 
-  def condition tree=true
+  def condition
     start=pointer
     brace=_? "("
-    no=_? "not"
-    not_brace=_? "("
+    negated=_? "not"
+    brace||=_? "(" if negated
     # @a=endNode # NO LISTS (YET)! :(
     quantifier=maybe { tokens quantifiers } # vs selector!
     # __? noun _? "in" all even numbers in [1,2,3,4] -> selector!
@@ -1281,12 +1292,12 @@ class EnglishParser < Parser
     @comp=use_verb=maybe { verb_comparison } # run like , contains
     @comp=maybe { comparation } if not use_verb # are bigger than
     #allow_rollback # upto where??
-    @b=expression0
+    @b=expression0 #if @comp
     # @b=endNode
     _ ")" if brace
-    _ ")" if not_brace
-    negate = (no||@not)&& !(no and @not)
+    negate = (negated||@not)&& !(negated and @not)
     subnode negate: negate
+    # return  negate ? !@a : @a if not @comp
     if @interpret
       return negate ? (!check_list_condition(quantifier)) : check_list_condition(quantifier) if quantifier
       return negate ? (!check_condition) : check_condition # nil
@@ -1353,6 +1364,7 @@ class EnglishParser < Parser
 
   def do_evaluate x
     begin
+      return x if x.is_a?Numeric
       return eval(x[0]) if x.is_a? Array and x.length==1
       return x if x.is_a? Array and x.length!=1
       return @variables[x] if @variables.contains x
@@ -1419,8 +1431,11 @@ class EnglishParser < Parser
     end
     obj=Object if not obj or not has_object op
     args.replace_numerals! if args and args.is_a? String
+
+
     #todo: call FUNCTIONS!
     return @result=obj.send(op) if not has_args op, obj rescue NoMethodError #.new("#{obj}.#{op}") #SyntaxError,
+    return @result=args[1].send(op) if has_args op, obj if(args[0]=="of") rescue NoMethodError #rest of x
     return @result=obj.send(op, args) if has_args op, obj rescue NoMethodError #SyntaxError,
     puts "ERROR CALLING #{obj}.#{op}(#{args}) : NoMethodError"
     # raise SyntaxError.new("ERROR CALLING #{obj}.#{op}(#{args}) : NoMethodError")
@@ -1500,6 +1515,7 @@ class EnglishParser < Parser
           maybe { article?; typeName } ||
           maybe { range } || # not params!
           maybe { value } ||
+          maybe { list } ||
           maybe { token "a" } # not article DANGER!
     }
     po=maybe { postjective } # inverted
@@ -1622,16 +1638,22 @@ class EnglishParser < Parser
 
   def evaluate_index
     must_contain '[', ']'
-    v=true_variable
+    v=endNode # true_variable
     _ '['
     i=endNode
     _ ']'
-    do_evaluate "#{v}[#{i}]" if check_interpret
+    set=_?'='
+    set=expression0 if set
+    # @result=v.send :index,i if check_interpret
+    @result=v.send :[],i if check_interpret #old value
+    @result=v.send :[]=,i,set if set and check_interpret
+    # @result=do_evaluate "#{v}[#{i}]" if check_interpret
+    @result
   end
 
   def evaluate_property
     _? "all" # list properties (all files in x)
-    must_contain_before ["of", "in","."],"("
+    must_contain_before "(",["of", "in","."]
     raiseNewline
     x=endNoun type_keywords
     __ "of", "in"

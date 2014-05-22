@@ -56,6 +56,23 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert "the counter is 3"
   end
 
+  def test_array_arg
+    assert_equals((parse "rest of [1,2,3]"),[2,3])
+    # assert parse "rest of [1,2,3]"==[2,3]
+  end
+
+
+  def test_array_index
+    assert_equals((parse "[1,2,3][2]"),3) # ruby index: 0,1,2
+    assert_equals((parse "x=[1,2,3];x[2]"),3) # ruby index: 0,1,2
+    assert_equals((parse "second element in [1,2,3]"),2) # english index: 1,2,3 !!!!
+  end
+
+  def test_array_arg
+    assert_equals((parse "rest of [1,2,3]"),[2,3])
+    # assert parse "rest of [1,2,3]"==[2,3]
+  end
+
   def test_add_time
     # parse "now plus 1 minute"
   end

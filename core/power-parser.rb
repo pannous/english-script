@@ -132,7 +132,8 @@ class Parser #<MethodInterception
   def must_contain_before before, *args#,before:nil
     raiseEnd
     good=false
-    before.flatten! if before
+    before.flatten! if before and before.is_a?Array
+    args.flatten!
     for x in args.flatten
       if x.match(/^\w+$/)
         good||=(" #{@string} ").match(/[^\w]#{x}[^\w]/)
@@ -322,7 +323,6 @@ class Parser #<MethodInterception
       result = yield
       if result
         @rollback[caller.count..-1]="YES" #Succeeded
-        @result=result
       else
         #DANGER RETURNING false as VALUE!! use RAISE ONLY todo
         (@nodes-old_nodes).each { |n| n.valid=false }
