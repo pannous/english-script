@@ -5,7 +5,7 @@ The main purpose of this language is to make programming accessible to many more
 
 Examples
 --------
-Here are some of our favorite examples from the [tests](test), **working today**:
+Here are some of our favorite examples from the [tests](test/unit), **working today**:
 
 `beep three times`
 (There will be a generation of programmers who will shake their heads that there ever was a programming language which did not interpret that sentence correctly.)
