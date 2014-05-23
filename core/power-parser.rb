@@ -333,6 +333,7 @@ class Parser #<MethodInterception
       return result
     rescue NotMatching, EndOfLine => e
       @current_value=nil
+      @string=old
       check_interpret 2
       verbose "Tried #{to_source block}"
       verbose e
@@ -364,6 +365,7 @@ class Parser #<MethodInterception
       return false
         #return true
     rescue => e # NoMethodError etc
+      @string=old
       error e
     end
     @string=old #if rollback

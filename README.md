@@ -10,9 +10,9 @@ Here are some of our favorite examples from the [tests](test/unit), **working to
 `beep three times`
 (There will be a generation of programmers who will shake their heads that there ever was a programming language which did not interpret that sentence correctly.)
 
-`square of 1,2 and 3 equals 1,4,9`
+`assert square of [1,2 and 3] equals 1,4,9`
 
-`add one to every odd number in 1,2,3 == 2,2,4`
+`assert 3rd word in 'hi my friend' is 'friend'`
 
 `x is 2; if all 0,2,4 are smaller 5 then increase x; assert x equals 3 `
 
@@ -20,7 +20,6 @@ Here are some of our favorite examples from the [tests](test/unit), **working to
 
 `counter is zero; repeat three times: add 1 to counter; done repeating; assert that the counter is 3`
 
-`assert 3rd word in 'hi my friend' is 'friend'`
 
 `last item in 'hi','you' is equal to 'you'`
 
@@ -39,6 +38,10 @@ How to check if someone is online on Skype
 	Return no otherwise
 Done
 ```
+
+Todo (soon):
+`add one to every odd number in 1,2,3 == 2,2,4`
+
 
 Language Specification
 ----------------------

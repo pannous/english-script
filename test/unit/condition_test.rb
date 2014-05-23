@@ -141,7 +141,15 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals @result, 'beeped'
     parse 'if two is bigger than zero then beep'
     assert_equals @result, 'beeped'
+  end
 
+  def test_root
+    parse "1==1"
+  end
+
+  def test_complicated
+    parse "x is 2; if all 0,2,4 are smaller 5 then increase x; assert x equals 3"
+    assert @result
   end
 
 end

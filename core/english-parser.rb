@@ -97,10 +97,11 @@ class EnglishParser < Parser
       maybe { newline } ||
           maybe { method_definition } ||
           maybe { assert_that} ||
-          maybe { statement } ||
           maybe { ruby_def } ||
-          maybe { block }||
-          maybe { expression0 } ||
+          maybe { block and checkNewline}|| # raise if not checkNewline!!
+          maybe { statement and checkNewline} ||
+          maybe { expression0 and checkNewline} ||
+          maybe {@result=condition;@comp}|| # 1==1
           maybe { context }
     }
   end
@@ -299,6 +300,7 @@ class EnglishParser < Parser
   end
 
   def plusEqual
+    must_contain '+='
     v=variable
     _ '+='
     e=expression0
@@ -308,6 +310,7 @@ class EnglishParser < Parser
 
 
   def plusPlus
+    must_contain '++'
     v=variable
     _ '++'
     @variables[v]=@result=do_evaluate(v).to_i+1 if @interpret
@@ -460,12 +463,11 @@ class EnglishParser < Parser
     # c=condition
     _? 'then'
     dont_interpret! #if not c  else dont do_execute_block twice!
-    use_block=start_block?
-    no_rollback! 9 # wy??
-    b=block if use_block # interferes with @comp/condition
-    b=statement if not use_block
+    no_rollback! 6 # wy??
+    b=action_or_block
+    # b=block if use_block # interferes with @comp/condition
+    # b=statement if not use_block
     # b=action if not use_block
-    done
     if check_interpret
       if check_condition c
         return do_execute_block b
