@@ -135,7 +135,7 @@ class Parser #<MethodInterception
     before.flatten! if before and before.is_a?Array
     args.flatten!
     for x in args.flatten
-      if x.match(/^\w+$/)
+      if x.match(/^\s*\w+\s*$/)
         good||=(" #{@string} ").match(/[^\w]#{x}[^\w]/)
         good=nil if good and before and before.matches(good.pre_match)
       else

@@ -132,7 +132,7 @@ class EnglishParser < Parser
     # x=x.join(" ") if x.is_a? Array
     return x[0] if x.is_a? Array and x.count==1
     return x.to_s if x.is_a? Array
-    do_evaluate x
+    do_evaluate x rescue x
   end
 
   def algebra
@@ -255,7 +255,7 @@ class EnglishParser < Parser
     __ ['word', 'item', 'element', 'object'] # noun
     __ ['in', 'of']
     l=list?||quote
-    @result=l.item(n)
+    @result=l.item(n) # -1 AppleScript style !!! BUT list[0] !!!
     return @result
   end
 
@@ -274,7 +274,8 @@ class EnglishParser < Parser
 
   def list
     raise NotMatching.new if @string[0]==','
-    must_contain_before [be_words+[' '], operators-['and']], ',' #,before:
+    must_contain_before [be_words, operators-['and']], ',' #,before:
+    # +[' '] ???
     start_brace= maybe { token '[' }
     start_brace= _? '{' if not start_brace
     raise NotMatching.new 'not a deep list' if not start_brace and (@inside_list)
@@ -351,8 +352,8 @@ class EnglishParser < Parser
       maybe { algebra } ||
           maybe { json_hash } ||
           maybe { evaluate_index } ||
-          maybe { list } ||
           maybe { listSelector } ||
+          maybe { list } ||
           maybe { evaluate_property } ||
           maybe { selfModify } ||
           maybe { endNode }
@@ -582,7 +583,7 @@ class EnglishParser < Parser
   end
 
   def is_object_method m
-    object_method = Object.method(m) rescue false
+    object_method = Object.method(m) if Object.method_defined?(m) rescue false
     if object_method
       return object_method
     end
@@ -601,10 +602,8 @@ class EnglishParser < Parser
   end
 
   def has_args m, clazz=Object
-    object_method = clazz.method(m) rescue false
     clazz=clazz.class if not clazz.is_a? Class #lol
-    # todo: better
-    object_method = clazz.method(m) if not object_method rescue false
+    object_method = clazz.method(m) if clazz.method_defined?(m) rescue false
     object_method = clazz.public_instance_method(m) if not object_method rescue false
     if object_method # Bad approach:  that might be another method Tree.beep!
       return object_method.arity>0
@@ -658,7 +657,7 @@ class EnglishParser < Parser
     # args=Hash[[args]] if ...
     if @variables[obj]
       @result=do_send(@variables[obj], method, args)
-      @variables[obj]=@result if method=='increase' # => selfModify
+      @variables[obj]=@result if method=='increase' # => selfModify todo
     else
       @result=do_send(obj, method, args)
     end
@@ -1247,14 +1246,18 @@ class EnglishParser < Parser
   end
 
   def do_evaluate_property x, y
-    # todo: eval NODE !@!!
+    # todo: REFLECTION / eval NODE !@!!
     return false if x.nil?
     verbose 'do_evaluate_property '+x.to_s+' '+y.to_s
     @result=nil #delete old!
     x='class' if x=='type' # !@!@*)($&@) NOO
     x=x.value_string if x.is_a? TreeNode
+    return @result=do_send(y,x,nil) rescue nil #try 1
+    return @result=eval(y+'.'+x) rescue nil #try 1
     x=x.join(' ') if x.is_a? Array
+    return @result=eval(y+'.'+x) rescue nil #try 2
     y=y.to_s #if y.is_a? Array
+    return @result=eval(y+'.'+x) rescue nil #try 3
     all=x.to_s+' of '+y.to_s
     x=x.gsub(' ', ' :')
     begin
@@ -1302,7 +1305,7 @@ class EnglishParser < Parser
   end
 
   def do_compare a, comp, b
-    a=eval_string(a)
+    a=eval_string(a) # NOT: "a=3; 'a' is 3" !!!!!!!!!!!!!!!!!!!!   Todo ooooooo!!
     b=eval_string(b)
     a=a.to_f if b.is_a? Numeric
     b=b.to_f if a.is_a? Numeric

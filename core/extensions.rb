@@ -112,6 +112,14 @@ end
 
 class Array
 
+
+  # ifdef $auto_map
+  def method_missing method, *args, &block
+    return self.map{|x| x.send method} if args.count==0
+    return self.map{|x| x.send(method,args)} if args.count>0
+    super method, *args, &block
+  end
+
   # def matches item
   #   contains item
   # end
@@ -166,11 +174,11 @@ class Array
     item nr
   end
 
-  def item nr
+  def item nr # -1 AppleScript style !!! BUT list[0] !!!
     self[fix_int nr]
   end
 
-  def word nr
+  def word nr # -1 AppleScript style !!! BUT list[0] !!!
     self[fix_int nr]
   end
 
@@ -190,12 +198,6 @@ class Array
   def contains x
     index x
   end
-  #
-  #def method_missing method, *args, &block
-  #  return self.map{|x| x.send method} if args.count==0
-  #  return self.map{|x| x.send(method,args)} if args.count>0
-  #  super method, *args, &block
-  #end
 
   #def to_s
   #  "["+join(", ")+"]"

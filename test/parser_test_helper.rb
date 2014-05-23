@@ -16,9 +16,10 @@ module ParserTestHelper
     begin
       # x=yield if not x and block
       assert x, &block
-      raise ScriptError.new "assert_has_error "
-    rescue
-      puts "TEST PASSED: assert_HAS_error "+x.to_s+" \t" +@parser.to_source(block).to_s
+      puts "TEST NOT PASSED: "+x.to_s+" \t" +@parser.to_source(block).to_s
+        # raise ScriptError.new "assert_has_error "
+    rescue Exception => e
+      puts "TEST PASSED: assert_HAS_error #{e} "+x.to_s+" \t" +@parser.to_source(block).to_s
     end
   end
 
@@ -85,6 +86,9 @@ module ParserTestHelper
   end
 
 
+  def result
+    @parser.result
+  end
 
   def parse x
     @parser.parse x

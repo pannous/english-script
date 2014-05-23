@@ -442,7 +442,7 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def wordnet_is_noun
-    the_noun=@string.match(/^\s*(\w+)/)[1] rescue nil
+    the_noun=@string.match(/^\s*(\w+)/)[1] if @string.match(/^\s*(\w+)/)rescue nil
     #return false if not the_noun
     raise NotMatching.new "no noun word" if not the_noun
     raise NotMatching.new "no noun" if not the_noun.is_noun
@@ -451,7 +451,7 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def wordnet_is_adjective
-    the_adjective=@string.match(/^\s*(\w+)/)[1] rescue nil
+    the_adjective=@string.match(/^\s*(\w+)/)[1] if @string.match(/^\s*(\w+)/) rescue nil
     #return false if not the_adjective
     raise NotMatching.new "no adjective word" if not the_adjective
     raise NotMatching.new "no adjective" if not the_adjective.is_adjective
@@ -461,7 +461,7 @@ module EnglishParserTokens #< MethodInterception
 
 
   def wordnet_is_verb
-    the_verb=@string.match(/^\s*(\w+)/)[1] rescue nil
+    the_verb=@string.match(/^\s*(\w+)/)[1] if @string.match(/^\s*(\w+)/) rescue nil
     return false if not the_verb
     raise NotMatching.new "no verb" if the_verb.synsets(:verb).empty?
     #raise NotMatching.new "no verb" if not the_verb.is_verb

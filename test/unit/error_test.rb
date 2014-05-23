@@ -8,8 +8,8 @@ class ErrorTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   include ParserTestHelper
 
-  def test_type
-    parse "x=1,2,y;" # at:3y= in:list type:unknownVariable:y
+  def test_type #todo
+    assert_has_error "x=1,2,y;" # at:3y= in:list type:unknownVariable:y
   end
 
   def test_type3
