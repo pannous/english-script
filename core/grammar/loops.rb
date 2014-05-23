@@ -8,6 +8,8 @@ module LoopsGrammar
           maybe { for_i_in_collection }||
           maybe { while_loop }||
           maybe { looped_action }||
+          maybe { looped_action_until }||
+          maybe { repeat_while} ||
           maybe { as_long_condition_block }||
           maybe { forever }
     }
@@ -38,11 +40,11 @@ module LoopsGrammar
   end
 
   def repeat_while
-    _ 'repeat'
-    _while =_? 'while'
+    _ 'repeat' #,'do'
+    raise NotMatching if @string.match /\s*while/
+    b=action_or_block
+    _ 'while'
     c=condition
-    _ 'while' if not _while
-    b=block
     while evaluate_condition c
       @result=do_execute_block b
     end if @interpret
@@ -52,50 +54,61 @@ module LoopsGrammar
 
 
   def while_loop
-    _ 'while'
+    _? 'repeat'
+    __ 'while','as long as'
     dont_interpret!
     no_rollback! #no_rollback! 13 # arbitrary value ! :{
     c=condition
-    start_block
-    b=block #Danger when interpreting it might contain conditions and breaks
-    end_block
+    _? 'repeat' # keep gerunding
+    b=action_or_block #Danger when interpreting it might contain conditions and breaks
     r=do_execute_block b while (check_condition c) if check_interpret
     r
   end
 
-#
-#def until_condition
-#  action
-#  _'until'
-#  condition
-#end
-#
-#def while_condition
-#  action
-#  _'while'
-#  condition
-#end
-#
-#def as_long_condition
-#  action
-#  _'as long'
-#  condition
-#end
-#
+
+  def until_loop
+    _? 'repeat'
+    __ 'until','as long as'
+    dont_interpret!
+    no_rollback! #no_rollback! 13 # arbitrary value ! :{
+    c=condition
+    _? 'repeat'
+    b=action_or_block #Danger when interpreting it might contain conditions and breaks
+    r=do_execute_block b until (check_condition c) if check_interpret
+    r
+  end
 
   def looped_action
-    must_contain 'as long', 'while', 'until'
+    must_contain 'as long as', 'while'
     dont_interpret!
     _? 'do'
     _? 'repeat'
-    a=action
-    __ 'as long', 'while', 'until'
+    a=action # or semi-block
+    __ 'as long as', 'while'
     c=condition
-    do_execute_block a while (check_condition c) if check_interpret
+    return a if !check_interpret
+    @result=do_execute_block a while (check_condition c) if check_interpret
+    @result
   end
 
+  def looped_action_until
+    must_contain 'until'
+    dont_interpret!
+    _? 'do'
+    _? 'repeat'
+    a=action # or semi-block
+    _'until'
+    c=condition
+    return a if !check_interpret
+    @result=do_execute_block a until (check_condition c) if check_interpret
+    @result
+  end
 
-  # notodo: LTR parser just here!
+  def is_number n
+    n.to_s.replace_numerals!.to_i != 0 #hum
+  end
+
+    # notodo: LTR parser just here!
   # say hello 6 times
   # say hello 6 times 5 #=> hello 30 ??? SyntaxError! say hello (6 times 5)
   def action_n_times
@@ -104,7 +117,12 @@ module LoopsGrammar
     _? 'do'
     #_? "repeat"
     a=action
-    a, n=a.join(' ').split(/(\d)\s*$/) #if a.matches /\d\s*$/ # greedy action hack "say hello 6"
+    ws=a.join(' ').split(' ')
+
+    if is_number ws[-1] # greedy action hack "say hello 6" times
+      a=ws[0..-2]
+      n=ws[-1]
+    end
     n=number if not n
     _ 'times'
     end_block
@@ -124,6 +142,7 @@ module LoopsGrammar
   end
 
   def repeat_n_times
+    must_contain 'times'
     _ 'repeat'
     n=number
     _ 'times'

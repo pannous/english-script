@@ -159,7 +159,7 @@ module EnglishParserTokens #< MethodInterception
 
   def be_words
     ['is an','is a','is','be','was','are','will be','were','have been','shall be','should be', ':=','=','==','equals','equal',
-     'is equal to',"consist of","consists of","is made up of"]
+     'is equal to',"consist of","consists of","is made up of",'equal to']
   end
 
   # nicer, sweeter, ....

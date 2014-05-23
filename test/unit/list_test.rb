@@ -43,6 +43,11 @@ class ListTestParser < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_has_error "first item in 'hi,'you' is 'hi'" # quote not closed: 'hi,'y...
   end
 
+  def test_last
+    assert("last item in 'hi','you' is equal to 'you'")
+  end
+
+
   def test_select2
     assert "first item in 'hi','you' is 'hi'"
     assert "second item in 'hi','you' is 'you'"

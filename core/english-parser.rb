@@ -96,6 +96,7 @@ class EnglishParser < Parser
     many {#root}
       maybe { newline } ||
           maybe { method_definition } ||
+          maybe { assert_that} ||
           maybe { statement } ||
           maybe { ruby_def } ||
           maybe { block }||
@@ -182,7 +183,8 @@ class EnglishParser < Parser
     }
     newline? # danger might act as block end!
     return parent_node if $use_tree
-    return (pointer-start).map &:stripNewline if not $use_tree
+    return pointer-start if not $use_tree
+    # return (pointer-start).map &:stripNewline if not $use_tree
   end
 
 
@@ -369,7 +371,7 @@ class EnglishParser < Parser
     raiseNewline
     x=any {#statement}
       return @NEWLINE if checkNewline
-      maybe { loops }||
+          maybe { loops }||
           maybe { if_then } ||
           maybe { once } ||
           maybe { action } ||
@@ -696,6 +698,13 @@ class EnglishParser < Parser
     return @result
   end
 
+  def assert_that
+    _ 'assert'
+    _?'that'
+    what=rest_of_line
+    @result=assert what
+  end
+
   #	||'say' x=(.*) -> 'bash "say $quote"'
   def action
     start=pointer
@@ -708,7 +717,6 @@ class EnglishParser < Parser
           maybe { ruby_method_call } ||
           maybe { selfModify } ||
           maybe { thing_dot_method_call } ||
-          maybe { evaluate_property } ||
           maybe { method_call } ||
           maybe { evaluate } ||
           maybe { spo }
@@ -1057,6 +1065,7 @@ class EnglishParser < Parser
       comp=tokens true_comparitons
       no_rollback!
     end
+    _? 'to' if eq
     tokens? 'and', 'or', 'xor', 'nor'
     tokens? true_comparitons # bigger or equal  != SEE condition_tree
     _? 'than', 'then' #_?'then' ;}
@@ -1112,20 +1121,21 @@ class EnglishParser < Parser
     return false
   end
 
-  def check_condition cond=nil #later:node?
+  def check_condition cond=nil,negate=false #later:node?
     return true if cond==true #EVALUATED BEFORE!!!
     return false if cond==false #EVALUATED BEFORE!!!
     begin
-      if cond #HAAACK DANGARRR
-        #@a,@comp,@b= extract_condition c if c
-        evals=''
-        @variables.each { |var, val| evals+= "#{var}=#{val};" }
-        return result=eval(evals+cond.join(' ')) #dont set @result here (i.e. while(...)last_result )
-      end
       # else use state variables todo better!
       result=do_compare(@a, @comp, @b) if is_comparator @comp
       result=do_send(@a, @comp, @b) if not is_comparator @comp
+      if !result and not cond.blank? #HAAACK DANGARRR
+        #@a,@comp,@b= extract_condition c if c
+        evals=''
+        @variables.each { |var, val| evals+= "#{var}=#{val};" }
+        result=eval(evals+cond.join(' ')) #dont set @result here (i.e. while(...)last_result )
+      end
       result=!result if @not
+      result=!result if negate # XOR result=result ^ negate
       if not result
         debug "condition not met #{cond} #{@a} #{@comp} #{@b}"
       end

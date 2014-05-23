@@ -27,29 +27,29 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_action_n_times
-    parse "6 times say 'hello'"
-    parse "say 'hello' 6 times"
+    parse "2 times say 'hello'"
+    parse "say 'hello' 2 times"
   end
 
   def test_try_until
-    parse 'repeat while x<4: x++'
-    assert_equals @variables[:x],4
+    parse 'x=0;repeat while x<4: x++'
+    assert_equals variables["x"],4
     parse 'repeat x++ while x<4'
-    assert_equals @variables[:x],4
+    assert_equals variables["x"],4
     parse 'repeat x++ until x>4'
-    assert_equals @variables[:x],5
+    assert_equals variables["x"],5
     parse 'repeat until x>4: x++'
-    assert_equals @variables[:x],5
+    assert_equals variables["x"],5
     parse 'try until x>4: x++'
-    assert_equals @variables[:x],5
+    assert_equals variables["x"],5
     parse 'try while x<4: x++'
-    assert_equals @variables[:x],4
+    assert_equals variables["x"],4
     parse "try x++ until x>4"
-    assert_equals @variables[:x],5
+    assert_equals variables["x"],5
     parse "try x++ while x<4"
-    assert_equals @variables[:x],4
+    assert_equals variables["x"],4
     parse 'increase x until x>4'
-    assert_equals @variables[:x],5
+    assert_equals variables["x"],5
   end
 
 
@@ -86,7 +86,7 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   def test_repeat # NEEEEDS blocks!! Parser.new(block)
     parse "counter =0; repeat three times: increase the counter; okay"
     assert_equals @variables['counter'],3
-    assert_equals @variables[:counter],3
+    # assert_equals @variables[:counter],3
     assert "counter =3"
     #s "counter=counter+1;"
     #@interpret=false
@@ -99,6 +99,7 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     parse 'counter =0; repeat three times: counter++; okay'
     counter=@variables['counter']
     assert 'counter =3'
+    assert counter ==3
     #parse "counter =0; repeat three times: increase the counter by two; okay"
     #assert "counter =10"
   end

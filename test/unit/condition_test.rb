@@ -61,6 +61,9 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals check, false
   end
 
+  def test_assert
+    assert parse "assert 3rd word in 'hi my friend' is 'friend'"
+  end
 
   def test_and
     assert parse 'x=2;if x is smaller 3 and x is bigger 1 then true'

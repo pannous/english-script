@@ -57,6 +57,7 @@ class Parser #<MethodInterception
       puts x
     end
     puts "TEST PASSED! " +x.to_s+" \t" +to_source(block).to_s
+    return true
   end
 
   def interpretation
@@ -430,8 +431,7 @@ class Parser #<MethodInterception
       all=[]
       return all if line>=@parser.lines.count
       if line==end_pointer.line_number
-        all<<@parser.lines[line][start_pointer.offset..end_pointer.offset-1]
-        return all
+        return @parser.lines[line][start_pointer.offset..end_pointer.offset-1]
       else
         all<<@parser.lines[line][start_pointer.offset..-1]
       end
@@ -442,6 +442,8 @@ class Parser #<MethodInterception
       end
       chars=end_pointer.offset-1
       all<<@parser.lines[line][0..chars] if line<@parser.lines.count and chars>0
+      all.map &:stripNewline
+      return all[0] if all.length==1
       all
     end
 
