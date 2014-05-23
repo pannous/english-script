@@ -73,6 +73,8 @@ Todos
 * Implement event system: Beep three times whenever the disc space is over 80%
 * Hook into more existing libraries (java,ifttt,rubyosa?,...)
 * IntelliJ plugin
+* Promote the ease of use of this language:
+`set xs to all positive natural numbers smaller than 3; assert that xs.count==2 and xs' lenght equals the size of xs`
 
 Also check out cool similar projects:
 [kal](https://github.com/rzimmerman/kal)

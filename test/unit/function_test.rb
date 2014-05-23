@@ -78,7 +78,8 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_add
-    parse "counter is one; repeat three times: increase counter; done repeating;"
+    # parse "counter is one; repeat three times: increase counter; done"
+    parse "counter is one; repeat three times: increase counter; done repeating;" #todo done labeled
     assert_equals variables['counter'], 4
   end
 

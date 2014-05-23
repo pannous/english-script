@@ -16,6 +16,10 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
 
+  def test_while_return
+    assert_equals parse('c=0;while c<1:c++;beep;done'), "beeped"
+  end
+
   def test_loops  #OK
     parse 'beep three times' #OK
     parse "repeat three times: beep; okay" #OK
@@ -46,6 +50,12 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals @variables[:x],4
     parse 'increase x until x>4'
     assert_equals @variables[:x],5
+  end
+
+
+  def test_while_loop
+    parse 'c=0;while c<3:c++;beep;done'
+    assert variables["c"]==3
   end
 
   def test_expressions

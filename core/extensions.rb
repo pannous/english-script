@@ -182,6 +182,11 @@ class Array
     self[index x]
   end
 
+
+  def has x
+    index x
+  end
+
   def contains x
     index x
   end

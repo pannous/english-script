@@ -251,12 +251,13 @@ module EnglishParserTokens #< MethodInterception
     #end
     #return true if checkEndOfLine
     return "OK" if checkNewline
-    tokens done_words
+    ok=tokens done_words
     #rescue EndOfLine =>x
     #  puts x
     #end
     #return true
-    #ignore_rest_of_line
+    ignore_rest_of_line
+    ok
   end
 
   def let?

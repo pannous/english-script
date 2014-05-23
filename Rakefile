@@ -4,5 +4,5 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-EnglishScript::Application.load_tasks
-task :default => :test
+# EnglishScript::Application.load_tasks
+# task :default => :test

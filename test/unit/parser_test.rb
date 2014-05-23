@@ -3,7 +3,7 @@ $use_tree=false
 
 require_relative '../test_helper'
 
-#DIFFERENT TO OTHER TEST: TEST DIRECTLY!
+#DIFFERENT TO OTHER TEST: TEST EnglishParser methods DIRECTLY!
 class EnglishParserTestParser<EnglishParser
   #@@parser=EnglishParser.new
 

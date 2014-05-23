@@ -136,7 +136,7 @@ class EnglishParser < Parser
   end
 
   def algebra
-    must_contain_before [be_words, ','], operators
+    must_contain_before [be_words, ',',';',':'], operators
     result=any { maybe { value } or maybe { bracelet } }
     star {
       op=operator #operator KEYWORD!?! ==> @string="" BUG     4 and 5 == TROUBLE!!!
@@ -281,7 +281,7 @@ class EnglishParser < Parser
     @inside_list=true
     all=[]
     #all<<expression(start_brace)
-    $verbose=true #debug
+    # $verbose=true #debug
     all<<endNode
     star {
       tokens(',', 'and') # danger: and as plus! BAD IDEA!!!
@@ -331,7 +331,9 @@ class EnglishParser < Parser
     h={}
     star {
       _ ',' if h.length>0 # not h.blank?
+      __? '"',"'" # optional quotes
       key=word
+      __? '"',"'"
       _ ':'
       @inside_list=true
       # h[key] = expression0 # no
@@ -342,7 +344,8 @@ class EnglishParser < Parser
     h
   end
 
-  def expression0
+  # expression0 is reserved!
+  def expression0 fallback=nil
     start=pointer
     ex=any {#expression}
       maybe { algebra } ||
@@ -353,6 +356,7 @@ class EnglishParser < Parser
           maybe { evaluate_property } ||
           maybe { selfModify } ||
           maybe { endNode }
+      # ||['one'].has(fallback) ? 1 : false # WTF todo better quantifier one beer vs one==1
     }
     return pointer-start if not @interpret
     @result=do_evaluate ex if ex and @interpret rescue SyntaxError
@@ -735,6 +739,7 @@ class EnglishParser < Parser
   end
 
   def do_execute_block b
+    return false if not b
     block_parser=EnglishParser.new
     block_parser.variables=@variables
     @result=block_parser.parse(b.join("\n")).result
@@ -1075,6 +1080,7 @@ class EnglishParser < Parser
 
 
   def check_list_condition quantifier
+    # return true if not @a.is_a?Array # every one is evil
     # see quantifiers
     begin
       count=0
@@ -1115,16 +1121,16 @@ class EnglishParser < Parser
         #@a,@comp,@b= extract_condition c if c
         evals=''
         @variables.each { |var, val| evals+= "#{var}=#{val};" }
-        return @result=eval(evals+cond.join(' '))
+        return result=eval(evals+cond.join(' ')) #dont set @result here (i.e. while(...)last_result )
       end
       # else use state variables todo better!
-      @result=do_compare(@a, @comp, @b) if is_comparator @comp
-      @result=do_send(@a, @comp, @b) if not is_comparator @comp
-      @result=!@result if @not
-      if not @result
+      result=do_compare(@a, @comp, @b) if is_comparator @comp
+      result=do_send(@a, @comp, @b) if not is_comparator @comp
+      result=!result if @not
+      if not result
         debug "condition not met #{cond} #{@a} #{@comp} #{@b}"
       end
-      return @result
+      return result
     rescue => e
       #debug x #soft message
       error e #exit!
@@ -1141,7 +1147,7 @@ class EnglishParser < Parser
     quantifier=maybe { tokens quantifiers } # vs selector!
     # __? noun _? "in" all even numbers in [1,2,3,4] -> selector!
     _? 'of' if quantifier # all of
-    @a=expression0
+    @a=expression0 quantifier
     @not=false
     @comp=use_verb=maybe { verb_comparison } # run like , contains
     @comp=maybe { comparation } if not use_verb # are bigger than
