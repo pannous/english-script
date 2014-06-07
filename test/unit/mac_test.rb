@@ -24,8 +24,8 @@ class MacTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_files
-    @variables['x']="/Users/me"
-    @variables['my home folder'] = "/Users/me"
+    variables['x']="/Users/me"
+    variables['my home folder'] = "/Users/me"
     assert "/Users/me == x"
     assert "my home folder == /Users/me"
     assert "my home folder == x"
@@ -33,13 +33,13 @@ class MacTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_files3
     init "my home folder = Dir.home"
-    setter
+    @parser.setter
     init "my home folder == /Users/me"
-    condition
+    @parser.condition
     init "/Users/me/photo.JPG ok"
-    p=linuxPath
+    p=@parser.linuxPath
     init "Dir.home"
-    r=rubyThing
+    r=@parser.rubyThing
     parse "x := /Users/me "
     assert "my home folder == /Users/me"
     assert "/Users/me == x"

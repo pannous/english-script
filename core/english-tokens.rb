@@ -321,7 +321,7 @@ module EnglishParserTokens #< MethodInterception
 
   def real
     raiseEnd
-    match=@string.match(/^-?\d*\\.\d+/)
+    match=@string.match(/^-?\d*\.\d+f?r?/)
     if match
       @current_value=match[0].to_f
       @string=match.post_match.strip
@@ -442,6 +442,7 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def wordnet_is_noun
+    raise NotMatching.new "numbers are not nouns" if @string.match(/^\d/)
     the_noun=@string.match(/^\s*(\w+)/)[1] if @string.match(/^\s*(\w+)/)rescue nil
     #return false if not the_noun
     raise NotMatching.new "no noun word" if not the_noun

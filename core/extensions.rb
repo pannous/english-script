@@ -244,8 +244,8 @@ class String
   end
 
   def show x=nil
-    puts self
-    puts x if x
+    puts x||self
+    return x||self
   end
 
   def contains *things

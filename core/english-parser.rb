@@ -13,9 +13,6 @@ require_relative 'grammar/ruby'
 require_relative 'grammar/loops'
 
 
-
-
-
 require 'linguistics'
 require 'wordnet'
 #require 'wordnet-defaultdb'
@@ -30,8 +27,8 @@ class EnglishParser < Parser
 
 
   include LoopsGrammar # while, as long as, ...
-  include RubyGrammar  # def, ...
-  include Betty        # convert a.wav to mp3
+  include RubyGrammar # def, ...
+  include Betty # convert a.wav to mp3
 
   attr_accessor :variables, :methods, :result
 
@@ -96,12 +93,12 @@ class EnglishParser < Parser
     many {#root}
       maybe { newline } ||
           maybe { method_definition } ||
-          maybe { assert_that} ||
+          maybe { assert_that } ||
           maybe { ruby_def } ||
-          maybe { block and checkNewline}|| # raise if not checkNewline!!
-          maybe { statement and checkNewline} ||
-          maybe { expression0 and checkNewline} ||
-          maybe {@result=condition;@comp}|| # 1==1
+          maybe { block and checkNewline }|| # raise if not checkNewline!!
+          maybe { statement and checkNewline } ||
+          maybe { expression0 and checkNewline } || # eval for commandline!
+          maybe { @result=condition; @comp }|| # 1==1
           maybe { context }
     }
   end
@@ -138,7 +135,7 @@ class EnglishParser < Parser
   end
 
   def algebra
-    must_contain_before [be_words, ',',';',':'], operators
+    must_contain_before [be_words, ',', ';', ':'], operators
     result=any { maybe { value } or maybe { bracelet } }
     star {
       op=operator #operator KEYWORD!?! ==> @string="" BUG     4 and 5 == TROUBLE!!!
@@ -337,9 +334,9 @@ class EnglishParser < Parser
     h={}
     star {
       _ ',' if h.length>0 # not h.blank?
-      __? '"',"'" # optional quotes
+      __? '"', "'" # optional quotes
       key=word
-      __? '"',"'"
+      __? '"', "'"
       _ ':'
       @inside_list=true
       # h[key] = expression0 # no
@@ -374,7 +371,7 @@ class EnglishParser < Parser
     raiseNewline
     x=any {#statement}
       return @NEWLINE if checkNewline
-          maybe { loops }||
+      maybe { loops }||
           maybe { if_then } ||
           maybe { once } ||
           maybe { action } ||
@@ -399,10 +396,10 @@ class EnglishParser < Parser
     start_block # :
     no_rollback! 10
     @interpret=false
-    block
+    b=block
     done
     @interpret=true
-    @methods[name]=parent_node rescue nil # with args! only in tree mode!!
+    @methods[name]=parent_node||b rescue nil # with args! only in tree mode!!
     name
   end
 
@@ -451,7 +448,7 @@ class EnglishParser < Parser
 
   def if_then_else
     if_then
-    _else=_?'else'
+    _else=_? 'else'
     statement if _else
     @result
   end
@@ -517,6 +514,7 @@ class EnglishParser < Parser
     v=verb
     nod
     raise UnknownCommandError.new 'no such method: '+v if !@methods.contains(v)
+    return v
     #end_expression
   end
 
@@ -635,7 +633,7 @@ class EnglishParser < Parser
     must_contain '.' # before...?
     obj=endNode
     return strange_eval obj if _? '(' and check_interpret
-    _'.'
+    _ '.'
     method_call obj
   end
 
@@ -643,7 +641,7 @@ class EnglishParser < Parser
   def method_call obj=nil
     #verb_node
     method=true_method
-    brace=_?'('
+    brace=_? '('
     no_rollback! if brace
     if is_object_method(method) #todo !has_object(method) is_class_method
       obj||=Object
@@ -654,7 +652,7 @@ class EnglishParser < Parser
       @current_value=nil
       args=star { arg }
     end
-    _')' if brace
+    _ ')' if brace
     return method if not check_interpret #parent node!!!
     #end_expression
 
@@ -702,7 +700,7 @@ class EnglishParser < Parser
 
   def assert_that
     _ 'assert'
-    _?'that'
+    _? 'that'
     what=rest_of_line
     @result=assert what
   end
@@ -747,10 +745,11 @@ class EnglishParser < Parser
     done
   end
 
-  def do_execute_block b
+  def do_execute_block b, args={}
     return false if not b
     block_parser=EnglishParser.new
     block_parser.variables=@variables
+    # block_parser.variables+=args
     @result=block_parser.parse(b.join("\n")).result
     @variables=block_parser.variables
     @result
@@ -795,7 +794,6 @@ class EnglishParser < Parser
       do_execute_block b
     end if check_interpret
   end
-
 
 
   def end_expression
@@ -1123,7 +1121,7 @@ class EnglishParser < Parser
     return false
   end
 
-  def check_condition cond=nil,negate=false #later:node?
+  def check_condition cond=nil, negate=false #later:node?
     return true if cond==true #EVALUATED BEFORE!!!
     return false if cond==false #EVALUATED BEFORE!!!
     begin
@@ -1235,7 +1233,7 @@ class EnglishParser < Parser
 
   def do_evaluate x
     begin
-      return x if x.is_a?Numeric
+      return x if x.is_a? Numeric
       return eval(x[0]) if x.is_a? Array and x.length==1
       return x if x.is_a? Array and x.length!=1
       return @variables[x] if @variables.contains x
@@ -1244,7 +1242,7 @@ class EnglishParser < Parser
       return x.call if x.is_a? Method
       return eval(x) # rescue x # system.jpg  DANGER? OK ^^
         # ... todo METHOD / Function!
-    rescue TypeError, SyntaxError=>e
+    rescue TypeError, SyntaxError => e
       puts x
       puts e
       return x
@@ -1264,7 +1262,7 @@ class EnglishParser < Parser
     @result=nil #delete old!
     x='class' if x=='type' # !@!@*)($&@) NOO
     x=x.value_string if x.is_a? TreeNode
-    return @result=do_send(y,x,nil) rescue nil #try 1
+    return @result=do_send(y, x, nil) rescue nil #try 1
     return @result=eval(y+'.'+x) rescue nil #try 1
     x=x.join(' ') if x.is_a? Array
     return @result=eval(y+'.'+x) rescue nil #try 2
@@ -1283,17 +1281,21 @@ class EnglishParser < Parser
 
 
   # todo cleanup method + argument matching + concept
-  def do_send x, op, y
+  def do_send obj, op, args
     # try direct first!
-    y=y[0] if y.is_a? Array and y.count==0 # SURE???????
+    # y=y[0] if y.is_a? Array and y.count==1 # SURE??????? ["noo"].length
+    if @methods.contains op
+      return do_execute_block @methods[op], args
+    end
+
     begin
-      @result=x.send(op) if not y
-      @result=x.send(op, y) if y
+      @result=obj.send(op) if not args rescue NoMethodError
+      @result=obj.send(op, args) if args rescue NoMethodError
       return @result
     rescue
     end
-    obj=resolve(x)
-    args=eval_string(y) rescue NoMethodError
+    obj=resolve(obj)
+    args=eval_string(args) rescue NoMethodError
     obj=Object if not obj
     # return false if not obj
     return false if not op
@@ -1310,7 +1312,7 @@ class EnglishParser < Parser
 
     #todo: call FUNCTIONS!
     return @result=obj.send(op) if not has_args op, obj rescue NoMethodError #.new("#{obj}.#{op}") #SyntaxError,
-    return @result=args[1].send(op) if has_args op, obj if(args[0]=='of') rescue NoMethodError #rest of x
+    return @result=args[1].send(op) if has_args op, obj if (args[0]=='of') rescue NoMethodError #rest of x
     return @result=obj.send(op, args) if has_args op, obj rescue NoMethodError #SyntaxError,
     puts "ERROR CALLING #{obj}.#{op}(#{args}) : NoMethodError"
     # raise SyntaxError.new("ERROR CALLING #{obj}.#{op}(#{args}) : NoMethodError")
@@ -1460,18 +1462,18 @@ class EnglishParser < Parser
     _ '['
     i=endNode
     _ ']'
-    set=_?'='
+    set=_? '='
     set=expression0 if set
     # @result=v.send :index,i if check_interpret
-    @result=v.send :[],i if check_interpret #old value
-    @result=v.send :[]=,i,set if set and check_interpret
+    @result=v.send :[], i if check_interpret #old value
+    @result=v.send :[]=, i, set if set and check_interpret
     # @result=do_evaluate "#{v}[#{i}]" if check_interpret
     @result
   end
 
   def evaluate_property
     _? 'all' # list properties (all files in x)
-    must_contain_before '(',['of', 'in', '.']
+    must_contain_before '(', ['of', 'in', '.']
     raiseNewline
     x=endNoun type_keywords
     __ 'of', 'in'

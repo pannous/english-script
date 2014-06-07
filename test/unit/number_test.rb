@@ -3,7 +3,7 @@
 # $use_tree=true
 $use_tree=false
 
-# $verbose=true
+$verbose=true
 
 require_relative '../parser_test_helper'
 
@@ -51,6 +51,22 @@ class NumberTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     parse "invert 3"
     assert @result=="1/3"
   end
+
+  def test_parse_float
+
+    init "5.0"
+    x=@parser.real
+
+    # parse "5.0"
+    # assert_equals result,5
+
+    # init "20/5.0"
+    # x=@parser.algebra
+    # p x
+    parse "20/5.0"
+    assert_equals result,4
+  end
+
 
   def current
     # test_failing

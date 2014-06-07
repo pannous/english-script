@@ -9,10 +9,11 @@ class MethodTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_result
     parse "how to test:show 3;ok"
-    assert @methods.count>0
-    assert @methods.last.name=="test"
+    assert methods.count>0
+    assert methods["test"]=="show 3;"
     parse "test"
-    assert @result=="3"
+    parse "show 3"
+    assert_equals result,"3"
     #assert @variables['x']==3
   end
 
