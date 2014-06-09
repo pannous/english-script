@@ -92,6 +92,7 @@ class EnglishParser < Parser
   def root
     many {#root}
       maybe { newline } ||
+          maybe { requirements } ||
           maybe { method_definition } ||
           maybe { assert_that } ||
           maybe { ruby_def } ||
@@ -102,6 +103,24 @@ class EnglishParser < Parser
           maybe { context }
     }
   end
+
+  def includes dependency
+    # todo obj.include !!
+    # todo mapping + reflection
+    include dependency rescue nil  #ruby!
+    extends dependency rescue nil  #ruby!
+    require dependency rescue nil  #ruby!
+    @javascript<<"javascript_include(#{dependency});" # if ...
+  end
+
+  def requirements
+    __ 'dependencies','dependency','depends','requirement','requirements','require','required','include','using',
+       'script src','script source','source'
+    # source? really?
+    dependency=rest_of_line
+    includes dependency if check_interpret
+  end
+
 
   def context
     _ 'context'
@@ -1625,10 +1644,8 @@ class EnglishParser < Parser
     @svg<<x
   end
 
-
-  MAXHISTSIZE = 100
-
   def self.load_history_why? history_file
+    histSize = 100
     begin
       history_file = File::expand_path(history_file)
       if File::exists?(history_file)
@@ -1637,7 +1654,7 @@ class EnglishParser < Parser
       end
       Kernel::at_exit do
         lines = Readline::HISTORY.to_a.reverse.uniq.reverse
-        lines = lines[-MAXHISTSIZE, MAXHISTSIZE] if lines.count > MAXHISTSIZE
+        lines = lines[-histSize, histSize] if lines.count > histSize
         File::open(history_file, File::WRONLY|File::CREAT|File::TRUNC) { |io| io.puts lines.join("\n") }
       end
     rescue => e

@@ -45,7 +45,7 @@ Todo (soon):
 
 Language Specification
 ----------------------
-Read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md) for a more complete **language specification**, vision and some background. The grammar is not meant to be linguistically complete, but [functionality complete](https://en.wikipedia.org/wiki/Functional_completeness) and easily extendable. It is currently running in the [ruby](https://www.ruby-lang.org/en/) environment, but will soon compile to the [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine) and as a final aim run natively.
+Read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md) for a more complete **language specification**, vision and some background. The grammar is not meant to be linguistically complete, but [functionality complete](https://en.wikipedia.org/wiki/Functional_completeness) and easily extendable. It is currently running in the [ruby](https://www.ruby-lang.org/en/) environment, but will soon compile to the [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine),  [CLR](https://en.wikipedia.org/wiki/Common_Language_Runtime) and as a final aim run natively through [LLVM](https://en.wikipedia.org/wiki/LLVM).
 
 To check out the current capabilities of this language have a look at the [tests](https://github.com/pannous/natural-english/tree/master/test/unit), at the [grammar](https://github.com/pannous/natural-english/blob/master/lib/english-script/english-parser.rb) and at the
 [keywords](https://github.com/pannous/natural-english/blob/master/lib/english-script/english-tokens.rb)
