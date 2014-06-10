@@ -12,6 +12,7 @@ require_relative 'betty'
 require_relative 'grammar/ruby'
 require_relative 'grammar/loops'
 
+# require_relative 'bindings/common-scripting-objects'
 
 require 'linguistics'
 require 'wordnet'
@@ -24,8 +25,6 @@ class EnglishParser < Parser
   include TreeBuilder
   include CoreFunctions
   include EnglishParserTokens # module
-
-
   include LoopsGrammar # while, as long as, ...
   include RubyGrammar # def, ...
   include Betty # convert a.wav to mp3
@@ -104,23 +103,40 @@ class EnglishParser < Parser
     }
   end
 
-  def includes dependency
-    # todo obj.include !!
-    # todo mapping + reflection
-    include dependency rescue nil  #ruby!
-    extends dependency rescue nil  #ruby!
-    require dependency rescue nil  #ruby!
-    @javascript<<"javascript_include(#{dependency});" # if ...
+  def set_context context
+    @context=context
+  end
+
+  def module
+    __ %w[module package context]
+    set_context rest_of_line
+  end
+
+  def javascript_require dependency
+    require_relative "bindings/js/javascript_auto_libs"
+    # require_relative "javascript_auto_libs"
+    dependency.gsub!(/.* /,"")# require javascript bla.js
+    mapped=$javascript_libs[dependency]
+    dependency=mapped if mapped
+    @javascript<<"javascript_require(#{dependency});"
+  end
+
+  def includes dependency,type
+    return javascript_require dependency if dependency.match /\.js$/
+    return javascript_require dependency if type and %w[javascript script js].has type
+    return ruby_require dependency
   end
 
   def requirements
-    __ 'dependencies','dependency','depends','requirement','requirements','require','required','include','using',
-       'script src','script source','source'
+    require_types=javascript_words + %w[javascript script js gcc ruby gem header file]
+    type=__? require_types
+    __ 'dependencies', 'dependency', 'depends', 'requirement', 'requirements', 'require', 'required', 'include', 'using',
+       'script src', 'script source', 'source'
+    type||= __? require_types
     # source? really?
     dependency=rest_of_line
-    includes dependency if check_interpret
+    includes dependency,type if check_interpret
   end
-
 
   def context
     _ 'context'
@@ -174,22 +190,51 @@ class EnglishParser < Parser
     $use_tree ? parent_node : @result
   end
 
-  def javascript
-    __ @context=='javascript' ? 'script' : 'java script', 'javascript', 'js'
-    no_rollback! 10
-    @javascript+=rest_of_line+';'
-    newline?
-    return @javascript
-    #block and done if not @javascript
+  def current_context
+    @context #todo: tree / per node
+  end
+
+  # def javascript
+  #   script_block?
+  #   __ current_context=='javascript' ? 'script' : 'java script', 'javascript', 'js'
+  #   no_rollback! 10
+  #   @javascript+=rest_of_line+';'
+  #   newline?
+  #   return @javascript
+  #   #block and done if not @javascript
+  # end
+
+  def read_block type=nil
+    block=[]
+    start_block type
+    while true do
+      break if end_block? type
+      block<<rest_of_line
+    end
+    subnode type||:block => block
   end
 
 
-  def script_block
-    _ '<script>'
-    read_until '</script>'
+  def html_block
+    read_block 'html'
   end
 
 
+  def javascript_block
+    block=maybe{read_block('script')} || maybe{read_block('js')} || read_block('javascript')
+    @javascript << block.join(";\n")
+  end
+
+
+  def ruby_block
+    read_block 'ruby'
+  end
+
+  def special_blocks
+    html_block? || ruby_block? || javascript_block
+  end
+
+  # see read_block for RAW blocks! (</EOF> type)
   # EXCLUDING start_block & end_block !!!
   def block
     start=pointer
@@ -427,21 +472,24 @@ class EnglishParser < Parser
     exec(action || quote)
   end
 
-
   def bash_action
-    must_contain 'bash'
+    require_relative "bindings/shell/bash-commands"
+    must_contain ['bash'] + $bash_commands
     remove_tokens 'execute', 'command', 'commandline', 'run', 'shell', 'shellscript', 'script', 'bash'
     @command = maybe { quote } # danger bash "hi">echo
-    @command = rest_of_line if not @command
+    @command ||= rest_of_line
+    subnode bash: @command
     #any{ try{  } ||  statements }
-    begin
-      puts 'going to execute ' + @command
-      result=%x{#{@command}}
-      puts 'result:'
-      puts result
-      return result || true
-    rescue
-      puts 'error executing bash_action'
+    if check_interpret
+      begin
+        puts 'going to execute ' + @command
+        result=%x{#{@command}}
+        puts 'result:'
+        puts result
+        return result || true
+      rescue
+        puts 'error executing bash_action'
+      end
     end
 
   end
@@ -686,17 +734,7 @@ class EnglishParser < Parser
   end
 
   def bla
-    @current_value=nil
-    star {
-      tokens 'tell me', 'hey', 'could you', 'give me',
-             'i would like to', 'can you', 'please', 'let us', "let's", 'can i',
-             'can you', 'would you', 'i would', 'i ask you to', "i'd",
-             'love to', 'like to', 'i asked you to', 'would you', 'could i',
-             'i tell you to', 'i told you to', 'would you', 'come on',
-             'i wanna', 'i want to', 'i want', 'tell me', 'i need to',
-             'i need'
-    }
-    #_? "know" # what is
+    tokens? bla_words
   end
 
   def applescript
@@ -706,7 +744,8 @@ class EnglishParser < Parser
     @result="tell application \"#{app}\""
     @result+= ' to '+ @string if to
     if not to #Multiline
-      while @string and not @string.contains 'end tell' and not @string.contains 'end' #TODO deep blocks!
+      while @string and not @string.contains 'end tell'
+        # #TODO deep blocks! simple 'end' : and not @string.contains 'end'
         @result+= rest_of_line() +"\n"
       end
       # tokens? "end tell","end"
@@ -729,7 +768,7 @@ class EnglishParser < Parser
     start=pointer
     bla?
     result=any {#action
-      maybe { javascript } ||
+      maybe { special_blocks } ||
           maybe { applescript } ||
           maybe { bash_action } ||
           maybe { setter } ||
@@ -760,9 +799,26 @@ class EnglishParser < Parser
     return b
   end
 
-  def end_block
-    done
+  def end_block type=nil
+    done type
   end
+
+  def done type=nil
+    return @OK if type and close_tag? type
+    return @OK if checkNewline
+    ok=tokens done_words
+    token type if type #optional?
+    ignore_rest_of_line
+    ok
+  end
+
+  # used by done / end_block
+  def close_tag type
+    _ '</'
+    _ type
+    _ '>'
+  end
+
 
   def do_execute_block b, args={}
     return false if not b
@@ -1446,7 +1502,12 @@ class EnglishParser < Parser
     line
   end
 
-  def start_block
+  def start_block type=nil
+    if type
+      xmls=_? '<'
+      _ type
+      _ '>' if xmls
+    end
     return @OK if checkNewline
     maybe { tokens ':', 'do', '{', 'first you ', 'second you ', 'then you ', 'finally you ' }
   end

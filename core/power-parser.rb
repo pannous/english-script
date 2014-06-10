@@ -310,6 +310,7 @@ class Parser #<MethodInterception
     res
   end
 
+  # todo ? trial and error -> evidence based 'parsing' ?
   def maybe(&block)
     #return if checkEnd
     allow_rollback 1

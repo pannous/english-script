@@ -1,4 +1,7 @@
 module MacExtensions
+  # osx/cocoa DEPRECATED
+  # see mruby-cocoa
+  # rubymotion PROPRIETARY!
 
   require 'ffi' # doesn't allow for catching Signals
   # does NOT support events!!

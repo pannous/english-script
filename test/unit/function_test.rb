@@ -9,11 +9,11 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   include ParserTestHelper
 
-  def test_basic syntax
+  def test_basic_syntax
 
   end
 
-  def test_complex syntax
+  def test_complex_syntax
     init "here is how to define a method: done"
   end
 
@@ -22,7 +22,7 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_not_nil functions["increase"],"sdfsdf"
   end
 
-  def test_simple parameters
+  def test_simple_parameters
 
   end
 

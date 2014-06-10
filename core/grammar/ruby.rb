@@ -55,4 +55,21 @@ module RubyGrammar
     lines
   end
 
+
+  def install_gem gem
+    `gem install #{gem}` #todo: ask ;}
+  end
+
+  def ruby_require dependency
+    install_gem dependency
+    if check_interpret
+      # todo obj.include !!
+      # todo mapping + reflection
+      include dependency rescue nil #ruby!
+      extends dependency rescue nil #ruby!
+      require dependency rescue nil #ruby!
+    end
+
+  end
+
 end

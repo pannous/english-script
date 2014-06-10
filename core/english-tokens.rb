@@ -242,24 +242,6 @@ module EnglishParserTokens #< MethodInterception
     tokens 'often','never','joyfully', 'often','never','joyfully','quite','nearly','almost','definitely','by any means','without a doubt'
   end
 
-
-
-  def done
-    #if(@string[0]=='}')
-    #  @string=@string[1]
-    #  pop '}'
-    #end
-    #return true if checkEndOfLine
-    return "OK" if checkNewline
-    ok=tokens done_words
-    #rescue EndOfLine =>x
-    #  puts x
-    #end
-    #return true
-    ignore_rest_of_line
-    ok
-  end
-
   def let?
     _? 'let' , 'set'
   end
@@ -277,6 +259,17 @@ module EnglishParserTokens #< MethodInterception
     ['in', 'at', 'every', 'from', 'between', 'after', 'before', 'until', 'till']
   end
 
+
+
+  def bla_words
+    ['tell me', 'hey', 'could you', 'give me',
+     'i would like to', 'can you', 'please', 'let us', "let's", 'can i',
+     'can you', 'would you', 'i would', 'i ask you to', "i'd",
+     'love to', 'like to', 'i asked you to', 'would you', 'could i',
+     'i tell you to', 'i told you to', 'would you', 'come on',
+     'i wanna', 'i want to', 'i want', 'tell me', 'i need to',
+     'i need']
+  end
 
 
   def question
