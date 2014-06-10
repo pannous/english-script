@@ -1,0 +1,5 @@
+extra/
+extra
+./extra
+core/emitters/bash-commands-auto-index.rb
+core/emitters/bash-commands-auto-index.rb -f
