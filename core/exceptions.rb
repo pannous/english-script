@@ -1,4 +1,6 @@
 module Exceptions
+  # DONT ROLLBACK StandardError
+  # DO ROLLBACK all NotMatching
 NotMatching = Class.new StandardError
 NotPassing = Class.new StandardError
 NoResult = Class.new NotMatching
@@ -10,4 +12,5 @@ GivingUp= Class.new StandardError
 ShouldNotMatchKeyword=  Class.new NotMatching
 KeywordNotExpected=  Class.new NotMatching
 UndefinedRubyMethod=  Class.new NotMatching
+WrongType = Class.new StandardError
 end

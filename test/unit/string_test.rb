@@ -82,7 +82,7 @@ class StringTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     # really ? or 'a' 'b' 'c' == ['a','b','c'] ??
     # really ? or 'a' 'b' 'c' == 'a b c' ??
     init "'hi' ' ' 'world'"
-    z=@parser.expression0
+    z=@parser.expressions
     assert_equals z, 'hi world'
 
     variables['x']='hi'
@@ -133,7 +133,7 @@ class StringTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals result, Quote
     # assert_equals result,String todo!
     init "class of 'hi'"
-    @parser.expression0
+    @parser.expressions
     assert_equals result, Quote
     # assert_equals result,String
     parse "class of 'hi'"

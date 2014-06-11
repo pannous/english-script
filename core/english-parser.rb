@@ -29,18 +29,20 @@ class EnglishParser < Parser
   include RubyGrammar # def, ...
   include Betty # convert a.wav to mp3
 
-  attr_accessor :variables, :methods, :result, :interpretation
+  attr_accessor :methods, :result, :interpretation, :variables, :variableType
 
   def initialize
     super
     @interpret=@did_interpret=true
     @javascript=''
     @context=''
-    @variables={}
+    @variables={nill:nil}
+    @variableTypes={}
     @svg=[]
     # @bash_methods=["say"]
-    @ruby_methods=['puts', 'print', 'svg', 'now', 'yesterday'] #"puts"=>x_puts !!!
-    @core_methods=['show', 'now'] #"puts"=>x_puts !!!
+    @c_methods=['printf']
+    @ruby_methods=['puts', 'print'] #"puts"=>x_puts !!!
+    @core_methods=['show', 'now', 'yesterday'] #"puts"=>x_puts !!!
     @methods={} # name->method-node
     @OK='OK'
     @result=''
@@ -96,7 +98,7 @@ class EnglishParser < Parser
           maybe { ruby_def } ||
           maybe { block and checkNewline }|| # raise if not checkNewline!!
           maybe { statement and checkNewline } ||
-          maybe { expression0 and checkNewline } || # eval for commandline!
+          maybe { expressions and checkNewline } || # eval for commandline!
           maybe { @result=condition; @comp }|| # 1==1
           maybe { context }
     }
@@ -185,9 +187,9 @@ class EnglishParser < Parser
     if @interpret
       @result=result
       tree=parent_node
-      @result=tree.eval_node @variables,result if tree and $use_tree rescue result #wasteful!!
+      @result=tree.eval_node @variables, result if tree and $use_tree rescue result #wasteful!!
     end
-     @result
+    @result
   end
 
   def current_context
@@ -277,6 +279,7 @@ class EnglishParser < Parser
     comment_block if @string.starts_with? '/*'
     string=@string.strip+' '
     for t in tokenz.flatten
+      next if t=='' # todo debug HOW
       return true if (t=="\n" and @string.empty?)
       if t.match(/^\w/)
         match=string.match(/^\s*#{t}/im)
@@ -364,7 +367,7 @@ class EnglishParser < Parser
     must_contain '+='
     v=variable
     _ '+='
-    e=expression0
+    e=expressions
     @variables[v]=@result=do_send(do_evaluate(v), '+', e) if @interpret
     v
   end
@@ -380,17 +383,17 @@ class EnglishParser < Parser
 
 
   def orEqual
+    must_contain '|=', '||='
     v=variable
     __ '|=', '||='
-    @variables[v]=@result=do_evaluate(v) or (do_evaluate expression0) if @interpret
+    @variables[v]=@result=do_evaluate(v) or (do_evaluate expressions) if @interpret
     v
   end
 
   def selfModify
     maybe { plusEqual } ||
         maybe { plusPlus } ||
-        maybe { orEqual }
-    #orEqual
+        orEqual
   end
 
   def json_hash
@@ -404,15 +407,15 @@ class EnglishParser < Parser
       _ ':'
       @inside_list=true
       # h[key] = expression0 # no
-      h[key.to_s.to_sym] = expression0 # no
+      h[key.to_s.to_sym] = expressions # no
     }
     _ '}'
     @inside_list=false
     h
   end
 
-  # expression0 is reserved!
-  def expression0 fallback=nil
+  # keyword expression is reserved by ruby/rails!!! => use hax0r writing or plural
+  def expressions fallback=nil
     start=pointer
     ex=any {#expression}
       maybe { algebra } ||
@@ -425,7 +428,7 @@ class EnglishParser < Parser
           maybe { endNode }
       # ||['one'].has(fallback) ? 1 : false # WTF todo better quantifier one beer vs one==1
     }
-    return pointer-start if not @interpret
+    return pointer-start if not @interpret and not $use_tree
     @result=do_evaluate ex if ex and @interpret rescue SyntaxError
     if @result.blank? or @result==SyntaxError and not ex==SyntaxError
       # keep false
@@ -433,11 +436,12 @@ class EnglishParser < Parser
       ex=@result
     end
 
-    more=expression0? if @result.is_a? Quote
-    more||=quote? #  "bla " 7 " yeah"
+    # NEIN! print 'hi' etc etc
+    # more=expression0? if @result.is_a? Quote
+    # more||=quote? #  "bla " 7 " yeah"
     # more+=expression0? if more.is_a? Quote rescue ""
-    ex+=more if more
-    subnode expression1: ex
+    # ex+=more if more
+    # subnode expression: ex
     return @result=ex
   end
 
@@ -449,7 +453,7 @@ class EnglishParser < Parser
           maybe { if_then } ||
           maybe { once } ||
           maybe { action } ||
-          maybe { expression0 } # AS RETURN VALUE! DANGER!
+          maybe { expressions } # AS RETURN VALUE! DANGER!
     }
     x
     #one :action, :if_then ,:once , :looper
@@ -646,7 +650,9 @@ class EnglishParser < Parser
     end
     checkNewline
     #raiseEnd
-    return ruby_method
+    subnode method:ruby_method #why not auto??
+    subnode args:args
+    return @current_value=ruby_method
     # return Object.method ruby_method.to_sym
     # return Method_call.new ruby_method,args,:ruby
   end
@@ -680,10 +686,14 @@ class EnglishParser < Parser
     return true
   end
 
+  def c_method
+    tokens @c_methods
+  end
+
   def true_method
     no_keyword
     should_not_match auxiliary_verbs
-    v=verb? || tokens?(@methods.names)|| Object.method(word) rescue nil
+    v=c_method? || verb? || tokens?(@methods.names)|| Object.method(word) rescue nil
     raise NotMatching.new 'no method found' if not v
     v
   end
@@ -720,6 +730,8 @@ class EnglishParser < Parser
       args=star { arg }
     end
     _ ')' if brace
+    subnode object:obj
+    subnode arguments:args
     return method if not check_interpret #parent node!!!
     #end_expression
 
@@ -877,24 +889,38 @@ class EnglishParser < Parser
 
 #  until_condition ,:while_condition ,:as_long_condition
 
+  def assure_same_Type var, val
+    oldType=@variableTypes[var]
+    raise WrongType.new if not val.type.is_a oldType
+  end
+
+  def boolean
+    tokens 'true','false'
+  end
+
 #  CAREFUL WITH WATCHES!!! THEY manipulate the current system, especially variable
 #/*	 let nod be nods */
   def setter
-    no_rollback! if let?
+    must_contain be_words+['set']
+    _let=no_rollback! if let?
     a=the?
     mod=modifier?
     tokens? 'var', 'val', 'value of'
-    mod||=modifier? # ??
+    mod||=modifier? # public static ...
     old=@string
     var=variable a
     # _?("always") => pointer
     setta=_?('to') || be # or not_to_be 	contain -> add or create
     no_rollback!
-    val=adjective? || expression0
+    val=adjective? || expressions
     val=[val].flatten if setta=='are' or setta=='consist of' or setta=='consists of'
+    assure_same_Type var, val if _let
+
     if @interpret and (mod!='default') or not @variables.contains(var)
       @variables[var]=val
     end
+    @variableTypes[var]||=val.class #eval'ed!
+
     @result=val
     end_expression
     # return var if @interpret
@@ -907,17 +933,22 @@ class EnglishParser < Parser
 
   # a=7
   # a dog=7
+  # Int dog=7
   # my dog=7
   # a green dog=7
   def variable a=nil
     a||=article?
     a=nil if a!='a' #hack for a variable
+    typ=typeName?
     p=pronoun?
     all=p ? [p] : []
     all+=one_or_more { word } rescue (a=='a' ? all=[a] : (raise NotMatching))
-    all.join(' ')
+    name=typ ? all.join(' ') : all[1..-1].join(' ')
+    if (typ||all.length>1) # todo UNHACK ^^
+      @variableTypes[name]=typ||all[0]
+    end
+    name
   end
-
 
   def word item=nil
     #danger:greedy!!!
@@ -961,15 +992,16 @@ class EnglishParser < Parser
 
   def value
     @current_value=nil
-    no_keyword_except constants+numbers+result_words
+    no_keyword_except constants+numbers+result_words+nill_words
     @current_value=x=any {
       maybe { quote }||
+          maybe { nill } ||
           maybe { number } ||
           maybe { true_variable } ||
+          maybe { boolean }||
           maybe { constant }||
           maybe { it }||
-          maybe { nod } ||
-          maybe { nill }
+          maybe { nod }
       #rest_of_line # TOOBIG HERE!
     }
     x
@@ -1232,12 +1264,12 @@ class EnglishParser < Parser
     quantifier=maybe { tokens quantifiers } # vs selector!
     # __? noun _? "in" all even numbers in [1,2,3,4] -> selector!
     _? 'of' if quantifier # all of
-    @a=expression0 quantifier
+    @a=expressions quantifier
     @not=false
     @comp=use_verb=maybe { verb_comparison } # run like , contains
     @comp=maybe { comparation } if not use_verb # are bigger than
     #allow_rollback # upto where??
-    @b=expression0 #if @comp
+    @b=expressions #if @comp
     # @b=endNode
     _ ')' if brace
     negate = (negated||@not)&& !(negated and @not)
@@ -1424,7 +1456,7 @@ class EnglishParser < Parser
     list=get_iterator(list) if not list.is_a? Array
     if $use_tree
       method=criterion[:comparative]||criterion[:comparison]||criterion[:adjective]
-      args=criterion[:endNode]||criterion[:endNoun]||criterion[:expression0]
+      args=criterion[:endNode]||criterion[:endNoun]||criterion[:expressions]
     else
       method=@comp
       args=criterion
@@ -1547,7 +1579,7 @@ class EnglishParser < Parser
     i=endNode
     _ ']'
     set=_? '='
-    set=expression0 if set
+    set=expressions if set
     # @result=v.send :index,i if check_interpret
     @result=v.send :[], i if check_interpret #old value
     @result=v.send :[]=, i, set if set and check_interpret
@@ -1561,7 +1593,7 @@ class EnglishParser < Parser
     raiseNewline
     x=endNoun type_keywords
     __ 'of', 'in'
-    y=expression0
+    y=expressions
     return parent_node if not @interpret
     begin #interpret !:
       do_evaluate_property(x, y)
@@ -1591,7 +1623,9 @@ class EnglishParser < Parser
     return if not $use_tree
     return if not @current_node #raise!
     attributes.each do |name, value|
-      @current_node.nodes<<TreeNode.new(name: name, value: value)
+      node=TreeNode.new(name: name, value: value)
+      @nodes<<node
+      @current_node.nodes<<node
       @current_value=value
     end
     return @current_value

@@ -192,6 +192,16 @@ module EnglishParserTokens #< MethodInterception
         'fini','all set','finished','finish','fin','the end','over and out','over','q.e.d.','qed',"<end>"]# NL+ # NL verbium?]
   end
 
+  def false_words
+    ['false','FALSE','False','falsch','wrong','no','nein']#'negative',
+  end
+  def true_words
+    ['true','yes','ja','positive']
+  end
+
+  def boolean_words
+    false_words+true_words
+  end
 
   def otherKeywords
     ['and','as','back','beginning','but','by','contain','contains','copy','def','div','does','eighth','else',
@@ -222,7 +232,8 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def nill
-    tokens nill_words
+    t=tokens nill_words
+    return :nill
   end
 
   def preposition
@@ -352,11 +363,14 @@ module EnglishParserTokens #< MethodInterception
 
 
   def match_path string
-    string.to_s.match /^(\/[\w\/\.]+)/
+    m=string.to_s.match /^(\/[\w\/\.]+)/
+    return false if not m
+    m
   end
 
   def is_file string, must_exist=true
     m=string.to_s.match /^([\w\/\.]+\.\w+)/ || match_path(string)
+    return false if not m
     must_exist ? m && File.file?(m) : m
   end
 
@@ -446,7 +460,8 @@ module EnglishParserTokens #< MethodInterception
 
   def wordnet_is_adjective
     the_adjective=@string.match(/^\s*(\w+)/)[1] if @string.match(/^\s*(\w+)/) rescue nil
-    #return false if not the_adjective
+    raise NotMatching.new "no boolean adjectives" if boolean_words.match the_adjective
+        #return false if not the_adjective
     raise NotMatching.new "no adjective word" if not the_adjective
     raise NotMatching.new "no adjective" if not the_adjective.is_adjective
     @string=@string.strip[the_adjective.length..-1]

@@ -13,12 +13,30 @@ class TreeNode
   #attr_accessor :end_offset
 
   def show_node
-    #true
-    @valid and @nodes.empty? and @value or not @nodes.empty? # if node.valid
+    # @value or not @nodes.empty?
+    @valid and (@value or not @nodes.empty?) # if node.valid
+  end
+
+  def find x
+    for n in self.nodes
+      if(x=="*"|| n.name==x||n.name.to_s==x.to_s)
+        return n.value if n.value
+        return n.find "*"
+      end
+      ok=n.find x
+      return ok if ok
+    end
+    # puts "WARN: No such property #{x} in #{self}"
+    # raise Exception.new "No such property #{x} in #{self}"
+    false
+  end
+
+  def [] x
+    find x
   end
 
   def blank?
-    @valid and @nodes.empty? and @value or not @nodes.empty? # if node.valid
+    not show_node
   end
 
   def is_leaf

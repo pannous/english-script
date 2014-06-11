@@ -10,11 +10,6 @@ class Quote < String
   end
 end
 
-class Interpretation
-  attr_accessor :root, :nodes, :context
-end
-
-
 class Parser #<MethodInterception
   include Exceptions
   attr_accessor :lines
@@ -281,31 +276,6 @@ class Parser #<MethodInterception
     string_pointer if @verbose
     raise NotMatching.new(to_source block)
     #throw "Not matching #{to_source block}"
-  end
-
-  def quote
-    raiseEnd
-    #return if checkEnd
-    # todo :match ".*?"
-    if @string.strip[0]=="'"
-      @string.strip!
-      to=@string[1..-1].index("'")
-      @result=@current_value=@string[1..to];
-      @string= @string[to+2..-1].strip
-      return Quote.new @current_value
-      #return "'"+@current_value+"'"
-    end
-    if @string.strip[0]=='"'
-      @string.strip!
-      to=@string[1..-1].index('"')
-      @current_value=@string[1..to];
-      @string= @string[to+2..-1].strip
-      return Quote.new @current_value
-      #return '"'+@current_value+'"'
-    end
-    raise NotMatching.new("quote")
-    #throw "no quote" if @throwing
-    return false
   end
 
   def to_source x
@@ -664,6 +634,32 @@ class Parser #<MethodInterception
     show_tree
     #puts @svg
     return interpretation # self# @result
+  end
+
+
+  def quote
+    raiseEnd
+    #return if checkEnd
+    # todo :match ".*?"
+    if @string.strip[0]=="'"
+      @string.strip!
+      to=@string[1..-1].index("'")
+      @result=@current_value=@string[1..to];
+      @string= @string[to+2..-1].strip
+      return Quote.new @current_value
+      #return "'"+@current_value+"'"
+    end
+    if @string.strip[0]=='"'
+      @string.strip!
+      to=@string[1..-1].index('"')
+      @result=@current_value=@string[1..to];
+      @string= @string[to+2..-1].strip
+      return Quote.new @current_value
+      #return '"'+@current_value+'"'
+    end
+    raise NotMatching.new("quote")
+    #throw "no quote" if @throwing
+    return false
   end
 
 end

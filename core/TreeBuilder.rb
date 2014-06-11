@@ -18,7 +18,22 @@ module TreeBuilder
   end
 
   def ignore_parent
-    # "word",    "endNode",
+    ["number","rest_of_line"]
+    # ["integer","real"]#,"expression0"]
+    # [    "endNode","integer","real","expression0","value","word"]
+  end
+
+  # what exactly machen die??
+  def keepers #== ignore_parent , ,"rest_of_line"
+    ["token", "tokens", "word","number","setter","variable","value","method_call","object","subnode"]
+  #
+  #   ,"ruby_method_call"
+  #   ,"quote"
+  end
+
+  def delete
+    ["bla","newlines"]
+    # "subnode",
   end
 
   def ignore
@@ -26,13 +41,16 @@ module TreeBuilder
     #test_setter Should never be set ("")!?
     #"token","tokens","number",
     # "setter",  "endNode",
-    [ "_", "_?","should_not_match","do_send","pronouns","end_expression","do_evaluate", "subnode","numbers", "tokens",
+    # "rest_of_line",
+    ignore_parent+delete+
+    [ "_", "_?","interpretation","should_not_match","do_send","pronouns","end_expression","do_evaluate",
+"numbers", "tokens",
 "ignore", "initialize", "endNode",
       "bad",  "wordnet_is_noun", "true_comparitons", "special_verbs", "wordnet_is_verb",
       "checkNewline", "newline", "wordnet_is_adjective",
       "newline?", "ruby_block_test","subnode_token","get_adjective","get_noun","get_verb",
       "substitute_variables", "raiseNewline", "any", "initialize", "one_or_more", "expression",
-      "the_noun_that", "nod", "star", "rest_of_line",  "action", "parse",
+      "the_noun_that", "nod", "star", "action", "parse",
       "allow_rollback",  "init", "type_keywords", "articles",  "modifiers", "auxiliary_verbs",
       "test_setter", "try_action", "method_missing", "endNode2", "no_rollback!", "raiseEnd",
       "string_pointer", "verbose", "try", "checkEnd", "to_source", "rest", "keywords",
@@ -41,9 +59,6 @@ module TreeBuilder
       "constants", "comment", "any_ruby_line" ] #"call_is_verb",
   end
 
-  def keepers
-    ["token", "tokens", "word","integer","real","quote"]
-  end
 
 
 
@@ -61,6 +76,14 @@ module TreeBuilder
 
   def current_value= x
     @current_value=x
+  end
+
+  #todo: move to interpretation or tree.full
+  def full_tree node=@root, tabs=0
+    puts " "*tabs + "#{node.name} #{node.value}"
+    for n in node.nodes
+      full_tree n, (tabs+1)
+    end
   end
 
   def walk_tree node, tabs=0
@@ -88,7 +111,7 @@ module TreeBuilder
     for n in node.nodes
       flat_tree(n)
     end
-    puts ";" if node.name=="statement" or node.name==:statement
+    puts "" if node.name=="statement" or node.name==:statement
   end
 
   def flat_tree2 node, collect=[]
@@ -102,6 +125,7 @@ module TreeBuilder
     collect
   end
 
+  #todo: move to interpretation or tree.show
   def show_tree
     return if not @root
     walk_tree @root
@@ -134,6 +158,9 @@ module TreeBuilder
   end
 
   def before_each_method name
+    if name=="quote"
+      puts "YY"
+    end
     if not bad name
       @current_value=nil # if not keepers.index name.to_s
                          #parent=@current_node
@@ -150,13 +177,14 @@ module TreeBuilder
   # not called on error, good. cleanup @nodes in try/star/...
   def after_each_method name
     return if not @current_node #HOOOW?
+    # return if name!="boolean" and not @current_value
     if not bad name
       @current_node.valid=true if @current_value #and not @current_node.nodes.blank?
       @current_node.value=@current_value if @current_node.is_leaf
       @current_node.endPointer=pointer
       @nodes.pop
       @current_node=@nodes[-1]
-      @new_nodes<<@current_node
+      @new_nodes<<@current_node  #if name=="boolean" || @current_value
     end
     @current_value=nil if not keepers.index name.to_s
   end
@@ -180,6 +208,9 @@ module TreeBuilder
     end
 
     def method_added name
+      if name=="quote"
+        puts "YY"
+      end
       return true if name.to_s=="initialize"
       return if not $use_tree
       return if @@__last_methods_added && @@__last_methods_added.include?(name)

@@ -100,6 +100,7 @@ module ParserTestHelper
     # @variables=@parser.variables
     # @result=@parser.result
     @variables=@parser.interpretation.variables
+    # return @parser.interpretation if $use_tree
     @result=@parser.interpretation.result
     # @current_value=@parser.interpretation.current_value
     # @current_node=@parser.interpretation.current_node
@@ -109,6 +110,14 @@ module ParserTestHelper
     puts "NOT testing "+x.to_s
   end
 
+  def variableTypes v
+    @parser.variableTypes v
+  end
+
+  def emit x
+    interpretation= parse x
+    interpretation.evaluate
+  end
 
   # def _test_all
   #   @parser.methods.each { |m|

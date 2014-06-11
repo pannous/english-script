@@ -144,7 +144,7 @@ class ListTestParser < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     @parser.evaluate_property
     assert_equals result,Array
     init "class of [1,2,3]"
-    @parser.expression0
+    @parser.expressions
     assert_equals result,Array
     parse "class of 1,2,3"
     assert_equals result,Array

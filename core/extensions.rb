@@ -4,6 +4,10 @@ def puts x # debug!
   x
 end
 
+def put x
+  print x
+end
+
 def grep xs, x
   xs.select { |y| y.to_s.match(x) }
 end
