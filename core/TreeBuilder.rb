@@ -17,16 +17,22 @@ module TreeBuilder
     @current_value=""
   end
 
+  def ignore_parent
+    # "word",    "endNode",
+  end
+
   def ignore
     #"newline","newlines","newline?",
     #test_setter Should never be set ("")!?
     #"token","tokens","number",
-    [ "_", "_?","endNode","pronouns","end_expression","do_evaluate", "subnode","numbers", "tokens", "ignore", "initialize",
+    # "setter",  "endNode",
+    [ "_", "_?","should_not_match","do_send","pronouns","end_expression","do_evaluate", "subnode","numbers", "tokens",
+"ignore", "initialize", "endNode",
       "bad",  "wordnet_is_noun", "true_comparitons", "special_verbs", "wordnet_is_verb",
       "checkNewline", "newline", "wordnet_is_adjective",
       "newline?", "ruby_block_test","subnode_token","get_adjective","get_noun","get_verb",
       "substitute_variables", "raiseNewline", "any", "initialize", "one_or_more", "expression",
-      "the_noun_that", "nod", "star", "rest_of_line", "setter", "action", "parse",
+      "the_noun_that", "nod", "star", "rest_of_line",  "action", "parse",
       "allow_rollback",  "init", "type_keywords", "articles",  "modifiers", "auxiliary_verbs",
       "test_setter", "try_action", "method_missing", "endNode2", "no_rollback!", "raiseEnd",
       "string_pointer", "verbose", "try", "checkEnd", "to_source", "rest", "keywords",
@@ -36,7 +42,7 @@ module TreeBuilder
   end
 
   def keepers
-    ["token", "tokens", "word","integer","real"]
+    ["token", "tokens", "word","integer","real","quote"]
   end
 
 
@@ -77,11 +83,12 @@ module TreeBuilder
 
   def flat_tree node
     if node.show_node and node.value
-      puts node.good_value
+      print node.good_value+" "
     end
     for n in node.nodes
       flat_tree(n)
     end
+    puts ";" if node.name=="statement" or node.name==:statement
   end
 
   def flat_tree2 node, collect=[]

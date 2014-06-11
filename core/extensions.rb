@@ -1,3 +1,9 @@
+def puts x # debug!
+  print x
+  print "\n"
+  x
+end
+
 def grep xs, x
   xs.select { |y| y.to_s.match(x) }
 end
@@ -298,6 +304,18 @@ class String
     reverse
   end
 
+  def plus x
+    self+x
+  end
+
+  def and x
+    self+x
+  end
+
+  def add x
+    self+x
+  end
+
   def - x
     self[0..self.index(x)-1]+self[self.index(x)+x.length..-1]
   end
@@ -310,6 +328,12 @@ class String
   def is_verb
     not synsets(:verb).empty? of
     not self.gsub(/s$/, "").synsets(:verb).empty?
+  end
+
+  def is_a className
+    className.downcase!
+    return true if className=="quote"
+    return className=="string"
   end
 
   def is_adverb

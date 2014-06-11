@@ -12,6 +12,11 @@ module ParserTestHelper
     super args
   end
 
+  def assert_has_no_error x=nil
+    init x
+    assert @parser.root
+  end
+
   def assert_has_error x=nil, &block
     begin
       # x=yield if not x and block
@@ -57,7 +62,7 @@ module ParserTestHelper
   end
 
 
-  def NOmethod_missing(sym, *args, &block) # <- NoMethodError use node.blah to get blah!
+  def NOmethod_missing(sym, *args, &block) # <- use @parser.blah or node.blah to get blah / NoMethodError!
     syms=sym.to_s
     if @parser and @parser.methods.contains(sym) #(syms.end_with?"?")
       x= maybe { @parser.send(sym) } if args.count==0
@@ -69,7 +74,7 @@ module ParserTestHelper
   end
 
   def init string
-    @parser.allow_rollback
+    @parser.allow_rollback #reset
     @parser.init string
   end
 

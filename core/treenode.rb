@@ -40,6 +40,7 @@ class TreeNode
       if $variables and ($variables[value])
         return $variables[value]
       else
+        return "'#{value}'" if value.is_a? Quote
         return value
       end
     elsif @nodes.count>0
@@ -64,14 +65,15 @@ class TreeNode
   end
 
 
-  def eval_node variables
+  def eval_node variables,fallback
     $variables||=variables
     whot=full_value
     begin
       whot.gsub!("\\", "") # where from?? token?
-      res=eval(whot) rescue nil ## v0.0
+      res=eval(whot) rescue fallback ## v0.0
       return res
     rescue SyntaxError => se
+      return fallback
     end
   end
 

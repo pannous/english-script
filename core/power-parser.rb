@@ -2,6 +2,13 @@
 
 require_relative "exceptions"
 
+class Quote < String
+  def is_a className
+    className.downcase!
+    return true if className=="quote"
+    return className=="string"
+  end
+end
 
 class Interpretation
   attr_accessor :root, :nodes, :context
@@ -121,19 +128,19 @@ class Parser #<MethodInterception
   def __? *x
     # DANGER!! Obviously very different semantics from maybe{tokens}!!
     # remove_tokens x # shortcut
-    maybe{tokens x}
+    maybe { tokens x }
   end
 
 
-
-  def must_contain *args#,before:nil
-    must_contain_before nil,args
+  def must_contain *args #,before:nil
+    must_contain_before nil, args
   end
 
-  def must_contain_before before, *args#,before:nil
+  def must_contain_before before, *args #,before:nil
     raiseEnd
     good=false
-    before.flatten! if before and before.is_a?Array
+    before=[before] if before and before.is_a? String
+    before=before.flatten+[';'] if before
     args.flatten!
     for x in args.flatten
       if x.match(/^\s*\w+\s*$/)
@@ -197,6 +204,11 @@ class Parser #<MethodInterception
     @method=caller #_name
   end
 
+  def do_interpret!
+    @interpret_border=-1
+    @did_interpret=@interpret
+    @interpret=true
+  end
 
   def dont_interpret!
     if @interpret_border<0
@@ -278,9 +290,9 @@ class Parser #<MethodInterception
     if @string.strip[0]=="'"
       @string.strip!
       to=@string[1..-1].index("'")
-      @current_value=@string[1..to];
+      @result=@current_value=@string[1..to];
       @string= @string[to+2..-1].strip
-      return @current_value
+      return Quote.new @current_value
       #return "'"+@current_value+"'"
     end
     if @string.strip[0]=='"'
@@ -288,7 +300,7 @@ class Parser #<MethodInterception
       to=@string[1..-1].index('"')
       @current_value=@string[1..to];
       @string= @string[to+2..-1].strip
-      return @current_value
+      return Quote.new @current_value
       #return '"'+@current_value+'"'
     end
     raise NotMatching.new("quote")
@@ -315,8 +327,8 @@ class Parser #<MethodInterception
     #return if checkEnd
     allow_rollback 1
     old=@string
-    if(@nodes.count>@max_depth)
-       raise SystemStackError.new "if(@nodes.count>@max_depth)"
+    if (@nodes.count>@max_depth)
+      raise SystemStackError.new "if(@nodes.count>@max_depth)"
     end
 
     @original_string=@string||"" if @original_string.blank?
@@ -409,7 +421,7 @@ class Parser #<MethodInterception
     attr_accessor :line_number, :offset, :parser
 
     def - start
-      return offset-=start.length if start.is_a?String
+      return offset-=start.length if start.is_a? String
       return content_between self, start if start>self
       return content_between start, self
     end
@@ -454,7 +466,7 @@ class Parser #<MethodInterception
 
   def star(&block)
     #checkEnd
-    if(@nodes.count>@max_depth)
+    if (@nodes.count>@max_depth)
       raise SystemStackError.new "if(@nodes.count>@max_depth)"
     end
 
@@ -544,7 +556,7 @@ class Parser #<MethodInterception
     x
   end
 
-  def error e,force=false
+  def error e, force=false
     raise e if e.is_a? GivingUp # hand through!
     raise e if e.is_a? NotMatching
     puts e if e.is_a? String
@@ -554,7 +566,7 @@ class Parser #<MethodInterception
       puts e.class.to_s+" "+e.message.to_s
       string_pointer
       show_tree
-      raise e if not $verbose# SyntaxError.new(e)
+      raise e if not $verbose # SyntaxError.new(e)
       #exit
     end
   end
@@ -596,7 +608,7 @@ class Parser #<MethodInterception
       old_last=@last_pattern
       @last_pattern=cut
       x= maybe { send(cut) } if args.count==0
-      x= maybe { send(cut,args[0]) } if args.count==1
+      x= maybe { send(cut, args[0]) } if args.count==1
       x= maybe { send(cut, args) } if args.count>1
       @last_pattern=old_last
       return x

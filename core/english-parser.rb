@@ -7,11 +7,11 @@ require_relative 'english-tokens'
 require_relative 'power-parser'
 require_relative 'extensions'
 require_relative 'events'
-require_relative 'betty'
 
 require_relative 'grammar/ruby'
 require_relative 'grammar/loops'
 
+require_relative 'bindings/shell/betty'
 # require_relative 'bindings/common-scripting-objects'
 
 require 'linguistics'
@@ -29,7 +29,7 @@ class EnglishParser < Parser
   include RubyGrammar # def, ...
   include Betty # convert a.wav to mp3
 
-  attr_accessor :variables, :methods, :result
+  attr_accessor :variables, :methods, :result, :interpretation
 
   def initialize
     super
@@ -64,7 +64,6 @@ class EnglishParser < Parser
     @original_string=@string
     @root=nil
     @nodes=[]
-    @interpret=true
   end
 
 
@@ -115,27 +114,27 @@ class EnglishParser < Parser
   def javascript_require dependency
     require_relative "bindings/js/javascript_auto_libs"
     # require_relative "javascript_auto_libs"
-    dependency.gsub!(/.* /,"")# require javascript bla.js
+    dependency.gsub!(/.* /, "") # require javascript bla.js
     mapped=$javascript_libs[dependency]
     dependency=mapped if mapped
     @javascript<<"javascript_require(#{dependency});"
   end
 
-  def includes dependency,type
+  def includes dependency, type
     return javascript_require dependency if dependency.match /\.js$/
     return javascript_require dependency if type and %w[javascript script js].has type
     return ruby_require dependency
   end
 
   def requirements
-    require_types=javascript_words + %w[javascript script js gcc ruby gem header file]
+    require_types=%w[javascript script js gcc ruby gem header file]
     type=__? require_types
     __ 'dependencies', 'dependency', 'depends', 'requirement', 'requirements', 'require', 'required', 'include', 'using',
        'script src', 'script source', 'source'
     type||= __? require_types
     # source? really?
     dependency=rest_of_line
-    includes dependency,type if check_interpret
+    includes dependency, type if check_interpret
   end
 
   def context
@@ -177,17 +176,18 @@ class EnglishParser < Parser
       no_rollback! if not op=='and'
       # @string=""+@string2 #==> @string="" BUG WHY??
       y=maybe { value } || bracelet
-      if not $use_tree and @interpret
+      if @interpret #and not $use_tree
         result=do_send(result, op, y) rescue SyntaxError
       end
       result||true # star OK
     }
+    return parent_node if $use_tree and not @interpret
     if @interpret
       @result=result
       tree=parent_node
-      @result=tree.eval_node @variables if tree and $use_tree #wasteful!!
+      @result=tree.eval_node @variables,result if tree and $use_tree rescue result #wasteful!!
     end
-    $use_tree ? parent_node : @result
+     @result
   end
 
   def current_context
@@ -221,7 +221,7 @@ class EnglishParser < Parser
 
 
   def javascript_block
-    block=maybe{read_block('script')} || maybe{read_block('js')} || read_block('javascript')
+    block=maybe { read_block('script') } || maybe { read_block('js') } || read_block('javascript')
     @javascript << block.join(";\n")
   end
 
@@ -427,8 +427,18 @@ class EnglishParser < Parser
     }
     return pointer-start if not @interpret
     @result=do_evaluate ex if ex and @interpret rescue SyntaxError
-    @result=ex if @result.blank? or @result==SyntaxError and not ex==SyntaxError # keep false
-    return @result
+    if @result.blank? or @result==SyntaxError and not ex==SyntaxError
+      # keep false
+    else
+      ex=@result
+    end
+
+    more=expression0? if @result.is_a? Quote
+    more||=quote? #  "bla " 7 " yeah"
+    # more+=expression0? if more.is_a? Quote rescue ""
+    ex+=more if more
+    subnode expression1: ex
+    return @result=ex
   end
 
   def statement
@@ -610,45 +620,35 @@ class EnglishParser < Parser
     args
   end
 
-  def x_puts x
-    if @result
-      @result+=x.to_s rescue nil
-    else
-      @result=x
-    end
-    puts x
-    x
-  end
 
-  #def print x
-  #  @result+=x.to_s
-  #  p x
-  #  x
-  #end
-
+  # todo : why special? direct eval, rest_of_line
   def ruby_method_call
     call=tokens? 'call', 'execute', 'run', 'start', 'evaluate', 'invoke'
     no_rollback! if call # remove later
     ruby_method=tokens? @ruby_methods
     raise UndefinedRubyMethod.new word if not ruby_method
-    ruby_method.gsub!('puts', 'x_puts')
-    args=substitute_variables rest_of_line
-    begin
-      the_call=ruby_method+' '+args.to_s
-      @result=eval(the_call)||''
-      verbose the_call+'  called successfully with result '+@result.to_s
-    rescue SyntaxError => e
-      puts "\n!!!!!!!!!!!!\n ERROR calling #{the_call}\n!!!!!!!!!!!! #{e}\n "
-    rescue => e
-      puts "\n!!!!!!!!!!!!\n ERROR calling #{the_call}\n!!!!!!!!!!!! #{e}\n "
-      error $!
-      puts '!!!! ERROR calling '+the_call
+    args=rest_of_line
+    # args=substitute_variables rest_of_line
+    if check_interpret
+      begin
+        the_call=ruby_method+' '+args.to_s
+        print_variables=@variables.inject("") { |s, v| "#{v[0]}=#{v[1].is_a(String) ? '"'+v[1]+'"' : v[1]};"+s }
+        @result=eval(print_variables+ the_call)||''
+        verbose the_call+'  called successfully with result '+@result.to_s
+        return result
+      rescue SyntaxError => e
+        puts "\n!!!!!!!!!!!!\n ERROR calling #{the_call}\n!!!!!!!!!!!! #{e}\n "
+      rescue => e
+        puts "\n!!!!!!!!!!!!\n ERROR calling #{the_call}\n!!!!!!!!!!!! #{e}\n "
+        error $!
+        puts '!!!! ERROR calling '+the_call
+      end
     end
     checkNewline
     #raiseEnd
-    @current_value=ruby_method
-    #return @OK # don't return nil!
     return ruby_method
+    # return Object.method ruby_method.to_sym
+    # return Method_call.new ruby_method,args,:ruby
   end
 
   def is_object_method m
@@ -897,7 +897,8 @@ class EnglishParser < Parser
     end
     @result=val
     end_expression
-    return var if @interpret
+    # return var if @interpret
+    return val if @interpret
     return parent_node if $use_tree
     return old-@string if not @interpret # for repeatable, BAD
     # ||'to'
@@ -1185,7 +1186,7 @@ class EnglishParser < Parser
       # todo "at least two","at most two","more than 3","less than 8","all but 8"
       @result=!@result if @not
       if not @result
-        debug "condition not met #{@a} #{@comp} #{@b}"
+        verbose "condition not met #{@a} #{@comp} #{@b}"
       end
       return @result
     rescue => e
@@ -1212,7 +1213,7 @@ class EnglishParser < Parser
       result=!result if @not
       result=!result if negate # XOR result=result ^ negate
       if not result
-        debug "condition not met #{cond} #{@a} #{@comp} #{@b}"
+        verbose "condition not met #{cond} #{@a} #{@comp} #{@b}"
       end
       return result
     rescue => e
@@ -1308,6 +1309,8 @@ class EnglishParser < Parser
 
   def do_evaluate x
     begin
+      return x if x.is_a? Quote #why not just String???
+      return x if x.is_a? Class
       return x if x.is_a? Numeric
       return eval(x[0]) if x.is_a? Array and x.length==1
       return x if x.is_a? Array and x.length!=1
@@ -1318,8 +1321,7 @@ class EnglishParser < Parser
       return eval(x) # rescue x # system.jpg  DANGER? OK ^^
         # ... todo METHOD / Function!
     rescue TypeError, SyntaxError => e
-      puts x
-      puts e
+      puts "ERROR #{e} in do_evaluate #{x}"
       return x
     end
   end
@@ -1468,12 +1470,14 @@ class EnglishParser < Parser
           maybe { range } || # not params!
           maybe { value } ||
           maybe { list } ||
-          maybe { token 'a' } # not article DANGER!
+          maybe { token 'a' } # variable 'a' not as article DANGER!
     }
+
     po=maybe { postjective } # inverted
     if po and @interpret
       x=@current_value=x.send(po) rescue x #DANGAR!!
     end
+
     x
   end
 
@@ -1489,7 +1493,7 @@ class EnglishParser < Parser
         raise NotMatching.new 'no endNoun'
       end
     end
-    return parent_node if $use_tree
+    return obj if $use_tree # parent_node
     #return adjs.to_s+" "+obj.to_s # hmmm  hmmm   hmmm  W.T.F.!!!!!!!!!!!!!?????
     adjs=' ' + adjs.join(' ') if adjs and adjs.is_a? Array
     return obj.to_s + adjs.to_s # hmmm hmmm   hmmm  W.T.F.!!!!!!!!!!!!!????? ( == todo )
