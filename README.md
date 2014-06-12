@@ -3,6 +3,8 @@
 This is English as a programming language.
 The main purpose of this language is to make programming accessible to many more people, more fun and to facilitate programming computers via Voice.
 
+The guiding philosophy is to have forgiving interfaces yet strict implementations.
+
 Examples
 --------
 Here are some of our favorite examples from the [tests](test/unit), **working today**:

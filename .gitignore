@@ -4,3 +4,4 @@ extra
 core/emitters/bash-commands-auto-index.rb
 core/emitters/bash-commands-auto-index.rb -f
 main.bc
+extra

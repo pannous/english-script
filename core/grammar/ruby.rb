@@ -61,13 +61,17 @@ module RubyGrammar
   end
 
   def ruby_require dependency
-    install_gem dependency
     if check_interpret
       # todo obj.include !!
       # todo mapping + reflection
-      include dependency rescue nil #ruby!
-      extends dependency rescue nil #ruby!
-      require dependency rescue nil #ruby!
+      begin
+        require dependency
+        # extends dependency
+        # include dependency
+      rescue Exception => e
+        puts "missing dependency #{dependency}: #{e}"
+        install_gem dependency rescue nil
+      end
     end
 
   end

@@ -25,7 +25,7 @@ module EnglishParserTokens #< MethodInterception
     super
     #pronouns +  TODO!!! keywords-pronouns has "I" (for I in [1..2])!?
     @NEWLINE="NEWLINE"
-    @keywords=prepositions+modifiers+be_words+true_comparitons+fillers+nill_words+done_words+auxiliary_verbs+
+    @keywords=prepositions+modifiers+be_words+comparison_words+fillers+nill_words+done_words+auxiliary_verbs+
         conjunctions+type_keywords+otherKeywords+numbers
   end
 
@@ -165,10 +165,10 @@ module EnglishParserTokens #< MethodInterception
   # nicer, sweeter, ....
   #  '=>' '<=', DANGER
   # OR class_words
-  def true_comparitons
+  def comparison_words
     ['be','is','are','were','=','>','>=','==','<=','<','=<','gt','lt','eq','bigger','greater','equals',
      'identical to','smaller','less','equal to','more','less','the same as','same as','similar','comes after',
-     'comes before']
+     'comes before','exact','exactly','~>','at least','at most']
   end
 
 
@@ -460,7 +460,7 @@ module EnglishParserTokens #< MethodInterception
 
   def wordnet_is_adjective
     the_adjective=@string.match(/^\s*(\w+)/)[1] if @string.match(/^\s*(\w+)/) rescue nil
-    raise NotMatching.new "no boolean adjectives" if boolean_words.match the_adjective
+    raise NotMatching.new "no boolean adjectives" if boolean_words.has the_adjective
         #return false if not the_adjective
     raise NotMatching.new "no adjective word" if not the_adjective
     raise NotMatching.new "no adjective" if not the_adjective.is_adjective

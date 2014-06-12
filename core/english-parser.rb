@@ -36,7 +36,7 @@ class EnglishParser < Parser
     @interpret=@did_interpret=true
     @javascript=''
     @context=''
-    @variables={nill:nil}
+    @variables={nill: nil}
     @variableTypes={}
     @svg=[]
     # @bash_methods=["say"]
@@ -109,7 +109,7 @@ class EnglishParser < Parser
   end
 
   def module
-    __ %w[module package context]
+    __ %w[module package context gem library] #source
     set_context rest_of_line
   end
 
@@ -122,21 +122,49 @@ class EnglishParser < Parser
     @javascript<<"javascript_require(#{dependency});"
   end
 
-  def includes dependency, type
+  def includes dependency, type,version
     return javascript_require dependency if dependency.match /\.js$/
     return javascript_require dependency if type and %w[javascript script js].has type
-    return ruby_require dependency
+    return ruby_require dependency if not type or %w[ruby gem].has type
+  end
+
+  # #{escape_token t}
+  def regex x
+    match=@string.match(x)
+    match||=@string.match(/^\s*#{x}/im)
+    raise NotMatching(x) if not match
+    @string=match.post_match.strip
+    @current_value=x
+  end
+
+  def package_version
+    _? 'with'
+    c=_? comparison_words
+    __ 'v', 'version'
+    c||=_? comparison_words
+    subnode bigger: c
+    # @current_value=
+    @result=regex '\d(\.\d)*'
+    _? "or later"
   end
 
   def requirements
-    require_types=%w[javascript script js gcc ruby gem header file]
+    require_types=%w[javascript script js gcc ruby gem header c cocoa native] # todo c++ c# not tokened!
     type=__? require_types
-    __ 'dependencies', 'dependency', 'depends', 'requirement', 'requirements', 'require', 'required', 'include', 'using',
-       'script src', 'script source', 'source'
+    __ 'dependencies', 'dependency', 'depends on', 'depends', 'requirement', 'requirements', 'require', 'required',
+       'include', 'using',
+       'uses', 'needs', 'requires'
+    type||=__? require_types
+    __? %w[file script header source src]
+    __? 'gem', 'package', 'library', 'module', 'context'
     type||= __? require_types
     # source? really?
-    dependency=rest_of_line
-    includes dependency, type if check_interpret
+    dependency=quote?
+    no_rollback! 5
+    dependency||= word # rest_of_line
+    version=package_version?
+    includes dependency, type, version if check_interpret
+    return {dependency: {type:type,package:dependency,version:version}}
   end
 
   def context
@@ -383,7 +411,6 @@ class EnglishParser < Parser
 
 
   def orEqual
-    must_contain '|=', '||='
     v=variable
     __ '|=', '||='
     @variables[v]=@result=do_evaluate(v) or (do_evaluate expressions) if @interpret
@@ -391,6 +418,7 @@ class EnglishParser < Parser
   end
 
   def selfModify
+    must_contain '|=', '||=','+=','-=','/=','*='#,'++','--'
     maybe { plusEqual } ||
         maybe { plusPlus } ||
         orEqual
@@ -650,8 +678,8 @@ class EnglishParser < Parser
     end
     checkNewline
     #raiseEnd
-    subnode method:ruby_method #why not auto??
-    subnode args:args
+    subnode method: ruby_method #why not auto??
+    subnode args: args
     return @current_value=ruby_method
     # return Object.method ruby_method.to_sym
     # return Method_call.new ruby_method,args,:ruby
@@ -730,8 +758,8 @@ class EnglishParser < Parser
       args=star { arg }
     end
     _ ')' if brace
-    subnode object:obj
-    subnode arguments:args
+    subnode object: obj
+    subnode arguments: args
     return method if not check_interpret #parent node!!!
     #end_expression
 
@@ -895,13 +923,13 @@ class EnglishParser < Parser
   end
 
   def boolean
-    tokens 'true','false'
+    tokens 'true', 'false'
   end
 
 #  CAREFUL WITH WATCHES!!! THEY manipulate the current system, especially variable
 #/*	 let nod be nods */
   def setter
-    must_contain be_words+['set']
+    must_contain_before ['>','<','+','-','|','/','*'], be_words+['set']
     _let=no_rollback! if let?
     a=the?
     mod=modifier?
@@ -1055,7 +1083,7 @@ class EnglishParser < Parser
 
   # more easisly
   def more_comparative
-    __ 'more', 'less', 'equally'
+    __ 'more', 'less', 'equally' # comparison_words
     adverb
   end
 
@@ -1168,14 +1196,14 @@ class EnglishParser < Parser
     @not=tokens? 'not'
     maybe { adverb } #'quite','nearly','almost','definitely','by any means','without a doubt'
     if (eq) # is (equal) optional
-      comp=tokens? true_comparitons
+      comp=tokens? comparison_words
     else
-      comp=tokens true_comparitons
+      comp=tokens comparison_words
       no_rollback!
     end
     _? 'to' if eq
     tokens? 'and', 'or', 'xor', 'nor'
-    tokens? true_comparitons # bigger or equal  != SEE condition_tree
+    tokens? comparison_words # bigger or equal  != SEE condition_tree
     _? 'than', 'then' #_?'then' ;}
     @comp=comp||eq
   end
@@ -1191,7 +1219,7 @@ class EnglishParser < Parser
   end
 
   def is_comparator c
-    true_comparitons.contains(c) || class_words.contains(c)
+    comparison_words.contains(c) || class_words.contains(c)
   end
 
 
