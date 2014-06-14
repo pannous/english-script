@@ -8,31 +8,81 @@ require 'llvm/core'
 require 'llvm/execution_engine'
 require 'llvm/transforms/scalar'
 
+
+# VIA MicroVR: Rubinius / Parrot /
+# VIA MRUBY libmruby.a YAY VM / bytecode
+
+# You can also compile Ruby programs into compiled byte code using the mruby compiler "mrbc". !!!
+#  USE EXISTING 'VM': YARV / mruby 'ritevm'/Rubinius/ ... or?
+# mrb_define_method(mrb, h, "values_at", hash_values_at, MRB_ARGS_ANY());
+# RubyVM::InstructionSequence.compile "puts 1+4"  YARV became the official Ruby interpreter !!
+#  3699712byte= 3.6MB! libruby.2.0.0.dylib
+# http://www.reddit.com/r/ruby/comments/k9jce/ruby_ritevm_faq_and_timeline_updates/
+# threads ok ++
+# http://patshaughnessy.net/2012/6/29/how-ruby-executes-your-code
+# Why I deverop ytljit instead of using llvm? Because according to
+# my yarv2llvm's experience I think llvm don't have enough power
+# for  Ruby compiler.
+
+# VIA CYTHON??
+
+# VIA C++ ? similar to j-rubyflux
+
+# via AST? clang -Xclang -ast-dump -fsyntax-only test.cc
+# http://clang.llvm.org/docs/IntroductionToTheClangAST.html
+# probably not https://github.com/ioquatix/ffi-clang
+
 class NativeEmitter
   include LLVM
+
+  #  HORRIBLE just to set a variable: http://llvm.org/docs/tutorial/LangImpl7.html !!!!!!!!!!!! :(
+  #  OMG in LLVM IR, fields of structs do not have names.
+
+  # F  = LLVM::Function([LLVM::Int], LLVM::Int)
+  # FP = LLVM::Pointer(F) # FunctionPointers !!
+  # LLVM::GenericValue.from_d(2.2).to_f(LLVM::Double)
+  # ref = builder.gep(global, [LLVM::Int(0), LLVM::Int(0)])
 
   def args_match meth, args
     [@chars]
   end
 
-  def norm args,types,block
+  def norm args, types, block
     # args=args.to_s if args.is_a? TreeNode #TODO
     a=block.global_string_pointer(args);
     a
   end
 
+  def setter context, node, modul, block
+    var=node[:word]
+    val=node[:expressions]
+    # context.variables[var]
+    modul.globals.add(var.to_s,nil) do |v|
+    # Aliases http://llvm.org/docs/LangRef.html#id564
+
+
+    end
+  end
+
   def method_call context, node, modul, block
-    args=node["arguments"]||node["object"]
+    # puts("#{meth}(#{args.join(',')})") lol
+    args=node["arguments"]||node["object"]||node["arg"]
     meth=node["true_method"]||node["c_method"]
-    arg_types=args_match(meth,args)
+    arg_types=args_match(meth, args)
     return_type=LLVM.Void # 'EGAL!'
-    func=@included[meth]|| modul.functions.add(meth, arg_types,return_type)
+    func=@included[meth]|| modul.functions.add(meth, arg_types, return_type)
     @included[meth]=func
     # func.basic_blocks.append.build do |block|
-    params=norm(args,arg_types,block)
-    result=block.call(func,params)
+    params=norm(args, arg_types, block)
+    result=block.call(func, params)
     puts result
     # end
+  end
+
+  def algebra
+    # n_1       = b.sub(n, LLVM::Int(1), "n-1")
+    # fac_n_1   = b.call(fac, n_1, "fac(n-1)")
+    # n_fac_n_1 = b.mul(n, fac_n_1, "n*fac(n-1)")
   end
 
   def descend context, node, modul, func
@@ -40,7 +90,12 @@ class NativeEmitter
     put "{"
     # method_call context, node, modul, func if node.name==:method_call
     case node.name
-      when :method_call then method_call context, node, modul, func
+      when :method_call then
+        method_call context, node, modul, func
+      when :setter then
+        setter context, node, modul, func
+      when :algebra then
+        algebra
     end
 
     for n in node.nodes
@@ -94,7 +149,7 @@ class NativeEmitter
 
     puts "EXECUTING FILE!!!"
     system("./target/main")
-    # system("./target/main&")
+# system("./target/main&")
 
     puts "\nEXECUTING JIT!!!"
     engine = LLVM::JITCompiler.new(modul) #LIVE TEST!

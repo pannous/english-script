@@ -115,6 +115,14 @@ end
 class Hash
   # filter ==  x.select{|z|z>1}
 
+  # CAREFUL! MESSES with rails etc!!
+  alias_method :orig_index,:[]
+  def [] x
+    return if not x
+    return orig_index(x) if not x.is_a? Symbol or x.is_a? String or x.is_a? Numeric
+    orig_index(x) || orig_index(x.to_s) || orig_index(x.to_sym)
+  end
+
   def contains key
     keys.contains key
   end
@@ -324,7 +332,7 @@ class String
     self[0..self.index(x)-1]+self[self.index(x)+x.length..-1]
   end
 
-  def is_noun
+  def is_noun # expensive!!!
     not synsets(:noun).empty? or
         not self.gsub(/s$/, "").synsets(:noun).empty?
   end

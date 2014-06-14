@@ -116,3 +116,20 @@ Shed Skin can compile Python to C++, but only a restricted subset of it. Some as
 compare natlash with treetop https://github.com/nathansobo/treetop
 
 I used Treetop to create the parser. Writing the Treetop grammar was the most time consuming task. Also, because Treetop can’t produce context sensitive grammar, you’re limited in the kind of syntax you provide!!!!!!!!!!!!!!!!!!!!!!!!!
+
+<< Clojure  LLVM >>
+Clojure depends on aggressive dynamic optimization for performance.
+It's a very different set of techniques than what is used in the
+ahead-of-time static compilation world from which LLVM hails. The
+Google guys working on Unladen Swallow seem to have had enough
+problems getting it to work well even as a basic JIT code generator;
+the layers of abstraction make it very slow. There's a good reason V8
+is using unlayered, direct code generation.
+In my judgement it would be a multi-year project for an experienced
+specialist in the field. Mike Pall took several years to do just the
+x86 version of LuaJIT 2.0, but he had already done LuaJIT 1.0, and he
+is arguably one of the world's top experts in this area.
+Besides, one of the Clojure's main raisons d'etre is the vast pool of
+existing libraries in the JVM (and now CLR) world to draw from.
+
+LLVM provides a lot, but it's still only a small part of the runtime a functional language needs. And C FFI calls are uncomplicated because LLVM leaves memory management to be handled by someone else. Interacting the Garbage Collector is what makes FFI calls difficult in languages such as Scheme.

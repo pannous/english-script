@@ -18,17 +18,22 @@ module TreeBuilder
   end
 
   def ignore_parent
-    ["number","rest_of_line"]
+    ["rest_of_line"]
+    # "number",
     # ["integer","real"]#,"expression0"]
     # [    "endNode","integer","real","expression0","value","word"]
   end
 
   # what exactly machen die??
   def keepers #== ignore_parent , ,"rest_of_line"
-    ["token", "tokens", "word","number","setter","variable","value","method_call","object","subnode"]
-  #
+    ["token","number", "tokens", "word","setter","variable","value","method_call","object","subnode","integer","number_word"]
+  #             "number_word","integer",
   #   ,"ruby_method_call"
   #   ,"quote"
+  end
+
+  def dont_add_node
+    ["integer"]
   end
 
   def delete
@@ -36,6 +41,7 @@ module TreeBuilder
     # "subnode",
   end
 
+  # includes rather than ignore???? or EXPLICIT node construction!!!
   def ignore
     #"newline","newlines","newline?",
     #test_setter Should never be set ("")!?
@@ -43,9 +49,10 @@ module TreeBuilder
     # "setter",  "endNode",
     # "rest_of_line",
     ignore_parent+delete+
-    [ "_", "_?","interpretation","should_not_match","do_send","pronouns","end_expression","do_evaluate",
-"numbers", "tokens",
-"ignore", "initialize", "endNode",
+    [ "_", "_?","interpretation","should_not_match","do_send","pronouns","end_expression",
+"do_evaluate",
+"numbers", "tokens","current_context","type_names","possessive_pronouns",
+"ignore", "initialize", "endNode", "start_block","OK",
       "bad",  "wordnet_is_noun", "true_comparitons", "special_verbs", "wordnet_is_verb",
       "checkNewline", "newline", "wordnet_is_adjective",
       "newline?", "ruby_block_test","subnode_token","get_adjective","get_noun","get_verb",
@@ -56,7 +63,7 @@ module TreeBuilder
       "string_pointer", "verbose", "try", "checkEnd", "to_source", "rest", "keywords",
       "starts_with?", "be_words", "no_keyword", "no_keyword_except", "prepositions", "variables_list", "the?",
       "app_path","escape_token","operators","newline_tokens",
-      "constants", "comment", "any_ruby_line" ] #"call_is_verb",
+      "constants", "comment", "any_ruby_line","quantifiers","article" ] #"call_is_verb",
   end
 
 
@@ -158,9 +165,6 @@ module TreeBuilder
   end
 
   def before_each_method name
-    if name=="quote"
-      puts "YY"
-    end
     if not bad name
       @current_value=nil # if not keepers.index name.to_s
                          #parent=@current_node
@@ -182,11 +186,13 @@ module TreeBuilder
       @current_node.valid=true if @current_value #and not @current_node.nodes.blank?
       @current_node.value=@current_value if @current_node.is_leaf
       @current_node.endPointer=pointer
-      @nodes.pop
+      @nodes.pop # keep through parent
       @current_node=@nodes[-1]
-      @new_nodes<<@current_node  #if name=="boolean" || @current_value
+      @new_nodes<<@current_node  #if name=="boolean" || @current_value  # WHAT's THAT?
     end
-    @current_value=nil if not keepers.index name.to_s
+    if not keepers.index name.to_s
+      @current_value=nil
+    end
   end
 
   def self.included(base)
@@ -208,9 +214,6 @@ module TreeBuilder
     end
 
     def method_added name
-      if name=="quote"
-        puts "YY"
-      end
       return true if name.to_s=="initialize"
       return if not $use_tree
       return if @@__last_methods_added && @@__last_methods_added.include?(name)

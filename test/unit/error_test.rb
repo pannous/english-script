@@ -20,11 +20,24 @@ class ErrorTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_has_error("square 1,2 andy 3")   # at:andy in:list
   end
 
+
+  def test_endNode_as
+    init "as"
+    @parser.arg
+    assert_has_error "as"
+  end
+
+  def test_endNode
+    # init "of"
+    # @parser.word
+    assert_has_error "of"
+  end
+
   def test_list_concatenation_unknownVariable
     variables['x']='hi'
     variables['y']='world'
     assert_has_error "z=x ' ' w"
-    assert_has_error "z=x ' ' y"
+    assert_has_error "z=x ' ' y" #tdod NOO
     assert_has_no_error "z=x ' ' y" #setter OK!?!
   end
 

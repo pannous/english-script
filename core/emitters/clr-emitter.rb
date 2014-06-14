@@ -1,5 +1,6 @@
 # http://ironruby.net/ # 1.1.3 released on 2011-3-13 DON't USE!!
 # VIA JAVA! OK with java 8 http://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html
+# VIA CLOSURE(+JAVA) !!!! https://github.com/richhickey/clojure-clr
 
 # OR vi LLVM: llc -march=msil  DEPRECATED!!!!!!
 # Going from C# or MSIL (CIL) to LLVM IR hasnt been done yet (or at least finished). You'd need a C# Front-End.

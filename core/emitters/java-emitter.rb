@@ -1,7 +1,11 @@
-# CLR VIA JAVA! OK with java 8 http://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html
+# >>> via lightweight clojure approach SEE THERE FOR EMITTER
 
-# VIA JRUBY + extensions OR
-# via lightweight clojure approach
+# VIA JAVA FILES: https://github.com/headius/rubyflux
+
+# VIA JRUBY + extensions SLOOOOOW!!!
+# http://jruby.org/apidocs/org/jruby/ast/class-use/Node.html#org.jruby.compiler
+
+
 
 # Arrays.sort(rosterAsArray, (a, b) -> Person.compareByAge(a, b));
 # Arrays.sort(rosterAsArray, Person::compareByAge); !!!

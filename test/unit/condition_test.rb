@@ -24,6 +24,17 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
 
+  def test_else_
+    assert_result_is "if(1<2) then 3 else 4",3
+    assert_result_is "if 1<2 then 5 else 4",5
+    assert_result_is "if(3<2) then 3 else 4",4
+    assert_result_is "if 3<2 then 5 else 4",4
+    assert_result_is "if 1<2 then false else 4","false"
+    # assert_result_is "if 1<2 then false else 4",:false
+    # assert_result_is "if 1<2 then false else 4",false
+  end
+
+
   def dont_test_everything_is_fine
     #everything as quantifier!!!
     # TODO: NOTHING! would be dangerous!

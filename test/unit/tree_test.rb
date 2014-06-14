@@ -9,6 +9,11 @@ class TreeTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   include ParserTestHelper
 
 
+  def test_algebra1
+    assert_result_is "3 minus one",2
+  end
+
+
   def test_method4
     init "how to integrate a bug
       test

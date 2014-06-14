@@ -14,6 +14,11 @@ class VariableTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
 
+  def test_variableTypes
+    init "an integer i"
+    @parser.variable
+  end
+
 
   def test_property_setter
     parse "circle.color=green"

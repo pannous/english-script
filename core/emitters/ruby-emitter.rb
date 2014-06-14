@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # ruby2ruby
-# + llvm / rubymotion for native !!
+# + llvm / rubymotion / j-rubyflux for native !!
 
 require 'rubygems'
 require 'ruby2ruby'

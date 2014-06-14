@@ -10,6 +10,46 @@ class Quote < String
   end
 end
 
+class Function
+  attr_accessor :name, :arguments, :return_type, :scope, :module, :class, :object
+
+  def initialize args
+    self.name=args[:name]
+    self.scope=args[:scope]
+    self.class=args[:class]
+    self.module=args[:module]
+    self.object=args[:object]
+    self.arguments=args[:arguments]
+    # scope.variables[name]=self
+  end
+end
+
+class Argument
+  attr_accessor :name, :type, :position, :default, :preposition, :value
+
+  def initialize args
+    self.name=args[:name]
+    self.preposition=args[:preposition]
+    self.type=args[:type]
+    self.position=args[:position]
+    self.default=args[:default]
+    self.value=args[:value]
+    # scope.variables[name]=self
+  end
+end
+
+class Variable
+  attr_accessor :name, :type, :scope, :module, :value
+
+  def initialize args
+    self.name=args[:name]
+    self.type=args[:type]
+    self.scope=args[:scope]
+    self.module=args[:module]
+    # scope.variables[name]=self
+  end
+end
+
 class Parser #<MethodInterception
   include Exceptions
   attr_accessor :lines
@@ -27,6 +67,7 @@ class Parser #<MethodInterception
     @line_number=0
     @lines=[]
     @interpret_border=-1
+    @no_rollback_depth=-1
     @max_depth=100
   end
 
@@ -188,15 +229,9 @@ class Parser #<MethodInterception
 
 
   def no_rollback! n=0
-    depth=caller.count
-    for i in 0..(depth+n)
-      @rollback[i] ="NO"
-    end
+    depth=caller_depth-1
     @no_rollback_depth=depth
-    # for i in (depth+n+i)...@rollback.length
-    #   @rollback[i] ="YES"
-    # end
-    @method=caller #_name
+    # @no_rollback_method=caller #_name
   end
 
   def do_interpret!
@@ -229,8 +264,7 @@ class Parser #<MethodInterception
   end
 
   def check_rollback_allowed
-    #puts caller.count
-    @rollback[caller.count]!="NO" # -1?
+    return caller_depth<@no_rollback_depth
   end
 
   # same as try but throws if no result
@@ -292,6 +326,11 @@ class Parser #<MethodInterception
     res
   end
 
+  def caller_depth
+    caller.count
+    # filter_stack(caller).count #-1
+  end
+
   # todo ? trial and error -> evidence based 'parsing' ?
   def maybe(&block)
     #return if checkEnd
@@ -306,7 +345,9 @@ class Parser #<MethodInterception
       old_nodes=@nodes.clone
       result = yield
       if result
-        @rollback[caller.count..-1]="YES" #Succeeded
+        if caller_depth+5<@no_rollback_depth
+          @no_rollback_depth=-1
+        end
       else
         #DANGER RETURNING false as VALUE!! use RAISE ONLY todo
         (@nodes-old_nodes).each { |n| n.valid=false }
@@ -328,12 +369,19 @@ class Parser #<MethodInterception
       #puts @rollback[caller.count]
       #puts caller.count
       #puts rollback
-      if not check_rollback_allowed
+      cc=caller_depth
+      rb= @no_rollback_depth
+      if cc<rb and not check_rollback_allowed
         error "NO ROLLBACK, GIVING UP!!!"
         string_pointer # ALWAYS! if @verbose
         show_tree #Not reached
-        ex=GivingUp.new(e)
-        ex.set_backtrace(e.backtrace[e.backtrace.count-@no_rollback_depth..-23])
+        attempt=e.to_s.gsub("[", "").gsub("]", "")
+        bt=e.backtrace[e.backtrace.count-@no_rollback_depth-1..-1]
+        bt=filter_stack bt
+        m0=bt[0].match(/`.*'/)
+        m1=bt[1].match(/`.*'/)
+        ex=GivingUp.new("Expecting #{m0} in #{m1} ... maybe try: #{attempt}")
+        ex.set_backtrace(bt)
         raise ex
         # error e #exit
         # raise SyntaxError.new(e)
@@ -347,6 +395,11 @@ class Parser #<MethodInterception
       #raise e
       return false
         #return true
+    rescue GivingUp => e
+      # @string=old #to mark??
+      # maybe => OK !?
+      error e #if not check_rollback_allowed
+        #     if @rollback[caller.count-1]!="NO" #
     rescue => e # NoMethodError etc
       @string=old
       error e
@@ -466,6 +519,7 @@ class Parser #<MethodInterception
         throw " too many occurrences of "+ to_source(block) if current>max and @throwing
       end
     rescue NotMatching => e
+      @string=oldString # partially reconstruct
       if @very_verbose and not good
         verbose "NotMatching star "+ e.to_s
         #verbose "expected any of "+tokens.to_s if tokens and tokens.count>0
@@ -628,6 +682,7 @@ class Parser #<MethodInterception
       init string
       root
     rescue => e
+      filter_backtrace e
       error e
     end
     verbose "PARSED SUCCESSFULLY!!"
@@ -636,30 +691,5 @@ class Parser #<MethodInterception
     return interpretation # self# @result
   end
 
-
-  def quote
-    raiseEnd
-    #return if checkEnd
-    # todo :match ".*?"
-    if @string.strip[0]=="'"
-      @string.strip!
-      to=@string[1..-1].index("'")
-      @result=@current_value=@string[1..to];
-      @string= @string[to+2..-1].strip
-      return Quote.new @current_value
-      #return "'"+@current_value+"'"
-    end
-    if @string.strip[0]=='"'
-      @string.strip!
-      to=@string[1..-1].index('"')
-      @result=@current_value=@string[1..to];
-      @string= @string[to+2..-1].strip
-      return Quote.new @current_value
-      #return '"'+@current_value+'"'
-    end
-    raise NotMatching.new("quote")
-    #throw "no quote" if @throwing
-    return false
-  end
 
 end

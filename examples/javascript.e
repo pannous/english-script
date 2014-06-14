@@ -1,5 +1,5 @@
 #!/usr/bin/natlash
-//
+
 <script type="javascript">
  var context = new(window.audioContext || window.webkitAudioContext);
  var oscillator = context.createOscillator();

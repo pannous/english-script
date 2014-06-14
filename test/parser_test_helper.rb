@@ -28,11 +28,17 @@ module ParserTestHelper
     end
   end
 
+  def assert_result_is x,r
+    assert_equals parse(x),r
+  end
+
   def assert_equals a, b
     if a==b
       puts "TEST PASSED! #{a} == #{b}"
     else
-      raise NotPassing.new "#{a} should equal #{b}"
+      e= NotPassing.new "#{a} should equal #{b}"
+      e.set_backtrace filter_stack(caller)
+      raise e
     end
   end
 
@@ -93,6 +99,11 @@ module ParserTestHelper
 
   def result
     @parser.result
+  end
+
+  def parse_file file
+    parse IO.read(file)
+    # lines(file).join("\n")
   end
 
   def parse x
