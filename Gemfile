@@ -10,4 +10,5 @@ gem 'ruby-stemmer'#,'~> 0.9.3'
 gem 'wordnet-defaultdb'
 # gem 'whenever', :require => false
 gem 'rufus-scheduler'
-gem 'ruby-llvm' #, :git => "git@github.com:jvoorhis/ruby-llvm"
+# gem 'ffi'
+# gem 'ruby-llvm' #, :git => "git@github.com:jvoorhis/ruby-llvm"

@@ -119,6 +119,7 @@ class NativeEmitter
     ftype=LLVM::Type.function([@chars], LLVM::Int32Ty)
 # printf = host_module.functions.add("printf", [chars], LLVM::Int32Ty)
     printf = host_module.functions.add("printf", ftype)
+    show_version = host_module.functions.add("_mrb_show_version",nil,nil);
     getenv = host_module.functions.add("getenv", [LLVM::Pointer(LLVM::Int8)], LLVM::Pointer(LLVM::Int8))
     @included["printf"]=printf
     init = modul.functions.add("init", [], LLVM.Void) do |fn|
@@ -131,6 +132,7 @@ class NativeEmitter
     main = modul.functions.add("main", [], LLVM.Void) do |fn|
       fn.basic_blocks.append.build do |block|
         block.call(init); #, LLVM::Pointer(ARGV))
+        block.call(show_version); #, LLVM::Pointer(ARGV))
         block.ret_void
         # builder.return(0.llvm)
         # builder.return(0.llvm(LLVM::Int32Ty))
