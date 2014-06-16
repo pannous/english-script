@@ -50,7 +50,7 @@ Language Specification
 Read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md) for a more complete **language specification**, vision and some background. The grammar is not meant to be linguistically complete, but [functionality complete](https://en.wikipedia.org/wiki/Functional_completeness) and easily extendable. It is currently running in the [ruby](https://www.ruby-lang.org/en/) environment, but will soon compile to the [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine),  [CLR](https://en.wikipedia.org/wiki/Common_Language_Runtime) and as a final aim run natively through [LLVM](https://en.wikipedia.org/wiki/LLVM).
 "Premature optimization is the root of all evil." Many programming languages 'optimize' on the syntax level in order to optimize the resulting applications. Maybe this is a mistake.
 
-To check out the current capabilities of English Script have a look at the [tests](https://github.com/pannous/natural-english/tree/master/test/unit), 
+To check out the current capabilities of English Script have a look at the [tests](https://github.com/pannous/natural-english/tree/master/test/unit),
 [keywords](https://github.com/pannous/natural-english/blob/master/lib/english-script/english-tokens.rb) and
 [grammar](https://github.com/pannous/natural-english/blob/master/lib/english-script/english-parser.rb)
 
@@ -65,14 +65,16 @@ Run it and see yourself!
 **experiment** by typing
 
 `./english-script.sh 6 plus six`
+
 `./english-script.sh "xs be 2,3,7,9; xs that are smaller than 7"`
+
 `./english-script.sh examples/test.e`
+
 `./english-script.sh` (no args for shell)
+
 `english> 6 plus six`
-`6`
-`english>
+
 `english> x is 2; if all 0,2,4 are smaller 5 then increase x`
-`3`
 
 Todos
 -----
