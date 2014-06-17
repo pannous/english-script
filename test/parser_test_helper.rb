@@ -29,7 +29,7 @@ module ParserTestHelper
   end
 
   def assert_result_is x,r
-    assert_equals parse(x),r
+    assert_equals parse(x),parse(r)
   end
 
   def assert_equals a, b
@@ -107,6 +107,7 @@ module ParserTestHelper
   end
 
   def parse x
+    return x if not x.is_a?String
     @parser.parse x
     # @variables=@parser.variables
     # @result=@parser.result
@@ -125,10 +126,6 @@ module ParserTestHelper
     @parser.variableTypes v
   end
 
-  def emit x
-    interpretation= parse x
-    interpretation.evaluate
-  end
 
   # def _test_all
   #   @parser.methods.each { |m|

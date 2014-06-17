@@ -1,13 +1,17 @@
+begin
 require "observer"
 require 'rufus-scheduler' # When the process is gone the schedules are gone!!
 # require "whenever" #cron ?? seriously?? yes: for days etc
 # require 'clockwork' #same
+rescue Exception => e
+  puts "WARN scheduler NOT available"
+end
 
 class Event
-  include Observable
-  @@id=0
+  include Observable rescue nil
+      @@id=0
   @@events=[]
-  @@scheduler = Rufus::Scheduler.new
+  @@scheduler = Rufus::Scheduler.new rescue nil
 
 
   def initialize time, action

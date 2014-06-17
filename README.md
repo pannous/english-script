@@ -47,7 +47,7 @@ Todo (soon):
 
 Language Specification
 ----------------------
-Read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md) for a more complete **language specification**, vision and some background. The grammar is not meant to be linguistically complete, but [functionality complete](https://en.wikipedia.org/wiki/Functional_completeness) and easily extendable. It is currently running in the [ruby](https://www.ruby-lang.org/en/) environment, but will soon compile to the [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine),  [CLR](https://en.wikipedia.org/wiki/Common_Language_Runtime) and as a final aim run natively through [LLVM](https://en.wikipedia.org/wiki/LLVM).
+Read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md) for a more complete **language specification**, vision and some background. The grammar is not meant to be linguistically complete, but [functionality complete](https://en.wikipedia.org/wiki/Functional_completeness) and easily extendable. It is currently running in the [ruby](https://www.ruby-lang.org/en/) environment, but will soon compile to the [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine), JavaScript, [CLR](https://en.wikipedia.org/wiki/Common_Language_Runtime) and as a final aim run natively through [LLVM](https://en.wikipedia.org/wiki/LLVM).
 "Premature optimization is the root of all evil." Many programming languages 'optimize' on the syntax level in order to optimize the resulting applications. Maybe [this](http://www.cs.utexas.edu/~EWD/transcriptions/EWD06xx/EWD667.html) is a mistake.
 
 To check out the current capabilities of English Script have a look at the [tests](https://github.com/pannous/natural-english/tree/master/test/unit),

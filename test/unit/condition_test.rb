@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
-require 'test_helper'
+# require 'test_helper'
 
-$use_tree=false
-#$use_tree=true
+$use_tree=$emit
+$use_tree=true
 
 require_relative '../parser_test_helper'
 
@@ -165,3 +165,12 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
 end
 
+module EmitterTestHelper
+  $emit=true
+end
+
+class EmittedConditionTest < ConditionTest
+
+  include EmitterTestHelper
+
+end

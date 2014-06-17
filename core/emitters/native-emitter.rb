@@ -4,10 +4,15 @@
 
 # require 'llvm' # ACTIVE project ++
 # require 'ruby-llvm'
+begin
 require 'llvm/core'
 require 'llvm/execution_engine'
 require 'llvm/transforms/scalar'
+rescue Exception => e
+  puts "WARN llvm NOT available"
+end
 
+# todo : google llvm AST emitter
 
 # VIA MicroVR: Rubinius / Parrot /
 # VIA MRUBY libmruby.a YAY VM / bytecode
@@ -33,7 +38,7 @@ require 'llvm/transforms/scalar'
 # probably not https://github.com/ioquatix/ffi-clang
 
 class NativeEmitter
-  include LLVM
+  include LLVM rescue nil
 
   #  HORRIBLE just to set a variable: http://llvm.org/docs/tutorial/LangImpl7.html !!!!!!!!!!!! :(
   #  OMG in LLVM IR, fields of structs do not have names.

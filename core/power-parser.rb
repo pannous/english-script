@@ -36,6 +36,12 @@ class Argument
     self.value=args[:value]
     # scope.variables[name]=self
   end
+  def name_or_value
+    self.value||self.name
+  end
+  def to_sym
+    self.name.to_sym
+  end
 end
 
 class Variable
@@ -46,6 +52,7 @@ class Variable
     self.type=args[:type]
     self.scope=args[:scope]
     self.module=args[:module]
+    self.value =args[:value]
     # scope.variables[name]=self
   end
 end
@@ -169,7 +176,7 @@ class Parser #<MethodInterception
 
 
   def must_contain *args #,before:nil
-    must_contain_before nil, args
+    must_contain_before [], args
   end
 
   def must_contain_before before, *args #,before:nil
@@ -257,10 +264,7 @@ class Parser #<MethodInterception
   end
 
   def allow_rollback n=0
-    return @rollback=[] if n==0
-    for i in 0..(caller.count+n-2)
-      @rollback[i] ="YES"
-    end
+    @no_rollback_depth=-1
   end
 
   def check_rollback_allowed
@@ -378,7 +382,7 @@ class Parser #<MethodInterception
         attempt=e.to_s.gsub("[", "").gsub("]", "")
         bt=e.backtrace[e.backtrace.count-@no_rollback_depth-1..-1]
         bt=filter_stack bt
-        m0=bt[0].match(/`.*'/)
+        m0=bt[0].match(/`.*/)
         m1=bt[1].match(/`.*'/)
         ex=GivingUp.new("Expecting #{m0} in #{m1} ... maybe try: #{attempt}")
         ex.set_backtrace(bt)

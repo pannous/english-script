@@ -116,7 +116,8 @@ class Hash
   # filter ==  x.select{|z|z>1}
 
   # CAREFUL! MESSES with rails etc!!
-  alias_method :orig_index,:[]
+  alias_method :orig_index, :[]
+
   def [] x
     return if not x
     return orig_index(x) if not x.is_a? Symbol or x.is_a? String or x.is_a? Numeric
@@ -129,12 +130,14 @@ class Hash
 end
 
 class Array
-
+  def to_str
+    self.join(", ")
+  end
 
   # ifdef $auto_map
   def method_missing method, *args, &block
-    return self.map{|x| x.send method} if args.count==0
-    return self.map{|x| x.send(method,args)} if args.count>0
+    return self.map { |x| x.send method } if args.count==0
+    return self.map { |x| x.send(method, args) } if args.count>0
     super method, *args, &block
   end
 
@@ -154,12 +157,12 @@ class Array
   end
 
   def and x
-    self+[x] if not x.is_a?Array
+    self+[x] if not x.is_a? Array
     self+x
   end
 
   def plus x
-    self+[x] if not x.is_a?Array
+    self+[x] if not x.is_a? Array
     self+x
   end
 
@@ -167,6 +170,7 @@ class Array
   def blank?
     nil? or empty?
   end
+
   #def = x  unexpected '='
   #  is x
   #end
@@ -242,12 +246,13 @@ class String
   end
 
   def stripNewline
-    strip.sub(/;$/,'')
+    strip.sub(/;$/, '')
   end
 
   def join x
     self
   end
+
   # def < x
   #   i=x.is_a?Numeric
   #   if i
@@ -374,7 +379,7 @@ class String
 
   def replace_numerals!
 
-    gsub!(/([a-z])-([a-z])/, "\\1+\\2")# WHOOOT???
+    gsub!(/([a-z])-([a-z])/, "\\1+\\2") # WHOOOT???
     gsub!("last", "0") # index trick
 
     gsub!("tenth", "10")
@@ -462,18 +467,21 @@ class Numeric
   def and x
     self+x
   end
+
   def plus x
     self+x
   end
+
   def minus x
     self-x
   end
+
   def times x
     self*x
   end
 
   def < x
-    return self<x.to_i if x.is_a?String
+    return self<x.to_i if x.is_a? String
     super.< x
   end
 
@@ -499,6 +507,10 @@ class Numeric
 
   def increase by=1
     self+by # Can't change the value of numeric self!!
+  end
+
+  def decrease by=1
+    self-by # Can't change the value of numeric self!!
   end
 
   def bigger? x
