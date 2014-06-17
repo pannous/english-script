@@ -119,7 +119,7 @@ class NativeEmitter
     ftype=LLVM::Type.function([@chars], LLVM::Int32Ty)
 # printf = host_module.functions.add("printf", [chars], LLVM::Int32Ty)
     printf = host_module.functions.add("printf", ftype)
-    show_version = host_module.functions.add("_mrb_show_version",nil,nil);
+    show_version = host_module.functions.add("mrb_show_version",[],LLVM::Int32Ty);
     getenv = host_module.functions.add("getenv", [LLVM::Pointer(LLVM::Int8)], LLVM::Pointer(LLVM::Int8))
     @included["printf"]=printf
     init = modul.functions.add("init", [], LLVM.Void) do |fn|
@@ -143,12 +143,13 @@ class NativeEmitter
 #, arg = (ARGV[0] || 6).to_i)
 
 # OR via ruby emitter: use FFI to call that DLL from Ruby https://github.com/ffi/ffi
-    puts "COMPILING!!!"
+    puts "\nCOMPILING!!!"
     modul.write_bitcode("./build/main.bc")
+    puts "BUILDING!!!"
     `llc -filetype=obj ./build/main.bc -o ./build/main.o` # to compile!!
 # `COMPILER_ARGS=llvm-config --libs core jit native --cxxflags --ldflags`
-    `clang++ $COMPILER_ARGS ./build/main.o -o ./target/main` # or any other gcc!!
-
+    puts "LINKING!!!"
+    `clang++ $COMPILER_ARGS ./build/libmruby.a  ./build/main.o -o ./target/main` # or any other gcc!!
     puts "EXECUTING FILE!!!"
     system("./target/main")
 # system("./target/main&")

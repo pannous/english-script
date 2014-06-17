@@ -5,6 +5,7 @@
 # VIA JRUBY + extensions SLOOOOOW!!!
 # http://jruby.org/apidocs/org/jruby/ast/class-use/Node.html#org.jruby.compiler
 
+# you can instruct the JVM to inline specific methods. -XX:CompileCommand=inline,java.lan.String::indexOf
 
 
 # Arrays.sort(rosterAsArray, (a, b) -> Person.compareByAge(a, b));
