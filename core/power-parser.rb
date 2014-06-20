@@ -580,7 +580,7 @@ class Parser #<MethodInterception
   end
 
   def clean_backtrace x
-    x=x.select { |x| not x.match(/ruby/) }
+    x=x.select { |x| not x.match(/ruby/) }.join("\n")
     x
   end
 

@@ -1,5 +1,6 @@
 ENV["RAILS_ENV"] = "test"
 $testing=true
+$emit=true # RUN ALL TEST THROUGH EMITTER PIPELINE!!
 
 require "test/unit"
 require_relative "../core/english-parser"
@@ -53,7 +54,9 @@ module ParserTestHelper
         puts "Testing #{x}"
         #root if @string
         init x
+        @parser.dont_interpret! if $emit
         ok=@parser.condition
+        ok=emit nil,ok if $emit #@parser.interpretation
       rescue SyntaxError => e
         raise e # ScriptError.new "NOT PASSING: SyntaxError : "+x+" \t("+e.class.to_s+") "+e.to_s
       rescue => e
@@ -106,7 +109,22 @@ module ParserTestHelper
     # lines(file).join("\n")
   end
 
+  def parse_tree x
+    return x if not x.is_a? String
+    @parser.dont_interpret!
+    interpretation= @parser.parse x
+    @parser.full_tree
+    # @parser.show_tree
+    emit interpretation,interpretation.root
+  end
+
+  def emit interpretation,root
+    require_relative '../../core/emitters/js-emitter'
+    JavascriptEmitter.new.emit interpretation,root,run:true
+  end
+
   def parse x
+    return parse_tree x if $emit
     return x if not x.is_a?String
     @parser.parse x
     # @variables=@parser.variables

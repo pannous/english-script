@@ -578,9 +578,9 @@ class EnglishParser < Parser
     star {
       op=__ 'and', 'or', 'nor', 'xor', 'nand', 'but'
       c2=condition_tree false if recurse
-      c =c&c2 if op=='and' || op=='but'
-      c =c&!c2 if op=='nor'
-      c =c|c2 if op=='or'
+      c =c&c2 if !$use_tree and op=='and' || op=='but'
+      c =c&!c2 if !$use_tree and op=='nor'
+      c =c|c2 if !$use_tree and op=='or'
       return c
     }
     _ ')' if brace
@@ -622,8 +622,8 @@ class EnglishParser < Parser
   def if_then
     __ if_words
     no_rollback! # 100
-    # c=condition_tree
-    c=condition
+    c=condition_tree
+    # c=condition
     _? 'then'
     dont_interpret! #if not c  else dont do_execute_block twice!
     b= expression_or_block #action_or_block

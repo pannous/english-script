@@ -4,38 +4,57 @@
 
 # require 'llvm' # ACTIVE project ++
 # require 'ruby-llvm'
-begin
-require 'llvm/core'
-require 'llvm/execution_engine'
-require 'llvm/transforms/scalar'
-rescue Exception => e
-  puts "WARN llvm NOT available"
-end
 
-# todo : google llvm AST emitter
+# Why I deverop ytljit instead of using llvm? Because according to
+# my yarv2llvm's experience I think llvm don't have enough power
+# Ytl is translator from CRuby VM (aka YARV) to X86-32/X86-64 Native Code. Ytl uses ytljit as code generate library.
+
+# VIA ruby bytecode loader, saver ('semi-native') + emitter
+# iseq gem needs array, we rather load binary dump
+# iseq_marshal_load NOWHERE FOUND!
+# reconstruct dump via rb_iseq_new_with_opt / prepare_iseq_build
+# DONT build manually via rb_iseq_compile_node (AST)
+# DONT iseq_data_to_ary(rb_iseq_t *iseq) : load directly, no ary array
+
 
 # VIA MicroVR: Rubinius / Parrot /
-# VIA MRUBY libmruby.a YAY VM / bytecode
+# VIA MRUBY libmruby.a YAY VM / bytecode (or call via ffi/llvm/c [main wrapper/mrbc header])
 
 # You can also compile Ruby programs into compiled byte code using the mruby compiler "mrbc". !!!
 #  USE EXISTING 'VM': YARV / mruby 'ritevm'/Rubinius/ ... or?
 # mrb_define_method(mrb, h, "values_at", hash_values_at, MRB_ARGS_ANY());
 # RubyVM::InstructionSequence.compile "puts 1+4"  YARV became the official Ruby interpreter !!
-#  3699712byte= 3.6MB! libruby.2.0.0.dylib
+# libruby.2.0.0.dylib 3699712byte = 3.6MB!
+# libmruby.a 3MB, but not all linked ++ : 691560 mruby_hello.out! 0.6MB
 # http://www.reddit.com/r/ruby/comments/k9jce/ruby_ritevm_faq_and_timeline_updates/
 # threads ok ++
 # http://patshaughnessy.net/2012/6/29/how-ruby-executes-your-code
-# Why I deverop ytljit instead of using llvm? Because according to
-# my yarv2llvm's experience I think llvm don't have enough power
-# for  Ruby compiler.
 
 # VIA CYTHON??
 
 # VIA C++ ? similar to j-rubyflux
 
+# VIA MachineCode? WAY Too painful + not portable
+
+# VIA >>> LLVM <<< ? Too painful! but would be VERY NICE!
+# SEE http://www.stephendiehl.com/llvm/#for-loop-expressions for advanced stuff!
+# Why I deverop ytljit instead of using llvm? Because according to
+# my yarv2llvm's experience I think llvm don't have enough power
+# for  Ruby compiler.
+# Ytl is translator from CRuby VM (aka YARV) to X86-32/X86-64 Native Code. Ytl uses ytljit as code generate library.
+# todo : google llvm AST emitter / llvm frontend => RUST / wait for swift OS?
+
 # via AST? clang -Xclang -ast-dump -fsyntax-only test.cc
 # http://clang.llvm.org/docs/IntroductionToTheClangAST.html
-# probably not https://github.com/ioquatix/ffi-clang
+# probably not: https://github.com/ioquatix/ffi-clang
+
+begin
+  require 'llvm/core'
+  require 'llvm/execution_engine'
+  require 'llvm/transforms/scalar'
+rescue Exception => e
+  puts "WARN llvm NOT available"
+end
 
 class NativeEmitter
   include LLVM rescue nil

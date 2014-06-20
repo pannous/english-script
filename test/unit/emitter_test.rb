@@ -11,24 +11,13 @@ class EmitterTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   include ParserTestHelper
 
-
-  def emit x
-    return x if not x.is_a? String
-    interpretation= @parser.parse x
-    @parser.full_tree
-    # @parser.show_tree
-    JavascriptEmitter.new.emit interpretation,run:true
-    # NativeEmitter.new.emit interpretation,run:true
-  end
-
   def assert_result_emitted x,r
-    assert_equals emit(x),emit(r)
+    assert_equals parse_tree(x),parse_tree(r)
   end
 
   def test_js_emitter
     # init "increase x"
     # @parser.action
-    @parser.dont_interpret!
     assert_result_emitted 6,"x=5;increase x"
     # super
   end

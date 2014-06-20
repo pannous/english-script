@@ -5,6 +5,8 @@
 # OR vi LLVM: llc -march=msil  DEPRECATED!!!!!!
 # Going from C# or MSIL (CIL) to LLVM IR hasnt been done yet (or at least finished). You'd need a C# Front-End.
 # VMkit had some kind of C# front end scaffolding. Support was never feature complete and interest has since faded. They've moved to just supporting Java.
+# http://stackoverflow.com/questions/3559415/is-there-any-way-to-write-a-llvm-front-end-compiler-in-c
+
 
 # Lexical Analysis with Flex: Split input data into a set of tokens (identifiers, keywords, numbers, brackets, braces, etc.)
 # Semantic Parsing with Bison: Generate an AST while parsing the tokens. Bison will do most of the legwork here, we just need to define our AST.

@@ -88,9 +88,10 @@ class JavascriptEmitter
     # put "}"
   end
 
-  def emit interpretation, do_run=false
+  def emit interpretation, root,do_run=false
+    root||=interpretation.root
     @file=File.open("../../target/app.js", "w");
-    descend interpretation, interpretation.root
+    descend interpretation, root
     @file.puts("console.log(result)")
     @file.flush
     result=`node #{@file}`.strip if do_run #danger 1

@@ -472,7 +472,7 @@ module EnglishParserTokens #< MethodInterception
     system_verbs=['contains', 'contain']+special_verbs+auxiliary_verbs
     no_keyword_except system_verbs-be_words
     found_verb= tokens? other_verbs+system_verbs-be_words-['do'] #@verbs,
-    # return found_verb unless $use_wordnet
+    return found_verb unless $use_wordnet
     @current_value=found_verb||wordnet_is_verb # call_is_verb
   end
 
