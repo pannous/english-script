@@ -59,13 +59,18 @@ EXPERIMENT
 ----------
 Run it and see yourself!
 
+** INSTALL **
 `git clone git@github.com:pannous/english-script.git`
 `cd english-script`
 `./install.sh`
 `./bin/angle`
+
+** Test **
+`./bin/angle` or `rake shell`
+
 `rake test`
+
 `rake run[examples/test.e]`
-`rake shell`
 
 **experiment** by typing
 
