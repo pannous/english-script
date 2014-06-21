@@ -64,13 +64,13 @@ Run it and see yourself!
 
 **experiment** by typing
 
-`./english-script.sh 6 plus six`
+`bin/angle "xs be 2,3,7,9; xs that are smaller than 7"`
 
-`./english-script.sh "xs be 2,3,7,9; xs that are smaller than 7"`
+`bin/angle 6 plus six`
 
-`./english-script.sh examples/test.e`
+`bin/angle examples/test.e`
 
-`./english-script.sh` (no args for shell)
+`bin/angle` (no args for shell)
 
 `english> 6 plus six`
 

@@ -199,7 +199,8 @@ class EnglishParser < Parser
     return x if x.is_a? String and x.index('/') #file, not regex!  ... notodo ...  x.match(/^\/.*[^\/]$/)
     # x=x.join(" ") if x.is_a? Array
     return x[0] if x.is_a? Array and x.count==1
-    return x.to_s if x.is_a? Array
+    return x if x.is_a? Array
+    # return x.to_s if x.is_a? Array
     do_evaluate x rescue x
   end
 
@@ -524,6 +525,18 @@ class EnglishParser < Parser
     return @result=ex
   end
 
+  def piped_actions
+    return false if @in_pipe
+    must_contain "|"
+    @in_pipe=true
+    a=statement
+    _ '|'
+    no_rollback!
+    c=true_method or bash_action
+    args=star{arg}
+    do_send(a,c,args) if check_interpret
+  end
+
   def statement
     raiseNewline
     x=any {#statement}
@@ -532,6 +545,7 @@ class EnglishParser < Parser
           maybe { if_then_else } ||
           # maybe { if_then } ||
           maybe { once } ||
+          maybe { piped_actions } ||
           maybe { action } ||
           maybe { expressions } # AS RETURN VALUE! DANGER!
     }
@@ -586,7 +600,7 @@ class EnglishParser < Parser
         result=%x{#{@command}}
         puts 'result:'
         puts result
-        return result || true
+        return result ? result.split("\n") : true
       rescue
         puts 'error executing bash_action'
       end
@@ -795,7 +809,8 @@ class EnglishParser < Parser
     object_method = clazz.method(m) if clazz.method_defined?(m) rescue false
     object_method = clazz.public_instance_method(m) if not object_method rescue false
     if object_method # Bad approach:  that might be another method Tree.beep!
-      puts object_method.parameters #todo MATCH!
+      puts "has_args method.parameters : #{object_method} #{object_method.parameters}"
+       #todo MATCH!   [[:req, :x]] -> required: x
       return object_method.arity>0
     end
     return true
@@ -808,7 +823,7 @@ class EnglishParser < Parser
   def true_method
     no_keyword
     should_not_match auxiliary_verbs
-    v=c_method? || verb? || tokens?(@methods.names)|| Object.method(word) rescue nil
+    v=c_method? || verb? || tokens?(@methods.names)|| Object.method(word)|| HelperMethods.method(word) rescue nil
     raise NotMatching.new 'no method found' if not v
     v
   end
@@ -1528,10 +1543,10 @@ class EnglishParser < Parser
   def self.self_modifying method
     method=='increase' || method=='decrease' || method.match(/\!$/)
   end
-
-  def self_modifying method
-    self.self_modifying method # -lol
-  end
+  #
+  # def self_modifying method
+  #   self.self_modifying method # -lol
+  # end
 
 # INTERPRET only,  todo cleanup method + argument matching + concept
   def do_send obj, method, args0
@@ -1570,7 +1585,7 @@ class EnglishParser < Parser
     # puts object_method.parameters #todo MATCH!
 
     # => selfModify todo
-    @variables[obj.to_sym.to_s]=@result if self_modifying method
+    @variables[obj.to_sym.to_s]=@result if self_modifying method rescue nil
 
     puts "ERROR CALLING #{obj}.#{method}(#{args}) : NoMethodError" if not @result
     # raise SyntaxError.new("ERROR CALLING #{obj}.#{op}(#{args}) : NoMethodError")

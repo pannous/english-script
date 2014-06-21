@@ -4,7 +4,7 @@ $testing=true
 gem "minitest", "4.7.5"
 
 require "test/unit"
-require_relative "../src/core/english-parser"
+require_relative "../core/english-parser"
 
 module ParserTestHelper
   include Exceptions

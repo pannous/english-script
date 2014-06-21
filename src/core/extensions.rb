@@ -214,6 +214,9 @@ class Array
     self[index x]
   end
 
+  def row n
+    at n
+  end
 
   def has x
     index x
