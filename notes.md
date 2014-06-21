@@ -5,18 +5,22 @@ Emscripten: An LLVM-to-JavaScript Compiler
 The CLR is a great platform for creating programming languages, and the DLR makes it all the better for dynamic languages. Also, the .NET framework (base class library, presentation foundation, Silverlight, etc.) gives developers an amazing amount of functionality and power.
 
 <!-- http://www.2ality.com/2012/01/bytecode-myth.html -->
-There is no single bytecode to “rule all languages”: A good bytecode is intimately tied to the language that is most frequently compiled to it. It is thus impossible to define a bytecode that works well with all languages, especially if you want to support both dynamic and static languages. There is no common ground between browsers. Source code is not that bad – it’s meta-bytecode
+There is no single bytecode to “rule all languages”: 
+A good bytecode is intimately tied to the language that is most frequently compiled to it. 
+It is thus impossible to define a bytecode that works well with all languages, 
+especially if you want to support both dynamic and static languages. There is no common ground between browsers. 
+Source code is not that bad – it’s meta-bytecode
 Parsing source code is fast (!?!?!?)
 Source can be quite compact !!
 Already a good compilation target!!!!!!!!!!!!!!!!!!!!!!!!
 JavaScript source code having such a high level of abstraction makes it relatively easy to compile to.
 In the future, source maps will even allow one to debug JavaScript code in the original language. 
-==> The web needs no bytecode, but LISP!!! for faster parsing (JSZap)
-Reduced program size (by approximately 10% compared to minification plus gzip compression). ????
-
-
 Bytecode is inflexible: it ties you to the current version of the language and to implementation details such as how data is encoded.
-Now, of course, you could say “Let’s version the bytecode”, and then you’re in version hell. The web really doesn’t like to have that kind of versioning. 
+Now, of course, you could say “Let’s version the bytecode”, and then you’re in version hell. 
+The web really doesn’t like to have that kind of versioning. 
+==> The web needs no bytecode, but LISP!!! 
+
+?? for faster parsing (JSZap) Reduced program size (by approximately 10% compared to minification plus gzip compression)
 
 mono - Mono's ECMA-CLI native code generator (Just-in-Time and Ahead-of-Time)
 mono --aot --llvm #--desktop --security --server --verify-all

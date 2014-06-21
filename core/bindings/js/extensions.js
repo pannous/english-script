@@ -1,1 +1,0 @@
-String.prototype.reverse=function(){}
