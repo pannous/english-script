@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require 'test_helper'
+# require 'test_helper'
 
 $use_tree=false
 
@@ -23,7 +23,7 @@ class FunctionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_simple_parameters
-
+    parse("puts 'hi'")
   end
 
   def test_to_do_something #at a given point

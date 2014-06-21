@@ -10,6 +10,7 @@
 # Ytl is translator from CRuby VM (aka YARV) to X86-32/X86-64 Native Code. Ytl uses ytljit as code generate library.
 
 # VIA ruby bytecode loader, saver ('semi-native') + emitter
+# RubyVM::InstructionSequence.compile "puts 1+4"  YARV became the official Ruby interpreter !!
 # iseq gem needs array, we rather load binary dump
 # iseq_marshal_load NOWHERE FOUND!
 # reconstruct dump via rb_iseq_new_with_opt / prepare_iseq_build
@@ -23,7 +24,6 @@
 # You can also compile Ruby programs into compiled byte code using the mruby compiler "mrbc". !!!
 #  USE EXISTING 'VM': YARV / mruby 'ritevm'/Rubinius/ ... or?
 # mrb_define_method(mrb, h, "values_at", hash_values_at, MRB_ARGS_ANY());
-# RubyVM::InstructionSequence.compile "puts 1+4"  YARV became the official Ruby interpreter !!
 # libruby.2.0.0.dylib 3699712byte = 3.6MB!
 # libmruby.a 3MB, but not all linked ++ : 691560 mruby_hello.out! 0.6MB
 # http://www.reddit.com/r/ruby/comments/k9jce/ruby_ritevm_faq_and_timeline_updates/
