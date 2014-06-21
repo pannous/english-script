@@ -54,23 +54,19 @@ To check out the current capabilities of English Script have a look at the [test
 [keywords](https://github.com/pannous/natural-english/blob/master/lib/english-script/english-tokens.rb) and
 [grammar](https://github.com/pannous/natural-english/blob/master/lib/english-script/english-parser.rb)
 
+INSTALL
+-------
+`git clone git@github.com:pannous/english-script.git`
+
+`cd english-script`
+
+`./install.sh`
+
+Start the shell : `./bin/angle` or `rake shell`
 
 EXPERIMENT
 ----------
 Run it and see yourself!
-
-** INSTALL **
-`git clone git@github.com:pannous/english-script.git`
-`cd english-script`
-`./install.sh`
-`./bin/angle`
-
-** Test **
-`./bin/angle` or `rake shell`
-
-`rake test`
-
-`rake run[examples/test.e]`
 
 **experiment** by typing
 
@@ -85,6 +81,12 @@ Run it and see yourself!
 `english> 6 plus six`
 
 `english> x is 2; if all 0,2,4 are smaller 5 then increase x`
+
+**Test**
+
+Run the tests : `rake test`
+
+Run an angle file: `rake run[examples/test.e]`
 
 Todos
 -----
