@@ -20,6 +20,9 @@ class ErrorTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_has_error("square 1,2 andy 3")   # at:andy in:list
   end
 
+  def test_x
+    parse "x"
+  end
 
   def test_endNode_as
     init "as"

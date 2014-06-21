@@ -153,4 +153,4 @@ zip
 # who
 # xargs later
 
-p $bash_commands_auto
+# p $bash_commands_auto

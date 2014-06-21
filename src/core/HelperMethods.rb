@@ -5,4 +5,9 @@ class HelperMethods
     c=all.map{|x|x.at b}
     c
   end
+
+  def self.help
+    puts "todo: Instead of pointing the user to the tests in src/test/unit/ he should be offered a proper list of
+things to do"
+  end
 end

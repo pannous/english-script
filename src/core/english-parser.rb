@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
 
 require_relative 'Interpretation'
 require_relative 'TreeBuilder'
@@ -44,7 +45,7 @@ class EnglishParser < Parser
     # @bash_methods=["say"]
     @c_methods    =['printf']
     @ruby_methods =['puts', 'print'] #"puts"=>x_puts !!!
-    @core_methods =['show', 'now', 'yesterday'] #"puts"=>x_puts !!!
+    @core_methods =['show', 'now', 'yesterday','help'] #difference?
     @methods      ={} # name->method-node
     @OK           ='OK'
     @result       =''
@@ -69,6 +70,7 @@ class EnglishParser < Parser
     @original_string  =@string
     @root             =nil
     @nodes            =[]
+    @result=nil
   end
 
 
@@ -605,7 +607,7 @@ class EnglishParser < Parser
         puts 'error executing bash_action'
       end
     end
-
+    false
   end
 
 
@@ -809,7 +811,7 @@ class EnglishParser < Parser
     object_method = clazz.method(m) if clazz.method_defined?(m) rescue false
     object_method = clazz.public_instance_method(m) if not object_method rescue false
     if object_method # Bad approach:  that might be another method Tree.beep!
-      puts "has_args method.parameters : #{object_method} #{object_method.parameters}"
+      # puts "has_args method.parameters : #{object_method} #{object_method.parameters}"
        #todo MATCH!   [[:req, :x]] -> required: x
       return object_method.arity>0
     end
@@ -1930,13 +1932,15 @@ class EnglishParser < Parser
     $verbose=false
     if ARGV.count==0 #and not ARGF
       puts 'usage:'
-      puts "\t./english-script.sh 6 plus six"
-      puts "\t./english-script.sh examples/test.e"
-      puts "\t./english-script.sh (no args for shell)"
+      puts "\t./angle 6 plus six"
+      puts "\t./angle examples/test.e"
+      puts "\t./angle (no args for shell)"
       @parser=EnglishParser.new
       require 'readline'
       load_history_why?('~/.english_history')
-      while input = Readline.readline('english> ', true)
+      # http://www.unicode.org/charts/PDF/U2980.pdf
+      while input = Readline.readline('⦠ ', true)
+        # while input = Readline.readline('angle-script⦠ ', true)
         # Readline.write_history_file("~/.english_history")
         # while true
         #   print "> "

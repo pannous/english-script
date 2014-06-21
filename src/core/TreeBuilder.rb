@@ -135,7 +135,7 @@ module TreeBuilder
 
   #todo: move to interpretation or tree.show
   def show_tree
-    return if not @root
+    return if not @root or not $use_tree
     walk_tree @root
     puts "---------"
     flat_tree @root

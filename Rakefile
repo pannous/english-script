@@ -24,7 +24,7 @@ require 'rake/testtask'
 # Hoe.plugin :git     # `gem install hoe-git`
 
 
-task :default => [:test,:shell]
+task :default => :shell #:test
 # EnglishScript::Application.load_tasks
 
 
@@ -57,15 +57,23 @@ task :run, [:file_name] => [:compile]  do
   system("./src/core/english-parser.rb #{args[:file_name]||''}")
 end
 
-desc "start angle REPL shell"
-task :shell do
-  system("./src/core/english-parser.rb")
-end  
-
 task :start => :run
 task :interpret => :run
-task :script => :run
+# task :script => :run
 task :emit => :compile
+
+desc "start angle REPL shell"
+task :shell do
+  begin
+  system("./src/core/english-parser.rb") 
+  rescue Exception => e
+    puts e.to_s
+  end
+end  
+
+task :script  => :shell
+task :anglescript  => :shell
+task :angle  => :shell
 
 task :init do
   mkdir_p 'dist'

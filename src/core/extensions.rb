@@ -245,6 +245,9 @@ class FalseClass
 end
 
 class String
+  def number
+    self.to_i
+  end
 
   def matches regex
     match regex
@@ -468,7 +471,9 @@ end
 
 #class Fixnum Float
 class Numeric
-
+  def number
+    self
+  end
   def and x
     self+x
   end
@@ -577,6 +582,9 @@ end
 # class Enumerator
 
 class Object
+  def number
+    false
+  end
 
   def blank?
     false
