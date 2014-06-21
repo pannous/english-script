@@ -9,4 +9,5 @@ echo get rubygems here https://rubygems.org/pages/download
 # cd ..
 
 # gem install wordnet-defaultdb
+echo INSTALLING DEPENDENCIES... This might take a minute or 10
 bundle install
