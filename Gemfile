@@ -16,8 +16,8 @@ gem 'linguistics'
 # gem 'simplecov'#,'~> 0.6.4'
 
 # for RUBYMINE WTF
-gem 'debase' if $RUBYMINE
-gem 'ruby-debug-ide' if $RUBYMINE
+# gem 'debase' if $RUBYMINE
+# gem 'ruby-debug-ide' if $RUBYMINE
 # gem 'debugger'
 # gem 'ruby-debug-base'
 # gem 'linecache19'
