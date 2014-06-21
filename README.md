@@ -70,17 +70,19 @@ Run it and see yourself!
 
 **experiment** by typing
 
-`bin/angle "xs be 2,3,7,9; xs that are smaller than 7"`
+`./bin/angle "6 plus six"
 
-`bin/angle 6 plus six`
+`./bin/angle "xs be 2,3,7,9; xs that are smaller than 7"`
 
-`bin/angle examples/test.e`
+`./bin/angle examples/test.e`
 
-`bin/angle` (no args for shell)
+`./bin/angle` (no args to start the shell)
 
-`english> 6 plus six`
+`⦠ 6 plus six`
 
-`english> x is 2; if all 0,2,4 are smaller 5 then increase x`
+`⦠ x is 2; if all 0,2,4 are smaller 5 then increase x`
+
+`⦠ beep three times`
 
 **Test**
 
