@@ -44,7 +44,8 @@ end
 
 desc "build binaries"
 task :build do
-  mkdir_p "build"
+  # mkdir_p "build"
+  # system("mkdir -q build")
   # system("mrbc ./src/core/english-parser.rb")
   system("touch ./bin/angle")
   # ruby("buildall.rb", "apps")
@@ -53,7 +54,7 @@ end
 task :compile => :build
 
 desc "run an angle file (interpreted)"
-task :run, [:file_name] => [:compile]  do
+task :run, [:file_name] => [:compile]  do |t, args|
   system("./src/core/english-parser.rb #{args[:file_name]||''}")
 end
 

@@ -1497,6 +1497,7 @@ class EnglishParser < Parser
       return x if x.is_a? Quote #why not just String???
       return x if x.is_a? Class
       return x if x.is_a? Hash
+      return x if x.is_a? String
       return x if x.is_a? Numeric
       return eval(x[0]) if x.is_a? Array and x.length==1
       return x if x.is_a? Array and x.length!=1
@@ -1962,8 +1963,8 @@ class EnglishParser < Parser
     @all=ARGV.join(' ')
     a   =ARGV[0].to_s
     # read from commandline argument or pipe!!
-    @all=ARGF.read||File.read(a) rescue
-        @all=@all.split("\n") if @all.is_a?(String)
+    @all=ARGF.read||File.read(a) rescue a
+    @all=@all.split("\n") if @all.is_a?(String)
     # puts "parsing #{@all}"
     for line in @all
       next if line.blank?

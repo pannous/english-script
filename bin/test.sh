@@ -1,13 +1,1 @@
-./test/unit/number_test.rb
-./test/unit/condition_test.rb
-./test/unit/function_test.rb
-./test/unit/list_test.rb
-./test/unit/loop_test.rb
-./test/unit/mac_test.rb
-./test/unit/method_test.rb
-./test/unit/observer_test.rb
-./test/unit/parser_test.rb
-./test/unit/selector_test.rb
-./test/unit/string_test.rb
-./test/unit/tree_test.rb
-./test/unit/variable_test.rb
+rake test
