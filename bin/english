@@ -1,0 +1,2 @@
+
+./core/english-parser.rb "$@"
