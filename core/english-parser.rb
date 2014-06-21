@@ -1,24 +1,33 @@
 #!/usr/bin/env ruby
+$:.unshift File.dirname(__FILE__)
+
+def require_relative path
+  require path
+end
 
 require_relative 'Interpretation'
 require_relative 'TreeBuilder'
-require_relative 'CoreFunctions'
-require_relative 'english-tokens'
-require_relative 'power-parser'
-require_relative 'extensions'
-require_relative 'events'
+require 'CoreFunctions'
+require 'english-tokens'
+require 'power-parser'
+require 'extensions'
+require 'events'
 
-require_relative 'grammar/ruby_grammar'
-require_relative 'grammar/loops_grammar'
+require 'grammar/ruby_grammar'
+require 'grammar/loops_grammar'
 
-require_relative 'bindings/shell/betty'
-require_relative 'bindings/native/native-scripting'
-# require_relative 'bindings/common-scripting-objects'
+require 'bindings/shell/betty' 
+require 'bindings/native/native-scripting'
+# require 'bindings/common-scripting-objects'
 
-require 'linguistics'
-require 'wordnet'
-#require 'wordnet-defaultdb'
+begin
+require 'wordnet' 
+require 'linguistics' 
 Linguistics.use(:en, :monkeypatch => true)
+rescue Exception => e
+  puts "WARN linguistics NOT available"
+end
+#require 'wordnet-defaultdb'
 #http://99designs.com/tech-blog/ More magic
 
 # look at java AST http://groovy.codehaus.org/Compile-time+Metaprogramming+-+AST+Transformations
@@ -117,8 +126,8 @@ class EnglishParser < Parser
   end
 
   def javascript_require dependency
-    require_relative "bindings/js/javascript_auto_libs"
-    # require_relative "javascript_auto_libs"
+    require "bindings/js/javascript_auto_libs"
+    # require "javascript_auto_libs"
     dependency.gsub!(/.* /, "") # require javascript bla.js
     mapped    =$javascript_libs[dependency]
     dependency=mapped if mapped
@@ -547,7 +556,7 @@ class EnglishParser < Parser
   end
 
   def bash_action
-    require_relative "bindings/shell/bash-commands"
+    require "bindings/shell/bash-commands"
     must_contain ['bash'] + $bash_commands
     remove_tokens 'execute', 'command', 'commandline', 'run', 'shell', 'shellscript', 'script', 'bash'
     @command = maybe { quote } # danger bash "hi">echo
@@ -1515,7 +1524,7 @@ class EnglishParser < Parser
     obj =resolve(obj)
     args=args0
     args=args.name_or_value if args.is_a? Argument
-    args=args.map &:name_or_value if args.is_a? Array and args[0].is_a? Argument
+    args=args.map{|x| x.name_or_value} if args.is_a? Array and args[0].is_a? Argument
     args=eval_string(args) rescue NoMethodError
     args.replace_numerals! if args and args.is_a? String
 
@@ -1881,6 +1890,26 @@ class EnglishParser < Parser
     end
   end
 
+  def self.english_repl
+    while true
+      puts "> "
+      input = STDIN.gets.strip unless const_defined? "Readline"
+      input = Readline.readline('english> ', true) if const_defined? "Readline"
+      Readline.write_history_file("~/.english_history") if const_defined? "Readline"
+      begin
+        interpretation= @parser.parse input
+        puts interpretation.tree if $use_tree
+        puts interpretation.result
+      rescue NotMatching
+        puts 'Syntax Error'
+      rescue GivingUp
+        puts 'Syntax Error'
+      rescue
+        puts $!
+      end
+    end
+  end
+
   def self.start_shell
     $verbose=false
     if ARGV.count==0 #and not ARGF
@@ -1889,25 +1918,12 @@ class EnglishParser < Parser
       puts "\t./english-script.sh examples/test.e"
       puts "\t./english-script.sh (no args for shell)"
       @parser=EnglishParser.new
-      require 'readline'
-      load_history_why?('~/.english_history')
-      while input = Readline.readline('english> ', true)
-        # Readline.write_history_file("~/.english_history")
-        # while true
-        #   print "> "
-        #   input = STDIN.gets.strip
-        begin
-          interpretation= @parser.parse input
-          puts interpretation.tree if $use_tree
-          puts interpretation.result
-        rescue NotMatching
-          puts 'Syntax Error'
-        rescue GivingUp
-          puts 'Syntax Error'
-        rescue
-          puts $!
-        end
+      begin
+        require 'readline' 
+        load_history_why?('~/.english_history') 
+      rescue Exception=>e
       end
+      english_repl
       exit
     end
     @all=ARGV.join(' ')

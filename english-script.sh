@@ -1,1 +1,1 @@
-./core/english-parser.rb "$@"
+mruby ./core/english-parser.rb "$@"

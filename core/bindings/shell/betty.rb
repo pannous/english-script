@@ -1,7 +1,9 @@
 module Betty
 $executors = []
-
-Dir[File.dirname(__FILE__) + '/betty/lib/*.rb'].each {|file|
+dirs=Dir[File.dirname(__FILE__) + '/betty/lib/*.rb']  rescue []#Exception => e
+# raise "can't access betty dirs" if dirs==[]
+puts "WARN betty dirs NOT available" if dirs==[]
+dirs.each {|file|
   begin
     require file
   rescue Exception => e

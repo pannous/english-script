@@ -15,9 +15,6 @@ Gem::Specification.new do |s|
   s.homepage = "https://github.com/pannous/english-script"
   s.rdoc_options = ["--title", "English as a programming language!", "--main", "README.md"]
   s.require_paths = ["core"]
-  s.rubyforge_project = "json"
-  s.rubygems_version = "0.8.1"
   s.summary = "English as a programming language!"
   s.test_files = ["./tests/*.rb"]
-
 end

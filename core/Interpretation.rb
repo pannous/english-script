@@ -1,3 +1,7 @@
+def require_relative path
+  require path
+end
+
 require_relative "emitters/native-emitter"
 
 # why not return parser??
