@@ -70,9 +70,8 @@ class Dir
     #  Dir.glob "*.JPG"
   end
 
-  require 'fileutils'
-
   def remove_leaves(dir=".", matching= ".svn")
+    require 'fileutils'
     Dir.chdir(dir) do
       entries=Dir.entries(Dir.pwd).reject { |e| e=="." or e==".." }
       if entries.size == 1 and entries.first == matching
@@ -178,7 +177,7 @@ class Array
   #  select{|y|y.to_s.match(x)}
   #end
   def names
-    map &:to_s
+    map{|x|x.to_s}
   end
 
   def rest
@@ -362,7 +361,8 @@ class String
   end
 
   def examples
-    synsets.flatten.map(&:hyponyms).flatten.map(&:words).flatten.uniq.map &:to_s
+    synsets.flatten.map {|x| x.hyponyms}.flatten.map{|x| x.words}.flatten.uniq.map{|x|x.to_s}
+      # synsets.flatten.map(&:hyponyms).flatten.map(&:words).flatten.uniq.map &:to_s
   end
 
   def blank?

@@ -227,6 +227,7 @@ class Parser #<MethodInterception
   end
 
   def caller_name
+    puts "caller_name"
     for i in 0..(caller.count)
       next if not caller[i].match(/parser/)
       name=caller[i].match(/`(.*)'/)[1]
@@ -248,15 +249,16 @@ class Parser #<MethodInterception
   end
 
   def dont_interpret!
+    # puts "dont_interpret!"
     if @interpret_border<0
-      @interpret_border= caller.count
+      @interpret_border= caller_depth
       @did_interpret=@interpret
     end
     @interpret=false
   end
 
   def check_interpret n=0
-    if (@interpret_border>=caller.count-n)
+    if (@interpret_border>=caller_depth-n)
       @interpret= @did_interpret
       @interpret_border=-1
     end
@@ -280,7 +282,7 @@ class Parser #<MethodInterception
     #return if checkEnd
     last_try=0
     #throw "Max recursion reached #{to_source block}" if @level>20
-    raise MaxRecursionReached.new(to_source block) if caller.count>180
+    raise MaxRecursionReached.new(to_source block) if caller_depth>120
     was_throwing=@throwing
     @throwing=false
     #@throwing[@level]=false
@@ -318,6 +320,7 @@ class Parser #<MethodInterception
 
   def to_source x
     return @last_pattern if @last_pattern or not x
+    return "source_location Not available in mRuby" if not x.source_location
     #proc=block.to_source(:strip_enclosure => true) rescue "Sourcify::MultipleMatchingProcsPerLineError"
     res=x.source_location[0]+":"+x.source_location[1].to_s+"\n"
     lines=IO.readlines(x.source_location[0])
@@ -331,7 +334,8 @@ class Parser #<MethodInterception
   end
 
   def caller_depth
-    caller.count
+    puts "caller_depth"
+    return caller.count rescue 1 # WOOORKAROUND for mruby !!
     # filter_stack(caller).count #-1
   end
 
@@ -433,7 +437,7 @@ class Parser #<MethodInterception
           #exit
         end
       rescue => e
-        error e
+        error e,false,e.backtrace
       end
     end
   end
@@ -484,7 +488,7 @@ class Parser #<MethodInterception
       end
       chars=end_pointer.offset-1
       all<<@parser.lines[line][0..chars] if line<@parser.lines.count and chars>0
-      all.map &:stripNewline
+      all.map{|x|x.stripNewline}
       return all[0] if all.length==1
       all
     end
@@ -584,13 +588,14 @@ class Parser #<MethodInterception
     x
   end
 
-  def error e, force=false
+  def error e, force=false,backtrace=nil
     raise e if e.is_a? GivingUp # hand through!
     raise e if e.is_a? NotMatching
     puts e if e.is_a? String
     if e.is_a? Exception
+      backtrace||=e.backtrace
       puts e.class.to_s+" "+e.message.to_s
-      puts clean_backtrace e.backtrace
+      puts clean_backtrace backtrace
       puts e.class.to_s+" "+e.message.to_s
       string_pointer
       show_tree
