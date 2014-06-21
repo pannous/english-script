@@ -2,7 +2,7 @@
 # Add your own tasks in files placed in lib/tasks ending in .rake,
 # for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
 
-require File.expand_path('../config/application', __FILE__)
+# require File.expand_path('../config/application', __FILE__)
 
 require 'rake/clean'
 require 'rake/testtask'
@@ -24,25 +24,57 @@ require 'rake/testtask'
 # Hoe.plugin :git     # `gem install hoe-git`
 
 
-task :default => [:test]
+task :default => [:test,:shell]
 # EnglishScript::Application.load_tasks
-# task :default => :test
 
+
+desc "running all tests"
 task :test do
-    Rake::TestTask.new do |t|
-      t.libs << "test"
-      t.test_files = FileList['./src/test/unit/*_test.rb']
-      t.verbose = true
-    end
     test_files = Dir['./src/test/unit/*_test.rb'] #FileList
     p test_files
-    test_files.each{|f|system(f)}
-    # chdir("src/test") { system "./tests.sh" }
-  # do_test 'src/test/ruby/hello.rb'
-  # puts "TODO: test!"
+    Rake::TestTask.new do |t|
+      $use_tree=false
+      t.libs << "test"
+      t.test_files =  test_files
+      # t.verbose = true
+      t.verbose = false
+    end
+    # test_files.each{|f|$use_tree=false;system(f)}
 end
 
+desc "build binaries"
 task :build do
   mkdir_p "build"
+  # system("mrbc ./src/core/english-parser.rb")
+  system("touch ./bin/angle")
   # ruby("buildall.rb", "apps")
+end
+
+task :compile => :build
+
+desc "run an angle file (interpreted)"
+task :run, [:file_name] => [:compile]  do
+  system("./src/core/english-parser.rb #{args[:file_name]||''}")
+end
+
+desc "start angle REPL shell"
+task :shell do
+  system("./src/core/english-parser.rb")
+end  
+
+task :start => :run
+task :interpret => :run
+task :script => :run
+task :emit => :compile
+
+task :init do
+  mkdir_p 'dist'
+  mkdir_p 'build'
+end
+
+desc "clean up build artifacts"
+task :clean do
+  # ant.delete 'quiet' => true, 'dir' => 'build'
+  rm_f 'build/*'
+  rm_rf 'tmp'
 end

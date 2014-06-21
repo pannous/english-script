@@ -23,6 +23,13 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert 'counter is the same as 3'
   end
 
+  def test_return
+    assert_result_is "if(1<2) then 3 else 4",3
+    assert_result_is "if 1<2 then 5 else 4",5
+    assert_result_is "if(3<2) then 3 else 4",4
+    assert_result_is "if 3<2 then 5 else 4",4
+    assert_result_is "if 1<2 then false else 4","false"
+  end
 
   def test_else_
     assert_result_is "if(1<2) then 3 else 4",3

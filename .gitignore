@@ -6,3 +6,4 @@ core/emitters/bash-commands-auto-index.rb -f
 main.bc
 extra
 xtra
+Gemfile.lock

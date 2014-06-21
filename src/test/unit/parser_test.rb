@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
 $use_tree=false
 
-require_relative '../test_helper'
+require_relative '../parser_base_test'
+# require_relative '../test_helper'
 
 #DIFFERENT TO OTHER TEST: TEST EnglishParser methods DIRECTLY!
 class EnglishParserTestParser<EnglishParser
