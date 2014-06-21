@@ -1,2 +1,1 @@
-
-./core/english-parser.rb "$@"
+./src/core/english-parser.rb "$@"
