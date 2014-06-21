@@ -90,7 +90,7 @@ class JavascriptEmitter
 
   def emit interpretation, root,do_run=false
     root||=interpretation.root
-    @file=File.open("../../target/app.js", "w");
+    @file=File.open("../../../build/app.js", "w");
     descend interpretation, root
     @file.puts("console.log(result)")
     @file.flush

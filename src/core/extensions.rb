@@ -120,8 +120,10 @@ class Hash
 
   def [] x
     return if not x
-    return orig_index(x) if not x.is_a? Symbol or x.is_a? String or x.is_a? Numeric
-    orig_index(x) || orig_index(x.to_s) || orig_index(x.to_sym)
+    return orig_index(x) || orig_index(x.to_s) if x.is_a? Symbol
+    return orig_index(x) || orig_index(x.to_sym) if x.is_a? String
+    # yay! todo: eqls {a:b}=={:a=>b}=={"a"=>b} !!
+    orig_index(x)
   end
 
   def contains key

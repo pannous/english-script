@@ -1,14 +1,17 @@
 ENV["RAILS_ENV"] = "test"
 $testing=true
-$emit=true # RUN ALL TEST THROUGH EMITTER PIPELINE!!
+
+gem "minitest", "4.7.5"
 
 require "test/unit"
-require_relative "../core/english-parser"
+require_relative "../src/core/english-parser"
 
 module ParserTestHelper
   include Exceptions
 
   def initialize args
+      $verbose=false if ENV['TEST_SUITE']
+      $emit=false #true # RUN ALL TEST THROUGH EMITTER PIPELINE!! SET per test_method !
     @parser=EnglishParser.new
     super args
   end
@@ -119,7 +122,7 @@ module ParserTestHelper
   end
 
   def emit interpretation,root
-    require_relative '../../core/emitters/js-emitter'
+    require_relative '../src/core/emitters/js-emitter'
     JavascriptEmitter.new.emit interpretation,root,run:true
   end
 

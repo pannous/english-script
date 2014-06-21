@@ -1,3 +1,3 @@
 $raking=true
-require_relative "../core/english-parser.rb"
+require_relative "../src/core/english-parser.rb"
 # dummy for rake

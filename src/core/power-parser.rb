@@ -175,8 +175,11 @@ class Parser #<MethodInterception
   end
 
 
-  def must_contain *args #,before:nil
-    must_contain_before [], args
+  def must_contain *args
+    before=args[-1][:before] if args[-1].is_a? Hash
+    args=args[0..-2] if before
+    before||=[]
+    must_contain_before before, args
   end
 
   def must_contain_before before, *args #,before:nil
@@ -189,7 +192,7 @@ class Parser #<MethodInterception
       if x.match(/^\s*\w+\s*$/)
         good||=(" #{@string} ").match(/[^\w]#{x}[^\w]/)
         good=nil if good and before and before.matches(good.pre_match)
-      else
+      else # token
         good||=@string.index(x)
         good=nil if good and before and before.matches(@string[0..good])
       end
@@ -201,6 +204,7 @@ class Parser #<MethodInterception
     @OK
   end
 
+  # NOT == starts_with !!!
   def look_ahead x
     @string.index(x) ? true : raise(NotMatching.new(x))
   end
@@ -384,7 +388,7 @@ class Parser #<MethodInterception
         bt=filter_stack bt
         m0=bt[0].match(/`.*/)
         m1=bt[1].match(/`.*'/)
-        ex=GivingUp.new("Expecting #{m0} in #{m1} ... maybe try: #{attempt}")
+        ex=GivingUp.new("Expecting #{m0} in #{m1} ... maybe related: #{attempt}")
         ex.set_backtrace(bt)
         raise ex
         # error e #exit

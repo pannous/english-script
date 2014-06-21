@@ -448,22 +448,48 @@ class EnglishParser < Parser
     h
   end
 
+  def close_bracket #for nice GivingUp
+    _ '}'
+  end
+
   def json_hash
+    must_contain ":","=>", before:"}"
+    regular_json_hash? or immediate_json_hash
+  end
+
+  # colon for types not Compatible? puts a:int vs puts {a:int} ? maybe egal
+  # careful with blocks!! {puts "s"} VS {a:"s"}
+  def regular_json_hash
     _ '{'
+    _? ':' and no_rollback! #{:a...} Could also mean list of symbols? Nah
     h={}
     star {
-      _ ',' if h.length>0 # not h.blank?
-      __? '"', "'" # optional quotes
+      _? ';' or _ ',' if h.length>0 # not h.blank?
+      quoted=__? '"', "'" # optional
       key=word
-      __? '"', "'"
-      _ ':'
+      __ '"', "'" if quoted
+      _? '=>' or _? '=' or   #  todo a{b=c} vs a{b:c} Property versus hash !!
+      starts_with?("{") or _? '=>' or _ ':'
       @inside_list       =true
       # h[key] = expression0 # no
       h[key.to_s.to_sym] = expressions # no
     }
-    _ '}'
+    # no_rollback!
+    close_bracket
     @inside_list=false
     h
+  end
+
+  # expensive?
+  # careful with blocks/closures ! map{puts it} VS data{a:"b"}
+  def immediate_json_hash # a:{b} OR a{b:c}
+    # must_contain_before ":{", ":"
+    w=word #expensive
+    # starts_with?("={") and _? '=' or # todo set a to {b=>c} vs a:{b:c}
+    starts_with?("{") or _? '=>' or _ ':'
+    no_rollback!
+    r=regular_json_hash
+    {w.to_sym => r} # AH! USEFUL FOR NON-symbols !!!
   end
 
   # keyword expression is reserved by ruby/rails!!! => use hax0r writing or plural
@@ -1501,6 +1527,10 @@ class EnglishParser < Parser
 
   def self.self_modifying method
     method=='increase' || method=='decrease' || method.match(/\!$/)
+  end
+
+  def self_modifying method
+    self.self_modifying method # -lol
   end
 
 # INTERPRET only,  todo cleanup method + argument matching + concept

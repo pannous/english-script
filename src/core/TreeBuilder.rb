@@ -87,6 +87,7 @@ module TreeBuilder
 
   #todo: move to interpretation or tree.full
   def full_tree node=@root, tabs=0
+    return if not node
     puts " "*tabs + "#{node.name} #{node.value}" if not false==node.value
     for n in node.nodes
       full_tree n, (tabs+1)
