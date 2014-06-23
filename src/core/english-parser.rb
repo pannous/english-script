@@ -289,7 +289,7 @@ class EnglishParser < Parser
     return s if check_interpret
     content=pointer-start
     return content if not $use_tree
-    @current_node.content=parent_node.content=content
+    @current_node.content=parent_node.content=content if $use_tree
     return parent_node if $use_tree
     # @current_node.content=content_between startPointer, endPointer
     # return (pointer-start).map &:stripNewline if not $use_tree
