@@ -822,7 +822,9 @@ class EnglishParser < Parser
 
   def builtin_method
     w=word
-    m=Object.method(w)|| HelperMethods.method(w)
+    m=Object.method(w) rescue nil
+    m||=HelperMethods.method(w) rescue nil
+    m
     # m ? m.name : nil
   end
 
