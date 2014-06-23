@@ -91,7 +91,7 @@ module ParserTestHelper
   end
 
   def variables
-    @parser.variables
+    @parser.variableValues
   end
 
   def functions
@@ -126,15 +126,19 @@ module ParserTestHelper
     JavascriptEmitter.new.emit interpretation,root,run:true
   end
 
-  def parse x
+  def parse x,interpret=true
+    @parser.do_interpret! if interpret
     return parse_tree x if $emit
     return x if not x.is_a?String
     @parser.parse x
     # @variables=@parser.variables
     # @result=@parser.result
     @variables=@parser.interpretation.variables
+    @variableValues=@variables.map_values{|v|v.value}
     # return @parser.interpretation if $use_tree
     @result=@parser.interpretation.result
+    @result=false if @result==:false
+    @result
     # @current_value=@parser.interpretation.current_value
     # @current_node=@parser.interpretation.current_node
   end
@@ -144,7 +148,7 @@ module ParserTestHelper
   end
 
   def variableTypes v
-    @parser.variableTypes v
+    @parser.variables[v].type
   end
 
 

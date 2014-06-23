@@ -48,7 +48,7 @@ module TreeBuilder
     #"token","tokens","number",
     # "setter",  "endNode",
     # "rest_of_line","word",
-    ignore_parent+delete+
+    ignore_parent+#delete+
     [ "_", "_?","interpretation","should_not_match","do_send","pronouns","end_expression",
 "do_evaluate",    "other_verbs",
 "numbers", "tokens","current_context","type_names","possessive_pronouns",

@@ -52,13 +52,13 @@ class ParserBaseTest < Test::Unit::TestCase
   end
 
   def variables
-    @parser.variables
+    @parser.variableValues
   end
 
 
   def parse x
     @parser.parse x
-    @variables=@parser.variables
+    @variableValues=@parser.variableValues
     @result=@parser.result
   end
 
@@ -68,7 +68,7 @@ class ParserBaseTest < Test::Unit::TestCase
   end
 
   def global_variables
-    @parser.variables
+    @parser.variableValues
   end
 
   def _test_all

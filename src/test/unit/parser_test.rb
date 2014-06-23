@@ -26,7 +26,7 @@ class EnglishParserTestParser<EnglishParser
   end
 
   def test_substitute_variables
-    @variables={"x" => 3}
+    @variableValues={"x" => 3}
     assert(" 3 "== substitute_variables(' #{x} '))
     assert('"3"'== substitute_variables('"#{x}"'))
     assert(" 3 "== substitute_variables(" $x "))
@@ -39,13 +39,13 @@ class EnglishParserTestParser<EnglishParser
   def test_default_setter_dont_overwrite
     s "set color to blue; set default color to green"
     setter
-    assert(@variables["color"]=="blue")
+    assert(@variableValues["color"]=="blue")
   end
 
   def test_default_setter
     s "set the default color to green"
     setter
-    assert(@variables.contains("color"))
+    assert(@variableValues.contains("color"))
   end
 
 # grammar : 'hello' QUESTION ('does'| QUESTION)* 'the world'? VERB

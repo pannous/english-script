@@ -13,7 +13,7 @@ module EnglishParserTokens #< MethodInterception
 ##################
 
   def numbers
-    %w[1 2 3 4 5 6 7 8 9 0
+    %w[+ - 1 2 3 4 5 6 7 8 9 0
       1st 2nd 3rd 4th 5th 6th 7th 8th 9th 0th 10th
       tenth ninth eighth seventh sixth fifth fourth third second first
       ten nine eight seven six five four three two one zero]
@@ -233,8 +233,12 @@ module EnglishParserTokens #< MethodInterception
            'go', 'know', 'take', 'see', 'come', 'think', 'look', 'give', 'use', 'find', 'tell', 'ask', 'work', 'seem', 'feel',
            'leave', 'call', 'integrate', 'print', 'eat', 'test']
 
+  def const
+    ['constant', 'const','final','immutable','unchangeable'] #not: static
+  end
+
   def modifiers
-    ['initial', 'public', 'static', 'void', 'default', 'protected', 'private', 'constant', 'const']
+    ['protected', 'private','public', 'static', 'void', 'default', 'initial', 'mutable','variable'] +const
   end
 
   def modifier
@@ -450,9 +454,10 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def true_variable
-    vars=@variables.keys
+    vars=@variableValues.keys
     v=tokens vars
-    return @variables[v] if @interpret
+    # return @variables[v] if @interpret #LATER!
+    v
     #for v in @variables.keys
     #  if @string.start_with? v
     #    var=token v

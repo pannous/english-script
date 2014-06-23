@@ -24,7 +24,7 @@ class StringTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   def _test_advanced_string_methods
     parse "x='hi' inverted"
     assert @result=="ih"
-    assert(@variables['x']== 'ih');
+    assert(@variableValues['x']== 'ih');
   end
 
 

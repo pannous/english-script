@@ -61,9 +61,15 @@ module LoopsGrammar
     dont_interpret!
     no_rollback! #no_rollback! 13 # arbitrary value ! :{
     c=condition
+    no_rollback!
     _? 'repeat' # keep gerunding
     b=action_or_block #Danger when interpreting it might contain conditions and breaks
+    begin
     r=do_execute_block b while (check_condition c) if check_interpret
+    rescue
+      puts $!
+    end
+    end_block?
     r
   end
 

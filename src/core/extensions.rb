@@ -120,6 +120,17 @@ class Hash
   # CAREFUL! MESSES with rails etc!!
   alias_method :orig_index, :[]
 
+
+  # Careful hash.map returns an Array, not a map as expected
+  # Therefore we need a new method:
+  # {a:1,b:2}.map_values{|x|x*3} => {a:3,b:6}
+  def map_values
+    self.inject({}) do |newhash, (k,v)|
+      newhash[k] = yield(v)
+      newhash
+    end
+  end
+
   def [] x
     return if not x
     return orig_index(x) || orig_index(x.to_s) if x.is_a? Symbol
@@ -134,6 +145,10 @@ class Hash
 end
 
 class Array
+  def drop! x
+    reject! x
+  end
+
   def to_str
     self.join(", ")
   end
@@ -360,8 +375,9 @@ class String
   end
 
   def is_noun # expensive!!!
+    # Sequel::InvalidOperation Invalid argument used for IS operator
     not synsets(:noun).empty? or
-        not self.gsub(/s$/, "").synsets(:noun).empty?
+        not self.gsub(/s$/, "").synsets(:noun).empty? rescue false
   end
 
   def is_verb

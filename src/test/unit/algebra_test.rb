@@ -41,7 +41,7 @@ class AlgebraTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     full_value=@current_node.full_value
     val=eval(full_value)
     assert_equals val,26
-    val=@current_node.eval_node(@variables)
+    val=@current_node.eval_node(@variableValues)
     assert_equals val,26
   end
 

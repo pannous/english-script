@@ -15,45 +15,64 @@ class Function
   attr_accessor :name, :arguments, :return_type, :scope, :module, :class, :object
 
   def initialize args
-    self.name=args[:name]
-    self.scope=args[:scope]
-    self.class=args[:class]
-    self.module=args[:module]
-    self.object=args[:object]
+    self.name     =args[:name]
+    self.scope    =args[:scope]
+    self.class    =args[:class]
+    self.module   =args[:module]
+    self.object   =args[:object]
     self.arguments=args[:arguments]
     # scope.variables[name]=self
   end
 end
 
+class FunctionCall
+
+  attr_accessor :name, :arguments, :scope, :module, :class, :object
+
+  def initialize args
+    self.name     =args[:name]
+    self.scope    =args[:scope]
+    self.class    =args[:class]
+    self.module   =args[:module]
+    self.object   =args[:object]
+    self.arguments=args[:arguments]
+  end
+end
+
+
 class Argument
   attr_accessor :name, :type, :position, :default, :preposition, :value
 
   def initialize args
-    self.name=args[:name]
+    self.name       =args[:name]
     self.preposition=args[:preposition]
-    self.type=args[:type]
-    self.position=args[:position]
-    self.default=args[:default]
-    self.value=args[:value]
+    self.type       =args[:type]
+    self.position   =args[:position]
+    self.default    =args[:default]
+    self.value      =args[:value]
     # scope.variables[name]=self
   end
+
   def name_or_value
     self.value||self.name
   end
+
   def to_sym
     self.name.to_sym
   end
 end
 
 class Variable
-  attr_accessor :name, :type, :scope, :module, :value
+  attr_accessor :name, :type, :scope, :module, :value, :final, :modifier
 
   def initialize args
-    self.name=args[:name]
-    self.type=args[:type]
-    self.scope=args[:scope]
-    self.module=args[:module]
-    self.value =args[:value]
+    self.name    =args[:name]
+    self.type    =args[:type]
+    self.scope   =args[:scope]
+    self.final   =args[:final]
+    self.value   =args[:value]
+    self.module  =args[:module]
+    self.modifier=args[:modifier]
     # scope.variables[name]=self
   end
 end
@@ -65,18 +84,18 @@ class Parser #<MethodInterception
   def initialize
     super # needs to be called by hand!
     # @verbose=true
-    @verbose=$VERBOSE||$verbose # false
-    @very_verbose=@verbose
-    @original_string="" # for string_pointer ONLY!!
-    @string=""
-    @last_pattern=nil
-    @rollback=[]
-    @tree=[]
-    @line_number=0
-    @lines=[]
-    @interpret_border=-1
+    @verbose          =$VERBOSE||$verbose # false
+    @very_verbose     =@verbose
+    @original_string  ="" # for string_pointer ONLY!!
+    @string           =""
+    @last_pattern     =nil
+    @rollback         =[]
+    @tree             =[]
+    @line_number      =0
+    @lines            =[]
+    @interpret_border =-1
     @no_rollback_depth=-1
-    @max_depth=100
+    @max_depth        =100
   end
 
   def s string
@@ -178,14 +197,14 @@ class Parser #<MethodInterception
 
   def must_contain *args
     before=args[-1][:before] if args[-1].is_a? Hash
-    args=args[0..-2] if before
+    args  =args[0..-2] if before
     before||=[]
     must_contain_before before, args
   end
 
   def must_contain_before before, *args #,before:nil
     raiseEnd
-    good=false
+    good  =false
     before=[before] if before and before.is_a? String
     before=before.flatten+[';'] if before
     args.flatten!
@@ -241,35 +260,35 @@ class Parser #<MethodInterception
 
 
   def no_rollback! n=0
-    depth=caller_depth-1
+    depth             =caller_depth-1
     @no_rollback_depth=depth
     # @no_rollback_method=caller #_name
   end
 
   def do_interpret!
     @interpret_border=-1
-    @did_interpret=@interpret
-    @interpret=true
+    @did_interpret   =@interpret
+    @interpret       =true
   end
 
   def dont_interpret!
     if @interpret_border<0
-      @interpret_border= caller.count
-      @did_interpret=@interpret
+      @interpret_border= caller_depth
+      @did_interpret   =@interpret
     end
     @interpret=false
   end
 
   def check_interpret n=0
-    if (@interpret_border>=caller.count-n)
-      @interpret= @did_interpret
+    if (@interpret_border>=caller_depth-n)
+      @interpret       = @did_interpret
       @interpret_border=-1
     end
     @interpret
   end
 
   def allow_rollback n=0
-    @no_rollback_depth=-1
+    @no_rollback_depth=(@no_rollback_depth||-1)-4
   end
 
   def check_rollback_allowed
@@ -278,7 +297,7 @@ class Parser #<MethodInterception
 
   # same as try but throws if no result
   @throwing=true #[]
-  @level=0
+  @level   =0
 
   def any(&block)
     raiseEnd
@@ -287,9 +306,9 @@ class Parser #<MethodInterception
     #throw "Max recursion reached #{to_source block}" if @level>20
     raise MaxRecursionReached.new(to_source block) if caller.count>180
     was_throwing=@throwing
-    @throwing=false
+    @throwing   =false
     #@throwing[@level]=false
-    oldString=@string
+    oldString   =@string
     begin
       result=yield # <--- !!!!!
       if not result
@@ -310,7 +329,7 @@ class Parser #<MethodInterception
       verbose "Error in #{to_source block}"
       error e
     end
-    @string=oldString if check_rollback_allowed
+    @string  =oldString if check_rollback_allowed
     @throwing=was_throwing
     #@throwing[@level]=true
     #@level=@level-1
@@ -324,9 +343,9 @@ class Parser #<MethodInterception
   def to_source x
     return @last_pattern if @last_pattern or not x
     #proc=block.to_source(:strip_enclosure => true) rescue "Sourcify::MultipleMatchingProcsPerLineError"
-    res=x.source_location[0]+":"+x.source_location[1].to_s+"\n"
+    res  =x.source_location[0]+":"+x.source_location[1].to_s+"\n"
     lines=IO.readlines(x.source_location[0])
-    i=x.source_location[1]-1
+    i    =x.source_location[1]-1
     while true
       res+= lines[i]
       break if i>=lines.length or lines[i].match "}" or lines[i].match "end"
@@ -336,14 +355,24 @@ class Parser #<MethodInterception
   end
 
   def caller_depth
-    caller.count
+    c = caller.count
+    c
     # filter_stack(caller).count #-1
+  end
+
+  def adjust_rollback depth=caller_depth
+    if depth+2<@no_rollback_depth
+      @no_rollback_depth=-1
+    end
+    if caller_depth<@no_rollback_depth
+      @no_rollback_depth=depth-4
+    end
   end
 
   # todo ? trial and error -> evidence based 'parsing' ?
   def maybe(&block)
     #return if checkEnd
-    allow_rollback 1
+    # allow_rollback 1
     old=@string
     if (@nodes.count>@max_depth)
       raise SystemStackError.new "if(@nodes.count>@max_depth)"
@@ -352,11 +381,9 @@ class Parser #<MethodInterception
     @original_string=@string||"" if @original_string.blank?
     begin
       old_nodes=@nodes.clone
-      result = yield
+      result   = yield
       if result
-        if caller_depth+5<@no_rollback_depth
-          @no_rollback_depth=-1
-        end
+        adjust_rollback
       else
         #DANGER RETURNING false as VALUE!! use RAISE ONLY todo
         (@nodes-old_nodes).each { |n| n.valid=false }
@@ -365,8 +392,9 @@ class Parser #<MethodInterception
       @last_node=@current_node
       return result
     rescue NotMatching, EndOfLine => e
+      verbose e
       @current_value=nil
-      @string=old
+      @string       =old
       check_interpret 2
       verbose "Tried #{to_source block}"
       verbose e
@@ -385,11 +413,11 @@ class Parser #<MethodInterception
         string_pointer # ALWAYS! if @verbose
         show_tree #Not reached
         attempt=e.to_s.gsub("[", "").gsub("]", "")
-        bt=e.backtrace[e.backtrace.count-@no_rollback_depth-1..-1]
-        bt=filter_stack bt
-        m0=bt[0].match(/`.*/)
-        m1=bt[1].match(/`.*'/)
-        ex=GivingUp.new("Expecting #{m0} in #{m1} ... maybe related: #{attempt}")
+        bt     =e.backtrace[e.backtrace.count-@no_rollback_depth-1..-1]
+        bt     =filter_stack bt
+        m0     =bt[0].match(/`.*/)
+        m1     =bt[1].match(/`.*'/)
+        ex     =GivingUp.new("Expecting #{m0} in #{m1} ... maybe related: #{attempt}")
         ex.set_backtrace(bt)
         raise ex
         # error e #exit
@@ -412,14 +440,17 @@ class Parser #<MethodInterception
     rescue => e # NoMethodError etc
       @string=old
       error e
+      verbose e
+    ensure
+      adjust_rollback
     end
     @string=old #if rollback
-    @nodes=old_nodes # restore
+    @nodes =old_nodes # restore
     return false
   end
 
   def one_or_more(&block)
-    all=[yield]
+    all           =[yield]
     @current_value=[]
     all+[star { yield }].flatten
   end
@@ -429,7 +460,7 @@ class Parser #<MethodInterception
       begin
         comment?
         old_tree=@nodes.clone
-        result=yield
+        result  =yield
         #puts "------------------"
         #puts @nodes-old_tree
         break if @string.blank? # TODO! loop criterion too week
@@ -464,9 +495,9 @@ class Parser #<MethodInterception
 
     def initialize line_number, offset, parser
       @line_number=line_number
-      offset=0 if line_number>=parser.lines.count
-      @offset=offset
-      @parser=parser
+      offset      =0 if line_number>=parser.lines.count
+      @offset     =offset
+      @parser     =parser
     end
 
     def to_s
@@ -475,7 +506,7 @@ class Parser #<MethodInterception
 
     def content_between start_pointer, end_pointer
       line=start_pointer.line_number
-      all=[]
+      all =[]
       return all if line>=@parser.lines.count
       if line==end_pointer.line_number
         return @parser.lines[line][start_pointer.offset..end_pointer.offset-1]
@@ -503,25 +534,25 @@ class Parser #<MethodInterception
     end
 
     was_throwing=@throwing
-    @throwing=true
-    old_state=@current_value # DANGER! must set @current_value=nil :{
-    max=20 # no list of >100 ints !?! WOW exclude lists!! TODO OOO!
-    current=0
-    good=[]
+    @throwing   =true
+    old_state   =@current_value # DANGER! must set @current_value=nil :{
+    max         =20 # no list of >100 ints !?! WOW exclude lists!! TODO OOO!
+    current     =0
+    good        =[]
     # begin
-    old_nodes=@nodes.clone
+    old_nodes   =@nodes.clone
     # entry_node_offset=@nodes.count-1
     # if(entry_node_offset>48)
     # entry_node=@last_node
     # end
 
-    oldString=@string
-    last_string=""
+    oldString   =@string
+    last_string =""
     begin
       while true
         break if @string=="" or @string==last_string
         last_string=@string
-        match=yield # <------!!!!!!!!!!!!!!!!!!!
+        match      =yield # <------!!!!!!!!!!!!!!!!!!!
         break if match.blank?
         oldString=@string # (partial)  success
         good<< match
@@ -548,7 +579,7 @@ class Parser #<MethodInterception
     return good if not good.blank?
     #else restore!
     @throwing=was_throwing
-    @string=oldString
+    @string  =oldString
     for n in @nodes-old_nodes do
       n.destroy
     end
@@ -633,16 +664,17 @@ class Parser #<MethodInterception
   end
 
 
+  # hack for kleene star etc  _? == maybe{tokens}
   def method_missing(sym, *args, &block) # <- NoMethodError use node.blah to get blah!
     syms=sym.to_s
-    cut=syms[0..-2]
+    cut =syms[0..-2]
     #return send(cut) if(syms.end_with?"!")
     if (syms.end_with? "?")
-      old_last=@last_pattern
+      old_last     =@last_pattern
       @last_pattern=cut
-      x= maybe { send(cut) } if args.count==0
-      x= maybe { send(cut, args[0]) } if args.count==1
-      x= maybe { send(cut, args) } if args.count>1
+      x            = maybe { send(cut) } if args.count==0
+      x            = maybe { send(cut, args[0]) } if args.count==1
+      x            = maybe { send(cut, args) } if args.count>1
       @last_pattern=old_last
       return x
     end
@@ -658,23 +690,6 @@ class Parser #<MethodInterception
   def *(a)
     puts a
   end
-
-
-  def start
-    a=ARGV[0] || app_path+"/../examples/test.e"
-    #test_any
-    #test_action
-    #test_expression
-    #test_method
-    if (File.exists? a)
-      @lines=IO.readlines(a)
-    else
-      @lines=a.split("\n")
-    end
-    parse @lines[0]
-    #parse IO.read(a)
-  end
-
 
   def app_path
     File.expand_path(File.dirname(__FILE__)).to_s
@@ -700,5 +715,14 @@ class Parser #<MethodInterception
     return interpretation # self# @result
   end
 
+  # def start_parser
+  #   a=ARGV[0] || app_path+"/../examples/test.e"
+  #   if (File.exists? a)
+  #     @lines=IO.readlines(a)
+  #   else
+  #     @lines=a.split("\n")
+  #   end
+  #   parse @lines[0]
+  # end
 
 end

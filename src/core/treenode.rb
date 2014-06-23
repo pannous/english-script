@@ -1,12 +1,14 @@
 class TreeNode
 
   attr_accessor :name
+  attr_accessor :content
   attr_accessor :value
   attr_accessor :parent
   attr_accessor :nodes
   attr_accessor :valid
   attr_accessor :startPointer
   attr_accessor :endPointer
+  # @variableValues
   #attr_accessor :start_line
   #attr_accessor :end_line
   #attr_accessor :start_offset
@@ -20,8 +22,11 @@ class TreeNode
   def find x
     for n in self.nodes
       if(x=="*"|| n.name==x||n.name.to_s==x.to_s)
-        return n.value if n.value
-        return n.find "*"
+        if n.value
+          return n.value
+        end
+        s=n.find "*"
+        return s if s
       end
       ok=n.find x
       return ok if ok
@@ -30,6 +35,21 @@ class TreeNode
     # raise Exception.new "No such property #{x} in #{self}"
     false
   end
+
+  def all x
+    all=[]
+    for n in self.nodes
+      if(x=="*"|| n.name==x||n.name.to_s==x.to_s)
+        if n.value
+          all<<n.value
+        end
+        all<< n.find("*")
+      end
+      all<< n.find(x)
+    end
+    all
+  end
+
 
   def [] x
     find x
@@ -43,10 +63,6 @@ class TreeNode
     nodes.empty?
   end
 
-  def content
-    content_between startPointer, endPointer
-  end
-
   def good_value
     # return @nodes[0].good_value if @nodes.count==1
     return @name.to_s if not @nodes.empty?
@@ -55,8 +71,8 @@ class TreeNode
 
   def full_value
     if value
-      if $variables and ($variables[value])
-        return $variables[value]
+      if @variableValues and (@variableValues[value])
+        return @variableValues[value]
       else
         return "'#{value}'" if value.is_a? Quote
         return value
@@ -83,8 +99,9 @@ class TreeNode
   end
 
 
+  #BAD method
   def eval_node variables,fallback
-    $variables||=variables
+    @variableValues||=variables #woot?
     whot=full_value
     begin
       whot.gsub!("\\", "") # where from?? token?

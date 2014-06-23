@@ -39,12 +39,12 @@ class TreeTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def _test_while
-    @variables[:i]=0;
-    @variables[:y]=5;
+    @variableValues[:i]=0;
+    @variableValues[:y]=5;
     parse "while i is smaller or less then y do
         increase i by 4;
       done"
-    assert_equals @variables[:i],8
+    assert_equals @variableValues[:i],8
   end
 
   def _test_while2
@@ -91,7 +91,7 @@ done"
     full_value=@current_node.full_value
     val=eval(full_value)
     assert_equals val,26
-    val=@current_node.eval_node(@variables)
+    val=@current_node.eval_node(@variableValues)
     assert_equals val,26
   end
 

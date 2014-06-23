@@ -2,7 +2,9 @@
 # require 'test_helper'
 
 $use_tree=$emit
-$use_tree=true
+# $use_tree=true
+$use_tree=false
+$verbose=true
 
 require_relative '../parser_test_helper'
 
@@ -24,19 +26,19 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_return
-    assert_result_is "if(1<2) then 3 else 4",3
-    assert_result_is "if 1<2 then 5 else 4",5
-    assert_result_is "if(3<2) then 3 else 4",4
-    assert_result_is "if 3<2 then 5 else 4",4
-    assert_result_is "if 1<2 then false else 4","false"
+    assert_result_is "if(1<2) then 3 else 4", 3
+    assert_result_is "if 1<2 then 5 else 4", 5
+    assert_result_is "if(3<2) then 3 else 4", 4
+    assert_result_is "if 3<2 then 5 else 4", 4
+    assert_result_is "if 1<2 then false else 4", "false"
   end
 
   def test_else_
-    assert_result_is "if(1<2) then 3 else 4",3
-    assert_result_is "if 1<2 then 5 else 4",5
-    assert_result_is "if(3<2) then 3 else 4",4
-    assert_result_is "if 3<2 then 5 else 4",4
-    assert_result_is "if 1<2 then false else 4","false"
+    assert_result_is "if(1<2) then 3 else 4", 3
+    assert_result_is "if 1<2 then 5 else 4", 5
+    assert_result_is "if(3<2) then 3 else 4", 4
+    assert_result_is "if 3<2 then 5 else 4", 4
+    assert_result_is "if 1<2 then false else 4", "false"
     # assert_result_is "if 1<2 then false else 4",:false
     # assert_result_is "if 1<2 then false else 4",false
   end
@@ -85,9 +87,16 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_and
     assert parse 'x=2;if x is smaller 3 and x is bigger 1 then true'
+  end
+
+  def test_and2
     assert parse 'x=2;if x is smaller 3 but not x is smaller 1 then true'
-    assert parse 'x=2;if x is smaller 3 and x is bigger 2 then true'==false
-    assert parse 'x=2;if x is smaller 3 and x is bigger 2 then "DONT REACH" else true'==true
+    assert parse 'x=2;if x is smaller 3 and x is bigger 2 then "DONT REACH" else true'
+    assert_result_is 'x=2;if x is smaller 3 and x is bigger 1 then 4 else 5', 4
+  end
+
+  def test_and3
+    assert_result_is 'x=2;if x is smaller 3 and x is bigger 3 then 4 else 5', 5
   end
 
   def test_no_rollback
@@ -123,9 +132,30 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_if_return
     assert_equals parse('if 1>0 then beep'), "beeped"
+    assert_equals parse('if 1>0 then beep else 0'), "beeped"
+    assert_equals parse('return if 1'), 1 # shorthand for return expression_or_block if expression_or_block != null
+  end
+
+  def assert_c_ok
+    variables['c']=0
+    z= parse "if c>-1 then beep;"
+    assert_equals z,"beeped"
+    z= parse "c++;if c>1 then beep;"
+    assert_equals z,false
+    @parser.do_interpret!
+    z= parse "c++;if c>1 then beep;"
+    assert_equals z,"beeped"
+    # init "c++"
+    # @parser.do_interpret!
+    # c2=@parser.block
+    # c2=@parser.do_execute_block b
+    assert_equals c2, 2
+    assert_equals variables['c'], 2
   end
 
   def test_if_in_loop
+
+    assert_c_ok
     assert_equals parse('c=0;while c<3:c++;if c>1 then beep;done'), "beeped"
   end
 

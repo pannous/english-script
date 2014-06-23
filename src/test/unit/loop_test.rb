@@ -69,26 +69,26 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     #@variables['counter']=1
     #parse "counter+1"
     #r=expression0
-    assert(@variables['counter']==1)
+    assert(@variableValues['counter']==1)
     parse 'counter++'
     #r=expression0
-    assert(@variables['counter']==2)
+    assert(@variableValues['counter']==2)
     #@variables['counter']=2
     parse 'counter+=1'
     #r=plusEqual
     #r=expression0
-    assert(@variables['counter']==3)
+    assert(@variableValues['counter']==3)
     parse 'counter=counter+counter'
     #r=setter
     #r=algebra
     #r=expression0
-    counter=@variables['counter']
+    counter=@variableValues['counter']
     assert counter==6
   end
 
   def test_repeat # NEEEEDS blocks!! Parser.new(block)
     parse "counter =0; repeat three times: increase the counter; okay"
-    assert_equals @variables['counter'],3
+    assert_equals @variableValues['counter'],3
     # assert_equals @variables[:counter],3
     assert "counter =3"
     #s "counter=counter+1;"
@@ -100,7 +100,7 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     parse 'counter =0; repeat three times: counter+=1; okay'
     assert 'counter =3'
     parse 'counter =0; repeat three times: counter++; okay'
-    counter=@variables['counter']
+    counter=@variableValues['counter']
     assert 'counter =3'
     assert counter ==3
     #parse "counter =0; repeat three times: increase the counter by two; okay"
