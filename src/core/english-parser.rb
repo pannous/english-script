@@ -208,18 +208,19 @@ class EnglishParser < Parser
 
   def algebra
     must_contain_before [be_words, ',', ';', ':'], operators
-    result=any { maybe { value } or maybe { bracelet } }
+    result=value? or bracelet  # any { maybe { value } or maybe { bracelet } }
     star {
       op=operator #operator KEYWORD!?! ==> @string="" BUG     4 and 5 == TROUBLE!!!
       no_rollback! if not op=='and'
       # @string=""+@string2 #==> @string="" BUG WHY??
       y=maybe { value } || bracelet
-      if @interpret #and not $use_tree
+      if check_interpret #and not $use_tree
+        y=y.to_f if op == "/" # 3/4==0 ? NOT WITH US!!
         result=do_send(result, op, y) rescue SyntaxError
       end
       result||true # star OK
     }
-    return parent_node if $use_tree and not @interpret
+    return parent_node if $use_tree and not check_interpret
     if @interpret
       @result=result
       tree   =parent_node
@@ -290,6 +291,8 @@ class EnglishParser < Parser
 
   #direct_token: WITH space!
   def token t
+    return tokens t if t.is_a?Array
+    # encoding: utf-8
     #return nil if checkEnd
     # t=t[0] if t.is_a? Array #HOW TH ?? method_missing
     @string.strip!
@@ -311,6 +314,7 @@ class EnglishParser < Parser
   end
 
   def tokens *tokenz
+    # encoding: utf-8
     raiseEnd
     comment_block if @string.starts_with? '/*'
     string=@string.strip+' '
@@ -1560,7 +1564,7 @@ class EnglishParser < Parser
       return do_execute_block @methods[method], args
     end
 
-    obj =resolve(obj)
+    obj =resolve(obj) rescue obj
     args=args0
     args=args.name_or_value if args.is_a? Argument
     args=args.map &:name_or_value if args.is_a? Array and args[0].is_a? Argument
@@ -1968,7 +1972,7 @@ class EnglishParser < Parser
     # puts "parsing #{@all}"
     for line in @all
       next if line.blank?
-      interpretation=EnglishParser.new.parse line
+      interpretation=EnglishParser.new.parse line.encode('utf-8')
       puts interpretation.result
     end
   end

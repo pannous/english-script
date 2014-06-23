@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 def puts x # debug!
   print x
   print "\n"
@@ -250,7 +252,16 @@ class String
   end
 
   def matches regex
-    match regex
+    if regex.is_a? Array
+      regex.each { |x| z=match x;
+      if z
+        return x
+      end
+      }
+    else
+      match regex
+    end
+    return false
   end
 
   def stripNewline
@@ -271,6 +282,9 @@ class String
 
   def starts_with? x
     # puts "WARNING: start_with? missspelled as starts_with?"
+    if x.is_a?Array
+      x.each{|y| return y if start_with? y}
+    end
     return start_with? x
   end
 
@@ -385,6 +399,11 @@ class String
     downcase!
   end
 
+  def shift n=1
+    n.times{self.gsub!(/^./,"")}
+    # self[n..-1]
+  end
+
   def replace_numerals!
 
     gsub!(/([a-z])-([a-z])/, "\\1+\\2") # WHOOOT???
@@ -447,6 +466,23 @@ class String
     gsub!("dozen", "12")
     gsub!("couple", "2")
 
+    gsub!("½", "+1/2.0");
+    gsub!("⅓", "+1/3.0");
+    gsub!("⅔", "+2/3.0");
+    gsub!("¼", "+1/4.0");
+    gsub!("¾", "+3/4.0");
+    gsub!("⅕", "+1/5.0");
+    gsub!("⅖", "+2/5.0");
+    gsub!("⅗", "+3/5.0");
+    gsub!("⅘", "+4/5.0");
+    gsub!("⅙", "+1/6.0");
+    gsub!("⅚", "+5/6.0");
+    gsub!("⅛", "+1/8.0");
+    gsub!("⅜", "+3/8.0");
+    gsub!("⅝", "+5/8.0");
+    gsub!("⅞", "+7/8.0");
+
+
     gsub!(" hundred thousand", " 100000")
     gsub!(" hundred", " 100")
     gsub!(" thousand", " 1000")
@@ -466,6 +502,11 @@ class String
     eval(self).to_i
   end
 
+  def parse_number
+    replace_numerals!
+    eval(self).to_f
+  end
+
 end
 
 
@@ -474,6 +515,7 @@ class Numeric
   def number
     self
   end
+
   def and x
     self+x
   end

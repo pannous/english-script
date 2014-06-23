@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
+
 $use_tree=false
 #$use_tree=true
 
@@ -29,6 +31,7 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   def test_action_n_times
     parse "2 times say 'hello'"
     parse "say 'hello' 2 times"
+    parse "puts 'hello' 2 times"
   end
 
   def test_try_until

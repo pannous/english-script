@@ -9,6 +9,8 @@ Examples
 --------
 Here are some of our favorite examples from the [tests](test/unit), **working today**:
 
+`assert two minus 1½ equals 0.5`
+
 `beep three times`
 (There will be a generation of programmers who will shake their heads that there ever was a programming language which did not interpret that sentence correctly.)
 

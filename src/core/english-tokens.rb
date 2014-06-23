@@ -1,6 +1,8 @@
+# encoding: utf-8
 require_relative "TreeBuilder"
 require_relative "exceptions"
 require_relative "extensions"
+# encoding: utf-8
 
 module EnglishParserTokens #< MethodInterception
   include TreeBuilder
@@ -326,12 +328,22 @@ module EnglishParserTokens #< MethodInterception
     __(numbers).parse_integer
   end
 
+  def fraction
+    f=integer? || 0
+    m=@string.starts_with?(["¼","½","¾","⅓","⅔","⅕","⅖","⅗","⅘","⅙","⅚","⅛","⅜","⅝","⅞"])
+    raise NotMatching if not m
+    @string.shift
+    m=m.parse_number
+    @result=f.to_f+m
+  end
+
   def number
   # complex? ||
-    real? || integer? || number_word
+    real? || fraction? || integer? || number_word
   end
 
   def integer
+    raiseEnd
     match=@string.match(/^\s*-?\d+/)
     if match
       @current_value=match[0].to_i

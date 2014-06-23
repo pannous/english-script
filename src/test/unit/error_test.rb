@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# HERE NOT encoding: utf-8
+
 $use_tree=false
 $verbose=false
 # $verbose=true

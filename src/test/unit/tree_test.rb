@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
 
 $use_tree=true
 
@@ -11,6 +12,12 @@ class TreeTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_algebra1
     assert_result_is "3 minus one",2
+    init "4½"
+    assert_equals @parser.fraction,4.5
+    init "4½+3½"
+    @parser.do_interpret!
+    assert_equals @parser.algebra,8
+    assert_result_is "4½+3½","8"
   end
 
 
@@ -63,6 +70,13 @@ done"
     init "evaluate the function at point I"
     @parser.method_call
     #action
+  end
+
+  def test_algebra_NOW
+    assert_result_is "1+3/4.0","1¾"
+    # 1.0 noo
+    assert_result_is "1.0+3/4.0","1¾"
+    # 4.0
   end
 
   def test_algebra

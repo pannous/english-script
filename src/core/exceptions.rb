@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Exceptions
   def filter_stack s
     s.select { |x| not (
