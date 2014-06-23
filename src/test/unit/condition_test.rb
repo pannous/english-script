@@ -4,7 +4,7 @@
 $use_tree=$emit
 # $use_tree=true
 $use_tree=false
-$verbose=true
+# $verbose =true
 
 require_relative '../parser_test_helper'
 
@@ -89,9 +89,17 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert parse 'x=2;if x is smaller 3 and x is bigger 1 then true'
   end
 
-  def test_and2
+
+  def test_and1
     assert parse 'x=2;if x is smaller 3 but not x is smaller 1 then true'
-    assert parse 'x=2;if x is smaller 3 and x is bigger 2 then "DONT REACH" else true'
+  end
+
+  def test_and2
+    assert parse 'x=2;if x is smaller 3 and x is bigger 3 then "DONT REACH" else true'
+  end
+
+  def test_and22
+    verbose
     assert_result_is 'x=2;if x is smaller 3 and x is bigger 1 then 4 else 5', 4
   end
 
@@ -138,13 +146,13 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def assert_c_ok
     variables['c']=0
-    z= parse "if c>-1 then beep;"
-    assert_equals z,"beeped"
+    z             = parse "if c>-1 then beep;"
+    assert_equals z, "beeped"
     z= parse "c++;if c>1 then beep;"
-    assert_equals z,false
+    assert_equals z, false
     @parser.do_interpret!
     z= parse "c++;if c>1 then beep;"
-    assert_equals z,"beeped"
+    assert_equals z, "beeped"
     init "c++"
     @parser.do_interpret!
     c2=@parser.block

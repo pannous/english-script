@@ -1,8 +1,9 @@
 class HelperMethods
   # def self.
-  def self.column a,b
-    all=a.map{|x|x.split}
-    c=all.map{|x|x.at b}
+  def self.column nr,array
+    # return self.column b,a if not a.is_a? Array and b.is_a? Array
+    all=array.map{|x|x.split}
+    c=all.map{|x|x.at nr-1}
     c
   end
 

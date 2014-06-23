@@ -2,13 +2,13 @@
 # encoding: utf-8
 
 $use_tree=true
+$use_tree=false
 
 require_relative '../parser_test_helper'
 
 class AlgebraTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   include ParserTestHelper
-
 
   def test_algebra1
     assert_result_is "two minus 1½",0.5
@@ -23,6 +23,7 @@ class AlgebraTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
 
   def test_algebra_NOW
+    assert_result_is "1+(3/4)","1¾"
     assert_result_is "1+3/4.0","1¾"
     # 1.0 noo
     assert_result_is "1.0+3/4.0","1¾"

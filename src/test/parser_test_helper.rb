@@ -138,6 +138,7 @@ module ParserTestHelper
     # return @parser.interpretation if $use_tree
     @result=@parser.interpretation.result
     @result=false if @result==:false
+    @result=true if @result==:true
     @result
     # @current_value=@parser.interpretation.current_value
     # @current_node=@parser.interpretation.current_node
@@ -151,6 +152,9 @@ module ParserTestHelper
     @parser.variables[v].type
   end
 
+  def verbose
+    @parser.verbose=true
+  end
 
   # def _test_all
   #   @parser.methods.each { |m|

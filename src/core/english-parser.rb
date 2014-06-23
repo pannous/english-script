@@ -4,6 +4,7 @@
 require_relative 'Interpretation'
 require_relative 'TreeBuilder'
 require_relative 'CoreFunctions'
+require_relative 'HelperMethods'
 require_relative 'english-tokens'
 require_relative 'power-parser'
 require_relative 'extensions'
@@ -217,7 +218,7 @@ class EnglishParser < Parser
       y=maybe { value } || bracelet
       if check_interpret #and not $use_tree
         y=y.to_f if op == "/" # 3/4==0 ? NOT WITH US!!
-        result=do_send(result, op, y) rescue SyntaxError
+        result=do_send(result, op, y||@result) rescue SyntaxError
       end
       result||true # star OK
     }
@@ -281,8 +282,7 @@ class EnglishParser < Parser
     s    =statement
     star {
       newlines
-      s2=statement
-      s||=s2
+      s=statement||s
     }
     newline? # danger might act as block end!
 
@@ -349,7 +349,7 @@ class EnglishParser < Parser
     t.gsub(/([^\w])/, "\\\\\\1")
   end
 
-  def starts_with? tokenz
+  def starts_with tokenz
     return false if checkEnd
     string=@string+' ' # todo: as regex?
     tokenz=[tokenz] if tokenz.is_a? String
@@ -559,7 +559,8 @@ class EnglishParser < Parser
     no_rollback!
     c=true_method or bash_action
     args=star { arg }
-    do_send(a, c, args) if check_interpret
+    args=[args,Argument.new(value:a)] if c.is_a? Method #with owner
+    puts do_send(a, c, args) if check_interpret
   end
 
   def statement
@@ -611,9 +612,14 @@ class EnglishParser < Parser
     exec(action || quote)
   end
 
+  def raise_not_matching msg=nil
+    raise NotMatching.new msg
+  end
+
   def bash_action
     require_relative "bindings/shell/bash-commands"
-    must_contain ['bash'] + $bash_commands
+    ok=starts_with (['bash'] + $bash_commands)
+    raise_not_matching "no bash commands" if not ok
     remove_tokens 'execute', 'command', 'commandline', 'run', 'shell', 'shellscript', 'script', 'bash'
     @command = maybe { quote } # danger bash "hi">echo
     @command ||= rest_of_line
@@ -804,13 +810,14 @@ class EnglishParser < Parser
     return true
   end
 
-  def has_args m, clazz=Object,assume=false
+  def has_args method, clazz=Object,assume=false
+      #todo MATCH!   [[:req, :x]] -> required: x
+    return method.arity>0 if method.is_a?Method
     clazz         =clazz.class if not clazz.is_a? Class #lol
-    object_method = clazz.method(m) if clazz.method_defined?(m) rescue false
-    object_method = clazz.public_instance_method(m) if not object_method rescue false
+    object_method = clazz.method(method) if clazz.method_defined?(method) rescue false
+    object_method = clazz.public_instance_method(method) if not object_method rescue false
     if object_method # Bad approach:  that might be another method Tree.beep!
       # puts "has_args method.parameters : #{object_method} #{object_method.parameters}"
-      #todo MATCH!   [[:req, :x]] -> required: x
       return object_method.arity>0
     end
     return assume #false # true
@@ -1051,7 +1058,9 @@ class EnglishParser < Parser
 
   def boolean
     b      =tokens 'true', 'false'
-    @result=b=='true'
+    @result=(b=='true')? :true : :false
+    # @result=b=='true'
+    @result
     # @OK
   end
 
@@ -1184,6 +1193,10 @@ class EnglishParser < Parser
     tokens articles
   end
 
+  def number_or_word
+    number?||word
+  end
+
   def arg position=1 # about sex
     pre=preposition? ||"" #  might be superfluous if calling "BY"
     article? #todo use a vs the ?
@@ -1192,7 +1205,7 @@ class EnglishParser < Parser
     type=typeName?
     v   =endNode
     name=pre+ (a ? a.name : "")
-    Argument.new name: name, type: type, preposition: pre, position: position, value: v
+    Argument.new preposition: pre, name: name, type: type,  position: position, value: v
   end
 
 
@@ -1355,7 +1368,7 @@ class EnglishParser < Parser
     tokens? comparison_words # bigger or equal  != SEE condition_tree
     _? 'than', 'then' #_?'then' ;}
     subnode comparation: pointer-start
-    @result=@comp=pointer-start #comp||eq
+    @comp=pointer-start #comp||eq
   end
 
   def either_or
@@ -1369,7 +1382,7 @@ class EnglishParser < Parser
   end
 
   def is_comparator c
-    comparison_words.contains(c) || class_words.contains(c)
+    comparison_words.contains(c) || comparison_words.contains(c-"is ") || class_words.contains(c)
   end
 
 
@@ -1408,8 +1421,10 @@ class EnglishParser < Parser
   end
 
   def check_condition cond=nil, negate=false #later:node?
-    return true if cond==true #EVALUATED BEFORE!!!
-    return false if cond==false #EVALUATED BEFORE!!!
+    return true if cond==true || cond==:true  #EVALUATED BEFORE!!!
+    return false if cond==false || cond==:false  #EVALUATED BEFORE!!!
+    # cond==nil ||
+    # return false if cond==false #EVALUATED BEFORE!!!
     begin
       # else use state variables todo better!
       if cond.is_a? TreeNode
@@ -1417,7 +1432,7 @@ class EnglishParser < Parser
         @b   =cond.all(:expressions).reject { |x| x==false }[-1]
         @comp=cond[:comparation]
       end
-      c=@comp
+      @comp.strip!
       result=do_compare(@a, @comp, @b) if is_comparator @comp
       result=do_send(@a, @comp, @b) if not is_comparator @comp
       # if !result and not cond.blank? #HAAACK DANGARRR
@@ -1459,9 +1474,9 @@ class EnglishParser < Parser
     negate = (negated||@not)&& !(negated and @not)
     subnode negate: negate
     # return  negate ? !@a : @a if not @comp
-    if @interpret
+    if check_interpret
       return negate ? (!check_list_condition(quantifier)) : check_list_condition(quantifier) if quantifier
-      return negate ? (!check_condition) : check_condition # nil
+      return negate ? (!check_condition) : check_condition# nil
     end
     return start-pointer if not $use_tree
     return parent_node if $use_tree
@@ -1632,21 +1647,27 @@ class EnglishParser < Parser
       return do_execute_block @methods[method], args
     end
 
-    obj =resolve(obj0) rescue obj0
+    obj =method.owner if method.is_a? Method
+    obj ||=resolve(obj0) rescue obj0
     args=args0
     args=args.name_or_value if args.is_a? Argument
     args=args.map &:name_or_value if args.is_a? Array and args[0].is_a? Argument
     args=eval_string(args) rescue NoMethodError
     args.replace_numerals! if args and args.is_a? String
 
-    method=method.name.to_s if method.is_a? Method #todo bettter
-    if obj.respond_to? method
-      # OK
-    elsif  obj.respond_to? method+'s'
-      method=method+'s'
-    elsif  obj.respond_to? method.gsub(/s$/, '')
-      method=method.gsub(/s$/, '')
+    if method.is_a? Method and method.owner
+      return @result=method.call(*args)
     end
+
+    method_name=(method.is_a? Method)? method.name.to_s  : method.to_s  #todo bettter
+    if obj.respond_to? method_name
+      # OK
+    elsif  obj.respond_to? method_name+'s'
+      method=method_name+'s'
+    elsif  obj.respond_to? method_name.gsub(/s$/, '')
+      method=method_name.gsub(/s$/, '') rescue nil
+    end
+
 
     if not obj
       obj=args0

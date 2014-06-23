@@ -10,6 +10,10 @@ class BashTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   include ParserTestHelper
 
   def test_pipe
-    parse "bash 'ls -al .'|column 1"
+    parse "bash 'ls -al' | column 1"
   end
+
+  # def test_selector
+  #   parse "column 1 from ls -all"
+  # end
 end
