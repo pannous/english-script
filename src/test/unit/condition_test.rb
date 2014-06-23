@@ -145,12 +145,12 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     @parser.do_interpret!
     z= parse "c++;if c>1 then beep;"
     assert_equals z,"beeped"
-    # init "c++"
-    # @parser.do_interpret!
-    # c2=@parser.block
+    init "c++"
+    @parser.do_interpret!
+    c2=@parser.block
     # c2=@parser.do_execute_block b
-    assert_equals c2, 2
-    assert_equals variables['c'], 2
+    assert_equals c2, 3
+    assert_equals variables['c'], 3
   end
 
   def test_if_in_loop

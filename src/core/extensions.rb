@@ -515,7 +515,8 @@ class String
 
   def parse_integer
     replace_numerals!
-    eval(self).to_i
+    i=eval(self).to_i # rescue 666
+    i
   end
 
   def parse_number

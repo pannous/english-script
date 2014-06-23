@@ -79,7 +79,7 @@ end
 
 class Parser #<MethodInterception
   include Exceptions
-  attr_accessor :lines
+  attr_accessor :lines,:verbose
 
   def initialize
     super # needs to be called by hand!

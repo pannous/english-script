@@ -415,7 +415,7 @@ class EnglishParser < Parser
     must_contain '--'
     v=variable
     _ '--'
-    @result           =do_evaluate(v).to_i+1 if @interpret
+    @result           =do_evaluate(v,v.type)+1 if @interpret
     @variableValues[v]=v.value=@result
   end
 
@@ -424,7 +424,7 @@ class EnglishParser < Parser
     v=variable
     _ '++'
     return parent_node if not @interpret
-    @result                =do_evaluate(v).to_i+1
+    @result                =do_evaluate(v,v.type)+1
     @variableValues[v.name]=v.value=@result
   end
 
@@ -438,7 +438,7 @@ class EnglishParser < Parser
     mod=__ '|=', '&=', '&&=', '||=', '+=', '-=', '/=', '^=', '%=', '#=', '*=', '**=', '<<', '>>'
     val=v.value
     exp=expressions # value
-    arg=do_evaluate(exp)
+    arg=do_evaluate(exp,v.type)
     return parent_node if not check_interpret
     @result                =val|arg if mod=='|='
     @result                =val||arg if mod=='||='
@@ -1555,13 +1555,17 @@ class EnglishParser < Parser
     @current_value
   end
 
-  def do_evaluate x #WHAT, WHY?
+  # see resolve ???
+  def do_evaluate x,type=nil #  #WHAT, WHY?
+    return x if not check_interpret
     begin
       return x.value || @variableValues[x.name] if x.is_a? Variable
+      return x.to_f if x.is_a? String and type and type.is_a?Numeric
       return @variableValues[x] if @variableValues.contains x
       return x if x.is_a? Quote #why not just String???
       return x if x.is_a? Class
       return x if x.is_a? Hash
+      return x.to_f if x.is_a? String and type and type.is_a?Fixnum
       return x if x.is_a? Numeric
       return x if x.is_a? String
       return eval(x[0]) if x.is_a? Array and x.length==1
@@ -1577,6 +1581,7 @@ class EnglishParser < Parser
     end
   end
 
+  # see do_evaluate ! merge
   def resolve x
     return Dir.new x if is_dir x
     return File.new x if is_file x

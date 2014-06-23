@@ -150,7 +150,7 @@ module TreeBuilder
   end
 
   def parent_node
-    return nil if @nodes.count==0
+    return "OK_BUT_NO_TREE" if @nodes.count==0
     for i in 0..(caller.count)
       next if not caller[i].match(/parser/)
       name=caller[i].match(/`(.*)'/)[1]
