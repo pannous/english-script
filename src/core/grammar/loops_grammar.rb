@@ -125,7 +125,7 @@ module LoopsGrammar
     _? 'do'
     #_? "repeat"
     a=action
-    ws=a.join(' ').split(' ')
+    ws=a.join(' ').split(' ') rescue [a]
 
     if is_number ws[-1] # greedy action hack "say hello 6" times
       a=ws[0..-2]

@@ -804,7 +804,7 @@ class EnglishParser < Parser
     return true
   end
 
-  def has_args m, clazz=Object
+  def has_args m, clazz=Object,assume=false
     clazz         =clazz.class if not clazz.is_a? Class #lol
     object_method = clazz.method(m) if clazz.method_defined?(m) rescue false
     object_method = clazz.public_instance_method(m) if not object_method rescue false
@@ -813,7 +813,7 @@ class EnglishParser < Parser
       #todo MATCH!   [[:req, :x]] -> required: x
       return object_method.arity>0
     end
-    return true
+    return assume #false # true
   end
 
   def c_method
@@ -1650,12 +1650,12 @@ class EnglishParser < Parser
 
     if not obj
       obj=args0
-      @result=Object.send(method, args) rescue NoMethodError #.new("#{obj}.#{op}")
+      @result=Object.send(method, args) rescue NoMethodError
       @result=args.send(method) rescue NoMethodError #.new("#{obj}.#{op}")
       @result=args[1].send(method) if has_args method, obj if (args[0]=='of') rescue NoMethodError #rest of x
     else
-      @result=obj.send(method) if not has_args method, obj rescue NoMethodError #.new("#{obj}.#{op}") #SyntaxError,
-      @result=obj.send(method, args) if has_args method, obj rescue NoMethodError #SyntaxError,
+      @result=obj.send(method) unless has_args method, obj,false rescue NoMethodError
+      @result=obj.send(method, args) if has_args method, obj,true  rescue NoMethodError #SyntaxError,
     end
     #todo: call FUNCTIONS!
     # puts object_method.parameters #todo MATCH!

@@ -631,6 +631,7 @@ class Numeric
     self*self
   end
 
+  # todo: use ^^
   def squared
     self*self
   end

@@ -100,7 +100,7 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_repeat1
-    @parser.verbose=true
+    # @parser.verbose=true
     parse 'counter =0; repeat three times: counter+=1; okay'
     assert 'counter =3'
     parse 'counter =0; repeat three times: counter++; okay'
