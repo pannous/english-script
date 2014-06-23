@@ -1436,8 +1436,10 @@ class EnglishParser < Parser
       if cond.is_a? TreeNode
         @a   =cond[:expressions]
         @b   =cond.all(:expressions).reject { |x| x==false }[-1]
-        @comp=cond[:comparation]
+        @comp=cond.all(:comparation).reject { |x| x==false }[-1]
+        # @comp=cond[:comparation]
       end
+      return false if not @comp #todo!
       @comp.strip!
       result=do_compare(@a, @comp, @b) if is_comparator @comp
       result=do_send(@a, @comp, @b) if not is_comparator @comp
