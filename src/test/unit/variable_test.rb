@@ -37,10 +37,10 @@ class VariableTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_vars # NEEEEDS blocks!! Parser.new(block)
-    variables['counter']=3
-    s "counter =3"
-    condition
-    assert "counter =3"
+    variables['counter']=4
+    init "counter=3"
+    @parser.condition #don't change var!
+    assert "counter =2"
     # @variables[:counter]=3
     # assert "counter =3"
     parse "counter =2"
