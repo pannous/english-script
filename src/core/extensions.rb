@@ -240,7 +240,8 @@ class Array
   end
 
   def contains x
-    index x
+    ok=index(x)
+    ok ? at(index x) : false
   end
 
   #def to_s
@@ -371,7 +372,7 @@ class String
   end
 
   def - x
-    self.gsub!(x,"")
+    self.gsub(x,"")
     # self[0..self.index(x)-1]+self[self.index(x)+x.length..-1]
   end
 

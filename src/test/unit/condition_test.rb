@@ -67,8 +67,11 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_list_quantifiers
-    check=parse 'x is 2; if all 0,1,2 are smaller 3 then increase x'
-    assert_equals check, 3
+    check=parse 'x is 5; if all 0,1,2 are smaller 3 then increase x'
+    assert_equals check, 6
+  end
+
+  def test_list_quantifiers2
     check=parse 'x=2;if all 0,1,2 are smaller 2 then x++'
     assert_equals check, false # if false then true returns false !
     check=parse 'x=2;if one of 0,1,2 is smaller 3 then x++'

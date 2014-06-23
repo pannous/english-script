@@ -1352,8 +1352,8 @@ class EnglishParser < Parser
 # Comparison phrase
   def comparation
     # danger: is, is_a
-    start=pointer
     eq=tokens? be_words
+    start=pointer
     tokens? 'either', 'neither'
     @not=tokens? 'not'
     maybe { adverb } #'quite','nearly','almost','definitely','by any means','without a doubt'
@@ -1367,8 +1367,9 @@ class EnglishParser < Parser
     tokens? 'and', 'or', 'xor', 'nor'
     tokens? comparison_words # bigger or equal  != SEE condition_tree
     _? 'than', 'then' #_?'then' ;}
-    subnode comparation: pointer-start
-    @comp=pointer-start #comp||eq
+    @comp=comp ? pointer-start : eq
+    subnode comparation: @comp
+    @comp
   end
 
   def either_or
@@ -1382,7 +1383,11 @@ class EnglishParser < Parser
   end
 
   def is_comparator c
-    comparison_words.contains(c) || comparison_words.contains(c-"is ") || class_words.contains(c)
+    ok=comparison_words.contains(c) ||
+        comparison_words.contains(c-"is ") ||
+        comparison_words.contains(c-"are ") ||
+        class_words.contains(c)
+    ok
   end
 
 
@@ -1391,6 +1396,7 @@ class EnglishParser < Parser
     # see quantifiers
     begin
       count=0
+      @comp.strip!
       for item in @a
         @result=do_compare(item, @comp, @b) if is_comparator @comp
         @result=do_send(item, @comp, @b) if not is_comparator @comp
@@ -1574,6 +1580,8 @@ class EnglishParser < Parser
   def do_evaluate x,type=nil #  #WHAT, WHY?
     return x if not check_interpret
     begin
+      return x if x.is_a? Array and x.length!=1
+      return eval(x[0]) if x.is_a? Array and x.length==1
       return x.value || @variableValues[x.name] if x.is_a? Variable
       return x.to_f if x.is_a? String and type and type.is_a?Numeric
       return @variableValues[x] if @variableValues.contains x
@@ -1583,8 +1591,6 @@ class EnglishParser < Parser
       return x.to_f if x.is_a? String and type and type.is_a?Fixnum
       return x if x.is_a? Numeric
       return x if x.is_a? String
-      return eval(x[0]) if x.is_a? Array and x.length==1
-      return x if x.is_a? Array and x.length!=1
       return x.eval_node @variableValues if x.is_a? TreeNode
       return resolve x if x.is_a? String and match_path(x)
       return x.call if x.is_a? Method #Whoot
