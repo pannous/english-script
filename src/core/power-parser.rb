@@ -705,7 +705,9 @@ class Parser #<MethodInterception
       allow_rollback
       init string
       root
+      @last_result=@result
     rescue => e
+      @last_result=@result=nil
       filter_backtrace e
       error e
     end

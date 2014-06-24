@@ -114,8 +114,14 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_has_error 'x=2;if x is smaller 3 and x is bigger 1 then for end'
   end
 
-  def test_it
+  def test_it_result
     assert parse 'x=1+1;if it is 2 then true'
+    assert_result_is 'x=3;it*2', 6
+    assert_result_is '3;it*2', 6
+    assert_result_is '2*it', 12
+    assert_result_is 'it*2', 24
+    assert_result_is '6;that*2', 12
+    assert_result_is '6;2*result', 12
   end
 
   def test_or
