@@ -481,7 +481,7 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def other_verbs
-    ['increase','decrease','square']
+    ['increase','decrease','square','invert']
   end
 
   def special_verbs

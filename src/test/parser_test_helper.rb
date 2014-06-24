@@ -38,7 +38,7 @@ module ParserTestHelper
 
   def assert_equals a, b
     if a==b
-      puts "TEST PASSED!#    #{a} == #{b}"
+      puts "TEST PASSED! #{@parser.original_string}    #{a} == #{b}"
     else
       e= NotPassing.new "#{a} should equal #{b}"
       e.set_backtrace filter_stack(caller)
@@ -47,7 +47,7 @@ module ParserTestHelper
   end
 
   def assert x=nil, msg=nil, &block
-    return puts "\nTEST PASSED! " if x==true
+    return puts "\nTEST PASSED! #{@parser.original_string}" if x==true
     x=yield if not x and block
     #raise Exception.new (to_source(block)) if not x
     raise NotPassing.new to_source(block) if block and not x

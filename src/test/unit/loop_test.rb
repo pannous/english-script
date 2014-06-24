@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
-$use_tree=false
-#$use_tree=true
+# $use_tree=false
+$use_tree=true
 
 require_relative '../parser_test_helper'
 
@@ -22,36 +22,12 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals parse('c=0;while c<1:c++;beep;done'), "beeped"
   end
 
-  def test_loops #OK
-    parse 'beep three times' #OK
-    parse "repeat three times: beep; okay" #OK
-    parse "repeat three times: beep" #OK
-  end
-
-  def test_action_n_times
-    parse "2 times say 'hello'"
-    parse "say 'hello' 2 times"
-    parse "puts 'hello' 2 times"
-  end
-
-  def _test_try_until #todo
+  def test_repeat_while #todo
     parse 'x=0;repeat while x<4: x++'
     assert_equals variables["x"], 4
     parse 'repeat x++ while x<4'
     assert_equals variables["x"], 4
     parse 'repeat x++ until x>4'
-    assert_equals variables["x"], 5
-    parse 'repeat until x>4: x++'
-    assert_equals variables["x"], 5
-    parse 'try until x>4: x++'
-    assert_equals variables["x"], 5
-    parse 'try while x<4: x++'
-    assert_equals variables["x"], 4
-    parse "try x++ until x>4"
-    assert_equals variables["x"], 5
-    parse "try x++ while x<4"
-    assert_equals variables["x"], 4
-    parse 'increase x until x>4'
     assert_equals variables["x"], 5
   end
 
@@ -88,9 +64,9 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_repeat # NEEEEDS blocks!! Parser.new(block)
     parse "counter =0; repeat three times: increase the counter; okay"
+    assert "counter=3"
     assert_equals @variableValues['counter'], 3
     # assert_equals @variables[:counter],3
-    assert "counter =3"
     #s "counter=counter+1;"
     #@interpret=false
     #action

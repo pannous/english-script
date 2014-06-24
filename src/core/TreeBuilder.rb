@@ -150,7 +150,7 @@ module TreeBuilder
   end
 
   def parent_node
-    return "OK_BUT_NO_TREE" if @nodes.count==0
+    return @original_string-@string if not $use_tree # @nodes.count==0
     for i in 0..(caller.count)
       next if not caller[i].match(/parser/)
       name=caller[i].match(/`(.*)'/)[1]
@@ -187,6 +187,8 @@ module TreeBuilder
       @current_node.valid=true if @current_value #and not @current_node.nodes.blank?
       @current_node.value=@current_value if @current_node.is_leaf
       @current_node.endPointer=pointer
+      content=pointer-@current_node.startPointer
+      @current_node.content||=content
       @nodes.pop # keep through parent
       @current_node=@nodes[-1]
       @new_nodes<<@current_node  #if name=="boolean" || @current_value  # WHAT's THAT?

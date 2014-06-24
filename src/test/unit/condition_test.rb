@@ -102,7 +102,7 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_and22
-    verbose
+    # verbose
     assert_result_is 'x=2;if x is smaller 3 and x is bigger 1 then 4 else 5', 4
   end
 

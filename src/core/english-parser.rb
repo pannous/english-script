@@ -290,7 +290,8 @@ class EnglishParser < Parser
     return s if check_interpret
     content=pointer-start
     return content if not $use_tree
-    # @current_node.content=parent_node.content=content if $use_tree
+    parent_node.content=content if $use_tree
+    # return @current_node if $use_tree
     return parent_node if $use_tree
     # @current_node.content=content_between startPointer, endPointer
     # return (pointer-start).map &:stripNewline if not $use_tree
@@ -388,9 +389,9 @@ class EnglishParser < Parser
     filter(xs, crit)
   end
 
-  def list
+  def list check=true
     raise NotMatching.new if @string[0]==','
-    must_contain_before [be_words, operators-['and']], ',' #,before:
+    must_contain_before [be_words, operators-['and']], ',' if check  #,before:
     # +[' '] ???
     start_brace= maybe { token '[' }
     start_brace= _? '{' if not start_brace
@@ -879,6 +880,9 @@ class EnglishParser < Parser
       @current_value=nil
       @in_args      =true
       args          =star { arg }
+    else
+      more=_? ','
+      obj=[obj]+list(false) if more
     end
     @in_args=false
     _ ')' if start_brace=='('
@@ -1474,6 +1478,10 @@ class EnglishParser < Parser
     return false
   end
 
+  def action_or_expressions q
+    maybe{expressions(q)}|| action
+  end
+
   def condition
     start     =pointer
     brace     =_? '('
@@ -1483,13 +1491,12 @@ class EnglishParser < Parser
     quantifier=maybe { tokens quantifiers } # vs selector!
     # __? noun _? "in" all even numbers in [1,2,3,4] -> selector!
     _? 'of' if quantifier # all of
-    @a   =expressions quantifier
+    @a   =action_or_expressions quantifier
     @not =false
     @comp=use_verb=maybe { verb_comparison } # run like , contains
     @comp=maybe { comparation } unless use_verb # are bigger than
     allow_rollback # upto where??
-    @b =expressions #if @comp
-    # @b=endNode
+    @b =action_or_expressions nil #if @comp
     _ ')' if brace
     negate = (negated||@not)&& !(negated and @not)
     subnode negate: negate
@@ -1555,8 +1562,9 @@ class EnglishParser < Parser
 
   def the_noun_that
     the?
-    noun
+    n=noun
     star { selector }
+    n
   end
 
 

@@ -117,7 +117,7 @@ module LoopsGrammar
   end
 
     # notodo: LTR parser just here!
-  # say hello 6 times
+  # say hello 6 times   #=> (say hello 6) times ? give up for now
   # say hello 6 times 5 #=> hello 30 ??? SyntaxError! say hello (6 times 5)
   def action_n_times
     must_contain 'times'
