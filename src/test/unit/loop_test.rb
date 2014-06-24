@@ -22,10 +22,10 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals parse('c=0;while c<1:c++;beep;done'), "beeped"
   end
 
-  def test_loops  #OK
+  def test_loops #OK
     parse 'beep three times' #OK
     parse "repeat three times: beep; okay" #OK
-    parse "repeat three times: beep"       #OK
+    parse "repeat three times: beep" #OK
   end
 
   def test_action_n_times
@@ -36,23 +36,23 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def _test_try_until #todo
     parse 'x=0;repeat while x<4: x++'
-    assert_equals variables["x"],4
+    assert_equals variables["x"], 4
     parse 'repeat x++ while x<4'
-    assert_equals variables["x"],4
+    assert_equals variables["x"], 4
     parse 'repeat x++ until x>4'
-    assert_equals variables["x"],5
+    assert_equals variables["x"], 5
     parse 'repeat until x>4: x++'
-    assert_equals variables["x"],5
+    assert_equals variables["x"], 5
     parse 'try until x>4: x++'
-    assert_equals variables["x"],5
+    assert_equals variables["x"], 5
     parse 'try while x<4: x++'
-    assert_equals variables["x"],4
+    assert_equals variables["x"], 4
     parse "try x++ until x>4"
-    assert_equals variables["x"],5
+    assert_equals variables["x"], 5
     parse "try x++ while x<4"
-    assert_equals variables["x"],4
+    assert_equals variables["x"], 4
     parse 'increase x until x>4'
-    assert_equals variables["x"],5
+    assert_equals variables["x"], 5
   end
 
 
@@ -88,15 +88,19 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_repeat # NEEEEDS blocks!! Parser.new(block)
     parse "counter =0; repeat three times: increase the counter; okay"
-    assert_equals @variableValues['counter'],3
+    assert_equals @variableValues['counter'], 3
     # assert_equals @variables[:counter],3
     assert "counter =3"
     #s "counter=counter+1;"
     #@interpret=false
     #action
     #@interpret=true
-    parse 'counter =0; repeat three times: counter=counter+1; okay'
-    assert 'counter =3' #if $use_tree # counter=counter+1 not repeatable as string
+  end
+
+  def test_repeat3
+    assert_result_is 'counter =0; repeat three times: counter=counter+1; okay',3
+    # parse 'counter =0; repeat three times: counter=counter+1; okay'
+    # assert 'counter =3' #if $use_tree # counter=counter+1 not repeatable as string
   end
 
   def test_repeat1

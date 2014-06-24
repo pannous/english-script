@@ -335,6 +335,7 @@ module EnglishParserTokens #< MethodInterception
 
   def fraction
     f=integer? || 0
+    raiseEnd
     m=@string.starts_with?(["¼","½","¾","⅓","⅔","⅕","⅖","⅗","⅘","⅙","⅚","⅛","⅜","⅝","⅞"])
     raise NotMatching if not m
     @string.shift
@@ -470,7 +471,8 @@ module EnglishParserTokens #< MethodInterception
 
 
   def noun include=[]
-    the?
+    a=the?
+    must_not_match system_verbs unless a
     return word(include) unless $use_wordnet
     #return true if true_variable
     no_keyword_except include
@@ -486,10 +488,14 @@ module EnglishParserTokens #< MethodInterception
     ['evaluate', 'eval']
   end
 
+  def system_verbs
+    ['contains', 'contain']+special_verbs+auxiliary_verbs
+  end
+
   def verb
-    system_verbs=['contains', 'contain']+special_verbs+auxiliary_verbs
     no_keyword_except system_verbs-be_words
     found_verb= tokens? other_verbs+system_verbs-be_words-['do'] #@verbs,
+    raise_not_matching "no verb" if not found_verb
     return found_verb unless $use_wordnet
     @current_value=found_verb||wordnet_is_verb # call_is_verb
   end
@@ -497,6 +503,7 @@ module EnglishParserTokens #< MethodInterception
 
   def adjective
     return @current_value=tokens('funny', 'big', 'small', 'good', 'bad') unless $use_wordnet
+    # raise_not_matching "no verb" if not found_verb
     @current_value=wordnet_is_adjective
   end
 

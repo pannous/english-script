@@ -866,14 +866,14 @@ class EnglishParser < Parser
     method      =true_method
     start_brace =__? '(', '{' # '[', list and closure danger: index
     # todo  ?merge with list?
-    no_rollback! if brace
+    no_rollback! if start_brace
     if is_object_method(method) #todo !has_object(method) is_class_method
       obj||=Object
     else
       obj=maybe { nod? } if @in_args
-      obj=maybe { nod? || list? } if not @in_args # todo: expression
+      obj=maybe { nod? || list } if not @in_args # todo: expression
       # print sorted files
-      obj=maybe { nod? || list? || expression } if not @in_args # todo: expression
+      # obj=maybe { nod? || list? || expression } if not @in_args # todo: expression
     end
     if has_args(method, obj)
       @current_value=nil
@@ -1149,6 +1149,10 @@ class EnglishParser < Parser
     # noun
   end
 
+  def must_not_match words
+    should_not_match words
+  end
+
   def should_not_match words
     bad=starts_with? words
     raise ShouldNotMatchKeyword.new bad if bad
@@ -1343,7 +1347,6 @@ class EnglishParser < Parser
 # contains
   def verb_comparison
     star { adverb }
-    @comp=nil
     @comp=verb # WEAK !?
     preposition?
     @comp
@@ -1352,7 +1355,7 @@ class EnglishParser < Parser
 
   def comparison # WEAK pattern?
     @comp=maybe { verb_comparison }|| # run like , contains
-        maybe { comparation } # are bigger than
+        comparation  # are bigger than
   end
 
 

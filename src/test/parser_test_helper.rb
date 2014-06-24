@@ -38,7 +38,7 @@ module ParserTestHelper
 
   def assert_equals a, b
     if a==b
-      puts "TEST PASSED! #{a} == #{b}"
+      puts "TEST PASSED!#    #{a} == #{b}"
     else
       e= NotPassing.new "#{a} should equal #{b}"
       e.set_backtrace filter_stack(caller)

@@ -329,13 +329,14 @@ class Parser #<MethodInterception
       verbose "Error in #{to_source block}"
       error e
     end
+    verbose "Succeeded with any #{to_source block}" if result
+    string_pointer if @verbose and not result
+    @last_token=string_pointer_s #if not @last_token
     @string  =oldString if check_rollback_allowed
     @throwing=was_throwing
     #@throwing[@level]=true
     #@level=@level-1
-    verbose "Succeeded with any #{to_source block}" if result
     return result if result
-    string_pointer if @verbose
     raise NotMatching.new(to_source block)
     #throw "Not matching #{to_source block}"
   end
@@ -361,11 +362,13 @@ class Parser #<MethodInterception
   end
 
   def adjust_rollback depth=caller_depth
-    if depth+2<@no_rollback_depth
-      @no_rollback_depth=-1
+    if depth+3<@no_rollback_depth
+      @no_rollback_depth-=2
+      # @no_rollback_depth=depth-2
     end
     if caller_depth<@no_rollback_depth
-      @no_rollback_depth=depth-4
+      @no_rollback_depth-=2
+      # @no_rollback_depth=depth-3
     end
   end
 
@@ -410,7 +413,7 @@ class Parser #<MethodInterception
       rb= @no_rollback_depth
       if cc<rb and not check_rollback_allowed
         error "NO ROLLBACK, GIVING UP!!!"
-        string_pointer # ALWAYS! if @verbose
+        puts @last_token || string_pointer # ALWAYS! if @verbose
         show_tree #Not reached
         attempt=e.to_s.gsub("[", "").gsub("]", "")
         bt     =e.backtrace[e.backtrace.count-@no_rollback_depth-1..-1]
