@@ -10,13 +10,11 @@ class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   include ParserTestHelper
 
-
   def _test_forever # OK ;{TRUST ME;}
     init 'beep forever'
     loops
     parse 'beep forever' # OK ;{TRUST ME;}
   end
-
 
   def test_while_return
     assert_equals parse('c=0;while c<1:c++;beep;done'), "beeped"
