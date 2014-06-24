@@ -155,6 +155,7 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def assert_c_ok
     variables['c']=0
+    # @parser.verbose=1
     z             = parse "if c>-1 then beep;"
     assert_equals z, "beeped"
     z= parse "c++;if c>1 then beep;"
@@ -171,9 +172,12 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_if_in_loop
-
     assert_c_ok
     assert_equals parse('c=0;while c<3:c++;if c>1 then beep;done'), "beeped"
+  end
+
+  def test_rollback
+    parse('if 1>0 then else');
   end
 
   def test_comparisons

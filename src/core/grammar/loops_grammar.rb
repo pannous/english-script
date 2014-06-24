@@ -11,7 +11,7 @@ module LoopsGrammar
           maybe { while_loop }||
           maybe { looped_action }||
           maybe { looped_action_until }||
-          maybe { repeat_while} ||
+          maybe { repeat_action_while} ||
           maybe { as_long_condition_block }||
           maybe { forever }
     }
@@ -41,9 +41,9 @@ module LoopsGrammar
     #parent_node if $use_tree
   end
 
-  def repeat_while
+  def repeat_action_while
     _ 'repeat' #,'do'
-    raise NotMatching if @string.match /\s*while/
+    raise_not_matching "repeat_action_while != repeat_while_action" if @string.match /\s*while/
     b=action_or_block
     _ 'while'
     c=condition

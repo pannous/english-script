@@ -86,7 +86,7 @@ module ParserTestHelper
   end
 
   def init string
-    @parser.allow_rollback #reset
+    @parser.allow_rollback -1#reset
     @parser.init string
   end
 
@@ -122,7 +122,7 @@ module ParserTestHelper
   end
 
   def emit interpretation,root
-    require_relative '../src/core/emitters/js-emitter'
+    require_relative '../core/emitters/js-emitter'
     JavascriptEmitter.new.emit interpretation,root,run:true
   end
 

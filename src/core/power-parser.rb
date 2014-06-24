@@ -9,6 +9,10 @@ class Quote < String
     return true if className=="quote"
     return className=="string"
   end
+  def self.== x
+    true if x==String
+    x==Quote
+  end
 end
 
 class Function
@@ -261,6 +265,7 @@ class Parser #<MethodInterception
 
   def no_rollback! n=0
     depth             =caller_depth-1
+    @old_rollback_depth=@no_rollback_depth
     @no_rollback_depth=depth
     # @no_rollback_method=caller #_name
   end
@@ -288,11 +293,13 @@ class Parser #<MethodInterception
   end
 
   def allow_rollback n=0
-    @no_rollback_depth=(@no_rollback_depth||-1)-4
+    @old_rollback_depth=-1 if @no_rollback_depth==-1 || n<0
+    @no_rollback_depth=@old_rollback_depth||-1
   end
 
   def check_rollback_allowed
-    return caller_depth<@no_rollback_depth
+    c=caller_depth
+    return c<@no_rollback_depth || c>@no_rollback_depth+2
   end
 
   # same as try but throws if no result
@@ -362,13 +369,11 @@ class Parser #<MethodInterception
   end
 
   def adjust_rollback depth=caller_depth
-    if depth+3<@no_rollback_depth
-      @no_rollback_depth-=2
-      # @no_rollback_depth=depth-2
-    end
-    if caller_depth<@no_rollback_depth
-      @no_rollback_depth-=2
-      # @no_rollback_depth=depth-3
+    # if depth+3<@no_rollback_depth
+    #   @no_rollback_depth=depth
+    # end
+    if depth+2<@no_rollback_depth #todo: nested no_rollback!
+      @no_rollback_depth=-1#depth#-3
     end
   end
 
@@ -377,7 +382,7 @@ class Parser #<MethodInterception
     #return if checkEnd
     # allow_rollback 1
     old=@string
-    if (@nodes.count>@max_depth)
+    if (caller_depth>@max_depth)
       raise SystemStackError.new "if(@nodes.count>@max_depth)"
     end
 
@@ -411,12 +416,13 @@ class Parser #<MethodInterception
       #puts rollback
       cc=caller_depth
       rb= @no_rollback_depth
-      if cc<rb and not check_rollback_allowed
+      # DO NOT TOUCH ! Or replace with a less fragile mechanism
+      if cc<rb and not cc+2<rb # not check_rollback_allowed
         error "NO ROLLBACK, GIVING UP!!!"
         puts @last_token || string_pointer # ALWAYS! if @verbose
         show_tree #Not reached
         attempt=e.to_s.gsub("[", "").gsub("]", "")
-        bt     =e.backtrace[e.backtrace.count-@no_rollback_depth-1..-1]
+        bt     =e.backtrace[e.backtrace.count-@no_rollback_depth-2..-1]
         bt     =filter_stack bt
         m0     =bt[0].match(/`.*/)
         m1     =bt[1].match(/`.*'/)

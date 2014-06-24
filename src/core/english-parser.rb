@@ -52,6 +52,7 @@ class EnglishParser < Parser
     @methods       ={} # name->method-node
     @OK            ='OK'
     @result        =''
+    @listeners     =[]
   end
 
   def now
@@ -289,12 +290,13 @@ class EnglishParser < Parser
 
     return s if check_interpret
     content=pointer-start
-    return content if not $use_tree
-    parent_node.content=content if $use_tree
-    # return @current_node if $use_tree
-    return parent_node if $use_tree
-    # @current_node.content=content_between startPointer, endPointer
-    # return (pointer-start).map &:stripNewline if not $use_tree
+    @last_result=@result
+    return content #if not $use_tree
+    # if $use_tree
+    #   p=parent_node
+    #   p.content=content if p
+    #   p
+    # end
   end
 
 
@@ -577,7 +579,8 @@ class EnglishParser < Parser
           maybe { action } ||
           maybe { expressions } # AS RETURN VALUE! DANGER!
     }
-    @last_result||=x
+    @last_result=x if x
+    # @last_result||=x
     #one :action, :if_then ,:once , :looper
     #any{action || if_then || once || looper}
   end
@@ -1159,6 +1162,7 @@ class EnglishParser < Parser
 
   def should_not_match words
     bad=starts_with? words
+    verbose "should_not_match DID match #{bad}"
     raise ShouldNotMatchKeyword.new bad if bad
     return @OK
   end
@@ -1182,7 +1186,7 @@ class EnglishParser < Parser
 
   def value
     @current_value=nil
-    no_keyword_except constants+numbers+result_words+nill_words
+    no_keyword_except constants+numbers+result_words+nill_words+['+','-']
     @result=@current_value=x=any {
       maybe { quote }||
           maybe { nill } ||
@@ -1479,7 +1483,8 @@ class EnglishParser < Parser
   end
 
   def action_or_expressions q
-    maybe{expressions(q)}|| action
+    # maybe{expressions(q)}|| action
+    expressions(q)
   end
 
   def condition
@@ -1495,7 +1500,7 @@ class EnglishParser < Parser
     @not =false
     @comp=use_verb=maybe { verb_comparison } # run like , contains
     @comp=maybe { comparation } unless use_verb # are bigger than
-    allow_rollback # upto where??
+    # allow_rollback # upto where??
     @b =action_or_expressions nil #if @comp
     _ ')' if brace
     negate = (negated||@not)&& !(negated and @not)

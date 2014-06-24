@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
-# $use_tree=false
-$use_tree=true
+$use_tree=false
+# $use_tree=true
 
 require_relative '../parser_test_helper'
 

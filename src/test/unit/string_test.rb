@@ -113,6 +113,7 @@ class StringTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_type
     parse "x='hi'"
+    assert_result_is "type of x",String
     assert "type of x is string"
   end
 

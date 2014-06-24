@@ -21,11 +21,11 @@ module Exceptions
   def filter_stack s
     s.select { |x| not (
     x.index "method_missing" or
-        x.index "block" or
-        x.index "maybe" or
-        x.index "any" or
-        x.index "many" or
-        x.index "star" or
+        x.index "`block'" or
+        x.index "`maybe'" or
+        x.index "`any'" or
+        x.index "`many'" or
+        x.index "`star'" or
         x.index ".rvm") }
   end
   def filter_backtrace e
