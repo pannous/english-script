@@ -32,6 +32,11 @@ class ErrorTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_has_error "as"
   end
 
+
+  def test_rollback
+    assert_has_error('if 1>0 then else');
+  end
+
   def test_endNode
     # init "of"
     # @parser.word

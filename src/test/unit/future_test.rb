@@ -21,6 +21,18 @@ class FutureTest # < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
 
+  def test_if_statement
+    init 'if x is smaller than three then everything is fine;'
+    @parser.if_then
+    assert_equals variables['everything'], 'fine'
+    parse 'x=2;if x is smaller than three then everything is good;'
+    puts variables["everything"]
+    assert_equals variables['everything'], 'good'
+    # parse "x=2;if x is smaller than three everything is fine;" 'then' keyword needed! (why?)
+    # assert "everything is fine"
+  end
+
+
   def test_repeat_until
     parse 'repeat until x>4: x++'
     assert_equals variables["x"], 5

@@ -26,8 +26,8 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_return
-    assert_result_is "if(1<2) then 3 else 4", 3
     assert_result_is "if 1<2 then 5 else 4", 5
+    assert_result_is "if(1<2) then 3 else 4", 3
     assert_result_is "if(3<2) then 3 else 4", 4
     assert_result_is "if 3<2 then 5 else 4", 4
     assert_result_is "if 1<2 then false else 4", "false"
@@ -53,17 +53,6 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     init 'everything is fine'
     @parser.condition
     assert 'everything is fine'
-  end
-
-  def test_if_statement
-    init 'if x is smaller than three then everything is fine;'
-    @parser.if_then
-    assert_equals variables['everything'], 'fine'
-    parse 'x=2;if x is smaller than three then everything is good;'
-    puts variables["everything"]
-    assert_equals variables['everything'], 'good'
-    # parse "x=2;if x is smaller than three everything is fine;" 'then' keyword needed! (why?)
-    # assert "everything is fine"
   end
 
   def test_list_quantifiers
@@ -180,9 +169,6 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals parse('c=0;while c<3:c++;if c>1 then beep;done'), "beeped"
   end
 
-  def test_rollback
-    parse('if 1>0 then else');
-  end
 
   def test_comparisons
     # init '1>0'
@@ -227,12 +213,12 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
 end
 
-module EmitterTestHelper
-  $emit=true
-end
+# module EmitterTestHelper
+#   $emit=true
+# end
 
-class EmittedConditionTest < ConditionTest
-
-  include EmitterTestHelper
-
-end
+# class EmittedConditionTest < ConditionTest
+#
+#   include EmitterTestHelper
+#
+# end

@@ -33,8 +33,8 @@ class EnglishParser < Parser
   include Betty # convert a.wav to mp3
   include ExternalLibraries
 
-  attr_accessor :methods, :result,:last_result, :interpretation, :variables, :variableValues,
-      :variableType #remove the later!
+  attr_accessor :methods, :result, :last_result, :interpretation, :variables, :variableValues,
+                :variableType #remove the later!
 
   def initialize
     super
@@ -74,6 +74,7 @@ class EnglishParser < Parser
     @original_string  =@string
     @root             =nil
     @nodes            =[]
+    @depth            =0
     # @result           =nil NOO, keep old!
   end
 
@@ -289,7 +290,7 @@ class EnglishParser < Parser
     newline? # danger might act as block end!
 
     return s if check_interpret
-    content=pointer-start
+    content     =pointer-start
     @last_result=@result
     return content #if not $use_tree
     # if $use_tree
@@ -393,7 +394,7 @@ class EnglishParser < Parser
 
   def list check=true
     raise NotMatching.new if @string[0]==','
-    must_contain_before [be_words, operators-['and']], ',' if check  #,before:
+    must_contain_before [be_words, operators-['and']], ',' if check #,before:
     # +[' '] ???
     start_brace= maybe { token '[' }
     start_brace= _? '{' if not start_brace
@@ -569,7 +570,7 @@ class EnglishParser < Parser
 
   def statement
     raiseNewline
-    x=any {#statement}
+    x           =any {#statement}
       return @NEWLINE if checkNewline
       maybe { loops }||
           maybe { if_then_else } ||
@@ -885,7 +886,7 @@ class EnglishParser < Parser
       args          =star { arg }
     else
       more=_? ','
-      obj=[obj]+list(false) if more
+      obj =[obj]+list(false) if more
     end
     @in_args=false
     _ ')' if start_brace=='('
@@ -929,7 +930,7 @@ class EnglishParser < Parser
   end
 
   def arguments
-    star{arg}
+    star { arg }
   end
 
   def constructor
@@ -938,7 +939,7 @@ class EnglishParser < Parser
     _ 'new'
     # clazz=word #allow data
     clazz=class_constant
-    do_send clazz,:new,arguments
+    do_send clazz, :new, arguments
     # clazz=Class.new
     # variables[clazz]=
     # clazz.new arguments
@@ -950,7 +951,7 @@ class EnglishParser < Parser
   end
 
   def breaks
-    __ 'next','continue','break','stop'
+    __ 'next', 'continue', 'break', 'stop'
   end
 
 #	||'say' x=(.*) -> 'bash "say $quote"'
@@ -1121,13 +1122,13 @@ class EnglishParser < Parser
 
   # Object.property || object.property
   def property
-    must_contain_before ' ',"."
+    must_contain_before ' ', "."
     no_rollback!
     owner=class_constant rescue nil
     owner=get_obj(owner)||variables[true_variable].value #reference
     _ '.'
     properti=word
-    Property.new name:properti,owner:owner
+    Property.new name: properti, owner: owner
   end
 
 #  CAREFUL WITH WATCHES!!! THEY manipulate the current system, especially variable
@@ -1154,8 +1155,8 @@ class EnglishParser < Parser
     var.value    =val
     var.final    =const.contains(mod)
     var.modifier =mod
-    var.owner.send(var.name+"=",val) if var.is_a? Property #todo
-    @result      =val
+    var.owner.send(var.name+"=", val) if var.is_a? Property #todo
+    @result =val
     # end_expression via statement!
     # return var if @interpret
 
@@ -1187,7 +1188,7 @@ class EnglishParser < Parser
     oldVal=@variableValues[name]
     # {variable:{name:name,type:typ,scope:@current_node,module:current_context}}
     return @variables[name] if @variables[name]
-    @result         =Variable.new name: name, type: typ, scope: @current_node, module: current_context,value:oldVal
+    @result         =Variable.new name: name, type: typ, scope: @current_node, module: current_context, value: oldVal
     @variables[name]=@result
   end
 
@@ -1213,7 +1214,7 @@ class EnglishParser < Parser
   end
 
   def should_not_match words
-    bad=starts_with? words
+    bad=starts_with words
     verbose "should_not_match DID match #{bad}"
     raise ShouldNotMatchKeyword.new bad if bad
     return @OK
@@ -1238,7 +1239,7 @@ class EnglishParser < Parser
 
   def value
     @current_value=nil
-    no_keyword_except constants+numbers+result_words+nill_words+['+','-']
+    no_keyword_except constants+numbers+result_words+nill_words+['+', '-']
     @result=@current_value=x=any {
       maybe { quote }||
           maybe { nill } ||
@@ -1415,7 +1416,7 @@ class EnglishParser < Parser
 
   def comparison # WEAK pattern?
     @comp=maybe { verb_comparison }|| # run like , contains
-        comparation  # are bigger than
+        comparation # are bigger than
   end
 
 
@@ -1438,8 +1439,8 @@ class EnglishParser < Parser
     _? 'to' if eq
     tokens? 'and', 'or', 'xor', 'nor'
     tokens? comparison_words # bigger or equal  != SEE condition_tree
-    _? 'than', 'then' #_?'then' ;}
     @comp=comp ? pointer-start : eq
+    _? 'than' #, 'then' #_?'then' ;} danger: if Jens.smaller then ok
     subnode comparation: @comp
     @comp
   end
@@ -1501,7 +1502,7 @@ class EnglishParser < Parser
   def check_condition cond=nil, negate=false #later:node?
     return true if cond==true || cond==:true #EVALUATED BEFORE!!!
     return false if cond==false || cond==:false #EVALUATED BEFORE!!!
-    return cond if cond!=nil and not cond.is_a? TreeNode
+    return cond if cond!=nil and not cond.is_a? TreeNode and not cond.is_a?String
     # cond==nil ||
     # return false if cond==false #EVALUATED BEFORE!!!
     begin
@@ -1536,7 +1537,7 @@ class EnglishParser < Parser
   end
 
   def action_or_expressions fallback=nil
-    maybe{action}||expressions(fallback)
+    maybe { action }||expressions(fallback)
     # maybe{expressions(fallback)}
     # expressions(fallback)
   end
@@ -1555,11 +1556,11 @@ class EnglishParser < Parser
     @comp=use_verb=maybe { verb_comparison } # run like , contains
     @comp=maybe { comparation } unless use_verb # are bigger than
     # allow_rollback # upto where??
-    @b =action_or_expressions nil if @comp  # optional, i.e.   return true IF 1
+    @b   =action_or_expressions nil if @comp # optional, i.e.   return true IF 1
     _ ')' if brace
     negate = (negated||@not)&& !(negated and @not)
     subnode negate: negate
-    return negate ? !@a : @a if not @comp  # optional, i.e.   return true IF 1
+    return negate ? !@a : @a if not @comp # optional, i.e.   return true IF 1
 
     # return  negate ? !@a : @a if not @comp
     if check_interpret

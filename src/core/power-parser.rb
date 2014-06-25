@@ -370,7 +370,10 @@ class Parser #<MethodInterception
   end
 
   def caller_depth
-    c = caller.count
+    # c= @depth #if $use_tree doesn't speed up
+    # c= @depth if $use_tree
+    c = @depth #for mruby
+    # c = caller.count rescue @depth #for mruby
     c
     # filter_stack(caller).count #-1
   end
@@ -388,6 +391,7 @@ class Parser #<MethodInterception
   def maybe(&block)
     #return if checkEnd
     # allow_rollback 1
+    @depth=@depth+1
     old=@string
     if (caller_depth>@max_depth)
       raise SystemStackError.new "if(@nodes.count>@max_depth)"
@@ -429,11 +433,12 @@ class Parser #<MethodInterception
         puts @last_token || string_pointer # ALWAYS! if @verbose
         show_tree #Not reached
         attempt=e.to_s.gsub("[", "").gsub("]", "")
-        from=@no_rollback_depth>0? e.backtrace.count-@no_rollback_depth-2 : 0
+        from= e.backtrace.count-@no_rollback_depth-2
+        from=0 if from<0
         bt     =e.backtrace[from..-1]
         bt     =filter_stack bt
-        m0     =bt[0].match(/`.*/) rescue "XX"
-        m1     =bt[1].match(/`.*'/) rescue "YY"
+        m0     =bt[0].match(/`.*/)# rescue "XX"
+        m1     =bt[1].match(/`.*'/)# rescue "YY"
         ex     =GivingUp.new("Expecting #{m0} in #{m1} ... maybe related: #{attempt}\n#{@last_token || string_pointer}")
         ex.set_backtrace(bt)
         raise ex
@@ -460,6 +465,7 @@ class Parser #<MethodInterception
       verbose e
     ensure
       adjust_rollback
+      @depth=@depth-1
     end
     @string=old #if rollback
     @nodes =old_nodes # restore
@@ -685,6 +691,7 @@ class Parser #<MethodInterception
   def method_missing(sym, *args, &block) # <- NoMethodError use node.blah to get blah!
     syms=sym.to_s
     cut =syms[0..-2]
+    @depth=@depth+1
     #return send(cut) if(syms.end_with?"!")
     if (syms.end_with? "?")
       old_last     =@last_pattern
@@ -693,6 +700,7 @@ class Parser #<MethodInterception
       x            = maybe { send(cut, args[0]) } if args.count==1
       x            = maybe { send(cut, args) } if args.count>1
       @last_pattern=old_last
+      @depth=@depth-1
       return x
     end
     if (syms.end_with? "!")
@@ -702,6 +710,7 @@ class Parser #<MethodInterception
     #return star{send(cut)} if(syms.end_with?"*")
     #return plus{send(cut)} if(syms.end_with?"+")
     super(sym, *args, &block)
+    @depth=@depth+1
   end
 
   def *(a)
