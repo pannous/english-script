@@ -150,7 +150,11 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   def test_if_return
     assert_equals parse('if 1>0 then beep'), "beeped"
     assert_equals parse('if 1>0 then beep else 0'), "beeped"
-    assert_equals parse('return if 1'), 1 # shorthand for return expression_or_block if expression_or_block != null
+  end
+
+  def test_if_return2
+    # verbose
+    assert_equals parse('return 1 if 1'), 1 # shorthand for return expression_or_block if expression_or_block != null
   end
 
   def assert_c_ok

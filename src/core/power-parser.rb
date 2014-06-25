@@ -66,6 +66,8 @@ class Argument
   end
 end
 
+
+
 class Variable
   attr_accessor :name, :type, :scope, :module, :value, :final, :modifier
 
@@ -79,6 +81,11 @@ class Variable
     self.modifier=args[:modifier]
     # scope.variables[name]=self
   end
+end
+
+
+class Property < Variable
+  attr_accessor :name,:owner
 end
 
 class Parser #<MethodInterception
@@ -422,11 +429,12 @@ class Parser #<MethodInterception
         puts @last_token || string_pointer # ALWAYS! if @verbose
         show_tree #Not reached
         attempt=e.to_s.gsub("[", "").gsub("]", "")
-        bt     =e.backtrace[e.backtrace.count-@no_rollback_depth-2..-1]
+        from=@no_rollback_depth>0? e.backtrace.count-@no_rollback_depth-2 : 0
+        bt     =e.backtrace[from..-1]
         bt     =filter_stack bt
-        m0     =bt[0].match(/`.*/)
-        m1     =bt[1].match(/`.*'/)
-        ex     =GivingUp.new("Expecting #{m0} in #{m1} ... maybe related: #{attempt}")
+        m0     =bt[0].match(/`.*/) rescue "XX"
+        m1     =bt[1].match(/`.*'/) rescue "YY"
+        ex     =GivingUp.new("Expecting #{m0} in #{m1} ... maybe related: #{attempt}\n#{@last_token || string_pointer}")
         ex.set_backtrace(bt)
         raise ex
         # error e #exit

@@ -655,7 +655,7 @@ class EnglishParser < Parser
 
   def action_if
     must_contain 'if'
-    a=expressions
+    a=action_or_expressions
     _ 'if'
     c=condition_tree
     if check_interpret
@@ -928,6 +928,31 @@ class EnglishParser < Parser
     @result=assert what
   end
 
+  def arguments
+    star{arg}
+  end
+
+  def constructor
+    _? 'create'
+    the?
+    _ 'new'
+    # clazz=word #allow data
+    clazz=class_constant
+    do_send clazz,:new,arguments
+    # clazz=Class.new
+    # variables[clazz]=
+    # clazz.new arguments
+  end
+
+  def returns
+    _ 'return'
+    expressions?
+  end
+
+  def breaks
+    __ 'next','continue','break','stop'
+  end
+
 #	||'say' x=(.*) -> 'bash "say $quote"'
   def action
     start=pointer
@@ -937,11 +962,14 @@ class EnglishParser < Parser
           maybe { applescript } ||
           maybe { bash_action } ||
           maybe { setter } ||
+          maybe { constructor } ||
           maybe { ruby_method_call } ||
           maybe { selfModify } ||
           maybe { thing_dot_method_call } ||
           maybe { method_call } ||
           maybe { evaluate } ||
+          maybe { returns } ||
+          maybe { breaks } ||
           maybe { spo }
       #try { verb_node } ||
       #try { verb }
@@ -1080,6 +1108,28 @@ class EnglishParser < Parser
     # @OK
   end
 
+  def class_constant
+    c=word
+    Object.const_get(c) if check_interpret
+    # raise NameError "uninitialized constant #{c}" unless Object.const_defined? c
+  end
+
+  def get_obj o
+    return false if not o
+    eval(o) rescue variables[o]
+  end
+
+  # Object.property || object.property
+  def property
+    must_contain_before ' ',"."
+    no_rollback!
+    owner=class_constant rescue nil
+    owner=get_obj(owner)||variables[true_variable].value #reference
+    _ '.'
+    properti=word
+    Property.new name:properti,owner:owner
+  end
+
 #  CAREFUL WITH WATCHES!!! THEY manipulate the current system, especially variable
 #/*	 let nod be nods */
   def setter
@@ -1090,7 +1140,7 @@ class EnglishParser < Parser
     tokens? 'var', 'val', 'value of'
     mod  ||=modifier? # public static ...
     old  =@string
-    var  =variable a
+    var  =property? || variable(a)
     # _?("always") => pointer
     setta=_?('to') || be # or not_to_be 	contain -> add or create
     val  =adjective? || expressions
@@ -1104,6 +1154,7 @@ class EnglishParser < Parser
     var.value    =val
     var.final    =const.contains(mod)
     var.modifier =mod
+    var.owner.send(var.name+"=",val) if var.is_a? Property #todo
     @result      =val
     # end_expression via statement!
     # return var if @interpret
@@ -1133,9 +1184,10 @@ class EnglishParser < Parser
     if (typ||all.length>1) # todo UNHACK ^^
       @variableTypes[name]=typ||all[0]
     end
+    oldVal=@variableValues[name]
     # {variable:{name:name,type:typ,scope:@current_node,module:current_context}}
     return @variables[name] if @variables[name]
-    @result         =Variable.new name: name, type: typ, scope: @current_node, module: current_context
+    @result         =Variable.new name: name, type: typ, scope: @current_node, module: current_context,value:oldVal
     @variables[name]=@result
   end
 
@@ -1449,6 +1501,7 @@ class EnglishParser < Parser
   def check_condition cond=nil, negate=false #later:node?
     return true if cond==true || cond==:true #EVALUATED BEFORE!!!
     return false if cond==false || cond==:false #EVALUATED BEFORE!!!
+    return cond if cond!=nil and not cond.is_a? TreeNode
     # cond==nil ||
     # return false if cond==false #EVALUATED BEFORE!!!
     begin
@@ -1482,9 +1535,10 @@ class EnglishParser < Parser
     return false
   end
 
-  def action_or_expressions q
-    # maybe{expressions(q)}|| action
-    expressions(q)
+  def action_or_expressions fallback=nil
+    maybe{action}||expressions(fallback)
+    # maybe{expressions(fallback)}
+    # expressions(fallback)
   end
 
   def condition
@@ -1501,10 +1555,12 @@ class EnglishParser < Parser
     @comp=use_verb=maybe { verb_comparison } # run like , contains
     @comp=maybe { comparation } unless use_verb # are bigger than
     # allow_rollback # upto where??
-    @b =action_or_expressions nil #if @comp
+    @b =action_or_expressions nil if @comp  # optional, i.e.   return true IF 1
     _ ')' if brace
     negate = (negated||@not)&& !(negated and @not)
     subnode negate: negate
+    return negate ? !@a : @a if not @comp  # optional, i.e.   return true IF 1
+
     # return  negate ? !@a : @a if not @comp
     if check_interpret
       return negate ? (!check_list_condition(quantifier)) : check_list_condition(quantifier) if quantifier
@@ -1615,6 +1671,7 @@ class EnglishParser < Parser
       return x if x.is_a? Quote #why not just String???
       return x if x.is_a? Class
       return x if x.is_a? Hash
+      return x if x.is_a? Symbol
       return x.to_f if x.is_a? String and type and type.is_a? Fixnum
       return x if x.is_a? Numeric
       return x if x.is_a? String
@@ -1673,6 +1730,7 @@ class EnglishParser < Parser
 
 # INTERPRET only,  todo cleanup method + argument matching + concept
   def do_send obj0, method, args0
+    return false if not check_interpret
     return false if not method
     # try direct first!
     # y=y[0] if y.is_a? Array and y.count==1 # SURE??????? ["noo"].length

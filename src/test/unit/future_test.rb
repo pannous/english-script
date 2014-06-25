@@ -11,7 +11,7 @@ require_relative '../parser_test_helper'
 # they can be read as a to do list,
 # to play with or
 # to be pasted to other test classes
-class FutureTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class FutureTest # < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   include ParserTestHelper
 
@@ -37,6 +37,27 @@ class FutureTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals variables["x"], 4
     parse 'increase x until x>4'
     assert_equals variables["x"], 5
+  end
+
+
+  def test_property_setter
+    parse "new circle;circle.color=green"
+    assert_equals("circle.color","green")
+  end
+
+
+
+  def test_local_variables_changed_by_subblocks
+    parse "x=2;def test\nx=1\nend\ntest"
+    init "x=2 or x=1"
+    assert @parser.condition_tree
+    assert "x=2"
+    parse "x=1;x=2;"
+    assert "x=2"
+    parse "x=1;while x<2 do x=2;"
+    assert "x=2"
+    # parse "x=1;try x=2;"
+    # assert "x=2"
   end
 
   # (beep three) times

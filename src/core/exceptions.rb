@@ -21,6 +21,7 @@ module Exceptions
   def filter_stack s
     s.select { |x| not (
     x.index "method_missing" or
+        x.index "`tokens'" or
         x.index "`block'" or
         x.index "`maybe'" or
         x.index "`any'" or
