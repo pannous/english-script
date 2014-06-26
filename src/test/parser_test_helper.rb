@@ -1,8 +1,6 @@
 ENV["RAILS_ENV"] = "test"
 $testing=true
 
-gem "minitest", "4.7.5"
-
 require "test/unit"
 require_relative "../core/english-parser"
 
