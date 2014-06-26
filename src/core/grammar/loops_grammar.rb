@@ -70,7 +70,7 @@ module LoopsGrammar
       puts $!
     end
     end_block?
-    r
+    r||@OK
   end
 
 

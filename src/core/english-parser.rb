@@ -302,6 +302,7 @@ class EnglishParser < Parser
 
 
   #direct_token: WITH space!
+  #todo: proper token stream, pre-lex'ed
   def token t
     return tokens t if t.is_a? Array
     # encoding: utf-8
@@ -325,6 +326,7 @@ class EnglishParser < Parser
     end
   end
 
+  #todo: proper token stream, pre-lex'ed
   def tokens *tokenz
     # encoding: utf-8
     raiseEnd
@@ -1422,10 +1424,12 @@ class EnglishParser < Parser
 
 # is more or less
 # is neither ... nor ...
+# are all smaller than ...
 # Comparison phrase
   def comparation
     # danger: is, is_a
-    eq   =tokens? be_words
+    eq =tokens? be_words
+    _? 'all'
     start=pointer
     tokens? 'either', 'neither'
     @not=tokens? 'not'
@@ -1502,7 +1506,7 @@ class EnglishParser < Parser
   def check_condition cond=nil, negate=false #later:node?
     return true if cond==true || cond==:true #EVALUATED BEFORE!!!
     return false if cond==false || cond==:false #EVALUATED BEFORE!!!
-    return cond if cond!=nil and not cond.is_a? TreeNode and not cond.is_a?String
+    return cond if cond!=nil and not cond.is_a? TreeNode and not cond.is_a? String
     # cond==nil ||
     # return false if cond==false #EVALUATED BEFORE!!!
     begin
@@ -1542,6 +1546,14 @@ class EnglishParser < Parser
     # expressions(fallback)
   end
 
+  # all of 1,2,3
+  # all even numbers in [1,2,3,4]
+  # one element in 1,2,3
+  def element_in
+    noun?
+    __ "in","of"
+  end
+
   def condition
     start     =pointer
     brace     =_? '('
@@ -1549,8 +1561,7 @@ class EnglishParser < Parser
     brace     ||=_? '(' if negated
     # @a=endNode # NO LISTS (YET)! :(
     quantifier=maybe { tokens quantifiers } # vs selector!
-    # __? noun _? "in" all even numbers in [1,2,3,4] -> selector!
-    _? 'of' if quantifier # all of
+    element_in? if quantifier  # -> selector!
     @a   =action_or_expressions quantifier
     @not =false
     @comp=use_verb=maybe { verb_comparison } # run like , contains
@@ -1562,11 +1573,13 @@ class EnglishParser < Parser
     subnode negate: negate
     return negate ? !@a : @a if not @comp # optional, i.e.   return true IF 1
 
+    quantifier||="all" if @a.is_a? Array # 1,2,3 are smaller 4
     # return  negate ? !@a : @a if not @comp
     if check_interpret
       return negate ? (!check_list_condition(quantifier)) : check_list_condition(quantifier) if quantifier
       return negate ? (!check_condition) : check_condition # nil
     end
+    # return Condition.new lhs:@a,cmp:@comp,rhs:@b
     return start-pointer if not $use_tree
     return parent_node if $use_tree
   end
@@ -1625,6 +1638,7 @@ class EnglishParser < Parser
   def the_noun_that
     the?
     n=noun
+    raise_not_matching "no noun" if not n
     star { selector }
     n
   end

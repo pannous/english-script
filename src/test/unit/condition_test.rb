@@ -164,8 +164,10 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     assert_equals variables['c'], 3
   end
 
-  def test_if_in_loop
+  def test_if_in_loop #NEEDS TREE! Otherwise A'n'B get ova writain
     assert_c_ok
+    # verbose
+    # return Condition.new lhs:@a,cmp:@comp,rhs:@b
     assert_equals parse('c=0;while c<3:c++;if c>1 then beep;done'), "beeped"
   end
 
@@ -208,6 +210,16 @@ class ConditionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_complicated
     parse "x is 2; if all 0,2,4 are smaller 5 then increase x; assert x equals 3"
+    assert @result
+  end
+
+  def test_complicated2
+    parse "x is 2; if 0,2,4 are all smaller 5 then increase x; assert x equals 3"
+    assert @result
+  end
+
+  def test_complicated3
+    parse "x is 2; if 0,2,4 are smaller 5 then increase x; assert x equals 3"
     assert @result
   end
 

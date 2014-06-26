@@ -106,7 +106,7 @@ class Parser #<MethodInterception
     @lines            =[]
     @interpret_border =-1
     @no_rollback_depth=-1
-    @max_depth        =100
+    @max_depth        =160
   end
 
   def s string
@@ -372,8 +372,8 @@ class Parser #<MethodInterception
   def caller_depth
     # c= @depth #if $use_tree doesn't speed up
     # c= @depth if $use_tree
-    c = @depth #for mruby
-    # c = caller.count rescue @depth #for mruby
+    # c = @depth #for mruby
+    c = caller.count rescue @depth #for mruby
     c
     # filter_stack(caller).count #-1
   end
@@ -426,19 +426,19 @@ class Parser #<MethodInterception
       #puts caller.count
       #puts rollback
       cc=caller_depth
-      rb= @no_rollback_depth
+      rb= @no_rollback_depth-2
       # DO NOT TOUCH ! Or replace with a less fragile mechanism
       if cc<rb and not cc+2<rb # not check_rollback_allowed
         error "NO ROLLBACK, GIVING UP!!!"
         puts @last_token || string_pointer # ALWAYS! if @verbose
         show_tree #Not reached
         attempt=e.to_s.gsub("[", "").gsub("]", "")
-        from= e.backtrace.count-@no_rollback_depth-2
-        from=0 if from<0
-        bt     =e.backtrace[from..-1]
+        from=0# e.backtrace.count-@no_rollback_depth-2
+        bt     =e.backtrace
+        bt     =bt[from..-1] #if from>10
         bt     =filter_stack bt
-        m0     =bt[0].match(/`.*/)# rescue "XX"
-        m1     =bt[1].match(/`.*'/)# rescue "YY"
+        m0     =bt[0].match(/`.*/) rescue "XX"
+        m1     =bt[1].match(/`.*'/) rescue "YY"
         ex     =GivingUp.new("Expecting #{m0} in #{m1} ... maybe related: #{attempt}\n#{@last_token || string_pointer}")
         ex.set_backtrace(bt)
         raise ex
