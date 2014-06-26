@@ -9,10 +9,12 @@ class Quote < String
     return true if className=="quote"
     return className=="string"
   end
+  # todont!!
   def self.== x
     # true if x.name==String
-    true if x.to_s=="String"
-    x==Quote
+    return true if x.to_s=="String"
+    return true if x.to_s=="Quote"
+    false
   end
 end
 
@@ -101,6 +103,12 @@ class Variable
     self.modifier=args[:modifier]
     # scope.variables[name]=self
   end
+
+  def increase
+    self.value = self.value+1
+    self.value
+  end
+
 end
 
 

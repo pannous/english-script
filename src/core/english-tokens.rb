@@ -68,10 +68,10 @@ module EnglishParserTokens #< MethodInterception
   end
 
 
-  def type_names #danger: object,class ,module  "char","character",
+  def type_names #danger: object,class ,module  "char","character",,"word"
     ["string", "int", "integer", "bool", "boolean", "list", "array", "hash","float",
      "real","double",
-     "number","word"]
+     "number"]
   end
 
   def constants
@@ -174,7 +174,7 @@ module EnglishParserTokens #< MethodInterception
 
   def be_words
     ['is an', 'is a', 'is', 'be', 'was', 'are', 'will be', 'were', 'have been', 'shall be', 'should be', ':=', '=', '==', 'equals', 'equal',
-     'is equal to', "consist of", "consists of", "is made up of", 'equal to']
+     'is equal to', "consist of", "consists of", "is made up of", 'equal to','same','the same as','same as','the same']
   end
 
   # nicer, sweeter, ....

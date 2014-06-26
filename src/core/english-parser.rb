@@ -1203,6 +1203,7 @@ class EnglishParser < Parser
     name  =all.join(' ')
     name  =all[1..-1].join(' ') if !typ&&all.length>1&&isType(all[0]) #(p ? 0 : 1)
     name  =p+' '+name if p
+    name.strip!
     oldVal=@variableValues[name]
     # {variable:{name:name,type:typ,scope:@current_node,module:current_context}}
     return @variables[name] if @variables[name]
@@ -1498,6 +1499,7 @@ class EnglishParser < Parser
     ok=comparison_words.contains(c) ||
         comparison_words.contains(c-"is ") ||
         comparison_words.contains(c-"are ") ||
+        comparison_words.contains(c-"the ") ||
         class_words.contains(c)
     ok
   end
@@ -1553,9 +1555,9 @@ class EnglishParser < Parser
         # @comp=cond[:comparation]
       end
       return false if not @comp #todo!
-      @a.strip!
+      @a.strip! if @a and @a.is_a?String # nil==nil ok
+      @b.strip! if @b and @b.is_a?String
       @comp.strip!
-      @b.strip!
       if is_comparator @comp
         result=do_compare(@a, @comp, @b)
       else
@@ -1615,7 +1617,7 @@ class EnglishParser < Parser
     return negate ? !@a : @a if not @comp # optional, i.e.   return true IF 1
 
     # 1,2,3 are smaller 4  VS 1,2,3 contains 4
-    quantifier||="all" if @a.is_a? Array and not @a.respond_to?(@comp)
+    quantifier||="all" if @a.is_a? Array and not @a.respond_to?(@comp) and not @b.is_a?Array
     # return  negate ? !@a : @a if not @comp
     if check_interpret
       return negate ? (!check_list_condition(quantifier)) : check_list_condition(quantifier) if quantifier
@@ -1752,10 +1754,11 @@ class EnglishParser < Parser
 
   # see do_evaluate ! merge
   def resolve x
+    return x.strip if x and x.is_a?String # todo x==" " !?!
     return Dir.new x if is_dir x
     return File.new x if is_file x
     return x.value if x.is_a? Variable
-    return @variableValues[x] if @interpret and @variableValues[x]
+    return @variableValues[x] if @interpret and @variableValues.key?(x)
     x
   end
 
@@ -1796,6 +1799,7 @@ class EnglishParser < Parser
   def do_send obj0, method, args0
     return false if not check_interpret
     return false if not method
+
     # try direct first!
     # y=y[0] if y.is_a? Array and y.count==1 # SURE??????? ["noo"].length
     if @methods.contains method
@@ -1803,12 +1807,13 @@ class EnglishParser < Parser
     end
 
     obj =method.owner if method.is_a? Method
-    obj ||=resolve(obj0.strip!) rescue obj0
-    args=args0.strip!
+    obj ||=resolve(obj0)
+    args=args0
     args=args.name_or_value if args.is_a? Argument
     args=args.map &:name_or_value if args.is_a? Array and args[0].is_a? Argument
     args=eval_string(args) rescue NoMethodError
     args.replace_numerals! if args and args.is_a? String
+    args.strip! if args and args.is_a?String
 
     if method.is_a? Method and method.owner
       return @result=method.call(*args)
@@ -1861,12 +1866,12 @@ class EnglishParser < Parser
       return a>b
     elsif comp=='smaller or equal'||comp=='<='
       return a<=b
-    elsif comp=='bigger or equal'||comp=='greater or equal'||comp=='>='
-      return a>=b
-    elsif class_words.index comp or comp.match(/same/)
+    elsif class_words.index comp
       return a.is_a b
     elsif be_words.index comp or comp.match(/same/)
       return a.is b
+    elsif comp=='equal'||comp=='the same'||comp=='the same as'||comp=='the same as'||comp=='='||comp=='=='
+      return a==b # Redundant
     else
       begin
         return a.send(comp, b) # raises!

@@ -87,16 +87,16 @@ class ListTest < ParserBaseTest # <  EnglishParser
   def test_list_syntax
     assert("1,2 is [1,2]")
     assert("1,2 is {1,2}")
-    assert("1,2 = [1,2]")
     assert("1,2 == [1,2]")
     assert("[1,2] is {1,2}")
+    assert("1,2 = [1,2]")
   end
 
   def test_list_syntax2
-    assert("1,2 and 3 is [1,2,3]")
     assert("1,2,3 is the same as [1,2,3]")
     assert("1,2 and 3 is the same as [1,2,3]")
     assert("1,2 and 3 are the same as [1,2,3]")
+    assert("1,2 and 3 is [1,2,3]")
   end
 
   def test_concatenation
