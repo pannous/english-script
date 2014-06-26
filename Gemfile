@@ -13,8 +13,9 @@ gem 'linguistics'
 # gem 'hoe-deveiate','~> 0.1.1'
 # gem 'simplecov'#,'~> 0.6.4'
 
+gem 'rake'
+
 # for RUBYMINE WTF
-# gem 'rake'
 # gem "minitest", "4.7.5" #if $RUBYMINE
 # gem 'debase' #if $RUBYMINE
 # gem 'ruby-debug-ide' #if $RUBYMINE
