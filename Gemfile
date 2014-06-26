@@ -14,6 +14,7 @@ gem 'linguistics'
 # gem 'simplecov'#,'~> 0.6.4'
 
 gem 'rake'
+gem "minitest"
 
 # for RUBYMINE WTF
 # gem "minitest", "4.7.5" #if $RUBYMINE
