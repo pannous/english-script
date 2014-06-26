@@ -14,7 +14,8 @@ gem 'linguistics'
 # gem 'simplecov'#,'~> 0.6.4'
 
 gem 'rake'
-gem "minitest"
+gem "minitest" , "~> 5.3.3"
+gem 'minitest-reporters', '>= 0.5.0'
 # gem "minitest", "4.7.5" #if $RUBYMINE
 
 gem 'debase', :groups => [:development]  #if $RUBYMINE

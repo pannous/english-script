@@ -1,14 +1,14 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
-$use_tree=true
+# $use_tree=true
+$use_tree=false
 
 require_relative '../parser_test_helper'
 
-class TreeTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class TreeTest < ParserBaseTest
 
   include ParserTestHelper
-
 
   def test_algebra1
     assert_result_is "3 minus one",2
@@ -62,8 +62,17 @@ done"
   end
 
   def test_looper
-    init "while i is smaller or less then y do\nyawn\nend"
-    @parser.looper
+    parse "i=1;y=2;"
+    init "while i is smaller or equal y do\ni++\nend"
+    @parser.loops
+    init "while i is smaller or equal than y do\ni++\nend"
+    @parser.loops
+  end
+
+  def test_then_typo
+    parse "while i is smaller or equal y then do\nyawn\nend"
+    skip
+    parse "while i is smaller or equal then y do\nyawn\nend"
   end
 
   def test_method_call

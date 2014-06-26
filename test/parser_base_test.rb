@@ -5,7 +5,7 @@ require "test/unit"
 require_relative "../core/english-parser"
 
 # use as MODULE!
-class ParserBaseTest < Test::Unit::TestCase
+class ParserBaseTest <   #Test::Unit::TestCase
   include Exceptions
 
   def assert_equals a, b

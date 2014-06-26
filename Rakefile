@@ -30,10 +30,12 @@ task :default => :shell #:test
 
 desc "running all tests"
 task :test do
-    test_files = Dir['./src/test/unit/*_test.rb'] #FileList
+    test_files = Dir['./test/unit/*_test.rb'] #FileList
     p test_files
     Rake::TestTask.new do |t|
       $use_tree=false
+      $raking=true
+      $testing=true
       t.libs << "test"
       t.test_files =  test_files
       # t.verbose = true

@@ -3,7 +3,7 @@
 #$use_tree=true
 require_relative '../parser_test_helper'
 
-class MethodTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class MethodTest < ParserBaseTest
 
   include ParserTestHelper
 

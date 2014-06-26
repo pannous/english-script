@@ -5,9 +5,9 @@ $use_tree=true
 $verbose=false
 
 require_relative '../parser_test_helper'
-require_relative '../../core/emitters/js-emitter'
+require_relative '../../src/core/emitters/js-emitter'
 
-class EmitterTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class EmitterTest < ParserBaseTest
 
   include ParserTestHelper
 
@@ -23,11 +23,16 @@ class EmitterTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_type_cast
-    parse "x='5';int z=x as int"
+    # verbose
+    assert_result_is "2.3",2.3
+    parse "int z=2.3 as int"
+    assert_equals result,2
+    # parse "x='5';int z=x as int"
   end
 
 
   def test_printf
+    skip
     $use_tree=true
     @parser.dont_interpret!
     # parse "printf 'hi' "

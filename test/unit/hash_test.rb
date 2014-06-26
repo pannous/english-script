@@ -4,7 +4,7 @@ $verbose=false
 # $verbose=true
 require_relative '../parser_test_helper'
 
-class HashTestParser < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class HashTestParser < ParserBaseTest
   include ParserTestHelper
 
   def test_hash_symbol_invariance_extension

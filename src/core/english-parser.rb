@@ -144,7 +144,7 @@ class EnglishParser < Parser
     match||=@string.match(/^\s*#{x}/im)
     raise NotMatching(x) if not match
     @string       =match.post_match.strip
-    @current_value=x
+    @current_value=match
   end
 
   def package_version
@@ -154,8 +154,9 @@ class EnglishParser < Parser
     c||=_? comparison_words
     subnode bigger: c
     # @current_value=
-    @result=regex '\d(\.\d)*'
+    @result=c+" "+regex('\d(\.\d)*')[0]
     _? "or later"
+    @result
   end
 
   #  (:use [native])
@@ -174,9 +175,9 @@ class EnglishParser < Parser
     no_rollback! 5
     # list_of?{packages}
     dependency||= word #regex "\w+(\/\w*)*(\.\w*)*\.?\*?" # rest_of_line
-    version   =package_version?
-    includes dependency, type, version if check_interpret
-    return {dependency: {type: type, package: dependency, version: version}}
+    version   =maybe { package_version }
+    includes dependency, type, version if check_interpret rescue nil
+    return @result={dependency: {type: type, package: dependency, version: version}}
   end
 
   def context
@@ -374,9 +375,11 @@ class EnglishParser < Parser
   def nth_item # Also redundant with property evaluation (But okay as a shortcut)
     n=__ numbers+['first', 'last', 'middle']
     _? '.'
-    __ ['word', 'item', 'element', 'object'] # noun
+    type=__ ['item', 'element', 'object', 'word', 'char', 'character']+type_names # noun
     __ ['in', 'of']
-    l      =list?||quote
+    l =list?||quote
+    return @result=l.join('')[n.parse_integer-1] if type.match(/^char/)
+    l      =l.select { |i| i.is_a type } if type_names.contains type
     @result=l.item(n) # -1 AppleScript style !!! BUT list[0] !!!
     return @result
   end
@@ -609,10 +612,11 @@ class EnglishParser < Parser
     @in_params =false
     _? ')'
     allow_rollback # for
+    dont_interpret!
     b=action_or_block # define z as 7 allowed !!!
-    @methods[name]=parent_node||b rescue nil # with args! only in tree mode!!
-    # name
-    Function.new name: name, arguments: args, return_type: return_type #,modifiers:modifiers,annotations:annotations
+    f=Function.new name: name, arguments: args, return_type: return_type #,modifiers:modifiers,annotations:annotations
+    @methods[name]=f||parent_node||b rescue nil # with args! only in tree mode!!
+    f || name
   end
 
   def ruby_action
@@ -708,6 +712,7 @@ class EnglishParser < Parser
 
   def action_once
     must_contain once_words # if not _do and newline
+    no_rollback!
     _do=_? 'do'
     dont_interpret!
     b=action if not _do
@@ -836,6 +841,8 @@ class EnglishParser < Parser
 
   def builtin_method
     w=word
+    raise_not_matching "no word" if not w
+    raise_not_matching "capitalized #{w} no builtin_method" if w.capitalize==w
     m=Object.method(w) rescue nil
     m||=HelperMethods.method(w) rescue nil
     m
@@ -859,6 +866,7 @@ class EnglishParser < Parser
     @result
   end
 
+  # conflict with files, 3.4
   def thing_dot_method_call
     must_contain_before ['='], '.' # before...?
     obj=endNode
@@ -912,7 +920,7 @@ class EnglishParser < Parser
     @result="tell application \"#{app}\""
     if _? 'to'
       @result+=' to '+rest_of_line() # "end tell"
-    else  #Multiline
+    else #Multiline
       while @string and not @string.contains 'end tell'
         # #TODO deep blocks! simple 'end' : and not @string.contains 'end'
         @result+= rest_of_line() +"\n"
@@ -990,7 +998,7 @@ class EnglishParser < Parser
     # dont_interpret  # always?
     a=maybe { action }
     return a if a
-    start_block
+    start_block && newline?
     b=block if not a
     end_block
     return b
@@ -1071,7 +1079,8 @@ class EnglishParser < Parser
   def collection
     any {#collection }
       maybe { range } ||
-          maybe { variable }
+          maybe { true_variable } ||
+          action_or_expressions #of type list !!
     }
   end
 
@@ -1114,7 +1123,8 @@ class EnglishParser < Parser
 
   def class_constant
     c=word
-    Object.const_get(c) if check_interpret
+    c=Object.const_get(c) if check_interpret
+    c
     # raise NameError "uninitialized constant #{c}" unless Object.const_defined? c
   end
 
@@ -1177,22 +1187,29 @@ class EnglishParser < Parser
 # my dog=7
 # a green dog=7
 # an integer i
+  def isType x
+    return true if x.is_a? Class
+    return true if type_names.contains x
+    return false
+  end
+
   def variable a=nil
     a  ||=article?
     a  =nil if a!='a' #hack for a variable
     typ=typeName?
     p  =__? possessive_pronouns
-    all=p ? [p] : []
-    all+=one_or_more { word } rescue (a=='a' ? all=[a] : (raise NotMatching))
-    name=typ||all.length==1 ? all.join(' ') : all[1..-1].join(' ')
-    if (typ||all.length>1) # todo UNHACK ^^
-      @variableTypes[name]=typ||all[0]
-    end
+    # all=p ? [p] : []
+    all=one_or_more { word } rescue (a=='a' ? all=[a] : (raise NotMatching))
+    name  =all.join(' ')
+    name  =all[1..-1].join(' ') if !typ&&all.length>1&&isType(all[0]) #(p ? 0 : 1)
+    name  =p+' '+name if p
     oldVal=@variableValues[name]
     # {variable:{name:name,type:typ,scope:@current_node,module:current_context}}
     return @variables[name] if @variables[name]
     @result         =Variable.new name: name, type: typ, scope: @current_node, module: current_context, value: oldVal
     @variables[name]=@result
+    # @variables[p+' '+name]=@result if p
+    @result
   end
 
   def word include=[]
@@ -1240,6 +1257,21 @@ class EnglishParser < Parser
     return @last_result
   end
 
+  def do_cast x, typ
+    return x.to_f if typ.is_a? Float
+    return x.to_i if typ.is_a? Fixnum
+    return x.to_i if typ.is_a "int" #todo!
+    return x.to_i if typ=="int"
+    return x.to_s if typ.is_a "String"
+    #todo!
+    return x
+  end
+
+  def cast x, typ
+    return do_cast x, typ if check_interpret
+    return x
+  end
+
   def value
     @current_value=nil
     no_keyword_except constants+numbers+result_words+nill_words+['+', '-']
@@ -1254,6 +1286,8 @@ class EnglishParser < Parser
           maybe { nod }
       #rest_of_line # TOOBIG HERE!
     }
+    typ    =typeName if _?('as')
+    x      =cast(x, typ) if typ
     x
   end
 
@@ -1519,9 +1553,14 @@ class EnglishParser < Parser
         # @comp=cond[:comparation]
       end
       return false if not @comp #todo!
+      @a.strip!
       @comp.strip!
-      result=do_compare(@a, @comp, @b) if is_comparator @comp
-      result=do_send(@a, @comp, @b) if not is_comparator @comp
+      @b.strip!
+      if is_comparator @comp
+        result=do_compare(@a, @comp, @b)
+      else
+        result=do_send(@a, @comp, @b)
+      end
       # if !result and not cond.blank? #HAAACK DANGARRR
       #   #@a,@comp,@b= extract_condition c if c
       #   evals=''
@@ -1542,7 +1581,8 @@ class EnglishParser < Parser
   end
 
   def action_or_expressions fallback=nil
-    maybe { action }||expressions(fallback)
+    maybe { action }||
+        expressions(fallback)
     # maybe{expressions(fallback)}
     # expressions(fallback)
   end
@@ -1574,7 +1614,8 @@ class EnglishParser < Parser
     subnode negate: negate
     return negate ? !@a : @a if not @comp # optional, i.e.   return true IF 1
 
-    quantifier||="all" if @a.is_a? Array # 1,2,3 are smaller 4
+    # 1,2,3 are smaller 4  VS 1,2,3 contains 4
+    quantifier||="all" if @a.is_a? Array and not @a.respond_to?(@comp)
     # return  negate ? !@a : @a if not @comp
     if check_interpret
       return negate ? (!check_list_condition(quantifier)) : check_list_condition(quantifier) if quantifier
@@ -1648,9 +1689,19 @@ class EnglishParser < Parser
 #def plural
 #  word #todo
 #end
+  def classConstDefined
+    begin
+      c=word.capitalize
+      return false unless Object.const_defined? c
+    rescue NameError
+      raise NotMatching.new
+    end
+    c=Object.const_get(c) if check_interpret
+    c
+  end
 
   def typeName
-    tokens type_names
+    classConstDefined? || tokens(type_names)
   end
 
 
@@ -1680,22 +1731,19 @@ class EnglishParser < Parser
     return x if not check_interpret
     begin
       return x if x.is_a? Array and x.length!=1
-      return eval(x[0]) if x.is_a? Array and x.length==1
+      return do_evaluate(x[0]) if x.is_a? Array and x.length==1
       return x.value || @variableValues[x.name] if x.is_a? Variable
       return x.to_f if x.is_a? String and type and type.is_a? Numeric
       return @variableValues[x] if @variableValues.contains x
-      return x if x.is_a? Quote #why not just String???
-      return x if x.is_a? Class
-      return x if x.is_a? Hash
-      return x if x.is_a? Symbol
+      return x if x==true or x==false
       return x.to_f if x.is_a? String and type and type.is_a? Fixnum
-      return x if x.is_a? Numeric
-      return x if x.is_a? String
       return x.eval_node @variableValues if x.is_a? TreeNode
       return resolve x if x.is_a? String and match_path(x)
+      # ... todo METHOD / Function!
       return x.call if x.is_a? Method #Whoot
-      return eval(x) # rescue x # system.jpg  DANGER? OK ^^
-        # ... todo METHOD / Function!
+      return x if x.is_a? String
+      return eval(x) if x.is_a? String # rescue x # system.jpg  DANGER? OK ^^
+      return x # DEFAULT!
     rescue TypeError, SyntaxError => e
       puts "ERROR #{e} in do_evaluate #{x}"
       return x
@@ -1755,8 +1803,8 @@ class EnglishParser < Parser
     end
 
     obj =method.owner if method.is_a? Method
-    obj ||=resolve(obj0) rescue obj0
-    args=args0
+    obj ||=resolve(obj0.strip!) rescue obj0
+    args=args0.strip!
     args=args.name_or_value if args.is_a? Argument
     args=args.map &:name_or_value if args.is_a? Array and args[0].is_a? Argument
     args=eval_string(args) rescue NoMethodError
@@ -1775,7 +1823,7 @@ class EnglishParser < Parser
       method=method_name.gsub(/s$/, '') rescue nil
     end
 
-
+    @result=NoMethodError
     if not obj
       obj=args0
       @result=Object.send(method, args) rescue NoMethodError
@@ -1795,7 +1843,9 @@ class EnglishParser < Parser
       @variableValues[name] =@result
     end rescue nil
 
-    puts "ERROR CALLING #{obj}.#{method}(#{args}) : NoMethodError" if not @result
+    # todo : nil OK, error not!
+    msg="ERROR CALLING #{obj}.#{method}(#{args})" if @result==NoMethodError
+    raise NoMethodError.new(msg, method, args) if @result==NoMethodError
     # raise SyntaxError.new("ERROR CALLING #{obj}.#{op}(#{args}) : NoMethodError")
     return @result
   end
@@ -1803,12 +1853,16 @@ class EnglishParser < Parser
   def do_compare a, comp, b
     a=eval_string(a) # NOT: "a=3; 'a' is 3" !!!!!!!!!!!!!!!!!!!!   Todo ooooooo!!
     b=eval_string(b)
-    a=a.to_f if b.is_a? Numeric
-    b=b.to_f if a.is_a? Numeric
+    a=a.to_f if a.match(/^\+?\-?\.?\d/) and b.is_a? Numeric rescue a
+    b=b.to_f if b.match(/^\+?\-?\.?\d/) and a.is_a? Numeric rescue b
     if comp=='smaller'||comp=='tinier'||comp=='comes before'||comp=='<'
       return a<b
-    elsif comp=='bigger'||comp=='larger'||comp=='comes after'||comp=='>'
+    elsif comp=='bigger'||comp=='larger'||comp=='greater'||comp=='comes after'||comp=='>'
       return a>b
+    elsif comp=='smaller or equal'||comp=='<='
+      return a<=b
+    elsif comp=='bigger or equal'||comp=='greater or equal'||comp=='>='
+      return a>=b
     elsif class_words.index comp or comp.match(/same/)
       return a.is_a b
     elsif be_words.index comp or comp.match(/same/)
@@ -1867,11 +1921,11 @@ class EnglishParser < Parser
           maybe { fileName } ||
           maybe { linuxPath } ||
           maybe { quote } || #redundant with value !
+          maybe { article?; typeName } ||
           maybe { evaluate_property }||
           maybe { selectable } ||
           maybe { true_variable } ||
           maybe { article?; word } ||
-          maybe { article?; typeName } ||
           maybe { range } || # not params!
           maybe { value } ||
           maybe { list } ||
@@ -1969,7 +2023,7 @@ class EnglishParser < Parser
     y=expressions
     return parent_node if not @interpret
     begin #interpret !:
-      do_evaluate_property(x, y)
+      @result=do_evaluate_property(x, y)
     rescue SyntaxError => e
       verbose 'ERROR do_evaluate_property'
         #@result=jeannie all if not @result

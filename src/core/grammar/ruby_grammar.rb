@@ -70,7 +70,7 @@ module RubyGrammar
         # include dependency
       rescue Exception => e
         puts "missing dependency #{dependency}: #{e}"
-        install_gem dependency rescue nil
+        install_gem dependency rescue nil if not $testing
       end
     end
 

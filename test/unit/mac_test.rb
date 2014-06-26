@@ -4,7 +4,7 @@ $use_tree=false
 
 require_relative '../parser_test_helper'
 
-class MacTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class MacTest < ParserBaseTest
 
   include ParserTestHelper
 
@@ -36,7 +36,7 @@ class MacTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
     @parser.setter
     init "my home folder == /Users/me"
     @parser.condition
-    init "/Users/me/photo.JPG ok"
+    init "/Users/me/.bashrc ok"
     p=@parser.linuxPath
     init "Dir.home"
     r=@parser.rubyThing
@@ -55,18 +55,31 @@ class MacTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_contains_file
     parse "xs= all files in Dir.home"
-    assert "xs contains photo.JPG"
+    p variables['xs']
+    assert "xs contains .bashrc"
 
 
     parse "xs= Dir.home"
-    assert "xs contains photo.JPG"
+    assert "xs contains .bashrc"
 
     parse "xs=/Users/me"
-    assert "xs contains photo.JPG"
+    assert "xs contains .bashrc"
 
+    parse "my home folder = Dir.home"
     parse "my home folder is Dir.home"
+    p variables
+    p variableValues
+    assert{variables['home folder']}
+    assert{variableValues['my home folder']}
+  end
+
+  def test_contains_file2
+    parse "my home folder = Dir.home"
+    parse "xs = my home folder "
+    parse "xs = files in my home folder "
+    parse "xs = all files in my home folder "
     parse "xs shall be all files in my home folder "
-    assert "xs contains photo.JPG"
+    assert "xs contains .bashrc"
 
   end
 end

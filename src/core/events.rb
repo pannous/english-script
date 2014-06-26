@@ -19,10 +19,13 @@ class Event
     @action=action
     @@events<<self
     @id=@@id
-    @@scheduler.in time.from.to_s+time.unit[0] do self.invoke end if time.kind=="in"
-    @@scheduler.at time.from.to_s+time.unit[0] do self.invoke end if time.kind=="at"
-    # @@scheduler.every time.from.to_s+" "+time.unit do self.invoke end if time.kind=="every" # FAIL
-    @@scheduler.every time.from.to_s+time.unit[0] do self.invoke end if time.kind=="every"
+    if not $testing
+      case time.kind
+        when "in" then @@scheduler.in time.from.to_s+time.unit[0] do self.invoke end
+        when "at" then @@scheduler.at time.from.to_s+time.unit[0] do self.invoke end
+        when "every" then @@scheduler.every time.from.to_s+time.unit[0] do self.invoke end
+      end
+    end
     @@id=@@id+1
   end
 

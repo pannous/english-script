@@ -425,7 +425,9 @@ class String
   def replace_numerals!
 
     gsub!(/([a-z])-([a-z])/, "\\1+\\2") # WHOOOT???
+    # gsub!("last", "-1") # index trick
     gsub!("last", "0") # index trick
+    gsub!("first", "1") # index trick
 
     gsub!("tenth", "10")
     gsub!("ninth", "9")
@@ -566,6 +568,7 @@ class Numeric
     return true if className=="real"
     return true if className=="float"
     return true if self.is_a? Integer and className=="integer" #todo move
+    return true if self.is_a? Integer and className=="int" #todo move
     return true if className==self.to_s.downcase #KINDA
     return true if self.is clazz
     return false

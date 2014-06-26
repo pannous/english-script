@@ -5,7 +5,7 @@ $use_tree=false
 
 require_relative '../parser_test_helper'
 
-class SelectorTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class SelectorTest < ParserBaseTest
 
   include ParserTestHelper
 
@@ -19,12 +19,12 @@ class SelectorTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_selector0
     init "2,3,8,9"
-    list
+    @parser.list
     #s "xs= 2,3,8,9"
     #setter
     parse "xs= 2,3,8,9"
     init " xs that are smaller than 7 "
-    z=selectable
+    z=@parser.selectable
     assert_equals z,[2,3]
     z=parse "let z be xs that are smaller than 7 "
     assert_equals z,[2,3]

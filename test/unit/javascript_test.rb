@@ -5,7 +5,7 @@ $verbose=false
 
 require_relative '../parser_test_helper'
 
-class JavascriptTestParser < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class JavascriptTestParser < ParserBaseTest
 
   include ParserTestHelper
 

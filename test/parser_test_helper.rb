@@ -1,16 +1,23 @@
 ENV["RAILS_ENV"] = "test"
-$testing=true
+$testing         =true
 
-require "test/unit"
-require_relative "../core/english-parser"
+# require "test/unit"
+require 'minitest/autorun'
+require_relative "../src/core/english-parser"
 
 module ParserTestHelper
+  #now in ParserBaseTest
+end
+
+class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
+
   include Exceptions
+  attr_accessor :variableValues
 
   def initialize args
-      $verbose=false if ENV['TEST_SUITE']
-      $emit=false #true # RUN ALL TEST THROUGH EMITTER PIPELINE!! SET per test_method !
-    @parser=EnglishParser.new
+    $verbose=false if ENV['TEST_SUITE']
+    $emit   =false #true # RUN ALL TEST THROUGH EMITTER PIPELINE!! SET per test_method !
+    @parser =EnglishParser.new
     super args
   end
 
@@ -30,8 +37,8 @@ module ParserTestHelper
     end
   end
 
-  def assert_result_is x,r
-    assert_equals parse(x),parse(r)
+  def assert_result_is x, r
+    assert_equals parse(x), parse(r)
   end
 
   def assert_equals a, b
@@ -44,12 +51,15 @@ module ParserTestHelper
     end
   end
 
+
+  alias_method :original_assert, :assert
   def assert x=nil, msg=nil, &block
     return puts "\nTEST PASSED! #{@parser.original_string}" if x==true
+    msg=msg.call if msg.is_a?Proc
+    msg||=@parser.to_source(block) if block
     x=yield if not x and block
-    #raise Exception.new (to_source(block)) if not x
-    raise NotPassing.new to_source(block) if block and not x
-    raise NotPassing.new if not x
+    # x=yield if block # enough?
+    original_assert false,  "NOT PASSING: #{x} #{msg}" if not x
     if x.is_a? String
       begin
         puts "Testing #{x}"
@@ -57,18 +67,23 @@ module ParserTestHelper
         init x
         @parser.dont_interpret! if $emit
         ok=@parser.condition
-        ok=emit nil,ok if $emit #@parser.interpretation
+        ok=emit nil, ok if $emit #@parser.interpretation
       rescue SyntaxError => e
         raise e # ScriptError.new "NOT PASSING: SyntaxError : "+x+" \t("+e.class.to_s+") "+e.to_s
       rescue => e
-        raise NotPassing.new "NOT PASSING: #{x} #{msg} \t(#{e.class}) #{e}"
+        raise e
+        # raise NotPassing.new "NOT PASSING: #{x} #{msg} \t(#{e.class}) #{e}"
       end
       if not ok
-        raise NotPassing.new "NOT PASSING: #{x} #{msg}"
+        # puts "NOT PASSING: #{x} #{msg}"
+        original_assert false,  "NOT PASSING: #{x} #{msg}"
+        # super.assert(test:false ,"NOT PASSING: #{x} #{msg}")
+        # super.assert(test:false ,"NOT PASSING: #{x} #{msg}")
+        # raise NotPassing.new "NOT PASSING: #{x} #{msg}"
       end
-      puts x
+      # puts x
     end
-    puts "\nTEST PASSED!  #{x} \t" +@parser.to_source(block).to_s
+    puts "TEST PASSED!  #{x} \t" +@parser.to_source(block).to_s
   end
 
 
@@ -84,7 +99,7 @@ module ParserTestHelper
   end
 
   def init string
-    @parser.allow_rollback -1#reset
+    @parser.allow_rollback -1 #reset
     @parser.init string
   end
 
@@ -116,27 +131,27 @@ module ParserTestHelper
     interpretation= @parser.parse x
     @parser.full_tree
     # @parser.show_tree
-    emit interpretation,interpretation.root
+    emit interpretation, interpretation.root
   end
 
-  def emit interpretation,root
+  def emit interpretation, root
     require_relative '../core/emitters/js-emitter'
-    JavascriptEmitter.new.emit interpretation,root,run:true
+    JavascriptEmitter.new.emit interpretation, root, run: true
   end
 
-  def parse x,interpret=true
+  def parse x, interpret=true
     @parser.do_interpret! if interpret
     return parse_tree x if $emit
-    return x if not x.is_a?String
+    return x if not x.is_a? String
     @parser.parse x
     # @variables=@parser.variables
     # @result=@parser.result
-    @variables=@parser.interpretation.variables
-    @variableValues=@variables.map_values{|v|v.value}
+    @variables     =@parser.interpretation.variables
+    @variableValues=@variables.map_values { |v| v.value }
     # return @parser.interpretation if $use_tree
-    @result=@parser.interpretation.result
-    @result=false if @result==:false
-    @result=true if @result==:true
+    @result        =@parser.interpretation.result
+    @result        =false if @result==:false
+    @result        =true if @result==:true
     @result
     # @current_value=@parser.interpretation.current_value
     # @current_node=@parser.interpretation.current_node
@@ -151,6 +166,7 @@ module ParserTestHelper
   end
 
   def verbose
+    return if $raking
     @parser.verbose=true
   end
 

@@ -2,12 +2,12 @@
 
 # $use_tree=true
 $use_tree=false
-
-$verbose=true
+$verbose=false
+# $verbose=true
 
 require_relative '../parser_test_helper'
 
-class NumberTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class NumberTest  < ParserBaseTest
 
   include ParserTestHelper
 
@@ -29,10 +29,11 @@ class NumberTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
   end
 
   def test_type3
+    # assert_equal 1,2
+    assert "3 is a Number"
     assert "3 is a Fixnum"
     assert "3 is a Numeric"
     assert "3 is a Integer"
-    assert "3 is a Number"
   end
 
   def test_english_number_types

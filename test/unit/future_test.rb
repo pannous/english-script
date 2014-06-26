@@ -11,7 +11,7 @@ require_relative '../parser_test_helper'
 # they can be read as a to do list,
 # to play with or
 # to be pasted to other test classes
-class FutureTest # < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class FutureTest # < ParserBaseTest
 
   include ParserTestHelper
 

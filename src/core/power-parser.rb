@@ -10,23 +10,34 @@ class Quote < String
     return className=="string"
   end
   def self.== x
-    true if x==String
+    # true if x.name==String
+    true if x.to_s=="String"
     x==Quote
   end
 end
 
 class Function
-  attr_accessor :name, :arguments, :return_type, :scope, :module, :class, :object
+  attr_accessor :name, :arguments, :return_type, :scope, :module, :clazz, :object
 
   def initialize args
     self.name     =args[:name]
     self.scope    =args[:scope]
-    self.class    =args[:class]
+    self.clazz    =args[:class]
     self.module   =args[:module]
     self.object   =args[:object]
     self.arguments=args[:arguments]
     # scope.variables[name]=self
   end
+
+  def == x
+    return false if not x.is_a?Function
+    self.name==x.name &&
+    self.scope==x.scope &&
+    self.clazz==x.clazz   &&
+    self.object==x.object   &&
+    self.arguments==x.arguments
+  end
+
 end
 
 class FunctionCall
@@ -55,6 +66,15 @@ class Argument
     self.default    =args[:default]
     self.value      =args[:value]
     # scope.variables[name]=self
+  end
+
+  def == x
+    self.name       == x.name &&
+        self.preposition== x.preposition &&
+        self.type       == x.type &&
+        self.position   == x.position &&
+        self.default    == x.default &&
+        self.value      == x.value
   end
 
   def name_or_value
@@ -95,7 +115,7 @@ class Parser #<MethodInterception
   def initialize
     super # needs to be called by hand!
     # @verbose=true
-    @verbose          =$VERBOSE||$verbose # false
+    @verbose          =$VERBOSE||$verbose and not $raking # false
     @very_verbose     =@verbose
     @original_string  ="" # for string_pointer ONLY!!
     @string           =""
@@ -415,7 +435,7 @@ class Parser #<MethodInterception
       @current_value=nil
       @string       =old
       check_interpret 2
-      verbose "Tried #{to_source block}"
+      verbose "Tried #{to_source block}" if @verbose
       verbose e
       string_pointer if @verbose
       (@nodes-old_nodes).each { |n|
@@ -428,12 +448,12 @@ class Parser #<MethodInterception
       cc=caller_depth
       rb= @no_rollback_depth-2
       # DO NOT TOUCH ! Or replace with a less fragile mechanism
-      if cc<rb and not cc+2<rb # not check_rollback_allowed
+      if cc<rb #and not cc+2<rb # not check_rollback_allowed
         error "NO ROLLBACK, GIVING UP!!!"
         puts @last_token || string_pointer # ALWAYS! if @verbose
         show_tree #Not reached
         attempt=e.to_s.gsub("[", "").gsub("]", "")
-        from=0# e.backtrace.count-@no_rollback_depth-2
+        from=0 #e.backtrace.count-@no_rollback_depth-2
         bt     =e.backtrace
         bt     =bt[from..-1] #if from>10
         bt     =filter_stack bt

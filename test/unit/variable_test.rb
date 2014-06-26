@@ -2,7 +2,7 @@
 # $use_tree=true
 require_relative '../parser_test_helper'
 
-class VariableTest  < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class VariableTest  < ParserBaseTest
 
   include ParserTestHelper
 

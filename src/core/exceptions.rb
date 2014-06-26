@@ -5,7 +5,8 @@ module Exceptions
   # DO ROLLBACK all NotMatching
   InternalError = Class.new StandardError
   NotMatching = Class.new StandardError
-  NotPassing = Class.new StandardError
+  # NotPassing = Class.new StandardError
+  NotPassing = Class.new Minitest::Assertion
   NoResult = Class.new NotMatching
   EndOfDocument = Class.new StandardError
   EndOfLine= Class.new NotMatching

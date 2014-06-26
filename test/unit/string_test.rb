@@ -6,7 +6,7 @@ $verbose=false
 
 require_relative '../parser_test_helper'
 
-class StringTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class StringTest < ParserBaseTest
 
   include ParserTestHelper
 

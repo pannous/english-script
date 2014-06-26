@@ -6,7 +6,7 @@ $use_tree=false
 
 require_relative '../parser_test_helper'
 
-class LoopTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class LoopTest < ParserBaseTest
 
   include ParserTestHelper
 

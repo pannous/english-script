@@ -5,7 +5,7 @@ $use_tree=false
 
 require_relative '../parser_test_helper'
 
-class FunctionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
+class FunctionTest < ParserBaseTest
 
   include ParserTestHelper
 
@@ -19,7 +19,10 @@ class FunctionTest < Test::Unit::TestCase #< ParserBaseTest <  EnglishParser
 
   def test_params
     parse("how to increase x by y: x+y;")
-    assert_not_nil functions["increase"],"sdfsdf"
+    g=functions["increase"]
+    f=Function.new(name:"increase", arguments:[Argument.new(name:"y", preposition:"by",position:1),
+                                               Argument.new(name:"", preposition:"",position:2)])
+    assert_equal f,g
   end
 
   def test_simple_parameters

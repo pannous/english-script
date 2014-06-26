@@ -68,8 +68,10 @@ module EnglishParserTokens #< MethodInterception
   end
 
 
-  def type_names
-    ["string", "int", "integer", "bool", "boolean", "list", "array", "hash"]
+  def type_names #danger: object,class ,module  "char","character",
+    ["string", "int", "integer", "bool", "boolean", "list", "array", "hash","float",
+     "real","double",
+     "number","word"]
   end
 
   def constants
@@ -179,8 +181,10 @@ module EnglishParserTokens #< MethodInterception
   #  '=>' '<=', DANGER
   # OR class_words
   def comparison_words
-    ['be', 'is', 'are', 'were', '=', '>', '>=', '==', '<=', '<', '=<', 'gt', 'lt', 'eq', 'bigger', 'greater', 'equals',
-     'identical to', 'smaller', 'less', 'equal to', 'more', 'less', 'the same as', 'same as', 'similar', 'comes after',
+    ['be', 'is', 'are', 'were',  '>=', '==', '<=',  '=<','=', '>', '<','gt', 'lt', 'eq',
+     'identical to', 'smaller or equal','greater or equal', 'equal to', 'bigger', 'greater', 'equals','smaller', 'less','more',  'the same as',
+     'same as',
+     'similar', 'comes after',
      'comes before', 'exact', 'exactly', '~>', 'at least', 'at most']
   end
 
@@ -407,7 +411,8 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def is_file string, must_exist=true
-    m=string.to_s.match /^([\w\/\.]+\.\w+)/ || match_path(string)
+    return false if string.to_s.match /^\d*\.\d+/
+    m=string.to_s.match /^([\w\/\.]*\.\w+)/ || match_path(string)
     return false if not m
     must_exist ? m && File.file?(m) : m
   end
@@ -481,7 +486,7 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def other_verbs
-    ['increase','decrease','square','invert']
+    ['increase','decrease','square','invert','test']
   end
 
   def special_verbs
