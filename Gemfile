@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'rake'
-gem "minitest", "4.7.5" #if $RUBYMINE
 gem 'wordnet'#,'~> 1.0.0'
 gem 'wordnet-defaultdb'
 gem 'rufus-scheduler'
@@ -16,6 +14,8 @@ gem 'linguistics'
 # gem 'simplecov'#,'~> 0.6.4'
 
 # for RUBYMINE WTF
+# gem 'rake'
+# gem "minitest", "4.7.5" #if $RUBYMINE
 # gem 'debase' #if $RUBYMINE
 # gem 'ruby-debug-ide' #if $RUBYMINE
 # gem 'debugger'
