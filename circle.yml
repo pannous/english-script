@@ -1,3 +1,10 @@
+dependencies:
+  bundler:
+    without:
+      - development
 test:
   post:
     - bundle exec rake test
+# machine:
+#   ruby:
+#     version:    

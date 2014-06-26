@@ -907,18 +907,19 @@ class EnglishParser < Parser
 
   def applescript
     tokens 'tell application', 'tell app'
+    no_rollback!
     app    =quote
-    to     = _? 'to'
     @result="tell application \"#{app}\""
-    @result+= ' to '+ @string if to
-    if not to #Multiline
+    if _? 'to'
+      @result+=' to '+rest_of_line() # "end tell"
+    else  #Multiline
       while @string and not @string.contains 'end tell'
         # #TODO deep blocks! simple 'end' : and not @string.contains 'end'
         @result+= rest_of_line() +"\n"
       end
       # tokens? "end tell","end"
-      @result+=rest_of_line() # "end tell"
     end
+    @result        +="\ntell application \"#{app}\" to activate"
     # -s o /path/to/the/script.scpt
     @current_value = %x{/usr/bin/osascript -ss -e $'#{@result}'} if @interpret
     return @result
@@ -1551,7 +1552,7 @@ class EnglishParser < Parser
   # one element in 1,2,3
   def element_in
     noun?
-    __ "in","of"
+    __ "in", "of"
   end
 
   def condition
@@ -1561,7 +1562,7 @@ class EnglishParser < Parser
     brace     ||=_? '(' if negated
     # @a=endNode # NO LISTS (YET)! :(
     quantifier=maybe { tokens quantifiers } # vs selector!
-    element_in? if quantifier  # -> selector!
+    element_in? if quantifier # -> selector!
     @a   =action_or_expressions quantifier
     @not =false
     @comp=use_verb=maybe { verb_comparison } # run like , contains
