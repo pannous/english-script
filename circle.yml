@@ -1,0 +1,3 @@
+test:
+  post:
+    - bundle exec rake test
