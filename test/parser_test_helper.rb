@@ -1,6 +1,6 @@
 ENV["RAILS_ENV"] = "test"
 $testing         =true
-
+$emit=true
 # require "test/unit"
 require 'minitest/autorun'
 require_relative "../src/core/english-parser"

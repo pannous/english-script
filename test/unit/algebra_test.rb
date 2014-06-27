@@ -23,8 +23,8 @@ class AlgebraTest < ParserBaseTest
 
 
   def test_algebra_NOW
-    assert_result_is "1+(3/4)","1¾"
     skip "test_algebra_NOW, DONT SKIP!"
+    assert_result_is "1+(3/4)","1¾"
     assert_result_is "1+3/4.0","1¾"
     # 1.0 noo
     assert_result_is "1.0+3/4.0","1¾"
