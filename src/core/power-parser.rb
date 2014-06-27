@@ -9,6 +9,13 @@ class Quote < String
     return true if className=="quote"
     return className=="string"
   end
+
+  def self.is x
+    return true if x.to_s.downcase=="string"
+    return true if x.to_s.downcase=="quote"
+    false
+  end
+
   # todont!!
   def self.== x
     # true if x.name==String
@@ -32,12 +39,12 @@ class Function
   end
 
   def == x
-    return false if not x.is_a?Function
+    return false if not x.is_a? Function
     self.name==x.name &&
-    self.scope==x.scope &&
-    self.clazz==x.clazz   &&
-    self.object==x.object   &&
-    self.arguments==x.arguments
+        self.scope==x.scope &&
+        self.clazz==x.clazz &&
+        self.object==x.object &&
+        self.arguments==x.arguments
   end
 
 end
@@ -71,12 +78,12 @@ class Argument
   end
 
   def == x
-    self.name       == x.name &&
+    self.name == x.name &&
         self.preposition== x.preposition &&
-        self.type       == x.type &&
-        self.position   == x.position &&
-        self.default    == x.default &&
-        self.value      == x.value
+        self.type == x.type &&
+        self.position == x.position &&
+        self.default == x.default &&
+        self.value == x.value
   end
 
   def name_or_value
@@ -87,7 +94,6 @@ class Argument
     self.name.to_sym
   end
 end
-
 
 
 class Variable
@@ -113,17 +119,17 @@ end
 
 
 class Property < Variable
-  attr_accessor :name,:owner
+  attr_accessor :name, :owner
 end
 
 class Parser #<MethodInterception
   include Exceptions
-  attr_accessor :lines,:verbose,:original_string
+  attr_accessor :lines, :verbose, :original_string
 
   def initialize
     super # needs to be called by hand!
     # @verbose=true
-    @verbose          =$VERBOSE||$verbose and not $raking # false
+    @verbose =$VERBOSE||$verbose and not $raking # false
     @very_verbose     =@verbose
     @original_string  ="" # for string_pointer ONLY!!
     @string           =""
@@ -299,9 +305,9 @@ class Parser #<MethodInterception
 
 
   def no_rollback! n=0
-    depth             =caller_depth-1
+    depth              =caller_depth-1
     @old_rollback_depth=@no_rollback_depth
-    @no_rollback_depth=depth
+    @no_rollback_depth =depth
     # @no_rollback_method=caller #_name
   end
 
@@ -329,7 +335,7 @@ class Parser #<MethodInterception
 
   def allow_rollback n=0
     @old_rollback_depth=-1 if @no_rollback_depth==-1 || n<0
-    @no_rollback_depth=@old_rollback_depth||-1
+    @no_rollback_depth =@old_rollback_depth||-1
   end
 
   def check_rollback_allowed
@@ -374,8 +380,8 @@ class Parser #<MethodInterception
     verbose "Succeeded with any #{to_source block}" if result
     string_pointer if @verbose and not result
     @last_token=string_pointer_s #if not @last_token
-    @string  =oldString if check_rollback_allowed
-    @throwing=was_throwing
+    @string    =oldString if check_rollback_allowed
+    @throwing  =was_throwing
     #@throwing[@level]=true
     #@level=@level-1
     return result if result
@@ -411,7 +417,7 @@ class Parser #<MethodInterception
     #   @no_rollback_depth=depth
     # end
     if depth+2<@no_rollback_depth #todo: nested no_rollback!
-      @no_rollback_depth=-1#depth#-3
+      @no_rollback_depth=-1 #depth#-3
     end
   end
 
@@ -420,7 +426,7 @@ class Parser #<MethodInterception
     #return if checkEnd
     # allow_rollback 1
     @depth=@depth+1
-    old=@string
+    old   =@string
     if (caller_depth>@max_depth)
       raise SystemStackError.new "if(@nodes.count>@max_depth)"
     end
@@ -461,13 +467,13 @@ class Parser #<MethodInterception
         puts @last_token || string_pointer # ALWAYS! if @verbose
         show_tree #Not reached
         attempt=e.to_s.gsub("[", "").gsub("]", "")
-        from=0 #e.backtrace.count-@no_rollback_depth-2
+        from   =0 #e.backtrace.count-@no_rollback_depth-2
         bt     =e.backtrace
         bt     =bt[from..-1] #if from>10
         bt     =filter_stack bt
-        m0     =bt[0].match(/`.*/) rescue "XX"
-        m1     =bt[1].match(/`.*'/) rescue "YY"
-        ex     =GivingUp.new("Expecting #{m0} in #{m1} ... maybe related: #{attempt}\n#{@last_token || string_pointer}")
+        m0 =bt[0].match(/`.*/) rescue "XX"
+        m1 =bt[1].match(/`.*'/) rescue "YY"
+        ex =GivingUp.new("Expecting #{m0} in #{m1} ... maybe related: #{attempt}\n#{@last_token || string_pointer}")
         ex.set_backtrace(bt)
         raise ex
         # error e #exit
@@ -717,8 +723,8 @@ class Parser #<MethodInterception
 
   # hack for kleene star etc  _? == maybe{tokens}
   def method_missing(sym, *args, &block) # <- NoMethodError use node.blah to get blah!
-    syms=sym.to_s
-    cut =syms[0..-2]
+    syms  =sym.to_s
+    cut   =syms[0..-2]
     @depth=@depth+1
     #return send(cut) if(syms.end_with?"!")
     if (syms.end_with? "?")
@@ -728,7 +734,7 @@ class Parser #<MethodInterception
       x            = maybe { send(cut, args[0]) } if args.count==1
       x            = maybe { send(cut, args) } if args.count>1
       @last_pattern=old_last
-      @depth=@depth-1
+      @depth       =@depth-1
       return x
     end
     if (syms.end_with? "!")

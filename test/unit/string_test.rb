@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-# $use_tree=false
-$use_tree=true
+$use_tree=false
+# $use_tree=true
 $verbose=false
 
 require_relative '../parser_test_helper'
@@ -118,12 +118,15 @@ class StringTest < ParserBaseTest
   end
 
   def test_type3
-    parse "x be 'hello world';show x;x;y= class of x"
+    parse "x be 'hello world';"
     # assert variables['y']==String
-    assert variables['y']==Quote
+    assert("x is a string")
     assert("type of x is string")
     assert("class of x is string")
     assert("kind of x is string")
+    parse "y= class of x"
+    assert variables['y']==Quote
+    assert("y is string")
     parse "y is type of x"
     assert("y is string")
   end

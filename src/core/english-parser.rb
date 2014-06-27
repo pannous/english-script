@@ -401,14 +401,16 @@ class EnglishParser < Parser
     raise NotMatching.new if @string[0]==','
     must_contain_before [be_words, operators-['and']], ',' if check #,before:
     # +[' '] ???
-    start_brace= maybe { token '[' }
-    start_brace= _? '{' if not start_brace
+    start_brace= _? '[' || _?('{')|| _?('(') #only one!
     raise NotMatching.new 'not a deep list' if not start_brace and (@inside_list)
-    @inside_list=true
-    all         =[]
+
     #all<<expression(start_brace)
     # $verbose=true #debug
-    all<<endNode
+    @inside_list=true
+    first=endNode?
+    @inside_list=false if not first
+    raise_not_matching if not first
+    all         =[first]
     star {
       tokens(',', 'and') # danger: and as plus! BAD IDEA!!!
       all<<endNode
@@ -416,6 +418,7 @@ class EnglishParser < Parser
     }
     _ ']' if start_brace=='['
     _ '}' if start_brace=='{'
+    _ ')' if start_brace=='('
     @inside_list  =false
     @current_value=all
     all
@@ -582,6 +585,10 @@ class EnglishParser < Parser
           # maybe { if_then } ||
           maybe { once } ||
           maybe { piped_actions } ||
+          maybe { setter } ||
+          maybe { returns } ||
+          maybe { breaks } ||
+          maybe { constructor } ||
           maybe { action } ||
           maybe { expressions } # AS RETURN VALUE! DANGER!
     }
@@ -890,10 +897,12 @@ class EnglishParser < Parser
       # print sorted files
       # obj=maybe { nod? || list? || expression } if not @in_args # todo: expression
     end
-    if has_args(method, obj)
+    assume_args=true #!starts_with("of")  # true    #<< Redundant with property eventilation!
+    if has_args(method, obj,assume_args)
       @current_value=nil
       @in_args      =true
       args          =star { arg }
+      # __? ',','and'
     else
       more=_? ','
       obj =[obj]+list(false) if more
@@ -927,7 +936,7 @@ class EnglishParser < Parser
       end
       # tokens? "end tell","end"
     end
-    @result        +="\ntell application \"#{app}\" to activate"
+    # @result        +="\ntell application \"#{app}\" to activate" # to front
     # -s o /path/to/the/script.scpt
     @current_value = %x{/usr/bin/osascript -ss -e $'#{@result}'} if @interpret
     return @result
@@ -973,15 +982,11 @@ class EnglishParser < Parser
       maybe { special_blocks } ||
           maybe { applescript } ||
           maybe { bash_action } ||
-          maybe { setter } ||
-          maybe { constructor } ||
+          maybe { evaluate } ||
           maybe { ruby_method_call } ||
           maybe { selfModify } ||
           maybe { thing_dot_method_call } ||
           maybe { method_call } ||
-          maybe { evaluate } ||
-          maybe { returns } ||
-          maybe { breaks } ||
           maybe { spo }
       #try { verb_node } ||
       #try { verb }
@@ -1754,7 +1759,7 @@ class EnglishParser < Parser
 
   # see do_evaluate ! merge
   def resolve x
-    return x.strip if x and x.is_a?String # todo x==" " !?!
+    x=x.strip if x and x.is_a?String # todo x==" " !?!
     return Dir.new x if is_dir x
     return File.new x if is_file x
     return x.value if x.is_a? Variable
@@ -1867,6 +1872,7 @@ class EnglishParser < Parser
     elsif comp=='smaller or equal'||comp=='<='
       return a<=b
     elsif class_words.index comp
+      return a.is_a? b if b.is_a?Class
       return a.is_a b
     elsif be_words.index comp or comp.match(/same/)
       return a.is b
@@ -1922,7 +1928,8 @@ class EnglishParser < Parser
     raiseEnd
     x=any {# NODE }
       #try { plural} ||
-      maybe { rubyThing } ||
+          maybe { list } ||
+          maybe { rubyThing } ||
           maybe { fileName } ||
           maybe { linuxPath } ||
           maybe { quote } || #redundant with value !
@@ -1933,7 +1940,6 @@ class EnglishParser < Parser
           maybe { article?; word } ||
           maybe { range } || # not params!
           maybe { value } ||
-          maybe { list } ||
           maybe { token 'a' } # variable 'a' not as article DANGER!
     }
 

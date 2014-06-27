@@ -23,8 +23,7 @@
 # f.puts Opal.compile("x = (1..3).map do |n| n * n * n  end.reduce(:+); puts x")
 # Opal::Builder.build('opal')
 
-class JavascriptEmitter
-
+class JavascriptEmitter < Emitter
 
   def setter context, node, modul, block
     var=node[:word]

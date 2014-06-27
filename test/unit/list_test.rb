@@ -207,9 +207,9 @@ class ListTest < ParserBaseTest # <  EnglishParser
   end
 
   def test_map2 # list vs params !
+    assert("square of 1,2 and 3 == 1,4,9")
     assert_equals parse("square 1,2,3"), [1, 4, 9] #needs Array.method_missing (auto-map) !!!
     assert_equals parse("square 1,2 and 3"), [1, 4, 9]
-    assert("square of 1,2 and 3 == 1,4,9")
   end
 
   def test_map22 # list vs params !

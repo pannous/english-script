@@ -45,9 +45,11 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
     if a==b
       puts "TEST PASSED! #{@parser.original_string}    #{a} == #{b}"
     else
-      e= NotPassing.new "#{a} should equal #{b}"
-      e.set_backtrace filter_stack(caller)
-      raise e
+      puts filter_stack(caller)
+      assert false, "#{a} should equal #{b}"
+      # e= NotPassing.new "#{a} should equal #{b}"
+      # e.set_backtrace filter_stack(caller)
+      # raise e
     end
   end
 

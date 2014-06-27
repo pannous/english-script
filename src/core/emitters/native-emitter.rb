@@ -49,6 +49,7 @@
 # probably not: https://github.com/ioquatix/ffi-clang
 
 begin
+  require_relative 'emitter'
   require 'llvm/core'
   require 'llvm/execution_engine'
   require 'llvm/transforms/scalar'
@@ -56,7 +57,7 @@ rescue Exception => e
   puts "WARN llvm NOT available"
 end
 
-class NativeEmitter
+class NativeEmitter < Emitter
   include LLVM rescue nil
 
   #  HORRIBLE just to set a variable: http://llvm.org/docs/tutorial/LangImpl7.html !!!!!!!!!!!! :(
@@ -67,9 +68,6 @@ class NativeEmitter
   # LLVM::GenericValue.from_d(2.2).to_f(LLVM::Double)
   # ref = builder.gep(global, [LLVM::Int(0), LLVM::Int(0)])
 
-  def args_match meth, args
-    [@chars]
-  end
 
   def norm args, types, block
     # args=args.to_s if args.is_a? TreeNode #TODO
@@ -107,25 +105,6 @@ class NativeEmitter
     # n_1       = b.sub(n, LLVM::Int(1), "n-1")
     # fac_n_1   = b.call(fac, n_1, "fac(n-1)")
     # n_fac_n_1 = b.mul(n, fac_n_1, "n*fac(n-1)")
-  end
-
-  def descend context, node, modul, func
-    put node.name
-    put "{"
-    # method_call context, node, modul, func if node.name==:method_call
-    case node.name
-      when :method_call then
-        method_call context, node, modul, func
-      when :setter then
-        setter context, node, modul, func
-      when :algebra then
-        algebra
-    end
-
-    for n in node.nodes
-      descend context, n, modul, func
-    end
-    put "}"
   end
 
   def emit interpretation, do_run=false
