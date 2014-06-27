@@ -1,7 +1,8 @@
 
 class Quote < String
   def is_a className
-    className.downcase!
+    return is_a?className if className.is_a?Class
+    className.downcase! if className.is_a?String
     return true if className=="quote"
     return className=="string"
   end
@@ -105,6 +106,10 @@ class Variable
     self.module  =args[:module]
     self.modifier=args[:modifier]
     # scope.variables[name]=self
+  end
+
+  def to_s
+     "Variable #{name}=#{value}"
   end
 
   def increase

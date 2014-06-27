@@ -92,8 +92,8 @@ class StringTest < ParserBaseTest
   end
 
   def test_concatenation_c
-    init "x is 'hi'"
-    parse "y is ' you'
+    parse "x is 'hi'"
+    parse "y is ' you';
        z is x + y"
     assert_equals(variables['z'],'hi you');
   end
@@ -135,11 +135,14 @@ class StringTest < ParserBaseTest
     parse "x is 'hi'; y = ' world'"
     assert_equals(parse("x + y"), "hi world");
     assert("x plus y == 'hi world'");
-    assert("'hi'+ ' '+'world' == 'hi world'");
-    assert("z is 'hi world'");
+  end
 
+  def test_concatenation2b
+    assert_equals(parse("'hi'+ ' '+'world'"),'hi world');
+    assert_result_is("'hi'+ ' '+'world'","'hi world'");
     parse "x is 'hi'; y is 'world';z is x plus ' ' plus y"
     assert_equals variables["z"], 'hi world'
+    assert("z is 'hi world'");
   end
 
   def test_type

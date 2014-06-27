@@ -57,6 +57,7 @@ class EmitterTest < ParserBaseTest
   end
 
   def test_setter
+    skip
     $use_tree=true
     @parser.dont_interpret!
     parse "x='ho';printf x"

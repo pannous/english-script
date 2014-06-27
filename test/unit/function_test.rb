@@ -35,6 +35,7 @@ class FunctionTest < ParserBaseTest
 
 
   def test_svg
+    skip
     parse 'svg <circle cx="$x" cy="50" r="$radius" stroke="black" fill="$color" id="circle"/>'
     parse 'what is that'
   end

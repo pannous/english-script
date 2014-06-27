@@ -69,7 +69,7 @@ module EnglishParserTokens #< MethodInterception
 
 
   def type_names #danger: object,class ,module  "char","character",,"word"
-    ["string", "int", "integer", "bool", "boolean", "list", "array", "hash","float",
+    ["auto","string", "int", "integer", "bool", "boolean", "list", "array", "hash","float",
      "real","double",
      "number"]
   end

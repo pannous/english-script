@@ -21,9 +21,12 @@ class TreeNode
 
   def find x
     for n in self.nodes
-      if(x=="*"|| n.name==x||n.name.to_s==x.to_s)
+      if (x=="*"|| n.name==x||n.name.to_s==x.to_s)
         if n.value
           return n.value
+        end
+        if n.content
+          return n.content
         end
         s=n.find "*"
         return s if s
@@ -39,7 +42,7 @@ class TreeNode
   def all x
     all=[]
     for n in self.nodes
-      if(x=="*"|| n.name==x||n.name.to_s==x.to_s)
+      if (x=="*"|| n.name==x||n.name.to_s==x.to_s)
         if n.value
           all<<n.value
         end
@@ -100,9 +103,9 @@ class TreeNode
 
 
   #BAD method
-  def eval_node variables,fallback
+  def eval_node variables, fallback
     @variableValues||=variables #woot?
-    whot=full_value
+    whot           =full_value
     begin
       whot.gsub!("\\", "") # where from?? token?
       res=eval(whot) rescue fallback ## v0.0
@@ -127,6 +130,6 @@ class TreeNode
     @nodes=[]
     @valid=false
     @value=nil || args[:value]
-    @name=nil || args[:name]
+    @name =nil || args[:name]
   end
 end

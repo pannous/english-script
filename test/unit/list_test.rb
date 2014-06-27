@@ -74,6 +74,7 @@ class ListTest < ParserBaseTest # <  EnglishParser
   end
 
   def test_select5
+    skip
     assert "numbers are 1,2,3. second number is 2"
     assert "my friends are a,b and c. my second friend is b"
   end
@@ -123,10 +124,16 @@ class ListTest < ParserBaseTest # <  EnglishParser
     parse "x is 1,2,3;y=4,5,6"
     parse "x + y"
     assert result.length==6
+    parse "z is x + y"
+    assert_equals(variables['z'], [1, 2, 3, 4,5,6]);
+  end
+
+  def test_concatenation2c
     parse "x is 1,2
-       y is 3,4; // todo: remove newline!
+       y is 3,4
        z is x + y"
-    assert(variables['z']== [1, 2, 3, 4]);
+    # // todo: remove newline!
+    assert_equals(variables['z'], [1, 2, 3, 4]);
   end
 
 
@@ -161,6 +168,7 @@ class ListTest < ParserBaseTest # <  EnglishParser
     init "class of [1,2,3]"
     @parser.expressions
     assert_equals result, Array
+    skip
     parse "class of 1,2,3"
     assert_equals result, Array
   end
@@ -184,9 +192,10 @@ class ListTest < ParserBaseTest # <  EnglishParser
     assert_equals variables['x'].type, Array
     assert_equals variables['x'].class, Array
     assert_equals variables['x'].kind, Array
-    assert("y is Array")
+    assert_equals variables['y'], Array
     assert("y is a Array")
     assert("y is an Array")
+    assert("y is Array")
     assert("Array == class of x")
     assert("class of x is Array")
     assert("kind of x is Array")

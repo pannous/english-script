@@ -61,7 +61,7 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
     msg||=@parser.to_source(block) if block
     x=yield if not x and block
     # x=yield if block # enough?
-    original_assert false,  "NOT PASSING: #{x} #{msg}" if not x
+    original_assert false,  "#{x} NOT PASSING: #{msg}" if not x
     if x.is_a? String
       begin
         puts "Testing #{x}"
@@ -78,7 +78,7 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
       end
       if not ok
         # puts "NOT PASSING: #{x} #{msg}"
-        original_assert false,  "NOT PASSING: #{x} #{msg}"
+        original_assert false,  "#{x} NOT PASSING: #{msg}"
         # super.assert(test:false ,"NOT PASSING: #{x} #{msg}")
         # super.assert(test:false ,"NOT PASSING: #{x} #{msg}")
         # raise NotPassing.new "NOT PASSING: #{x} #{msg}"

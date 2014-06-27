@@ -2,8 +2,8 @@
 # require 'test_helper'
 
 $use_tree=$emit
-$use_tree=true
-# $use_tree=false
+# $use_tree=true
+$use_tree=false
 # $verbose =true
 
 require_relative '../parser_test_helper'
@@ -60,7 +60,7 @@ class ConditionTest < ParserBaseTest
     assert_equals check, 6
   end
 
-  def test_list_quantifiers2
+  def test_list_quantifiers2  #OK
     check=parse 'x=2;if all 0,1,2 are smaller 2 then x++'
     assert_equals check, false # if false then true returns false !
     check=parse 'x=2;if one of 0,1,2 is smaller 3 then x++'
@@ -197,6 +197,9 @@ class ConditionTest < ParserBaseTest
     assert_equals @result, 'beeped'
     parse 'if 1>0 then: beep;end'
     assert_equals @result, 'beeped'
+  end
+
+  def test_if_then2
     parse "if 1>0\n beep\nend"
     assert_equals @result, 'beeped'
     parse 'if 1>0 beep' #optional, remove if test fails

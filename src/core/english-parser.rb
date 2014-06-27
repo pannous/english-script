@@ -267,16 +267,21 @@ class EnglishParser < Parser
     html_block? || ruby_block? || javascript_block
   end
 
+  def end_of_statement
+    __?newline_tokens||end_expression #end_block #newlines
+
+  end
+
   # see read_block for RAW blocks! (</EOF> type)
   # EXCLUDING start_block & end_block !!!
   def block
     start=pointer
     s    =statement
     star {
-      newlines
+      end_of_statement
       s=statement||s
     }
-    newline? # danger might act as block end!
+    end_of_statement? # danger might act as block end!
 
     return s if check_interpret
     content     =pointer-start
@@ -361,10 +366,9 @@ class EnglishParser < Parser
   end
 
 
-
   def nth_item # Also redundant with property evaluation (But okay as a shortcut)
-    set=_?'set'
-    n=__ numbers+['first', 'last', 'middle']
+    set=_? 'set'
+    n  =__ numbers+['first', 'last', 'middle']
     _? '.'
     type=__ ['item', 'element', 'object', 'word', 'char', 'character']+type_names # noun
     __ ['in', 'of']
@@ -374,7 +378,7 @@ class EnglishParser < Parser
     @result=l.item(n) # -1 AppleScript style !!! BUT list[0] !!!
     if set
       _ "to"
-      val=endNode
+      val                 =endNode
       l[n.parse_integer-1]=do_evaluate(val)
     end
     return @result
@@ -397,16 +401,16 @@ class EnglishParser < Parser
     raise NotMatching.new if @string[0]==','
     must_contain_before [be_words, operators-['and']], ',' if check #,before:
     # +[' '] ???
-    start_brace= __? '[','{','(' #only one!
+    start_brace= __? '[', '{', '(' #only one!
     raise NotMatching.new 'not a deep list' if not start_brace and (@inside_list)
 
     #all<<expression(start_brace)
     # $verbose=true #debug
     @inside_list=true
-    first=endNode?
+    first       =endNode?
     @inside_list=false if not first
     raise_not_matching if not first
-    all         =[first]
+    all =[first]
     star {
       tokens(',', 'and') # danger: and as plus! BAD IDEA!!!
       all<<endNode
@@ -618,8 +622,8 @@ class EnglishParser < Parser
     allow_rollback # for
     dont_interpret!
     b=action_or_block # define z as 7 allowed !!!
-    f=Function.new name: name, arguments: args, return_type: return_type,body:b
-     #,modifiers:modifiers, annotations:annotations
+    f=Function.new name: name, arguments: args, return_type: return_type, body: b
+    #,modifiers:modifiers, annotations:annotations
     @methods[name]=f||parent_node||b rescue nil # with args! only in tree mode!!
     f || name
   end
@@ -897,7 +901,7 @@ class EnglishParser < Parser
       # obj=maybe { nod? || list? || expression } if not @in_args # todo: expression
     end
     assume_args=true #!starts_with("of")  # true    #<< Redundant with property eventilation!
-    if has_args(method, obj,assume_args)
+    if has_args(method, obj, assume_args)
       @current_value=nil
       @in_args      =true
       args          =star { arg }
@@ -1041,15 +1045,15 @@ class EnglishParser < Parser
     _ '>'
   end
 
-  def call_function f,args=nil
-    do_send f.object, f.name,args|| f.arguments
+  def call_function f, args=nil
+    do_send f.object, f.name, args|| f.arguments
   end
 
 
   def do_execute_block b, args={}
     return false if not b
     return call_function b if b.is_a? FunctionCall
-    return call_function b,args if b.is_a? Function
+    return call_function b, args if b.is_a? Function
     b=b.content if b.is_a? TreeNode
     return b if not b.is_a? String # OR ... !!!
     block_parser               =EnglishParser.new
@@ -1208,9 +1212,9 @@ class EnglishParser < Parser
     p  =__? possessive_pronouns
     # all=p ? [p] : []
     all=one_or_more { word } rescue (a=='a' ? all=[a] : (raise NotMatching))
-    name  =all.join(' ')
-    name  =all[1..-1].join(' ') if !typ&&all.length>1&&isType(all[0]) #(p ? 0 : 1)
-    name  =p+' '+name if p
+    name =all.join(' ')
+    name =all[1..-1].join(' ') if !typ&&all.length>1&&isType(all[0]) #(p ? 0 : 1)
+    name =p+' '+name if p
     name.strip!
     oldVal=@variableValues[name]
     # {variable:{name:name,type:typ,scope:@current_node,module:current_context}}
@@ -1403,7 +1407,7 @@ class EnglishParser < Parser
   def that_are
     __ 'that', 'which', 'who'
     be
-    maybe{compareNode}|| # bigger than live
+    maybe { compareNode }|| # bigger than live
         @comp=adjective? || # simple
             gerund #  whining
     @comp
@@ -1564,8 +1568,8 @@ class EnglishParser < Parser
         # @comp=cond[:comparation]
       end
       return false if not @comp #todo!
-      @a.strip! if @a and @a.is_a?String # nil==nil ok
-      @b.strip! if @b and @b.is_a?String
+      @a.strip! if @a and @a.is_a? String # nil==nil ok
+      @b.strip! if @b and @b.is_a? String # " a "=="a" !?!?!? NOOO! why?
       @comp.strip!
       if is_comparator @comp
         result=do_compare(@a, @comp, @b)
@@ -1626,7 +1630,7 @@ class EnglishParser < Parser
     return negate ? !@a : @a if not @comp # optional, i.e.   return true IF 1
 
     # 1,2,3 are smaller 4  VS 1,2,3 contains 4
-    quantifier||="all" if @a.is_a? Array and not @a.respond_to?(@comp) and not @b.is_a?Array
+    quantifier||="all" if @a.is_a? Array and not @a.respond_to?(@comp) and not @b.is_a? Array
     # return  negate ? !@a : @a if not @comp
     if check_interpret
       return negate ? (!check_list_condition(quantifier)) : check_list_condition(quantifier) if quantifier
@@ -1802,11 +1806,10 @@ class EnglishParser < Parser
 
   # see do_evaluate ! merge
   def resolve x
-    x=x.strip if x and x.is_a?String # todo x==" " !?!
     return Dir.new x if is_dir x
     return File.new x if is_file x
     return x.value if x.is_a? Variable
-    return @variableValues[x] if @interpret and @variableValues.key?(x)
+    return @variableValues[x.strip] if @interpret and @variableValues.key?(x)
     x
   end
 
@@ -1892,8 +1895,8 @@ class EnglishParser < Parser
     elsif comp=='smaller or equal'||comp=='<='
       return a<=b
     elsif class_words.index comp
-      return a.is_a? b if b.is_a?Class
       return a.is_a b
+      # return a.is_a? b if b.is_a? Class
     elsif be_words.index comp or comp.match(/same/)
       return a.is b
     elsif comp=='equal'||comp=='the same'||comp=='the same as'||comp=='the same as'||comp=='='||comp=='=='
@@ -1948,7 +1951,7 @@ class EnglishParser < Parser
     raiseEnd
     x=any {# NODE }
       #try { plural} ||
-          maybe { list } ||
+      maybe { list } ||
           maybe { rubyThing } ||
           maybe { fileName } ||
           maybe { linuxPath } ||
@@ -1964,10 +1967,7 @@ class EnglishParser < Parser
     }
 
     po=maybe { postjective } # inverted
-    if po and @interpret
-      x=@current_value=x.send(po) rescue x #DANGAR!!
-    end
-
+    x =do_send(x, po, nil) if po and @interpret
     x
   end
 
@@ -2041,7 +2041,7 @@ class EnglishParser < Parser
     # @result=v.send :index,i if check_interpret
     # @result=do_send v,:[], i  if check_interpret
     # @result=do_send(v,:[]=, [i, set]) if set and check_interpret
-    va=resolve(v)
+    va     =resolve(v)
     @result=va.send :[], i if check_interpret #old value
     @result=va.send :[]=, i, set if set and check_interpret
     v.value=va if set and v.is_a? Variable
