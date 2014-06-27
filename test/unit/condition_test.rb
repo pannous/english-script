@@ -2,8 +2,8 @@
 # require 'test_helper'
 
 $use_tree=$emit
-# $use_tree=true
-$use_tree=false
+$use_tree=true
+# $use_tree=false
 # $verbose =true
 
 require_relative '../parser_test_helper'
@@ -186,7 +186,7 @@ class ConditionTest < ParserBaseTest
   end
 
   def test_if_then
-    # $verbose=true
+    # verbose
     init 'if 1>0 then: beep;'
     @parser.if_then
     parse 'if 1>0 then: beep;'

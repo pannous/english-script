@@ -349,12 +349,6 @@ class EnglishParserTest < ParserBaseTest
     }
   end
 
-  def test_current
-    @parser.test_algebra
-    #@testParser.test
-  end
-
-
   _test "setter" do
     @parser.test_default_setter
     @parser.test_default_setter_dont_overwrite

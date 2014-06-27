@@ -96,16 +96,15 @@ done"
   def test_algebra
     # s "2* ( 3 + 10 )"
     init "2*(3+10)"
-    puts "Parse #{@string} as algebra?"
-    ok=parse @string #@parser.algebra
+    ok=@parser.algebra
     puts "Parsed input as #{ok}!"
-    assert_equals @result,26
-    assert @current_node!=nil
-    #assert @current_node==@root
-    full_value=@current_node.full_value
+    assert_equals ok,26
+    skip if not $use_tree
+    current_node=interpretation.root
+    full_value=current_node.full_value
     val=eval(full_value)
     assert_equals val,26
-    val=@current_node.eval_node(@variableValues)
+    val=current_node.eval_node()
     assert_equals val,26
   end
 

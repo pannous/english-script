@@ -17,13 +17,12 @@ class SelectorTest < ParserBaseTest
     #p "friendly numbers= [1,2,3]; friendly numbers which are smaller than three "
   end
 
+  # BUG!
+  # def pointer.-
+  # GETS FUCKED UP BY @string.strip! !!! ???
   def test_selector0
-    init "2,3,8,9"
-    @parser.list
-    #s "xs= 2,3,8,9"
-    #setter
     parse "xs= 2,3,8,9"
-    init " xs that are smaller than 7 "
+    init " xs that are smaller than 7 " # BUG 'maller t'
     z=@parser.selectable
     assert_equals z,[2,3]
     z=parse "let z be xs that are smaller than 7 "
@@ -57,7 +56,8 @@ class SelectorTest < ParserBaseTest
 
 
 
-  def test_selector1
+  def test_selector3
+    skip
     assert("every number in 1,'a',3 ==1,3")
     assert("all numbers in 1,'a',3 ==1,3")
     assert("all negative numbers in 1,-2,3,-4 ==-2,-4")

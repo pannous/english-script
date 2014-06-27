@@ -124,7 +124,7 @@ class ListTest < ParserBaseTest # <  EnglishParser
     parse "x + y"
     assert result.length==6
     parse "x is 1,2
-       y is 3,4
+       y is 3,4; // todo: remove newline!
        z is x + y"
     assert(variables['z']== [1, 2, 3, 4]);
   end

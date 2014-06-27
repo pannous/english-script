@@ -1,126 +1,8 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
-require_relative "exceptions"
-
-class Quote < String
-  def is_a className
-    className.downcase!
-    return true if className=="quote"
-    return className=="string"
-  end
-
-  def self.is x
-    return true if x.to_s.downcase=="string"
-    return true if x.to_s.downcase=="quote"
-    false
-  end
-
-  # todont!!
-  def self.== x
-    # true if x.name==String
-    return true if x.to_s=="String"
-    return true if x.to_s=="Quote"
-    false
-  end
-end
-
-class Function
-  attr_accessor :name, :arguments, :return_type, :scope, :module, :clazz, :object
-
-  def initialize args
-    self.name     =args[:name]
-    self.scope    =args[:scope]
-    self.clazz    =args[:class]
-    self.module   =args[:module]
-    self.object   =args[:object]
-    self.arguments=args[:arguments]
-    # scope.variables[name]=self
-  end
-
-  def == x
-    return false if not x.is_a? Function
-    self.name==x.name &&
-        self.scope==x.scope &&
-        self.clazz==x.clazz &&
-        self.object==x.object &&
-        self.arguments==x.arguments
-  end
-
-end
-
-class FunctionCall
-
-  attr_accessor :name, :arguments, :scope, :module, :class, :object
-
-  def initialize args
-    self.name     =args[:name]
-    self.scope    =args[:scope]
-    self.class    =args[:class]
-    self.module   =args[:module]
-    self.object   =args[:object]
-    self.arguments=args[:arguments]
-  end
-end
-
-
-class Argument
-  attr_accessor :name, :type, :position, :default, :preposition, :value
-
-  def initialize args
-    self.name       =args[:name]
-    self.preposition=args[:preposition]
-    self.type       =args[:type]
-    self.position   =args[:position]
-    self.default    =args[:default]
-    self.value      =args[:value]
-    # scope.variables[name]=self
-  end
-
-  def == x
-    self.name == x.name &&
-        self.preposition== x.preposition &&
-        self.type == x.type &&
-        self.position == x.position &&
-        self.default == x.default &&
-        self.value == x.value
-  end
-
-  def name_or_value
-    self.value||self.name
-  end
-
-  def to_sym
-    self.name.to_sym
-  end
-end
-
-
-class Variable
-  attr_accessor :name, :type, :scope, :module, :value, :final, :modifier
-
-  def initialize args
-    self.name    =args[:name]
-    self.type    =args[:type]
-    self.scope   =args[:scope]
-    self.final   =args[:final]
-    self.value   =args[:value]
-    self.module  =args[:module]
-    self.modifier=args[:modifier]
-    # scope.variables[name]=self
-  end
-
-  def increase
-    self.value = self.value+1
-    self.value
-  end
-
-end
-
-
-class Property < Variable
-  attr_accessor :name, :owner
-end
+require_relative 'exceptions'
+require_relative 'nodes'
 
 class Parser #<MethodInterception
   include Exceptions
@@ -140,6 +22,7 @@ class Parser #<MethodInterception
     @lines            =[]
     @interpret_border =-1
     @no_rollback_depth=-1
+    @rollback_depths=[]
     @max_depth        =160
   end
 
@@ -303,14 +186,6 @@ class Parser #<MethodInterception
     end
   end
 
-
-  def no_rollback! n=0
-    depth              =caller_depth-1
-    @old_rollback_depth=@no_rollback_depth
-    @no_rollback_depth =depth
-    # @no_rollback_method=caller #_name
-  end
-
   def do_interpret!
     @interpret_border=-1
     @did_interpret   =@interpret
@@ -333,10 +208,6 @@ class Parser #<MethodInterception
     @interpret
   end
 
-  def allow_rollback n=0
-    @old_rollback_depth=-1 if @no_rollback_depth==-1 || n<0
-    @no_rollback_depth =@old_rollback_depth||-1
-  end
 
   def check_rollback_allowed
     c=caller_depth
@@ -412,12 +283,27 @@ class Parser #<MethodInterception
     # filter_stack(caller).count #-1
   end
 
+
+  def no_rollback! n=0
+    depth              =caller_depth-1
+    while (@rollback_depths[-1]||-1)>depth
+      @rollback_depths.pop
+    end
+
+    @rollback_depths.push(@no_rollback_depth)
+    @no_rollback_depth =depth
+    # @no_rollback_method=caller #_name
+  end
+
+
+  def allow_rollback n=0
+    @rollback_depths =[] if n<0
+    @no_rollback_depth =@rollback_depths.pop||-1
+  end
+
   def adjust_rollback depth=caller_depth
-    # if depth+3<@no_rollback_depth
-    #   @no_rollback_depth=depth
-    # end
-    if depth+2<@no_rollback_depth #todo: nested no_rollback!
-      @no_rollback_depth=-1 #depth#-3
+    if depth+2<@no_rollback_depth
+      @no_rollback_depth =@rollback_depths.pop||-1
     end
   end
 
@@ -462,6 +348,9 @@ class Parser #<MethodInterception
       cc=caller_depth
       rb= @no_rollback_depth-2
       # DO NOT TOUCH ! Or replace with a less fragile mechanism
+      # if cc+1<rb #jumped out OK
+      #   adjust_rollback cc
+      # end
       if cc<rb #and not cc+2<rb # not check_rollback_allowed
         error "NO ROLLBACK, GIVING UP!!!"
         puts @last_token || string_pointer # ALWAYS! if @verbose
@@ -532,6 +421,7 @@ class Parser #<MethodInterception
   end
 
 
+  # GETS FUCKED UP BY @string.strip! !!! ???
   def pointer
     #@line_number copy by ref?????????
     Pointer.new @line_number, @original_string.length-(@string||"").length, self

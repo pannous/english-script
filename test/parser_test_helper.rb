@@ -137,7 +137,7 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
   end
 
   def emit interpretation, root
-    require_relative '../core/emitters/js-emitter'
+    require_relative '../src/core/emitters/js-emitter'
     JavascriptEmitter.new.emit interpretation, root, run: true
   end
 

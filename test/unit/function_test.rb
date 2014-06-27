@@ -20,9 +20,9 @@ class FunctionTest < ParserBaseTest
   def test_params
     parse("how to increase x by y: x+y;")
     g=functions["increase"]
-    f=Function.new(name:"increase", arguments:[Argument.new(name:"y", preposition:"by",position:1),
-                                               Argument.new(name:"", preposition:"",position:2)])
-    assert_equal f,g
+    f=Function.new(name: "increase", arguments: [Argument.new(name: "y", preposition: "by", position: 1),
+                                                 Argument.new(name: "", preposition: "", position: 2)])
+    assert_equal f, g
   end
 
   def test_simple_parameters
@@ -32,7 +32,6 @@ class FunctionTest < ParserBaseTest
   def test_to_do_something #at a given point
     #s <name of the test>
   end
-
 
 
   def test_svg
@@ -54,7 +53,7 @@ class FunctionTest < ParserBaseTest
   def test_add_to_zero
     variables['x']=7
     init "x"
-    assert_equals @parser.nod,"x" #Variable.new "x"
+    assert_equals @parser.nod, "x" #Variable.new "x"
     # 0->false->"" ERROR!!!
     parse "counter is zero; repeat three times: increase counter by 1; done repeating;"
     assert_equals variables['counter'], 3
@@ -63,19 +62,28 @@ class FunctionTest < ParserBaseTest
   end
 
   def test_array_arg
-    assert_equals((parse "rest of [1,2,3]"),[2,3])
+    assert_equals((parse "rest of [1,2,3]"), [2, 3])
     # assert parse "rest of [1,2,3]"==[2,3]
   end
 
 
   def test_array_index
-    assert_equals((parse "[1,2,3][2]"),3) # ruby index: 0,1,2
-    assert_equals((parse "x=[1,2,3];x[2]"),3) # ruby index: 0,1,2
-    assert_equals((parse "second element in [1,2,3]"),2) # english index: 1,2,3 !!!!
+    assert_equals((parse "[1,2,3][2]"), 3) # ruby index: 0,1,2
+    assert_equals((parse "x=[1,2,3];x[2]"), 3) # ruby index: 0,1,2
+    assert_equals((parse "x=[1,2,3];x[2]=0;x"), [1, 2, 0]) # ruby index: 0,1,2
   end
 
+  def test_natural_array_index
+    parse "x=[1,2,3]"
+    assert_equals((parse "second element in [1,2,3]"), 2) # english index: 1,2,3 !!!!
+    assert_equals((parse "third element in x"), 3) # english index: 1,2,3 !!!!
+    assert_equals((parse "set third element in x to 8"), 8) # english index: 1,2,3 !!!!
+    assert_equals(parse("x"),[1,2,8])
+  end
+
+
   def test_array_arg
-    assert_equals((parse "rest of [1,2,3]"),[2,3])
+    assert_equals((parse "rest of [1,2,3]"), [2, 3])
     # assert parse "rest of [1,2,3]"==[2,3]
   end
 

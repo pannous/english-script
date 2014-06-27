@@ -8,11 +8,13 @@ class MethodTest < ParserBaseTest
   include ParserTestHelper
 
   def test_result
+    parse "show 3"
+    assert_equals result,"3"
+
     parse "how to test:show 3;ok"
     assert methods.count>0
-    assert methods["test"]=="show 3;"
+    assert_equals methods["test"].body,"show 3;"
     parse "test"
-    parse "show 3"
     assert_equals result,"3"
     #assert @variables['x']==3
   end

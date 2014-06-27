@@ -38,8 +38,9 @@ class HashTestParser < ParserBaseTest
   def test_immediate_hash
     # assert_equals parse('a:{b:"b",c:"c"}'), "a"=>{b:"b",c:"c"} # todo
     # assert_equals parse('a:{b:"b";c:"c"}'), a:{b:"b",c:"c"} # No ';' allowed here
-    assert_equals parse('a:{b:"b",c:"c"}'), a:{b:"b",c:"c"} #
     assert_equals parse('a{b:"b",c:"c"}'), a:{b:"b",c:"c"}  # careful map{puts ":"} !
+    skip "test_immediate_hash NO, because of blocks!"
+    assert_equals parse('a:{b:"b",c:"c"}'), a:{b:"b",c:"c"} #
   end
 end
 

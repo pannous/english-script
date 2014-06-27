@@ -2,7 +2,7 @@
 
 $use_tree=false
 # $use_tree=true
-$verbose=false
+$verbose =false
 
 require_relative '../parser_test_helper'
 
@@ -52,19 +52,50 @@ class StringTest < ParserBaseTest
     @parser.do_interpret!
     parse "x is 'Hi'; y is 'World';z is x plus y"
     assert_equals variables["z"], 'HiWorld'
+  end
+
+  def test_concatenation_b
     init "x is 'hi'"
     @parser.setter
     assert(variables['x']== 'hi');
-    init "x + 'world'"
-    #algebra
+    init "x + ' world'"
+    r=@parser.algebra
+    assert_equals r,"hi world"
     #statement
-    @parser.root
+    # @parser.root
     parse "x + ' world'"
-    assert result=="hi world"
-    parse "x is 'hi'
-       y is ' world'
+    assert_equals result,"hi world"
+
+    parse "y is ' world'"
+    parse "z is x + y"
+    assert_equals(variables['z'],'hi world');
+    parse "y is ' you'
        z is x + y"
-    assert(variables['z']== 'hi world');
+    assert_equals(variables['z'],'hi you');
+  end
+
+  def test_concatenation_b
+    init "x is 'hi'"
+    @parser.setter
+    assert(variables['x']== 'hi');
+    init "x + ' world'"
+    r=@parser.algebra
+    assert_equals r,"hi world"
+    #statement
+    # @parser.root
+    parse "x + ' world'"
+    assert_equals result,"hi world"
+
+    parse "y is ' world'"
+    parse "z is x + y"
+    assert_equals(variables['z'],'hi world');
+  end
+
+  def test_concatenation_c
+    init "x is 'hi'"
+    parse "y is ' you'
+       z is x + y"
+    assert_equals(variables['z'],'hi you');
   end
 
 
@@ -102,7 +133,7 @@ class StringTest < ParserBaseTest
 
   def test_concatenation2
     parse "x is 'hi'; y = ' world'"
-    assert_equals(parse("x + y"),"hi world");
+    assert_equals(parse("x + y"), "hi world");
     assert("x plus y == 'hi world'");
     assert("'hi'+ ' '+'world' == 'hi world'");
     assert("z is 'hi world'");
@@ -113,7 +144,7 @@ class StringTest < ParserBaseTest
 
   def test_type
     parse "x='hi'"
-    assert_result_is "type of x",String
+    assert_result_is "type of x", String
     assert "type of x is string"
   end
 
