@@ -42,10 +42,10 @@ class SelectorTest < ParserBaseTest
 
   def  test_selector1
     parse "xs= 1,2,3"
-    assert " xs that are bigger than one == [2,3]"
     init " xs that are bigger than one"
-    z=selectable
+    z=@parser.selectable
     assert_equals z,[2,3]
+    assert "xs that are bigger than one == [2,3]"
     #s " xs that are bigger than one == [2,3]"
     #condition
     #assert " xs that are bigger than one == [2,3]"

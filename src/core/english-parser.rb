@@ -1339,7 +1339,7 @@ class EnglishParser < Parser
   def compareNode
     c=comparison
     raise NotMatching.new "NO comparison" if not c
-    raise NotMatching.new 'compareNode = not allowed' if c=='=' #todo
+    raise NotMatching.new 'compareNode = not allowed' if c=='=' #todo Why not / when
     @b=endNode # expression
   end
 
@@ -1425,11 +1425,7 @@ class EnglishParser < Parser
 
 
   def that
-    filter=any {
-      maybe { that_do } ||
-          maybe { that_are }||
-          maybe { whose }
-    }
+    filter=maybe { that_do } ||maybe { that_are }|| whose
   end
 
 
@@ -1442,14 +1438,14 @@ class EnglishParser < Parser
 
   def selector
     return if checkEnd
-    x=any {
+    x=
       maybe { compareNode }||
           maybe { where }|| # sql style
           maybe { that } || # friends that live in africa
           maybe { token('of') and endNode }|| # friends of africa
-          maybe { preposition and nod } # friends in africa
-    }
+          preposition and nod  # friends in africa
     $use_tree ? parent_node : @current_value
+    x
   end
 
 
@@ -1780,7 +1776,7 @@ class EnglishParser < Parser
     do_evaluate x rescue x
   end
 
-  # see resolve ???
+  # see resolve eval_string???
   def do_evaluate x, type=nil #  #WHAT, WHY?
     return x if not check_interpret
     begin
@@ -1888,6 +1884,7 @@ class EnglishParser < Parser
     b=eval_string(b)
     a=a.to_f if a.match(/^\+?\-?\.?\d/) and b.is_a? Numeric rescue a
     b=b.to_f if b.match(/^\+?\-?\.?\d/) and a.is_a? Numeric rescue b
+    comp=comp.strip if comp.is_a?String #what else
     if comp=='smaller'||comp=='tinier'||comp=='comes before'||comp=='<'
       return a<b
     elsif comp=='bigger'||comp=='larger'||comp=='greater'||comp=='comes after'||comp=='>'
@@ -1919,8 +1916,8 @@ class EnglishParser < Parser
       method=criterion[:comparative]||criterion[:comparison]||criterion[:adjective]
       args  =criterion[:endNode]||criterion[:endNoun]||criterion[:expressions]
     else
-      method=@comp
-      args  =criterion
+      method=@comp||criterion
+      args  =@b
     end
     list.select { |i|
       do_compare(i, method, args) rescue false #REPORT BUGS!!!
