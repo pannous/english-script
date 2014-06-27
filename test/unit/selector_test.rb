@@ -10,9 +10,10 @@ class SelectorTest < ParserBaseTest
   include ParserTestHelper
 
   def test_every
-    parse "xs= [1,2,3]; show all xs"
-    parse "xs= [1,2,3]; show every xs"
+    parse "xs= [1,2,3]; increase all xs"
     skip
+    parse "xs= [1,2,3]; show all xs" # todo: ruby => rest_of_statement
+    parse "xs= [1,2,3]; show every xs"
     parse "friendly numbers= [1,2,3]; show all friendly numbers"
     parse "friendly numbers= [1,2,3]; show every friendly number"
     #p "print every item in [1,2,3]"

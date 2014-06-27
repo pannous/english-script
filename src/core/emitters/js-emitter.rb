@@ -44,10 +44,10 @@ class JavascriptEmitter < Emitter
 
   def emit interpretation, root,do_run=false
     root||=interpretation.root
-    @file=File.open("../../build/app.js", "w");# ./test/unit/
+    @file=File.open("../../build/app.js", "w") rescue nil# ./test/unit/
     # @file=File.open("../../../build/app.js", "w");
     # @file=File.open("build/app.js", "w");
-    # @file=File.open("app.js", "w");
+    @file=File.open("app.js", "w") if not @file
     descend interpretation, root
     @file.puts("console.log(result)")
     @file.flush

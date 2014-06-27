@@ -34,7 +34,7 @@ class ObserverTest  < ParserBaseTest
     parse "once x is 5 beep "
     parse "x is 5"
     # todo assert beeped
-    parse "beep whenever the clock shows five seconds"
+    # parse "beep whenever the clock shows five seconds"
   end
 
   def test_whenever_2

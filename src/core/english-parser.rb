@@ -268,8 +268,8 @@ class EnglishParser < Parser
   end
 
   def end_of_statement
-    __? newline_tokens||end_expression #end_block #newlines
-
+    checkNewline||end_expression
+    # ||end_expression #end_block #newlines
   end
 
   # see read_block for RAW blocks! (</EOF> type)
@@ -277,15 +277,16 @@ class EnglishParser < Parser
   def block
     start=pointer
     s    =statement
-    star {
-      end_of_statement
+    end_of_statement  # danger might act as block end!
+    star { #One or more
       s=statement||s
+      end_of_statement
     }
-    end_of_statement? # danger might act as block end!
+    # end_of_statement?
 
+    @last_result=@result
     return s if check_interpret
     content     =pointer-start
-    @last_result=@result
     return content #if not $use_tree
     # if $use_tree
     #   p=parent_node
@@ -1114,7 +1115,7 @@ class EnglishParser < Parser
 
   # todo vs checkNewline ??
   def end_expression
-    checkEndOfLine||newline
+    checkEndOfLine||__?(newline_tokens)||newline
   end
 
 #  until_condition ,:while_condition ,:as_long_condition
@@ -2127,7 +2128,8 @@ class EnglishParser < Parser
         return @NEWLINE
       end
       #raise EndOfDocument.new if @line_number==@lines.count
-      @string=@lines[@line_number];
+      @string=@lines[@line_number].strip #LOOSE INDENT HERE!!!
+      @string=@string.gsub(/\/\/.*/,"") # todo : Grab comment
       @original_string=@string||''
       checkNewline
       return @NEWLINE
@@ -2165,15 +2167,16 @@ class EnglishParser < Parser
     @string       =@string[@current_value.length..-1]
     return @current_value
   end
-
+  # todo merge ^> :
   def rest_of_line
     if not @string.match(/(.*?)[;\n]/)
       @current_value=@string
       @string       =nil
       return @current_value
     end
-    @current_value=@string.match(/(.*?)[;\n]/)[1]
-    @string       =@string[@current_value.length+1..-1]
+    match=@string.match(/(.*?)([;\n].*)/) # Need to preserve ;\n Characters for 'end of statement'
+    @current_value=match[1]
+    @string       =match[2]
     @current_value.strip!
     return @current_value
   end
