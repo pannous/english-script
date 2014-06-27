@@ -92,15 +92,14 @@ class Parser #<MethodInterception
     end
   end
 
-  def checkRaiseEnd
-    #raise EndOfDocument.new if @string.blank? # no:try,try,try
+
+  def checkEndOfLine
+    #raise EndOfDocument.new if @string.blank? # no:try,try,try  see raiseEnd
     return @string.blank?
   end
 
-
-  def checkEnd
-    #raise EndOfDocument.new if @string.blank? # no:try,try,try
-    return @string.blank?
+  def checkEndOfFile
+    return @line_number>=@lines.count && @string.blank?
   end
 
 
@@ -279,6 +278,9 @@ class Parser #<MethodInterception
     # c= @depth if $use_tree
     # c = @depth #for mruby
     c = caller.count rescue @depth #for mruby
+    if c>@max_depth
+    raise SystemStackError.new "depth overflow"
+    end
     c
     # filter_stack(caller).count #-1
   end
@@ -430,6 +432,14 @@ class Parser #<MethodInterception
   class Pointer
     attr_accessor :line_number, :offset, :parser
 
+    def to_s
+      puts "<Pointer #{@line_number} #{@offset} '#{@parser.lines[@line_number][@offset..-1]}'>"
+    end
+
+    # def to_s
+    #   @line_number.to_s+" "+@offset.to_s #+" "+@parser.lines[@line_number][@offset]
+    # end
+
     def - start
       return offset-=start.length if start.is_a? String
       return content_between self, start if start>self
@@ -447,9 +457,6 @@ class Parser #<MethodInterception
       @parser     =parser
     end
 
-    def to_s
-      @line_number.to_s+" "+@offset.to_s #+" "+@parser.lines[@line_number][@offset]
-    end
 
     def content_between start_pointer, end_pointer
       line=start_pointer.line_number

@@ -70,7 +70,7 @@ class EnglishParser < Parser
     @line_number      =0
     @lines            =strings if strings.is_a? Array
     @lines            =strings.split("\n") if strings.is_a? String
-    @string           =@lines[0]
+    @string           =@lines[0].strip # Postpone the problem
     @original_string  =@string
     @root             =nil
     @nodes            =[]
@@ -268,7 +268,7 @@ class EnglishParser < Parser
   end
 
   def end_of_statement
-    __?newline_tokens||end_expression #end_block #newlines
+    __? newline_tokens||end_expression #end_block #newlines
 
   end
 
@@ -351,7 +351,7 @@ class EnglishParser < Parser
   end
 
   def starts_with tokenz
-    return false if checkEnd
+    return false if checkEndOfLine
     string=@string+' ' # todo: as regex?
     tokenz=[tokenz] if tokenz.is_a? String
     for t in tokenz
@@ -1031,7 +1031,8 @@ class EnglishParser < Parser
 
   def done type=nil
     return @OK if type and close_tag? type
-    return @OK if checkNewline
+    return @OK if checkEndOfLine
+    newline?
     ok=tokens done_words
     token type if type #optional?
     ignore_rest_of_line
@@ -1113,14 +1114,14 @@ class EnglishParser < Parser
 
   # todo vs checkNewline ??
   def end_expression
-    checkEnd?||newline
+    checkEndOfLine||newline
   end
 
 #  until_condition ,:while_condition ,:as_long_condition
 
   def assure_same_type_overwrite var, val
     oldType=var.type
-    raise WrongType.new if not val.type.is_a oldType
+    raise WrongType.new "#{var} #{val}" if oldType and not val.type.is_a oldType
     raise ImmutableVaribale.new if var.final and var.value and not val.value==var.value
     var.value=val
   end
@@ -1437,13 +1438,13 @@ class EnglishParser < Parser
 # ambivalent?  delete james from china
 
   def selector
-    return if checkEnd
+    return if checkEndOfLine
     x=
-      maybe { compareNode }||
-          maybe { where }|| # sql style
-          maybe { that } || # friends that live in africa
-          maybe { token('of') and endNode }|| # friends of africa
-          preposition and nod  # friends in africa
+        maybe { compareNode }||
+            maybe { where }|| # sql style
+            maybe { that } || # friends that live in africa
+            maybe { token('of') and endNode }|| # friends of africa
+            preposition and nod # friends in africa
     $use_tree ? parent_node : @current_value
     x
   end
@@ -1731,8 +1732,8 @@ class EnglishParser < Parser
     match=@string.match(/^\s*(\w+)ed/)
     return false if not match
     @string=match.post_match
-    pr     =tokens? prepositions if not checkEnd # wrapped in
-    endNode? if pr and not checkEnd # silver
+    pr     =tokens? prepositions if not checkEndOfLine # wrapped in
+    endNode? if pr and not checkEndOfLine # silver
     @current_value=match[1]
     @current_value
   end
@@ -1827,7 +1828,7 @@ class EnglishParser < Parser
     # try direct first!
     # y=y[0] if y.is_a? Array and y.count==1 # SURE??????? ["noo"].length
     if @methods.contains method
-      return @result=do_execute_block(@methods[method], args0)
+      return @result=do_execute_block(@methods[method].body, args0)
     end
 
     obj =method.owner if method.is_a? Method
@@ -1880,11 +1881,11 @@ class EnglishParser < Parser
   end
 
   def do_compare a, comp, b
-    a=eval_string(a) # NOT: "a=3; 'a' is 3" !!!!!!!!!!!!!!!!!!!!   Todo ooooooo!!
-    b=eval_string(b)
-    a=a.to_f if a.match(/^\+?\-?\.?\d/) and b.is_a? Numeric rescue a
-    b=b.to_f if b.match(/^\+?\-?\.?\d/) and a.is_a? Numeric rescue b
-    comp=comp.strip if comp.is_a?String #what else
+    a   =eval_string(a) # NOT: "a=3; 'a' is 3" !!!!!!!!!!!!!!!!!!!!   Todo ooooooo!!
+    b   =eval_string(b)
+    a   =a.to_f if a.match(/^\+?\-?\.?\d/) and b.is_a? Numeric rescue a
+    b   =b.to_f if b.match(/^\+?\-?\.?\d/) and a.is_a? Numeric rescue b
+    comp=comp.strip if comp.is_a? String #what else
     if comp=='smaller'||comp=='tinier'||comp=='comes before'||comp=='<'
       return a<b
     elsif comp=='bigger'||comp=='larger'||comp=='greater'||comp=='comes after'||comp=='>'
@@ -2119,9 +2120,12 @@ class EnglishParser < Parser
   def checkNewline
     comment if not @string.blank?
     if @string.blank? or @string.strip.blank?
-      @line_number    =@line_number+1 if @line_number<@lines.count
-      @original_string='' if @line_number>=@lines.count #!
-      return @NEWLINE if @line_number>=@lines.count
+      @line_number =@line_number+1 if @line_number<@lines.count
+      if @line_number>=@lines.count #!
+        @original_string=''
+        @string         ='' #done!
+        return @NEWLINE
+      end
       #raise EndOfDocument.new if @line_number==@lines.count
       @string=@lines[@line_number];
       @original_string=@string||''

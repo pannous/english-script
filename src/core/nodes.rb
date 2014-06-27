@@ -109,7 +109,7 @@ class Variable
   end
 
   def to_s
-     "Variable #{name}=#{value}"
+     "Variable #{type} #{name}=#{value}"
   end
 
   def increase

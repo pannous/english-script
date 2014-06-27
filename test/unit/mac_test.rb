@@ -13,6 +13,7 @@ class MacTest < ParserBaseTest
   end
 
   def test_applescript
+    skip if not ENV['APPLE']
     parse "Tell application \"Finder\" to open home"
     # s "Tell application \"Finder\" to open home"
     # s 'tell app "Finder"\rdisplay dialog "Hello, world!"\rend'
@@ -24,6 +25,7 @@ class MacTest < ParserBaseTest
   end
 
   def test_files
+    skip if not ENV['APPLE']
     variables['x']="/Users/me"
     variables['my home folder'] = "/Users/me"
     assert "/Users/me == x"
@@ -32,6 +34,7 @@ class MacTest < ParserBaseTest
   end
 
   def test_files3
+    skip if not ENV['APPLE']
     skip #worked once!
     init "my home folder = Dir.home"
     @parser.setter
@@ -49,12 +52,15 @@ class MacTest < ParserBaseTest
 
 
   def test_variable_transitivity
+    skip if not ENV['APPLE']
     parse "my home folder = Dir.home "
     parse "xs= my home folder "
     assert "xs = /Users/me" #WOW!
   end
 
   def test_contains_file
+    skip if not ENV['APPLE']
+
     parse "xs= all files in Dir.home"
     p variables['xs']
     assert "xs contains .bashrc"
@@ -75,6 +81,8 @@ class MacTest < ParserBaseTest
   end
 
   def test_contains_file2
+    skip if not ENV['APPLE']
+
     parse "my home folder = Dir.home"
     parse "xs = my home folder "
     parse "xs = files in my home folder "
