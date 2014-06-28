@@ -4,7 +4,7 @@ $verbose=false
 # $verbose=true
 require_relative '../parser_test_helper'
 
-class HashTestParser < ParserBaseTest
+class HashTest < ParserBaseTest
   include ParserTestHelper
 
   def test_hash_symbol_invariance_extension
@@ -22,13 +22,14 @@ class HashTestParser < ParserBaseTest
   end
 
   def test_invariances
-    assert_equals parse('{a:"b"}'),parse('{"a":"b"}')
-    assert_equals parse('{a:"b"}'), a:"b"
-    assert_equals parse('{a{b:"b",c:"c"}}'),{a:{b:"b",c:"c"}}
-    assert_equals parse('{a{b:"b";c:"c"}}'), a:{b:"b",c:"c"}
+    assert_result_is '{a:"b"}', a:"b"
+    # assert_equals parse('{a:"b"}'), a:"b"
   end
 
   def test_invariances2 # careful / remove !
+    assert_equals parse('{a{b:"b",c:"c"}}'),{a:{b:"b",c:"c"}}
+    assert_equals parse('{a{b:"b";c:"c"}}'), a:{b:"b",c:"c"}
+    assert_equals parse('{a:"b"}'),parse('{"a":"b"}')
     assert_equals parse('{:a => "b"}'),a:'b' #Don't support all of the old rubies syntext
     assert_equals parse('{a:{b:"b";c:"c"}}'), a:{b:"b",c:"c"}
     # assert_equals parse('{a:{b="b";c="c"}}'), a:{b:"b",c:"c"} # DANGER with properties/setters/data !

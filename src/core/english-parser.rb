@@ -494,7 +494,9 @@ class EnglishParser < Parser
 
   def json_hash
     must_contain ":", "=>", before: "}"
-    regular_json_hash? or immediate_json_hash
+    # z=regular_json_hash? or immediate_json_hash RUBY BUG! or and || act very differently!
+    z=regular_json_hash? || immediate_json_hash
+    z
   end
 
   # colon for types not Compatible? puts a:int vs puts {a:int} ? maybe egal

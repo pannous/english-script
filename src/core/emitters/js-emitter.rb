@@ -24,6 +24,7 @@
 # Opal::Builder.build('opal')
 
 class JavascriptEmitter < Emitter
+  require 'json'
 
   def setter context, node
     var=node[:word]||node[:variable]
@@ -34,6 +35,22 @@ class JavascriptEmitter < Emitter
   def map_method meth
     return "++" if meth=="increase"
     meth
+  end
+
+  def list context, node
+    l=node.value
+    # return l if not l.contains_a TreeNode
+    mapped=l.map{|i| descend context,i}.join(",")
+    return mapped
+  end
+
+  def json_hash context, node
+    # node=TreeNode.new
+    e=node.content
+    # DEBUG ^^
+    l=node.value
+    mapped=l.map_values{|i| descend context,i}
+    return mapped.to_json
   end
 
   def emit_method_call meth,params

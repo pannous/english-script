@@ -7,13 +7,13 @@ module TreeBuilder
 
   def initialize
     super # needs to be called by hand!
-          #@tree=[]
-    @nodes=[]
-    @tokens=[]
-    @new_nodes=[] #  remove after try failed
-    @current_node=nil
-    @last_node=nil
-    @root=nil
+    #@tree=[]
+    @nodes        =[]
+    @tokens       =[]
+    @new_nodes    =[] #  remove after try failed
+    @current_node =nil
+    @last_node    =nil
+    @root         =nil
     @current_value=""
   end
 
@@ -26,10 +26,10 @@ module TreeBuilder
 
   # what exactly machen die??
   def keepers #== ignore_parent , ,"rest_of_line"
-    ["token","number", "tokens", "word","setter","variable","value","method_call","object","subnode","integer","number_word"]
-  #             "number_word","integer",
-  #   ,"ruby_method_call"
-  #   ,"quote"
+    ["token", "number", "tokens", "word", "setter", "variable", "value", "method_call", "object", "subnode", "integer", "number_word"]
+    #             "number_word","integer",
+    #   ,"ruby_method_call"
+    #   ,"quote"
   end
 
   def dont_add_node
@@ -37,7 +37,7 @@ module TreeBuilder
   end
 
   def delete
-    ["bla","newlines"]
+    ["bla", "newlines"]
     # "subnode",
   end
 
@@ -49,32 +49,30 @@ module TreeBuilder
     # "setter",  "endNode",
     # "rest_of_line","word",
     ignore_parent+#delete+
-    [ "_", "_?","interpretation","should_not_match","do_send","pronouns","end_expression",
-"do_evaluate",    "other_verbs",
-"numbers", "tokens","current_context","type_names","possessive_pronouns",
-"ignore", "initialize", "endNode", "start_block","OK",
-      "bad",  "wordnet_is_noun", "true_comparitons", "special_verbs", "wordnet_is_verb",
-      "checkNewline", "newline", "wordnet_is_adjective",
-      "newline?", "ruby_block_test","subnode_token","get_adjective","get_noun","get_verb",
-      "substitute_variables", "raiseNewline", "any", "initialize", "one_or_more", "expression",
-      "the_noun_that", "nod", "star", "action", "parse",
-      "allow_rollback",  "init", "type_keywords", "articles",  "modifiers", "auxiliary_verbs",
-      "test_setter", "try_action", "method_missing", "endNode2", "no_rollback!", "raiseEnd",
-      "string_pointer", "verbose", "try", "checkEnd", "to_source", "rest", "keywords",
-      "starts_with?", "be_words", "no_keyword", "no_keyword_except", "prepositions", "variables_list", "the?",
-      "app_path","escape_token","operators","newline_tokens",
-      "constants", "comment", "any_ruby_line","quantifiers","article" ] #"call_is_verb",
+        ["_", "_?", "interpretation", "should_not_match", "do_send", "pronouns", "end_expression",
+         "do_evaluate", "other_verbs",
+         "numbers", "tokens", "current_context", "type_names", "possessive_pronouns",
+         "ignore", "initialize", "endNode", "start_block", "OK",
+         "bad", "wordnet_is_noun", "true_comparitons", "special_verbs", "wordnet_is_verb",
+         "checkNewline", "newline", "wordnet_is_adjective",
+         "newline?", "ruby_block_test", "subnode_token", "get_adjective", "get_noun", "get_verb",
+         "substitute_variables", "raiseNewline", "any", "initialize", "one_or_more", "expression",
+         "the_noun_that", "nod", "star", "action", "parse",
+         "allow_rollback", "init", "type_keywords", "articles", "modifiers", "auxiliary_verbs",
+         "test_setter", "try_action", "method_missing", "endNode2", "no_rollback!", "raiseEnd",
+         "string_pointer", "verbose", "try", "checkEnd", "to_source", "rest", "keywords",
+         "starts_with?", "be_words", "no_keyword", "no_keyword_except", "prepositions", "variables_list", "the?",
+         "app_path", "escape_token", "operators", "newline_tokens",
+         "constants", "comment", "any_ruby_line", "quantifiers", "article"] #"call_is_verb",
   end
 
 
-
-
   def interpretation
-    i= @interpretation #  Interpretation.new
-                       #i.tree=
-    i.root=@root
+    i      = @interpretation #  Interpretation.new
+    #i.tree=
+    i.root =@root
     i.nodes=@nodes
-    i.tree=@root #filter_tree(@root)
+    i.tree =@root #filter_tree(@root)
     i
   end
 
@@ -155,7 +153,7 @@ module TreeBuilder
       next if not caller[i].match(/parser/)
       name=caller[i].match(/`(.*)'/)[1]
       for j in 1..(@nodes.count)
-        node=@nodes[-j]
+        node     =@nodes[-j]
         node_name=node.name.to_s
         if (node_name==name)
           return node
@@ -167,11 +165,11 @@ module TreeBuilder
 
   def before_each_method name
     if not bad name
-      @current_value=nil # if not keepers.index name.to_s
-                         #parent=@current_node
-      @current_node=TreeNode.new(parent: parent_node, name: name)
+      @current_value            =nil # if not keepers.index name.to_s
+      #parent=@current_node
+      @current_node             =TreeNode.new(parent: parent_node, name: name)
       @current_node.startPointer=pointer
-      @root=@current_node if @nodes.count==0
+      @root                     =@current_node if @nodes.count==0
       @nodes<<@current_node #OPTIMISTIC!! not after? noo, then it's a mess! delete in try/star/...
     end
     #not bad name and
@@ -184,14 +182,16 @@ module TreeBuilder
     return if not @current_node #HOOOW?
     # return if name!="boolean" and not @current_value
     if not bad name
-      @current_node.valid=true if @current_value #and not @current_node.nodes.blank?
-      @current_node.value=@current_value if @current_node.is_leaf
-      @current_node.endPointer=pointer
-      content=pointer-@current_node.startPointer
-      @current_node.content||=content
       @nodes.pop # keep through parent
       @current_node=@nodes[-1]
-      @new_nodes<<@current_node  #if name=="boolean" || @current_value  # WHAT's THAT?
+      if @current_node
+        content=pointer-@current_node.startPointer
+        @current_node.value     =@current_value # todo KF removed 27.6. if @current_node.is_leaf
+        @current_node.valid     =true if @current_value #and not @current_node.nodes.blank?
+        @current_node.endPointer=pointer
+        @current_node.content   =content # ||=
+      end
+      # @new_nodes<<@current_node  #if name=="boolean" || @current_value  # WHAT's THAT?
     end
     if not keepers.index name.to_s
       @current_value=nil
@@ -206,9 +206,9 @@ module TreeBuilder
 
     @@__last_methods_added=[]
 
-    def TreeBuilder.method_proxy  name,without,*args, &block
+    def TreeBuilder.method_proxy name, without, *args, &block
       before_each_method name
-      ret=send without, *args, &block
+      ret           =send without, *args, &block
       @current_value=ret if not @current_value #!?!???! TEST!! 7.1.2013
       after_each_method name #sets @current_value nil!
       #begin rescue  doesn't work
@@ -220,13 +220,13 @@ module TreeBuilder
       return true if name.to_s=="initialize"
       return if not $use_tree
       return if @@__last_methods_added && @@__last_methods_added.include?(name)
-      with = :"#{name}_with_before_each_method"
-      without = :"#{name}_without_before_each_method"
+      with                   = :"#{name}_with_before_each_method"
+      without                = :"#{name}_without_before_each_method"
       @@__last_methods_added = [name, with, without]
       define_method with do |*args, &block|
         # return method_proxy name,without,args,block Todo
         before_each_method name
-        ret=send without, *args, &block
+        ret           =send without, *args, &block
         @current_value=ret if not @current_value #!?!???! TEST!! 7.1.2013
         after_each_method name #sets @current_value nil!
         # #begin rescue  doesn't work

@@ -26,10 +26,14 @@ class Emitter
 
 
   def descend context, node
+    return node if not node.is_a? TreeNode
+    # return if not node.valid
     put node.name
     put "{"
     # method_call context, node, modul, func if node.name==:method_call
     case node.name
+    when :statement then
+      command="result=" # + ... subnodes
     when :method_call then
       command=method_call context, node
     when :setter then
@@ -37,7 +41,9 @@ class Emitter
     when :algebra then
       command=algebra context, node
     when :if_then_else then
-      command=if_then_else
+      command=if_then_else context, node
+    when :json_hash then
+      command=json_hash(context, node)
     end
     if command
       puts command

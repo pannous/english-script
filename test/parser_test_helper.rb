@@ -1,6 +1,8 @@
 ENV["RAILS_ENV"] = "test"
 $testing         =true
-$emit=true
+# $emit            =true #GLOBAL!
+$emit            =false #PER METHOD
+$use_tree        ||= $emit
 # require "test/unit"
 require 'minitest/autorun'
 require_relative "../src/core/english-parser"
@@ -16,7 +18,7 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
 
   def initialize args
     $verbose=false if ENV['TEST_SUITE']
-    $emit   =false #true # RUN ALL TEST THROUGH EMITTER PIPELINE!! SET per test_method !
+    $emit   =false if $raking #SET per test_method ! OR RUN ALL TEST THROUGH EMITTER PIPELINE!!
     @parser =EnglishParser.new
     super args
   end
@@ -55,13 +57,14 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
 
 
   alias_method :original_assert, :assert
+
   def assert x=nil, msg=nil, &block
     return puts "\nTEST PASSED! #{@parser.original_string}" if x==true
-    msg=msg.call if msg.is_a?Proc
+    msg=msg.call if msg.is_a? Proc
     msg||=@parser.to_source(block) if block
-    x=yield if not x and block
+    x  =yield if not x and block
     # x=yield if block # enough?
-    original_assert false,  "#{x} NOT PASSING: #{msg}" if not x
+    original_assert false, "#{x} NOT PASSING: #{msg}" if not x
     if x.is_a? String
       begin
         puts "Testing #{x}"
@@ -78,7 +81,7 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
       end
       if not ok
         # puts "NOT PASSING: #{x} #{msg}"
-        original_assert false,  "#{x} NOT PASSING: #{msg}"
+        original_assert false, "#{x} NOT PASSING: #{msg}"
         # super.assert(test:false ,"NOT PASSING: #{x} #{msg}")
         # super.assert(test:false ,"NOT PASSING: #{x} #{msg}")
         # raise NotPassing.new "NOT PASSING: #{x} #{msg}"
@@ -143,17 +146,21 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
 
   def parse x, interpret=true
     @parser.do_interpret! if interpret
-    return parse_tree x if $emit
     return x if not x.is_a? String
-    @parser.parse x
+    if $emit
+      @result =parse_tree x
+      # @variableValues     = todo if dynamic!
+    else
+      @result =@parser.parse x
+      @result =@parser.interpretation.result
+    end
+    @variables      =@parser.interpretation.variables
+    @variableValues =@variables.map_values { |v| v.value }
     # @variables=@parser.variables
     # @result=@parser.result
-    @variables     =@parser.interpretation.variables
-    @variableValues=@variables.map_values { |v| v.value }
     # return @parser.interpretation if $use_tree
-    @result        =@parser.interpretation.result
-    @result        =false if @result==:false
-    @result        =true if @result==:true
+    @result         =false if @result==:false
+    @result         =true if @result==:true
     @result
     # @current_value=@parser.interpretation.current_value
     # @current_node=@parser.interpretation.current_node

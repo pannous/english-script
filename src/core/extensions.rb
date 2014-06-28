@@ -145,6 +145,12 @@ class Hash
 end
 
 class Array
+
+  def contains_a type
+    each{|x| return true if x.is_a?type }
+    false
+  end
+
   def drop! x
     reject! x
   end
