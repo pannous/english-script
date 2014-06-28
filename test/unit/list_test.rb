@@ -223,6 +223,8 @@ class ListTest < ParserBaseTest # <  EnglishParser
 
   def test_map22 # list vs params !
     assert_result_is ("square 1,2 and 3"), [1, 4, 9]
+    assert("square of [1,2 and 3] equals 1,4,9")
+    parse("assert square of [1,2 and 3] equals 1,4,9")
     skip
     assert("square 1,2 and 3 == 1,4,9")
   end

@@ -898,6 +898,7 @@ class EnglishParser < Parser
     if is_object_method(method) #todo !has_object(method) is_class_method
       obj||=Object
     else
+      _? 'of'
       obj=maybe { nod? } if @in_args
       obj=maybe { nod? || list } if not @in_args # todo: expression
       # print sorted files
@@ -1836,6 +1837,7 @@ class EnglishParser < Parser
 
     obj =method.owner if method.is_a? Method
     obj ||=resolve(obj0)
+    # obj.map{|x| x.value}
     args=args0
     args=args.name_or_value if args.is_a? Argument
     args=args.map &:name_or_value if args.is_a? Array and args[0].is_a? Argument

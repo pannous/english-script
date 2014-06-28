@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+require 'minitest'
 module Exceptions
   # DONT ROLLBACK StandardError
   # DO ROLLBACK all NotMatching
