@@ -8,13 +8,6 @@ class ListTest < ParserBaseTest # <  EnglishParser
 
   include ParserTestHelper
 
-  def test_hasht
-    init "{1,2,3}"
-    assert_equals @parser.list, [1, 2, 3]
-    init "{a:1,b:2,c:3}"
-    assert_equals @parser.json_hash, {a: 1, b: 2, c: 3}
-  end
-
 
   def test_type0
     init "1 , 2 , 3"
@@ -236,6 +229,13 @@ class ListTest < ParserBaseTest # <  EnglishParser
     assert("square every number in 1,'a',3 ==1,9")
   end
 
+
+  def test_hasht
+    init "{1,2,3}"
+    assert_equals @parser.list, [1, 2, 3]
+    init "{a:1,b:2,c:3}"
+    assert_equals @parser.json_hash, {a: 1, b: 2, c: 3}
+  end
 
 end
 #

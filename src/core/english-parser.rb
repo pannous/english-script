@@ -1345,7 +1345,7 @@ class EnglishParser < Parser
     c=comparison
     raise NotMatching.new "NO comparison" if not c
     raise NotMatching.new 'compareNode = not allowed' if c=='=' #todo Why not / when
-    @b=endNode # expression
+    @rhs=endNode # expression
   end
 
   def whose
@@ -1525,9 +1525,9 @@ class EnglishParser < Parser
     begin
       count=0
       @comp.strip!
-      for item in @a
-        @result=do_compare(item, @comp, @b) if is_comparator @comp
-        @result=do_send(item, @comp, @b) if not is_comparator @comp
+      for item in @lhs
+        @result=do_compare(item, @comp, @rhs) if is_comparator @comp
+        @result=do_send(item, @comp, @rhs) if not is_comparator @comp
         break if !@result and ['all', 'each', 'every', 'everything', 'the whole'].matches quantifier
         break if @result and ['either', 'one', 'some', 'few', 'any'].contains quantifier
         if @result and ['no', 'not', 'none', 'nothing'].contains quantifier
@@ -1537,13 +1537,13 @@ class EnglishParser < Parser
         count=count+1 if @result # "many", "most" : continue count
       end
 
-      min    =@a.length/2
+      min    =@lhs.length/2
       @result=count>min if quantifier=='most'||quantifier=='many'
       @result=count>=1 if quantifier=='at least one'
       # todo "at least two","at most two","more than 3","less than 8","all but 8"
       @result=!@result if @not
       if not @result
-        verbose "condition not met #{@a} #{@comp} #{@b}"
+        verbose "condition not met #{@lhs} #{@comp} #{@rhs}"
       end
       return @result
     rescue => e
@@ -1563,19 +1563,19 @@ class EnglishParser < Parser
     begin
       # else use state variables todo better!
       if cond.is_a? TreeNode
-        @a   =cond[:expressions]
-        @b   =cond.all(:expressions).reject { |x| x==false }[-1]
+        @lhs   =cond[:expressions]
+        @rhs   =cond.all(:expressions).reject { |x| x==false }[-1]
         @comp=cond.all(:comparation).reject { |x| x==false }[-1]
         # @comp=cond[:comparation]
       end
       return false if not @comp #todo!
-      @a.strip! if @a and @a.is_a? String # nil==nil ok
-      @b.strip! if @b and @b.is_a? String # " a "=="a" !?!?!? NOOO! why?
+      @lhs.strip! if @lhs and @lhs.is_a? String # nil==nil ok
+      @rhs.strip! if @rhs and @rhs.is_a? String # " a "=="a" !?!?!? NOOO! why?
       @comp.strip!
       if is_comparator @comp
-        result=do_compare(@a, @comp, @b)
+        result=do_compare(@lhs, @comp, @rhs)
       else
-        result=do_send(@a, @comp, @b)
+        result=do_send(@lhs, @comp, @rhs)
       end
       # if !result and not cond.blank? #HAAACK DANGARRR
       #   #@a,@comp,@b= extract_condition c if c
@@ -1586,7 +1586,7 @@ class EnglishParser < Parser
       result=!result if @not
       result=!result if negate # XOR result=result ^ negate
       if not result
-        verbose "condition not met #{cond} #{@a} #{@comp} #{@b}"
+        verbose "condition not met #{cond} #{@lhs} #{@comp} #{@rhs}"
       end
       return result
     rescue => e
@@ -1619,19 +1619,19 @@ class EnglishParser < Parser
     # @a=endNode # NO LISTS (YET)! :(
     quantifier=maybe { tokens quantifiers } # vs selector!
     element_in? if quantifier # -> selector!
-    @a   =action_or_expressions quantifier
+    @lhs   =action_or_expressions quantifier
     @not =false
     @comp=use_verb=maybe { verb_comparison } # run like , contains
     @comp=maybe { comparation } unless use_verb # are bigger than
     # allow_rollback # upto where??
-    @b   =action_or_expressions nil if @comp # optional, i.e.   return true IF 1
+    @rhs   =action_or_expressions nil if @comp # optional, i.e.   return true IF 1
     _ ')' if brace
     negate = (negated||@not)&& !(negated and @not)
     subnode negate: negate
-    return negate ? !@a : @a if not @comp # optional, i.e.   return true IF 1
+    return negate ? !@lhs : @lhs if not @comp # optional, i.e.   return true IF 1
 
     # 1,2,3 are smaller 4  VS 1,2,3 contains 4
-    quantifier||="all" if @a.is_a? Array and not @a.respond_to?(@comp) and not @b.is_a? Array
+    quantifier||="all" if @lhs.is_a? Array and not @lhs.respond_to?(@comp) and not @rhs.is_a? Array
     # return  negate ? !@a : @a if not @comp
     if check_interpret
       return negate ? (!check_list_condition(quantifier)) : check_list_condition(quantifier) if quantifier
@@ -1923,7 +1923,7 @@ class EnglishParser < Parser
       args  =criterion[:endNode]||criterion[:endNoun]||criterion[:expressions]
     else
       method=@comp||criterion
-      args  =@b
+      args  =@rhs
     end
     list.select { |i|
       do_compare(i, method, args) rescue false #REPORT BUGS!!!

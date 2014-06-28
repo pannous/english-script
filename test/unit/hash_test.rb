@@ -10,7 +10,7 @@ class HashTest < ParserBaseTest
   def test_hash_symbol_invariance_extension
     a={a:1}
     #VIA extension.rb !!! todo : native
-    assert_equals a[:a],a['a']
+    assert_equals a[:lhs],a['lhs']
     # h=parse '["SuperSecret" : "kSecValueRef"]'
     h=parse '{"SuperSecret" : "kSecValueRef"}'
     assert_equals h['SuperSecret'],"kSecValueRef"
@@ -30,7 +30,7 @@ class HashTest < ParserBaseTest
     assert_equals parse('{a{b:"b",c:"c"}}'),{a:{b:"b",c:"c"}}
     assert_equals parse('{a{b:"b";c:"c"}}'), a:{b:"b",c:"c"}
     assert_equals parse('{a:"b"}'),parse('{"a":"b"}')
-    assert_equals parse('{:a => "b"}'),a:'b' #Don't support all of the old rubies syntext
+    assert_equals parse('{:a => "b"}'), a:'b' #Don't support all of the old rubies syntext
     assert_equals parse('{a:{b:"b";c:"c"}}'), a:{b:"b",c:"c"}
     # assert_equals parse('{a:{b="b";c="c"}}'), a:{b:"b",c:"c"} # DANGER with properties/setters/data !
     # assert_equals parse('a:"b"'), a:"b"  # ONLY IN CONTEXT! Special case for arguments
