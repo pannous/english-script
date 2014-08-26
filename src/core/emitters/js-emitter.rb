@@ -26,9 +26,7 @@
 class JavascriptEmitter < Emitter
   require 'json'
 
-  def setter context, node
-    var=node[:word]||node[:variable]
-    val=node[:value]||node[:expressions]
+  def setter var,val
     command="var #{var}=result=#{val};"
   end
 

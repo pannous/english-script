@@ -95,15 +95,16 @@ end
 
 
 class Variable
-  attr_accessor :name, :type, :scope, :module, :value, :final, :modifier
+  attr_accessor :name, :type,:owner, :value, :final, :modifier     # :scope, :module, << owner
 
   def initialize args
     self.name    =args[:name]
     self.type    =args[:type]
-    self.scope   =args[:scope]
+    self.owner    =args[:owner]
+    # self.scope   =args[:scope]
+    # self.module  =args[:module]
     self.final   =args[:final]
     self.value   =args[:value]
-    self.module  =args[:module]
     self.modifier=args[:modifier]
     # scope.variables[name]=self
   end
