@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
 # require 'test_helper'
 
 $use_tree=false
@@ -42,6 +43,17 @@ class FunctionTest < ParserBaseTest
 
   def test_java_style
     parse "1.add(0)"
+  end
+
+  # def ⦠
+  # swift!
+  # end
+
+  def test_dot
+    parse "x='hi'"
+    assert_result_is "reverse of x","ih"
+    assert_result_is "x.reverse","ih"
+    assert_result_is "reverse x","ih"
   end
 
   def test_rubyThing

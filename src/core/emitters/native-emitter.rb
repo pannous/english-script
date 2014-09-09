@@ -75,14 +75,10 @@ class NativeEmitter < Emitter
     a
   end
 
-  def setter context, node, modul, block
-    var=node[:word]
-    val=node[:expressions]
+  def setter var,val
     # context.variables[var]
     modul.globals.add(var.to_s,nil) do |v|
     # Aliases http://llvm.org/docs/LangRef.html#id564
-
-
     end
   end
 

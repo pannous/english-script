@@ -5,11 +5,12 @@
 // gcc -I/System/Library/Frameworks/Ruby.framework/Versions/2.0/Headers -lruby ruby_wrapper.c -o main
 // killall main || gcc -Iruby -I$RUBY_DEV_HOME/include -I$RUBY_DEV_HOME/.ext/include/x86_64-darwin13.2.0/ -lruby ruby_wrapper.c -o main && ./main &
 
+#define MAIN
 #include <stdio.h>
 #include <stdlib.h>
 #include <ruby.h>
 #include "vm_debug.h"
-#include "c-helpers.c"
+#include "helpers.c"
 // #include <value.h>
 // #include <node.h>
 // #include <iseq.h>

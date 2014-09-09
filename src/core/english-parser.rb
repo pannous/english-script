@@ -1190,7 +1190,9 @@ class EnglishParser < Parser
     # end_expression via statement!
     # return var if @interpret
 
-    return val if @interpret
+    subnode var: var
+    subnode val: val
+    return val if check_interpret
     return var
     # return parent_node if $use_tree
     # return old-@string if not @interpret # for repeatable, BAD

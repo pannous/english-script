@@ -146,6 +146,10 @@ end
 
 class Array
 
+  def wrap
+    map(&:wrap).join(", ") # leave [] which is not compatible with C
+  end
+
   def contains_a type
     each{|x| return true if x.is_a?type }
     false
@@ -269,6 +273,15 @@ class FalseClass
 end
 
 class String
+
+  def quoted
+    "\"#{self}\""
+  end
+
+  def wrap
+    "s(\"#{self}\")"
+  end
+
   def number
     self.to_i
   end
@@ -539,6 +552,10 @@ end
 
 #class Fixnum Float
 class Numeric
+  def wrap
+    "INT2NUM(#{self.to_s})"
+  end
+
   def number
     self
   end

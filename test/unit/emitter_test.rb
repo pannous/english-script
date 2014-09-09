@@ -6,6 +6,7 @@ $verbose=false
 
 require_relative '../parser_test_helper'
 require_relative '../../src/core/emitters/js-emitter'
+require_relative '../../src/core/emitters/c-emitter'
 
 class EmitterTest < ParserBaseTest
 
@@ -58,15 +59,17 @@ class EmitterTest < ParserBaseTest
   end
 
   def test_setter
-    skip
+    # skip
     $use_tree=true
     @parser.dont_interpret!
-    parse "x='ho';printf x"
+    # parse "x='ho';printf x"
+    parse "x='ho';puts x"
     interpretation= @parser.interpretation || Interpretation.new
     # @parser.full_tree
     @parser.show_tree
     # parse "x='hi';printf('hi')"
-    NativeEmitter.new.emit interpretation,run:true
+    NativeCEmitter.new.emit interpretation,run:true
+    # NativeEmitter.new.emit interpretation,run:true
     # assert "type of x is string"
   end
 

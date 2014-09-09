@@ -33,11 +33,13 @@ class Emitter
     # method_call context, node, modul, func if node.name==:method_call
     case node.name
     when :statement then
-      command="result=" # + ... subnodes
+      command=nil #//result=" # + ... subnodes
     when :method_call then
       command=method_call context, node
     when :setter then
-      command=setter context, node
+      var=node[:var]#||node[:variable]||node[:word]
+      val=node[:val]#||node[:value]||node[:expressions]
+      command=setter var,val
     when :algebra then
       command=algebra context, node
     when :if_then_else then
