@@ -22,7 +22,7 @@
 # VIA MRUBY libmruby.a YAY VM / bytecode (or call via ffi/llvm/c [main wrapper/mrbc header])
 
 # You can also compile Ruby programs into compiled byte code using the mruby compiler "mrbc". !!!
-#  USE EXISTING 'VM': YARV / mruby 'ritevm'/Rubinius/ ... or?
+#  USE EXISTING 'VM': YARV / mruby 'ritevm' / Rubinius/ ... or?
 # mrb_define_method(mrb, h, "values_at", hash_values_at, MRB_ARGS_ANY());
 # libruby.2.0.0.dylib 3699712byte = 3.6MB!
 # libmruby.a 3MB, but not all linked ++ : 691560 mruby_hello.out! 0.6MB

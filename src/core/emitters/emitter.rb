@@ -14,14 +14,24 @@ class Emitter
     args
   end
 
+  def map_method meth
+    meth
+  end
+
   def method_call context, node
     # puts("#{meth}(#{args.join(',')})") lol
-    args     =node["arguments"]||node["object"]||node["arg"]
-    meth0     =node["true_method"]||node["c_method"]
+    obj=node["object"]
+    args     =node["arguments"]||node["args"]||node["arg"]
+    meth0     =node["true_method"]
+    meth0     ||=node["ruby_method_call"]
+    if node["c_method"]
+      native=true
+      meth0     ||=node["c_method"]
+    end
     meth = map_method meth0.strip
     arg_types=args_match(meth, args)
     params   =norm(args, arg_types,context)
-    emit_method_call meth,params
+    emit_method_call obj,meth,params,native
   end
 
 

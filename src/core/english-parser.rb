@@ -75,6 +75,7 @@ class EnglishParser < Parser
     @root             =nil
     @nodes            =[]
     @depth            =0
+    @lhs=@rhs=@comp   =nil
     # @result           =nil NOO, keep old!
   end
 
@@ -817,7 +818,8 @@ class EnglishParser < Parser
   end
 
   def is_object_method m
-    object_method = Object.method(m) if Object.method_defined?(m) rescue false
+    return true if m.is_a?Method and m.receiver==Object
+    object_method = Object.method(m) rescue false #if Object.method_defined?(m) NOO : puts
     if object_method
       return object_method
     end
@@ -888,8 +890,13 @@ class EnglishParser < Parser
     method_call obj
   end
 
-  # read mail or bla(1) or a.bla(1)  vs ruby_method_call !!
   def method_call obj=nil
+    # ruby_method_call? ||
+        thing_dot_method_call? || generic_method_call(obj)
+  end
+
+  # read mail or bla(1) or a.bla(1)  vs ruby_method_call !!
+  def generic_method_call obj=nil
     #verb_node
     method      =true_method
     start_brace =__? '(', '{' # '[', list and closure danger: index
@@ -909,6 +916,7 @@ class EnglishParser < Parser
       @current_value=nil
       @in_args      =true
       args          =star { arg }
+      args=obj if not args #and c_method or static etc
       # __? ',','and'
     else
       more=_? ','
@@ -992,9 +1000,7 @@ class EnglishParser < Parser
           maybe { bash_action } ||
           maybe { evaluate } ||
           maybe { returns } || # Statement Shortcut, until if supports Statements
-          maybe { ruby_method_call } ||
           maybe { selfModify } ||
-          maybe { thing_dot_method_call } ||
           maybe { method_call } ||
           maybe { spo }
       #try { verb_node } ||
@@ -1445,12 +1451,11 @@ class EnglishParser < Parser
 
   def selector
     return if checkEndOfLine
-    x=
-        maybe { compareNode }||
-            maybe { where }|| # sql style
-            maybe { that } || # friends that live in africa
-            maybe { token('of') and endNode }|| # friends of africa
-            preposition and nod # friends in africa
+    x=maybe { compareNode }||
+      maybe { where }|| # sql style
+      maybe { that } || # friends that live in africa
+      maybe { token('of') and endNode }|| # friends of africa
+      preposition and nod # friends in africa
     $use_tree ? parent_node : @current_value
     x
   end
@@ -1936,7 +1941,7 @@ class EnglishParser < Parser
     must_contain 'that', 'whose', 'which'
     tokens? 'every', 'all', 'those'
     xs=resolve(true_variable?)|| endNoun
-    s =maybe { selector }
+    s =maybe { selector } # rhs=xs, @lhs implicit! (BAD!)
     x =filter(xs, s) if @interpret rescue xs
     x
   end

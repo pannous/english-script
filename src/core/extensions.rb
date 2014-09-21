@@ -149,6 +149,9 @@ class Array
   def wrap
     map(&:wrap).join(", ") # leave [] which is not compatible with C
   end
+  def values
+    map(&:value).join(", ") # leave [] which is not compatible with C
+  end
 
   def contains_a type
     each{|x| return true if x.is_a?type }
@@ -270,12 +273,28 @@ class FalseClass
   def blank?
     true
   end
+  def wrap
+    self
+  end
 end
 
 class String
 
   def quoted
     "\"#{self}\""
+  end
+
+  def name
+    self
+  end
+
+  def id
+    "id(\"#{self}\")"
+  end
+
+  def value
+    self  # variable
+    # quoted
   end
 
   def wrap

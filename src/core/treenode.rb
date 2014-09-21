@@ -21,15 +21,14 @@ class TreeNode
 
   def find x
     for n in self.nodes
-      if (x=="*"|| n.name==x||n.name.to_s==x.to_s)
+      if( n.name==x||n.name.to_s==x.to_s)
         if n.value
           return n.value
         end
         if n.content
           return n.content
         end
-        s=n.find "*"
-        return s if s
+        return n
       end
       ok=n.find x
       return ok if ok
@@ -46,9 +45,9 @@ class TreeNode
         if n.value
           all<<n.value
         end
-        all<< n.find("*")
+        all<< n.all("*")
       end
-      all<< n.find(x)
+      all+=n.all(x) if x!="*"
     end
     all
   end

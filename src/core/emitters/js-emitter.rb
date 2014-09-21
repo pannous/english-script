@@ -51,7 +51,8 @@ class JavascriptEmitter < Emitter
     return mapped.to_json
   end
 
-  def emit_method_call meth,params
+  def emit_method_call obj,meth,params,native=false
+    params=[obj]+params if obj
     set=EnglishParser.self_modifying(meth) ? params[0]+"=result=" : "result="
     command="#{set}#{meth}(#{params.join(",")})"
   end

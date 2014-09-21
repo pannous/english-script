@@ -658,6 +658,7 @@ class Parser #<MethodInterception
   end
 
   def parse string
+    return if string.empty?
     verbose "PARSING"
     begin
       allow_rollback

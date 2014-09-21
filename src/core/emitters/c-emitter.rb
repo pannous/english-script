@@ -5,11 +5,20 @@ class NativeCEmitter < Emitter
   # end
 
   def setter var, val
-    if var.owner
-      "set_property(#{var.owner},#{var},#{val});"
+    if var.owner #??
+      "VALUE #{var.name}=set_property(#{var.owner},#{var},#{val});"
     else
-      "set(#{var.name.quoted},#{val.wrap});"
+      "VALUE #{var.name}=set(#{var.name.quoted},#{val.wrap});"
     end
+  end
+
+  def emit_method_call obj,meth,params,native=false
+    set=EnglishParser.self_modifying(meth) ? obj.name+"=result=" :"result="
+    return "#{set}#{meth}(#{params.values});" if native  # static_cast<int> etc
+    return "#{set}call(Object,#{meth.id},0);" if not obj and params.empty?
+    return "#{set}call(#{obj.name},#{meth.id},0);" if params.empty?
+    return "#{set}call(Object,#{meth.id},#{params.count},#{params.values});" if not obj
+    return "#{set}call(#{obj.name},#{meth.id},#{params.count},#{params.values});"
   end
 
   def call obj, meth, args
@@ -17,9 +26,31 @@ class NativeCEmitter < Emitter
   end
 
   def emit  interpretation, do_run=false
-    @file=File.new("emitted.c","w") #IO.open
-    # @file.write("#include <ruby.h>")
+    @file=File.new("/tmp/emitted.c","w") #IO.open
     @file.write("#include \"helpers.c\"\n")
+    @file.write("VALUE run(VALUE arg){\n")
+    #  descend through Parent class emitter, Overwrite functions
+    descend  interpretation, interpretation.root
+    @file.write("return result;\n");
+    @file.write("}")
+    @file.close
+    `rm /tmp/main;`
+    include=" -I$RUBY_DEV_HOME/.ext/include/x86_64-darwin13.2.0/ "
+    include+=" -I$ENGLISH_SCRIPT_HOME/src/core/emitters/ " #helpers.c
+    include+=" -I$RUBY_DEV_HOME/include "
+    command="gcc -g -Iruby #{include} -lruby /tmp/emitted.c -o /tmp/main"
+    puts "\n\n"+command
+    ok=`#{command}`
+    # puts STDERR.methods
+    if $?.exitstatus==1
+      puts "ERROR COMPILING!"
+      exit!
+    end
+    puts ok
+    result=`/tmp/main` if do_run
+    result.strip
+  end
+
 #     @file.write("""
 # #include <ruby.h>
 # #include \"helpers.c\"
@@ -30,12 +61,4 @@ class NativeCEmitter < Emitter
 #  	ruby_finalize();
 #  	return 0;
 # }""")
-    @file.write("VALUE run(VALUE arg){\n")
-    descend  interpretation, interpretation.root
-    @file.write("}")
-    include="$RUBY_DEV_HOME/.ext/include/x86_64-darwin13.2.0/"
-    `gcc -Iruby -I$RUBY_DEV_HOME/include -I#{include} -lruby emitted.c -o main`
-    `./main` if do_run
-  end
-
 end

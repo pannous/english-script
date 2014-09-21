@@ -20,6 +20,11 @@ class Quote < String
     return true if x.to_s=="Quote"
     false
   end
+
+  def value
+    quoted
+  end
+
 end
 
 class Function

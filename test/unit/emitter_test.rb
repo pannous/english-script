@@ -13,16 +13,27 @@ class EmitterTest < ParserBaseTest
   include ParserTestHelper
 
   def assert_result_emitted x,r
-    assert_equals parse_tree(x),parse_tree(r)
+    # $use_tree=true
+    # @parser.dont_interpret!
+    # parse x
+    # interpretation= @parser.interpretation || Interpretation.new
+    # @parser.full_tree
+    # NativeEmitter.new.emit interpretation,run:true
+    # assert_result_is x,r # Make sure that at least the interpretation works
+    assert_equals parse_tree(x,emit:true),r #parse_tree(r,emit:true)
   end
 
   def test_js_emitter #NEEDS TREE
-    skip # if not $use_tree
-    # init "increase x"
-    # @parser.action
-    assert_result_emitted 6,"x=5;increase x"
-    # super
+    # skip if not $use_tree
+    assert_result_emitted "x=5;increase x",6
   end
+
+
+  def test_int_setter #NEEDS TREE
+    # skip if not $use_tree
+    assert_result_emitted "x=5;puts x",5
+  end
+
 
   def test_type_cast
     # verbose
@@ -34,13 +45,12 @@ class EmitterTest < ParserBaseTest
 
 
   def test_printf
-    skip
+    # skip
     $use_tree=true
     @parser.dont_interpret!
     # parse "printf 'hi' "
     # parse "printf hello world"
-    parse "printf 'hello world'"
-    # parse "print 'hello world'"
+    parse "printf 'hello world'",false
     # parse "printf('hi')"
     # parse "x=nil;printf 'hi'"
     # parse "x=7"#";printf 'hi'"
@@ -49,12 +59,20 @@ class EmitterTest < ParserBaseTest
     @parser.full_tree
     # @parser.show_tree
     # parse "x='hi';printf('hi')"
-    NativeEmitter.new.emit interpretation,run:true
+    # NativeEmitter.new.emit interpretation,run:true
+    result=NativeCEmitter.new.emit interpretation,run:true
+    assert_equals result,"hello world"
     # assert "type of x is string"
   end
 
+
+  def test_printf_1
+    assert_result_emitted "printf 'hello world'",'hello world'
+  end
+
   def test_function
-    assert_result_is "i=7;i minus one",6
+    # assert_result_is "i=7;i minus one",6
+    assert_result_emitted "i=7;i minus one",6
     # parse_file "examples/factorial.e"
   end
 

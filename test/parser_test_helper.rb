@@ -44,7 +44,7 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
   end
 
   def assert_equals a, b
-    if a==b
+    if a==b || a.to_s==b.to_s
       puts "TEST PASSED! #{@parser.original_string}    #{a} == #{b}"
     else
       puts filter_stack(caller)
@@ -120,6 +120,9 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
     @parser.methods
   end
 
+  def interpretation
+    @parser.interpretation
+  end
 
   def result
     @parser.result
@@ -130,18 +133,26 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
     # lines(file).join("\n")
   end
 
-  def parse_tree x
+  def parse_tree x,emit=false
     return x if not x.is_a? String
     @parser.dont_interpret!
     interpretation= @parser.parse x
     @parser.full_tree
     # @parser.show_tree
-    emit interpretation, interpretation.root
+    if emit
+      return emit interpretation, interpretation.root
+    else
+      return interpretation.evaluate
+    end
   end
 
   def emit interpretation, root
-    require_relative '../src/core/emitters/js-emitter'
-    JavascriptEmitter.new.emit interpretation, root, run: true
+    # require_relative '../src/core/emitters/js-emitter'
+    # JavascriptEmitter.new.emit interpretation, root, run: true
+    # require_relative '../src/core/emitters/native-emitter'
+    # NativeEmitter.new.emit interpretation, run: true
+    require_relative '../src/core/emitters/c-emitter'
+    NativeCEmitter.new.emit interpretation, run: true
   end
 
   def parse x, interpret=true
