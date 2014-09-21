@@ -114,6 +114,16 @@ class Variable
     # scope.variables[name]=self
   end
 
+  def c #unwrap, for optimization
+    return "NUM2INT(#{name})" if type==Numeric
+    return "NUM2INT(#{name})" if type==Fixnum
+    name
+  end
+
+  def wrap
+    name
+  end
+
   def to_s
      "Variable #{type} #{name}=#{value}"
   end

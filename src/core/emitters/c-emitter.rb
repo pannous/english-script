@@ -12,8 +12,27 @@ class NativeCEmitter < Emitter
     end
   end
 
+  # def norm a
+  #   a=super.norm a
+  #   a="i(#{a.to_s})" if a.is_a?Numeric
+  # end
+
+  def map_method meth
+    return "-" if meth=="minus"
+    return "+" if meth=="plus"
+    # return "++" if meth=="increase"
+    # return "--" if meth=="decrease"
+    meth
+  end
+
+  def emit_algebra lhs,op,rhs
+    return "result=i(#{lhs.c}#{op}#{rhs.c});"
+    # return "result=#{lhs}#{op}#{rhs.wrap};"
+  end
+
   def emit_method_call obj,meth,params,native=false
     set=EnglishParser.self_modifying(meth) ? obj.name+"=result=" :"result="
+    # rb_thread_critical = Qtrue;
     return "#{set}#{meth}(#{params.values});" if native  # static_cast<int> etc
     return "#{set}call(Object,#{meth.id},0);" if not obj and params.empty?
     return "#{set}call(#{obj.name},#{meth.id},0);" if params.empty?

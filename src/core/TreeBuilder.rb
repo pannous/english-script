@@ -24,9 +24,10 @@ module TreeBuilder
     # [    "endNode","integer","real","expression0","value","word"]
   end
 
-  # what exactly machen die??
+  # what exactly machen die??  Eigentlich sollen Sie den Wert an den parent weiterleiten aber das klappt nicht
   def keepers #== ignore_parent , ,"rest_of_line"
-    ["token", "number", "tokens", "word", "setter", "variable", "value", "method_call", "object", "subnode", "integer", "number_word"]
+    ["token", "number", "tokens", "word", "setter", "variable", "value", "method_call", "object",
+     "subnode", "integer", "number_word"]
     #             "number_word","integer",
     #   ,"ruby_method_call"
     #   ,"quote"
@@ -49,7 +50,9 @@ module TreeBuilder
     # "setter",  "endNode",
     # "rest_of_line","word",
     ignore_parent+#delete+
-        ["_", "_?", "interpretation","starts_with","bla", "should_not_match", "do_send", "pronouns", "end_expression",
+        ["_", "_?", "interpretation","must_not_match","system_verbs","starts_with","bla", "should_not_match", "do_send",
+         "pronouns",
+         "end_expression",
          "do_evaluate", "other_verbs",
          "numbers", "tokens", "current_context", "type_names", "possessive_pronouns",
          "ignore", "initialize", "endNode", "start_block", "OK",
@@ -182,15 +185,16 @@ module TreeBuilder
     return if not @current_node #HOOOW?
     # return if name!="boolean" and not @current_value
     if not bad name
-      @nodes.pop # keep through parent
+      @nodes.pop if not @nodes[-1].name==name# keep through parent
       @current_node=@nodes[-1]
       if @current_node
         content=pointer-@current_node.startPointer
         @current_node.value     =@current_value # todo KF removed 27.6. if @current_node.is_leaf
         @current_node.valid     =true if @current_value #and not @current_node.nodes.blank?
         @current_node.endPointer=pointer
-        @current_node.content   =content # ||=
+        @current_node.content   =content.strip # ||=
       end
+      @nodes.pop if @nodes[-1].name==name# keep through parent
       # @new_nodes<<@current_node  #if name=="boolean" || @current_value  # WHAT's THAT?
     end
     if not keepers.index name.to_s

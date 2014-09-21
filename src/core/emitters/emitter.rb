@@ -5,12 +5,16 @@ class Emitter
     [@chars]
   end
 
+  def norm a,context
+    a=a.value if a.is_a?(TreeNode)
+    a=a.name_or_value if a.is_a?(Argument)
+    a=map_method a #if ...!
+    a
+  end
 
-  def norm args, types, block
+  def norm_args args, types, block
     args=[args] if not args.is_a? Array
-    args=args.map { |a|
-      a.is_a?(Argument) ? a.name_or_value : a
-    }
+    args=args.map { |a| norm(a,block)}
     args
   end
 
@@ -30,8 +34,15 @@ class Emitter
     end
     meth = map_method meth0.strip
     arg_types=args_match(meth, args)
-    params   =norm(args, arg_types,context)
+    params   =norm_args(args, arg_types,context)
     emit_method_call obj,meth,params,native
+  end
+
+  def algebra context, node
+    lhs=norm(node[0],context)
+    op=norm(node[1],context)
+    rhs=norm(node[2],context)
+    emit_algebra lhs,op,rhs
   end
 
 

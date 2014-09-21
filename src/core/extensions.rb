@@ -145,6 +145,9 @@ class Hash
 end
 
 class Array
+  def c
+    map(&:c).join(", ") # leave [] which is not compatible with C
+  end
 
   def wrap
     map(&:wrap).join(", ") # leave [] which is not compatible with C
@@ -276,20 +279,27 @@ class FalseClass
   def wrap
     self
   end
+  def c
+    self
+  end
 end
 
 class String
+
+  def c
+    quoted
+  end
 
   def quoted
     "\"#{self}\""
   end
 
-  def name
-    self
-  end
-
   def id
     "id(\"#{self}\")"
+  end
+
+  def wrap
+    "s(\"#{self}\")"
   end
 
   def value
@@ -297,8 +307,8 @@ class String
     # quoted
   end
 
-  def wrap
-    "s(\"#{self}\")"
+  def name
+    self
   end
 
   def number
@@ -571,6 +581,10 @@ end
 
 #class Fixnum Float
 class Numeric
+  def c #unwrap, for optimization
+    self.to_s #"NUM2INT(#{self.to_s})"
+  end
+
   def wrap
     "INT2NUM(#{self.to_s})"
   end

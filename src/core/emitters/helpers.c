@@ -16,8 +16,8 @@
 //INT2FIX() :: for integers within 31bits.
 //INT2NUM() :: for arbitrary sized integer.  Bignum if > 32bit
 // #define s rb_string_value_cstr
-// #define f rb_float_new
-#define i INT2FIX
+#define f rb_float_new
+#define i INT2NUM
 
 #define is_nil(obj) NIL_P(obj)
 #define is_number(obj) FIXNUM_P(obj)

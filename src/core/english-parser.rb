@@ -198,7 +198,7 @@ class EnglishParser < Parser
   end
 
   def operator
-    tokens operators
+    tokens(operators)
   end
 
   def algebra
@@ -2101,7 +2101,7 @@ class EnglishParser < Parser
       @current_node.nodes<<node
       @current_value=value
     end
-    return @current_value
+    return attributes#@current_value
   end
 
   def evaluate

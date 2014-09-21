@@ -20,6 +20,7 @@ class TreeNode
   end
 
   def find x
+    return @nodes[x] if(x.is_a?Numeric)
     for n in self.nodes
       if( n.name==x||n.name.to_s==x.to_s)
         if n.value

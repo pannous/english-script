@@ -48,21 +48,11 @@ class EmitterTest < ParserBaseTest
     # skip
     $use_tree=true
     @parser.dont_interpret!
-    # parse "printf 'hi' "
-    # parse "printf hello world"
     parse "printf 'hello world'",false
-    # parse "printf('hi')"
-    # parse "x=nil;printf 'hi'"
-    # parse "x=7"#";printf 'hi'"
-    # parse "x=false"#";printf 'hi'"
     interpretation= @parser.interpretation || Interpretation.new
     @parser.full_tree
-    # @parser.show_tree
-    # parse "x='hi';printf('hi')"
-    # NativeEmitter.new.emit interpretation,run:true
     result=NativeCEmitter.new.emit interpretation,run:true
     assert_equals result,"hello world"
-    # assert "type of x is string"
   end
 
 

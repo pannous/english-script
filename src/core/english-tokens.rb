@@ -461,9 +461,10 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def true_variable
-    vars=@variableValues.keys
+    vars=@variables.keys
     v=tokens vars
-    # return @variables[v] if @interpret #LATER!
+    v=@variables[v] #why later?
+    #@variableValues[v] if @interpret #LATER!
     v
     #for v in @variables.keys
     #  if @string.start_with? v
