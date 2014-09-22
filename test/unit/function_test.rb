@@ -11,7 +11,7 @@ class FunctionTest < ParserBaseTest
   include ParserTestHelper
 
   def test_basic_syntax
-
+      assert_result_is "print 'hi'",'nill' #hi'
   end
 
   def test_complex_syntax

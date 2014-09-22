@@ -154,7 +154,6 @@ class Array
     "rb_ary_new3(#{size}/*size*/, #{wraps})" #values
   end
 
-
   def wraps
     map(&:wrap).join(", ") # leave [] which is not compatible with C
   end

@@ -75,7 +75,7 @@ class EnglishParser < Parser
     @root             =nil
     @nodes            =[]
     @depth            =0
-    @lhs=@rhs=@comp   =nil
+    @lhs              =@rhs=@comp =nil
     # @result           =nil NOO, keep old!
   end
 
@@ -278,8 +278,8 @@ class EnglishParser < Parser
   def block
     start=pointer
     s    =statement
-    end_of_statement  # danger might act as block end!
-    star { #One or more
+    end_of_statement # danger might act as block end!
+    star {#One or more
       s=statement||s
       end_of_statement
     }
@@ -287,7 +287,7 @@ class EnglishParser < Parser
 
     @last_result=@result
     return s if check_interpret
-    content     =pointer-start
+    content =pointer-start
     return content #if not $use_tree
     # if $use_tree
     #   p=parent_node
@@ -538,8 +538,8 @@ class EnglishParser < Parser
   # keyword expression is reserved by ruby/rails!!! => use hax0r writing or plural
   def expressions fallback=nil
     # raiseNewline ?
-    start=pointer
-    @result= ex   =any {#expression}
+    start  =pointer
+    @result= ex =any {#expression}
       maybe { algebra } ||
           maybe { json_hash } ||
           maybe { swift_hash } || # really?
@@ -818,7 +818,7 @@ class EnglishParser < Parser
   end
 
   def is_object_method m
-    return true if m.is_a?Method and m.receiver==Object
+    return true if m.is_a? Method and m.receiver==Object
     object_method = Object.method(m) rescue false #if Object.method_defined?(m) NOO : puts
     if object_method
       return object_method
@@ -847,7 +847,7 @@ class EnglishParser < Parser
       # puts "has_args method.parameters : #{object_method} #{object_method.parameters}"
       return object_method.arity>0
     end
-    return false if method.in ['invert','++','--'] # increase by 8
+    return false if method.in ['invert', '++', '--'] # increase by 8
 
     return assume #false # true
   end
@@ -870,7 +870,7 @@ class EnglishParser < Parser
     no_keyword
     should_not_match auxiliary_verbs
     # tokens?(@methods.keys+"ed") sorted files -> sort files ?
-    v=c_method? || verb? || tokens?(@methods.keys) || builtin_method?
+    v=c_method? || verb? || tokens?(@methods.keys) || tokens?(@ruby_methods) || tokens?(@core_methods) || builtin_method?
     raise NotMatching.new 'no method found' if not v
     v #.to_s
   end
@@ -894,7 +894,7 @@ class EnglishParser < Parser
 
   def method_call obj=nil
     # ruby_method_call? ||
-        thing_dot_method_call? || generic_method_call(obj)
+    thing_dot_method_call? || generic_method_call(obj)
   end
 
   # read mail or bla(1) or a.bla(1)  vs ruby_method_call !!
@@ -918,7 +918,7 @@ class EnglishParser < Parser
       @current_value=nil
       @in_args      =true
       args          =star { arg }
-      args=obj if not args #and c_method or static etc
+      args          =obj if not args #and c_method or static etc
       # __? ',','and'
     else
       more=_? ','
@@ -1227,6 +1227,7 @@ class EnglishParser < Parser
     p  =__? possessive_pronouns
     # all=p ? [p] : []
     all=one_or_more { word } rescue (a=='a' ? all=[a] : (raise NotMatching))
+    raise_not_matching if not all or all[0]==nil
     name =all.join(' ')
     name =all[1..-1].join(' ') if !typ&&all.length>1&&isType(all[0]) #(p ? 0 : 1)
     name =p+' '+name if p
@@ -1458,10 +1459,10 @@ class EnglishParser < Parser
   def selector
     return if checkEndOfLine
     x=maybe { compareNode }||
-      maybe { where }|| # sql style
-      maybe { that } || # friends that live in africa
-      maybe { token('of') and endNode }|| # friends of africa
-      preposition and nod # friends in africa
+        maybe { where }|| # sql style
+        maybe { that } || # friends that live in africa
+        maybe { token('of') and endNode }|| # friends of africa
+        preposition and nod # friends in africa
     $use_tree ? parent_node : @current_value
     x
   end
@@ -1576,8 +1577,8 @@ class EnglishParser < Parser
     begin
       # else use state variables todo better!
       if cond.is_a? TreeNode
-        @lhs   =cond[:expressions]
-        @rhs   =cond.all(:expressions).reject { |x| x==false }[-1]
+        @lhs =cond[:expressions]
+        @rhs =cond.all(:expressions).reject { |x| x==false }[-1]
         @comp=cond.all(:comparation).reject { |x| x==false }[-1]
         # @comp=cond[:comparation]
       end
@@ -1632,12 +1633,12 @@ class EnglishParser < Parser
     # @a=endNode # NO LISTS (YET)! :(
     quantifier=maybe { tokens quantifiers } # vs selector!
     element_in? if quantifier # -> selector!
-    @lhs   =action_or_expressions quantifier
+    @lhs =action_or_expressions quantifier
     @not =false
     @comp=use_verb=maybe { verb_comparison } # run like , contains
     @comp=maybe { comparation } unless use_verb # are bigger than
     # allow_rollback # upto where??
-    @rhs   =action_or_expressions nil if @comp # optional, i.e.   return true IF 1
+    @rhs =action_or_expressions nil if @comp # optional, i.e.   return true IF 1
     _ ')' if brace
     negate = (negated||@not)&& !(negated and @not)
     subnode negate: negate
@@ -1798,8 +1799,8 @@ class EnglishParser < Parser
   def do_evaluate x, type=nil #  #WHAT, WHY?
     return x if not check_interpret
     begin
-      return x if x.is_a? Array and x.length!=1
       return do_evaluate(x[0]) if x.is_a? Array and x.length==1
+      return x if x.is_a? Array and x.length!=1
       return x.value || @variableValues[x.name] if x.is_a? Variable
       return x.to_f if x.is_a? String and type and type.is_a? Numeric
       return @variableValues[x] if @variableValues.contains x
@@ -1878,8 +1879,14 @@ class EnglishParser < Parser
       @result=args.send(method) rescue NoMethodError #.new("#{obj}.#{op}")
       @result=args[1].send(method) if has_args method, obj if (args[0]=='of') rescue NoMethodError #rest of x
     else
-      @result=obj.send(method) unless has_args method, obj, false rescue NoMethodError
-      @result=obj.send(method, args) if has_args method, obj, true rescue NoMethodError #SyntaxError,
+      if (obj==Object)
+        m      =method(method_name)
+        @result=m.call || :nill unless has_args method, obj, false rescue NoMethodError
+        @result=m.call(args) || :nill if has_args method, obj, true rescue NoMethodError
+      else
+        @result=obj.send(method) unless has_args method, obj, false rescue NoMethodError
+        @result=obj.send(method, args) if has_args method, obj, true rescue NoMethodError #SyntaxError,
+      end
     end
     #todo: call FUNCTIONS!
     # puts object_method.parameters #todo MATCH!
@@ -2108,7 +2115,7 @@ class EnglishParser < Parser
       @current_node.nodes<<node
       @current_value=value
     end
-    return attributes#@current_value
+    return attributes #@current_value
   end
 
   def evaluate
@@ -2146,8 +2153,8 @@ class EnglishParser < Parser
         return @NEWLINE
       end
       #raise EndOfDocument.new if @line_number==@lines.count
-      @string=@lines[@line_number].strip #LOOSE INDENT HERE!!!
-      @string=@string.gsub(/\/\/.*/,"") # todo : Grab comment
+      @string         =@lines[@line_number].strip #LOOSE INDENT HERE!!!
+      @string         =@string.gsub(/\/\/.*/, "") # todo : Grab comment
       @original_string=@string||''
       checkNewline
       return @NEWLINE
@@ -2185,14 +2192,15 @@ class EnglishParser < Parser
     @string       =@string[@current_value.length..-1]
     return @current_value
   end
-  # todo merge ^> :
+
+# todo merge ^> :
   def rest_of_line
     if not @string.match(/(.*?)[;\n]/)
       @current_value=@string
       @string       =nil
       return @current_value
     end
-    match=@string.match(/(.*?)([;\n].*)/) # Need to preserve ;\n Characters for 'end of statement'
+    match         =@string.match(/(.*?)([;\n].*)/) # Need to preserve ;\n Characters for 'end of statement'
     @current_value=match[1]
     @string       =match[2]
     @current_value.strip!
@@ -2275,13 +2283,28 @@ class EnglishParser < Parser
     a   =ARGV[0].to_s
     # read from commandline argument or pipe!!
     @all=ARGF.read||File.read(a) rescue a
+    # @all=File.read(`pwd`.strip+"/"+a) if @all.is_a?(String) and @all.end_with? ".e"
     @all=@all.split("\n") if @all.is_a?(String)
+
     # puts "parsing #{@all}"
     for line in @all
       next if line.blank?
-      interpretation=EnglishParser.new.parse line.encode('utf-8')
-      puts interpretation.result
+      begin
+        interpretation=EnglishParser.new.parse line.encode('utf-8')
+        result        =interpretation.result
+        puts interpretation.tree if $use_tree
+        puts result if result and not result.empty? and not result==:nill
+      rescue NotMatching
+        puts $!
+        puts 'Syntax Error'
+      rescue GivingUp
+        puts 'Syntax Error'
+      rescue
+        puts $!
+        puts $!.backtrace.join("\n")
+      end
     end
+    puts ""
   end
 
 # def variables

@@ -1,4 +1,4 @@
-require_relative "emitters/native-emitter"
+# require_relative "emitters/native-emitter"
 
 # why not return parser??
 class Interpretation
