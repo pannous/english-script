@@ -150,8 +150,15 @@ class Array
   end
 
   def wrap
+    # map(&:wrap).join(", ") # leave [] which is not compatible with C
+    "rb_ary_new3(#{size}/*size*/, #{wraps})" #values
+  end
+
+
+  def wraps
     map(&:wrap).join(", ") # leave [] which is not compatible with C
   end
+
   def values
     map(&:value).join(", ") # leave [] which is not compatible with C
   end
@@ -313,6 +320,10 @@ class String
 
   def number
     self.to_i
+  end
+
+  def in ary
+    ary.has(self)
   end
 
   def matches regex
@@ -585,6 +596,10 @@ class Numeric
     self.to_s #"NUM2INT(#{self.to_s})"
   end
 
+  def value
+    self
+  end
+
   def wrap
     "INT2NUM(#{self.to_s})"
   end
@@ -703,6 +718,10 @@ end
 # class Enumerator
 
 class Object
+  def value
+    self
+  end
+
   def number
     false
   end

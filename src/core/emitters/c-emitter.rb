@@ -6,7 +6,7 @@ class NativeCEmitter < Emitter
 
   def setter var, val
     if var.owner #??
-      "VALUE #{var.name}=set_property(#{var.owner},#{var},#{val});"
+      "VALUE #{var.name}=set_property(#{var.owner},#{var},#{val.wrap});"
     else
       "VALUE #{var.name}=set(#{var.name.quoted},#{val.wrap});"
     end
@@ -34,8 +34,8 @@ class NativeCEmitter < Emitter
     set=EnglishParser.self_modifying(meth) ? obj.name+"=result=" :"result="
     # rb_thread_critical = Qtrue;
     return "#{set}#{meth}(#{params.values});" if native  # static_cast<int> etc
-    return "#{set}call(Object,#{meth.id},0);" if not obj and params.empty?
-    return "#{set}call(#{obj.name},#{meth.id},0);" if params.empty?
+    return "#{set}call0(#{obj.name},#{meth.id});" if obj and params.empty? or params[0]==nil
+    return "#{set}call0(Object,#{meth.id});" if not obj and params.empty? or params[0]==nil
     return "#{set}call(Object,#{meth.id},#{params.count},#{params.values});" if not obj
     return "#{set}call(#{obj.name},#{meth.id},#{params.count},#{params.values});"
   end
@@ -46,7 +46,7 @@ class NativeCEmitter < Emitter
 
   def emit  interpretation, do_run=false
     @file=File.new("/tmp/emitted.c","w") #IO.open
-    @file.write("#include \"helpers.c\"\n")
+    @file.write("#include \"helpers.h\"\n")
     @file.write("VALUE run(VALUE arg){\n")
     #  descend through Parent class emitter, Overwrite functions
     descend  interpretation, interpretation.root
@@ -57,7 +57,7 @@ class NativeCEmitter < Emitter
     include=" -I$RUBY_DEV_HOME/.ext/include/x86_64-darwin13.2.0/ "
     include+=" -I$ENGLISH_SCRIPT_HOME/src/core/emitters/ " #helpers.c
     include+=" -I$RUBY_DEV_HOME/include "
-    command="gcc -g -Iruby #{include} -lruby /tmp/emitted.c -o /tmp/main"
+    command="gcc -g -Iruby #{include} -lruby /tmp/emitted.c /tmp/helpers.c -o /tmp/main"
     puts "\n\n"+command
     ok=`#{command}`
     # puts STDERR.methods

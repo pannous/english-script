@@ -11,3 +11,6 @@ echo get rubygems here https://rubygems.org/pages/download
 # gem install wordnet-defaultdb
 echo INSTALLING DEPENDENCIES... This might take a minute or 10
 bundle install #--no-deployment --local
+
+git submodule init git@github.com:pickhardt/betty.git
+git submodule foreach git pull origin master

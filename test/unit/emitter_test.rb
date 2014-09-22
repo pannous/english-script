@@ -12,6 +12,10 @@ class EmitterTest < ParserBaseTest
 
   include ParserTestHelper
 
+  def last_result x
+    x.split("\n")[-1]
+  end
+
   def assert_result_emitted x,r
     # $use_tree=true
     # @parser.dont_interpret!
@@ -20,7 +24,7 @@ class EmitterTest < ParserBaseTest
     # @parser.full_tree
     # NativeEmitter.new.emit interpretation,run:true
     # assert_result_is x,r # Make sure that at least the interpretation works
-    assert_equals parse_tree(x,emit:true),r #parse_tree(r,emit:true)
+    assert_equals last_result(parse_tree(x,emit:true)),r #parse_tree(r,emit:true)
   end
 
   def test_js_emitter #NEEDS TREE
@@ -61,9 +65,17 @@ class EmitterTest < ParserBaseTest
   end
 
   def test_function
-    # assert_result_is "i=7;i minus one",6
     assert_result_emitted "i=7;i minus one",6
-    # parse_file "examples/factorial.e"
+  end
+
+  def test_function2
+    parse_file "examples/factorial.e"
+    assert_result_emitted "factorial 6",5040
+  end
+
+  def test_array
+    assert_result_emitted "xs=[1,4,7];invert xs",[7,4,1]
+    # assert_result_emitted "xs=1,4,7;invert xs",[7,4,1]
   end
 
   def test_setter

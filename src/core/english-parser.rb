@@ -539,7 +539,7 @@ class EnglishParser < Parser
   def expressions fallback=nil
     # raiseNewline ?
     start=pointer
-    ex   =any {#expression}
+    @result= ex   =any {#expression}
       maybe { algebra } ||
           maybe { json_hash } ||
           maybe { swift_hash } || # really?
@@ -847,6 +847,8 @@ class EnglishParser < Parser
       # puts "has_args method.parameters : #{object_method} #{object_method.parameters}"
       return object_method.arity>0
     end
+    return false if method.in ['invert','++','--'] # increase by 8
+
     return assume #false # true
   end
 
@@ -1255,15 +1257,19 @@ class EnglishParser < Parser
     # noun
   end
 
+  def must_not_start_with words
+    should_not_match words
+  end
+
   def must_not_match words
     should_not_match words
   end
 
   def should_not_match words
-    bad=starts_with words
-    verbose "should_not_match DID match #{bad}"
+    bad=starts_with? words
+    return @OK if not bad
+    verbose "should_not_match DID match #{bad}" if bad
     raise ShouldNotMatchKeyword.new bad if bad
-    return @OK
   end
 
   def no_keyword_except except=[]
@@ -2041,6 +2047,7 @@ class EnglishParser < Parser
   end
 
   def evaluate_index
+    must_not_start_with '['
     must_contain '[', ']'
     v=endNode # true_variable
     _ '['
