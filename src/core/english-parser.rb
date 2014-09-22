@@ -2250,35 +2250,40 @@ class EnglishParser < Parser
 
   def self.start_shell
     $verbose=false
-    if ARGV.count==0 #and not ARGF
-      puts 'usage:'
-      puts "\t./angle 6 plus six"
-      puts "\t./angle examples/test.e"
-      puts "\t./angle (no args for shell)"
-      @parser=EnglishParser.new
-      require 'readline'
-      load_history_why?('~/.english_history')
-      # http://www.unicode.org/charts/PDF/U2980.pdf
-      while input = Readline.readline('⦠ ', true)
-        # while input = Readline.readline('angle-script⦠ ', true)
-        # Readline.write_history_file("~/.english_history")
-        # while true
-        #   print "> "
-        #   input = STDIN.gets.strip
-        begin
-          interpretation= @parser.parse input
-          puts interpretation.tree if $use_tree
-          puts interpretation.result
-        rescue NotMatching
-          puts 'Syntax Error'
-        rescue GivingUp
-          puts 'Syntax Error'
-        rescue
-          puts $!
-        end
+    puts 'usage:'
+    puts "\t./angle 6 plus six"
+    puts "\t./angle examples/test.e"
+    puts "\t./angle (no args for shell)"
+    @parser=EnglishParser.new
+    require 'readline'
+    load_history_why?('~/.english_history')
+    # http://www.unicode.org/charts/PDF/U2980.pdf
+    while input = Readline.readline('⦠ ', true)
+      # while input = Readline.readline('angle-script⦠ ', true)
+      # Readline.write_history_file("~/.english_history")
+      # while true
+      #   print "> "
+      #   input = STDIN.gets.strip
+      begin
+        interpretation= @parser.parse input
+        next if not interpretation
+        puts interpretation.tree if $use_tree
+        puts interpretation.result
+      rescue NotMatching
+        puts 'Syntax Error'
+      rescue GivingUp
+        puts 'Syntax Error'
+      rescue
+        puts $!
       end
-      exit
     end
+    puts ""
+    exit
+  end
+
+
+  def self.startup
+    return start_shell if ARGV.count==0 #and not ARGF
     @all=ARGV.join(' ')
     a   =ARGV[0].to_s
     # read from commandline argument or pipe!!
@@ -2317,4 +2322,4 @@ class EnglishParser < Parser
 end
 
 $testing||=false
-EnglishParser.start_shell if ARGV and not $testing and not $commands_server #and not $raking
+EnglishParser.startup if ARGV and not $testing and not $commands_server #and not $raking
