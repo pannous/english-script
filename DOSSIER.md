@@ -266,6 +266,9 @@ Crazy step: compile to asm.js ??
 
 So far this language runs in the Ruby runtime environment (without any Java). It would be nice if we could keep it this way, even if compiling to Java byte code will become optionally possible.
 
+★ Interesting related projects ★
+--------------
+http://techcrunch.com/2014/10/01/eve-raises-2-3m-to-rethink-programming/
 
 ★ Last words ★
 --------------
