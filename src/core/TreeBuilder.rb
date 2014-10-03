@@ -51,8 +51,8 @@ module TreeBuilder
     # "rest_of_line","word",
     ignore_parent+#delete+
         ["_", "_?", "interpretation","must_not_match","system_verbs","starts_with","bla", "should_not_match", "do_send",
-         "pronouns",
-         "end_expression",
+         "pronouns","is_object_method", "method_tokens",
+         "end_expression", "end_of_statement","end_block", "done",
          "do_evaluate", "other_verbs",
          "numbers", "tokens", "current_context", "type_names", "possessive_pronouns",
          "ignore", "initialize", "endNode", "start_block", "OK",

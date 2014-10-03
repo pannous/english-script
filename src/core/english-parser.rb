@@ -45,6 +45,7 @@ class EnglishParser < Parser
     @variableTypes ={}
     @variableValues={} #    ={nill: nil}
     @svg           =[]
+    @lines         =[]
     # @bash_methods=["say"]
     @c_methods     =['printf']
     @ruby_methods  =['puts', 'print'] #"puts"=>x_puts !!!

@@ -34,10 +34,10 @@ class Function
     self.name     =args[:name]
     self.body     =args[:body]
     self.scope    =args[:scope]
-    self.clazz    =args[:class]
+    self.clazz    =args[:class]||Object
     self.module   =args[:module]
     self.object   =args[:object]
-    self.arguments=args[:arguments]
+    self.arguments=args[:arguments]||[]
 
     # integrate a function between x and y => object = a function (class)
     # if(self.arguments.count>0 and not self.object)
@@ -47,6 +47,10 @@ class Function
     #   end
     # end
     # scope.variables[name]=self
+  end
+
+  def argc
+    self.arguments.count
   end
 
   def == x

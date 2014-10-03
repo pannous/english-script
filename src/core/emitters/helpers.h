@@ -49,6 +49,7 @@ VALUE s(char* str);
 #define define_class rb_define_class // VALUE rb_define_class(const char *name, VALUE super)
 #define define_module rb_define_module //VALUE rb_define_module(const char *name)
 #define define_method rb_define_method //void rb_define_method(VALUE klass, const char *name,VALUE (*func)(), int argc)
+//#define RUBY_METHOD_FUNC(func) ((VALUE (*)(ANYARGS))(func))
 
 #define pf printf
 

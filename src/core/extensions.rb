@@ -150,6 +150,12 @@ class Hash
   end
 end
 
+class Class
+  def wrap
+    return self.to_s #TODO!?
+  end
+end
+
 class Array
   def c
     map(&:c).join(", ") # leave [] which is not compatible with C

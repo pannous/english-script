@@ -44,7 +44,7 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
   end
 
   def assert_equals a, b
-    if a==b || a.to_s==b.to_s
+    if a==b || a.to_s==b.to_s|| a.to_s=='"'+b.to_s+'"'
       puts "TEST PASSED! #{@parser.original_string}    #{a} == #{b}"
     else
       puts filter_stack(caller)

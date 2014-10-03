@@ -9,6 +9,7 @@ class Parser #<MethodInterception
   attr_accessor :lines, :verbose, :original_string
 
   def initialize
+    @lines            =[]
     super # needs to be called by hand!
     # @verbose=true
     @verbose =$VERBOSE||$verbose and not $raking # false
@@ -19,7 +20,6 @@ class Parser #<MethodInterception
     @rollback         =[]
     @tree             =[]
     @line_number      =0
-    @lines            =[]
     @interpret_border =-1
     @no_rollback_depth=-1
     @rollback_depths=[]
@@ -427,6 +427,7 @@ class Parser #<MethodInterception
 
   # GETS FUCKED UP BY @string.strip! !!! ???
   def pointer
+    return Pointer.new @line_number, 0, self if @lines.empty? or @line_number>=@lines.size
     #@line_number copy by ref?????????
     line=lines[@line_number]+"$$$"
     offset=line.offset(@string+"$$$")# @original_string.length-(@string||"").length

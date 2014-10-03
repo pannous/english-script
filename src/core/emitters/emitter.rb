@@ -52,6 +52,7 @@ class Emitter
 
   def descend context, node
     return node if not node.is_a? TreeNode
+    body=""
     # return if not node.valid
     put node.name
     put "{"
@@ -72,17 +73,19 @@ class Emitter
     when :json_hash then
       command=json_hash(context, node)
     when :method_definition then
-      @methods[node.value.name]=method_definition context, node
+      meth,command=method_definition context, node
+      @methods[node.value.name]=meth
     end
     if command
       puts command
-      @file.puts command if @file
+      body+=command
     end
 
     for n in node.nodes
-      descend context, n
+      body+=descend context, n
     end
     put "}"
+    return body
   end
 
 end

@@ -28,9 +28,14 @@ class NativeCEmitter < Emitter
   def method_definition context,node
     function=node.value #==Function
     m="VALUE #{function.name}(VALUE arg){\n"
-    m+=descend context,node
-    m+="return result;\n}"
-    return m
+
+    for n in node.nodes
+      m+=descend context, n
+    end
+    m+=";\nreturn result;" #if not function.return
+    m+="\n}"
+    command="define_method(#{function.clazz},#{function.name.quoted},#{function.name},#{function.argc});"
+    return m,command
   end
 
   def emit_algebra lhs,op,rhs
@@ -42,10 +47,11 @@ class NativeCEmitter < Emitter
     set=EnglishParser.self_modifying(meth) ? obj.name+"=result=" :"result="
     # rb_thread_critical = Qtrue;
     return "#{set}#{meth}(#{params.values});" if native  # static_cast<int> etc
-    return "#{set}call0(#{obj.name},#{meth.id});" if obj and params.empty? or params[0]==nil
-    return "#{set}call0(Object,#{meth.id});" if not obj and params.empty? or params[0]==nil
-    return "#{set}call(Object,#{meth.id},#{params.count},#{params.values});" if not obj
-    return "#{set}call(#{obj.name},#{meth.id},#{params.count},#{params.values});"
+    return "#{set}#{meth}(#{params.wraps});" if @methods[meth] # static_cast<int> etc
+    return "#{set}call0(#{obj.name},#{meth.id});" if obj and ( params.empty? or params[0]==nil or params[0]==obj)
+    return "#{set}call0(Object,#{meth.id});" if not obj and (params.empty? or params[0]==nil or params[0]==obj)
+    return "#{set}call(Object,#{meth.id},#{params.count},#{params.wraps});" if not obj
+    return "#{set}call(#{obj.name},#{meth.id},#{params.count},#{params.wraps});"
   end
 
   def call obj, meth, args
@@ -55,12 +61,13 @@ class NativeCEmitter < Emitter
   def emit  interpretation, do_run=false
     @file=File.new("/tmp/emitted.c","w") #IO.open
     @file.write("#include \"helpers.h\"\n")
-    @file.write("VALUE run(VALUE arg){\n")
     #  descend through Parent class emitter, Overwrite functions
-    descend  interpretation, interpretation.root
+    body=descend  interpretation, interpretation.root
+    @methods.each_value{|v|@file.write("\n"+v+"\n")}
+    @file.write("VALUE run(VALUE arg){\n")
+    @file.puts body
     @file.write("return result;\n");
     @file.write("}")
-    @methods.each_value{|v|@file.write("\n"+v+"\n")}
     @file.close
     `rm /tmp/main;`
     puts ""
@@ -78,10 +85,9 @@ class NativeCEmitter < Emitter
     # puts STDERR.methods
     if $?.exitstatus!=0
       puts "ERROR COMPILING!"
+      puts $?
       exit!
     end
-    puts ok
-    puts $?.exitstatus
     result=`/tmp/main` if do_run
     result.strip
   end
