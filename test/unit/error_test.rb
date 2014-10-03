@@ -14,6 +14,16 @@ class ErrorTest < ParserBaseTest
     assert_has_error "x=1,2,y;" # at:3y= in:list type:unknownVariable:y
   end
 
+  def test_variable_type_safety_errors
+    assert_has_error "string i=3"
+    assert_has_error "int i='hi'"
+    assert_has_error "integer i='hi'"
+    assert_has_error "an integer i;i='hi'"
+    assert_has_error "const i=1;i=2"
+    assert_has_error "const i=1;i='hi'"
+    assert_has_error "const i='hi';i='ho'"
+  end
+
   def test_type3
     assert_has_error "x be 1,2,3y= class of x"   # at:3y= in:list
   end

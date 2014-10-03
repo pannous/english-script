@@ -19,6 +19,20 @@ class VariableTest  < ParserBaseTest
     @parser.variable
   end
 
+  def test_variable_type_safety
+    parse "int i=3"
+    parse "an integer i;i=3"
+    parse "int i;i=3"
+    parse "char i='c'"
+    parse "char i;i='c'"
+    assert_has_error "string i=3"
+    assert_has_error "int i='hi'"
+    assert_has_error "integer i='hi'"
+    assert_has_error "an integer i;i='hi'"
+    assert_has_error "const i=1;i=2"
+    assert_has_error "const i=1;i='hi'"
+    assert_has_error "const i='hi';i='ho'"
+  end
 
   def test_vars
     variables['counter']=3
