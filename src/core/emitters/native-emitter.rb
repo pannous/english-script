@@ -5,6 +5,17 @@
 # require 'llvm' # ACTIVE project ++
 # require 'ruby-llvm'
 
+# on mac: macRubyc AOT
+# Rubinius is a new virtual machine for Ruby.
+# It leverages LLVM to dynamically compile Ruby code down to machine code using LLVM's JIT. (NOT AOT)
+# execute("#{env} arch -#{arch} #{@macruby} #{@uses_bs_flags} --emit-llvm \"#{bc}\" #{init_func} \"#{path}\"")
+
+# clang -emit-llvm -S -o test.bc test.c
+# lli test.bc
+# llc test.bc
+# as test.S
+
+
 # Why I deverop ytljit instead of using llvm? Because according to
 # my yarv2llvm's experience I think llvm don't have enough power
 # Ytl is translator from CRuby VM (aka YARV) to X86-32/X86-64 Native Code. Ytl uses ytljit as code generate library.

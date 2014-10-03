@@ -28,9 +28,23 @@ int main ( int argc, char ** argv) 	{
 //    rb_set_debug_option(getenv("RUBY_DEBUG"));
     pf("loading ruby vm\n");
 //	ruby_sysinit(&argc, &argv);
+
+    const char *progname = argv[0];
+    ruby_sysinit(&argc, &argv);
+    if (argc > 0) {
+	argc--;
+        argv++;
+    }
     ruby_init();
-	RUBY_INIT_STACK;
-	ruby_init_loadpath();
+    ruby_init_loadpath();
+    ruby_set_argv(argc, argv);
+//    rb_vm_init_compiler();
+//    rb_vm_init_jit();
+    ruby_script(progname);
+
+//    ruby_init();
+//	RUBY_INIT_STACK;
+//	ruby_init_loadpath();
 	setbuf(stdout, NULL); // disable buffering
     malloc(1);// for gdb: evaluation of this expression requires the program to have a function "malloc".
 //    require("./src/core/extensions.rb");
@@ -52,6 +66,7 @@ int main ( int argc, char ** argv) 	{
 	if(error!=0){
 	printf("Ruby ERROR %d\n",error);
 	perror("Ruby ERROR ");
+//	rb_vm_print_current_exception();
 	// p(get_global_variable("$!"));
 //	pf("rb_errinfo %lx",rb_errinfo());
 //	rb_set_errinfo(Qnil);

@@ -18,12 +18,49 @@ class FunctionTest < ParserBaseTest
     init "here is how to define a method: done"
   end
 
+  def test_block
+    # variables[:x]=1
+    # variables[:y]=2
+    variables["x"]=1
+    variables["y"]=2
+    assert_equals @parser.variables.count,2
+    z=parse("x+y;")
+    assert_equals z,3
+  end
+
   def test_params
     parse("how to increase x by y: x+y;")
     g=functions["increase"]
-    f=Function.new(name: "increase", arguments: [Argument.new(name: "y", preposition: "by", position: 1),
-                                                 Argument.new(name: "", preposition: "", position: 2)])
+    args=[Argument.new(name: "x", preposition: "", position: 1),Argument.new(name: "y", preposition: "by", position: 2)]
+    f=Function.new(name: "increase", body:"x+y;",arguments: args)
     assert_equal f, g
+    assert_equals @parser.call_function(f,{x:1,y:2}),3
+    # assert_equals @parser.call_function(f,1,2),3
+    # assert_equals f.call(1,2),3
+  end
+
+  def test_function_object
+    parse("how to increase a number x by y: x+y;")
+    g=functions["increase"]
+    arg1=Argument.new(name: "x",type:"number",preposition: "", position: 1)
+    arg2=Argument.new(name: "y",preposition: "by",position: 2)
+    f=Function.new(name: "increase", body:"x+y;",object: arg1,arguments:arg2)
+    # f=Function.new(name: "increase", body:"x+y;",arguments: [arg1,arg2])
+    assert_equal f, g
+    assert_equals @parser.call_function(f,{x:1,y:2}),3
+    # assert_equals @parser.call_function(f,1,2),3
+    # assert_equals f.call(1,2),3
+  end
+
+  def test_class_method
+    parse("how to list all numbers smaller x: [1..x]")
+    g=functions["list"]
+    f=Function.new(name: "list", body:"[1..x]",object: arg1,arguments:arg2)
+    # f=Function.new(name: "increase", body:"x+y;",arguments: [arg1,arg2])
+    assert_equal f, g
+    assert_equals @parser.call_function(f,4),[1,2,3]
+    # assert_equals @parser.call_function(f,1,2),3
+    # assert_equals f.call(1,2),3
   end
 
   def test_simple_parameters

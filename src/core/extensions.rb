@@ -131,6 +131,12 @@ class Hash
     end
   end
 
+
+  # DANGER: NOT surjective if not normed here too!!
+  # def []= x,y # NORM only through getter
+  #   super[x.to_sym]=y
+  # end
+
   def [] x
     return if not x
     return orig_index(x) || orig_index(x.to_s) if x.is_a? Symbol

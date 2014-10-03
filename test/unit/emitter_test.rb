@@ -5,7 +5,7 @@ $use_tree=true
 $verbose=false
 
 require_relative '../parser_test_helper'
-require_relative '../../src/core/emitters/js-emitter'
+# require_relative '../../src/core/emitters/js-emitter'
 require_relative '../../src/core/emitters/c-emitter'
 
 class EmitterTest < ParserBaseTest

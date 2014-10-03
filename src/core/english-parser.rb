@@ -609,7 +609,7 @@ class EnglishParser < Parser
     tokens method_tokens #  how to
     no_rollback!
     name= noun or verb #  integrate
-    obj=maybe { endNode } # a sine wave
+    # obj=maybe { endNode } # a sine wave  TODO: invariantly get as argument book.close==close(book)
     _? '('
     arg_nr=1
     args  =star {
@@ -1072,6 +1072,16 @@ class EnglishParser < Parser
     block_parser               =EnglishParser.new
     block_parser.variables     =@variables
     block_parser.variableValues=@variableValues
+    for arg, val in args
+      v=block_parser.variables[arg]
+      if v
+        v      =v.clone
+        v.value=val
+        block_parser.variables[arg.to_s]=v # to_sym todo NORM in hash!!!
+      else
+        block_parser.variables[arg.to_s]=Variable.new name:arg,value:val
+      end
+    end
     # block_parser.variables+=args
     begin
       @result =block_parser.parse(b.join("\n")).result

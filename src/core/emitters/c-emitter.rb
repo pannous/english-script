@@ -54,18 +54,25 @@ class NativeCEmitter < Emitter
     @file.write("}")
     @file.close
     `rm /tmp/main;`
+    puts ""
+    es_HOME=`echo $ENGLISH_SCRIPT_HOME`|| "/Users/me/dev/ai/english-script/"
+    es_HOME.strip!
+    path=es_HOME+"/src/core/emitters/"
+    puts "$ENGLISH_SCRIPT_HOME="+es_HOME
     include=" -I$RUBY_DEV_HOME/.ext/include/x86_64-darwin13.2.0/ "
+    include+=" -I#{es_HOME}/src/core/emitters/ " #helpers.c
     include+=" -I$ENGLISH_SCRIPT_HOME/src/core/emitters/ " #helpers.c
     include+=" -I$RUBY_DEV_HOME/include "
-    command="gcc -g -Iruby #{include} -lruby /tmp/emitted.c /tmp/helpers.c -o /tmp/main"
-    puts "\n\n"+command
+    command="gcc -g -Iruby #{include} -lruby /tmp/emitted.c #{path}/helpers.c -o /tmp/main"
+    puts command
     ok=`#{command}`
     # puts STDERR.methods
-    if $?.exitstatus==1
+    if $?.exitstatus==1 || $?.exitstatus==127
       puts "ERROR COMPILING!"
       exit!
     end
     puts ok
+    puts $?.exitstatus
     result=`/tmp/main` if do_run
     result.strip
   end

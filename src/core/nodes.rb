@@ -38,6 +38,14 @@ class Function
     self.module   =args[:module]
     self.object   =args[:object]
     self.arguments=args[:arguments]
+
+    # integrate a function between x and y => object = a function (class)
+    # if(self.arguments.count>0 and not self.object)
+    #   if(arguments[0].preposition.empty?)
+    #     self.object=arguments[0]
+    #     arguments.shift
+    #   end
+    # end
     # scope.variables[name]=self
   end
 
@@ -48,6 +56,11 @@ class Function
         self.clazz==x.clazz &&
         self.object==x.object &&
         self.arguments==x.arguments
+  end
+
+  def call *args
+    # @parser. self.context.
+       EnglishParser.call_function self,args
   end
 
 end
@@ -131,6 +144,18 @@ class Variable
   def increase
     self.value = self.value+1
     self.value
+  end
+
+
+  def == x
+    return self.value == x if not x.is_a?Variable
+    super == x
+    # self.name == x.name &&
+    #     self.preposition== x.preposition &&
+    #     self.type == x.type &&
+    #     self.position == x.position &&
+    #     self.default == x.default &&
+    #     self.value == x.value
   end
 
 end
