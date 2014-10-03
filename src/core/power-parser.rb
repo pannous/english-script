@@ -9,7 +9,7 @@ class Parser #<MethodInterception
   attr_accessor :lines, :verbose, :original_string
 
   def initialize
-    @lines            =[]
+    @lines =[]
     super # needs to be called by hand!
     # @verbose=true
     @verbose =$VERBOSE||$verbose and not $raking # false
@@ -22,7 +22,7 @@ class Parser #<MethodInterception
     @line_number      =0
     @interpret_border =-1
     @no_rollback_depth=-1
-    @rollback_depths=[]
+    @rollback_depths  =[]
     @max_depth        =160
   end
 
@@ -279,7 +279,7 @@ class Parser #<MethodInterception
     # c = @depth #for mruby
     c = caller.count rescue @depth #for mruby
     if c>@max_depth
-    raise SystemStackError.new "depth overflow"
+      raise SystemStackError.new "depth overflow"
     end
     c
     # filter_stack(caller).count #-1
@@ -287,7 +287,7 @@ class Parser #<MethodInterception
 
 
   def no_rollback! n=0
-    depth              =caller_depth-1
+    depth =caller_depth-1
     while (@rollback_depths[-1]||-1)>depth
       @rollback_depths.pop
     end
@@ -299,9 +299,9 @@ class Parser #<MethodInterception
 
 
   def allow_rollback n=0
-    @rollback_depths =[] if n<0
+    @rollback_depths   =[] if n<0
     @no_rollback_depth =@rollback_depths.pop||-1
-    @original_string=@string # if following no_rollback !
+    @original_string   =@string # if following no_rollback !
   end
 
   def adjust_rollback depth=caller_depth
@@ -319,7 +319,7 @@ class Parser #<MethodInterception
       raise SystemStackError.new "if(@nodes.count>@max_depth)"
     end
 
-    old   =@string # NOT overwritten, instead of:
+    old             =@string # NOT overwritten, instead of:
     @original_string=@string||"" if @original_string.blank?
     begin
       old_nodes=@nodes.clone
@@ -429,9 +429,9 @@ class Parser #<MethodInterception
   def pointer
     return Pointer.new @line_number, 0, self if @lines.empty? or @line_number>=@lines.size
     #@line_number copy by ref?????????
-    line=lines[@line_number]+"$$$"
-    offset=line.offset(@string+"$$$")# @original_string.length-(@string||"").length
-    Pointer.new @line_number, offset, self
+    line  =lines[@line_number]+"$$$"
+    offset=line.offset(@string+"$$$") # @original_string.length-(@string||"").length
+    Pointer.new @line_number, offset||0, self
   end
 
   class Pointer
@@ -446,20 +446,26 @@ class Parser #<MethodInterception
     # end
 
     def - start
-      return offset-=start.length if start.is_a? String
+      start = start.length if start.is_a? String
+      if start.is_a? Numeric
+        p       =self.clone
+        p.offset-=start.length
+        p.offset=0 if p.offset<0
+        return p
+      end
       return content_between self, start if start>self
       return content_between start, self
     end
 
     def > x
-      line_number>=x.line_number and offset>x.offset
+      @line_number>=x.line_number and @offset>x.offset
     end
 
     def initialize line_number, offset, parser
       @line_number=line_number
-      offset      =0 if line_number>=parser.lines.count
-      @offset     =offset
       @parser     =parser
+      @offset     =offset
+      @offset     =0 if line_number>=parser.lines.count
     end
 
 

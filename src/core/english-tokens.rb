@@ -478,7 +478,7 @@ module EnglishParserTokens #< MethodInterception
 
   def noun include=[]
     a=the?
-    must_not_match system_verbs unless a
+    should_not_start_with system_verbs unless a
     return word(include) unless $use_wordnet
     #return true if true_variable
     no_keyword_except include

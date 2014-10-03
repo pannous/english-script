@@ -24,15 +24,18 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
   end
 
   def assert_has_no_error x=nil
-    init x
-    assert @parser.root
+    parse x
+    # init x
+    # @parser.root
+    puts x+" parses OK" # raise exception if there is an errar
   end
 
   def assert_has_error x=nil, &block
     begin
       # x=yield if not x and block
-      assert x, &block
-      puts "TEST NOT PASSED: "+x.to_s+" \t" +@parser.to_source(block).to_s
+      parse x
+      # assert x, &block
+      original_assert "TEST NOT PASSED: "+x.to_s+" \t" +@parser.to_source(block).to_s, false
         # raise ScriptError.new "assert_has_error "
     rescue Exception => e
       puts "TEST PASSED: assert_HAS_error #{e} "+x.to_s+" \t" +@parser.to_source(block).to_s

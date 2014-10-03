@@ -282,7 +282,7 @@ class EnglishParser < Parser
     start           =pointer
     s               =statement #BUUUUUG~~~!!!
     content         =pointer-start
-    end_of_block    =tokens? done_words
+    end_of_block    =end_block? #tokens? done_words
     if not end_of_block
       end_of_statement # danger might act as block end!
       star {#One or more
@@ -597,6 +597,7 @@ class EnglishParser < Parser
           # maybe { if_then } ||
           maybe { once } ||
           maybe { piped_actions } ||
+          maybe { declaration } ||
           maybe { setter } ||
           maybe { returns } ||
           maybe { breaks } ||
@@ -626,8 +627,8 @@ class EnglishParser < Parser
       _? ','
       a
     } # over an interval
-    return_type=__?('as', 'return', 'returns', 'returning') and typeName?
-    return_type||=typeName if _? '->' #_? '!' # swift style --
+    return_type=__?('as', 'return', 'returns', 'returning') and typeNameMapped?
+    return_type||=typeNameMapped if _? '->' #_? '!' # swift style --
     @in_params =false
     _? ')'
     allow_rollback # for
@@ -876,7 +877,7 @@ class EnglishParser < Parser
 
   def true_method
     no_keyword
-    should_not_match auxiliary_verbs
+    should_not_start_with auxiliary_verbs
     # tokens?(@methods.keys+"ed") sorted files -> sort files ?
     v=c_method? || verb? || tokens?(@methods.keys) || tokens?(@ruby_methods) || tokens?(@core_methods) || builtin_method?
     raise NotMatching.new 'no method found' if not v
@@ -1078,7 +1079,7 @@ class EnglishParser < Parser
     block_parser               =EnglishParser.new
     block_parser.variables     =@variables
     block_parser.variableValues=@variableValues
-    args={arg:args} if not args.is_a?Hash
+    args                       ={arg: args} if not args.is_a? Hash
     for arg, val in args
       v=block_parser.variables[arg]
       if v
@@ -1148,6 +1149,21 @@ class EnglishParser < Parser
 
 #  until_condition ,:while_condition ,:as_long_condition
 
+
+  def assure_same_type var,type
+    oldType=@variableTypes[var.name]
+    # begin
+    raise WrongType.new "#{oldType} #{type}" if oldType and type and not type<=oldType
+    raise WrongType.new "#{oldType} #{var.type}" if oldType and var.type and not var.type<=oldType
+    # raise WrongType.new "#{type} #{var.type}" if type and var.type and not var.type>=type
+    raise WrongType.new "#{type} #{var.type}" if type and var.type and not (var.type<=type|| var.type>=type)
+    # rescue
+    #   p $!
+    # end
+    var.type=type
+  end
+
+
   def assure_same_type_overwrite var, val
     oldType=var.type
     raise WrongType.new "#{var} #{val}" if oldType and not val.type.is_a oldType
@@ -1186,6 +1202,22 @@ class EnglishParser < Parser
     Property.new name: properti, owner: owner
   end
 
+  def declaration
+    should_not_contain '='
+    # must_contain_before  be_words+['set'],';'
+    a   =the?
+    mod =modifier?
+    type=typeNameMapped
+    tokens? 'var', 'val', 'value of'
+    mod          ||=modifier? # public static ...
+    var          =property? || variable(a)
+    assure_same_type var,type
+    # var.type     ||=type
+    var.final    =const.contains(mod)
+    var.modifier =mod
+    return var
+  end
+
 #  CAREFUL WITH WATCHES!!! THEY manipulate the current system, especially variable
 #/*	 let nod be nods */
   def setter
@@ -1193,9 +1225,9 @@ class EnglishParser < Parser
     _let=no_rollback! if let?
     a   =the?
     mod =modifier?
+    type=typeNameMapped?
     tokens? 'var', 'val', 'value of'
     mod  ||=modifier? # public static ...
-    old  =@string
     var  =property? || variable(a)
     # _?("always") => pointer
     setta=_?('to') || be # or not_to_be 	contain -> add or create
@@ -1203,7 +1235,8 @@ class EnglishParser < Parser
     no_rollback!
     val=[val].flatten if setta=='are' or setta=='consist of' or setta=='consists of'
     assure_same_type_overwrite var, val if _let
-    var.type||=val.class #eval'ed! also x is an integer
+    # var.type||=type||val.class #eval'ed! also x is an integer
+    assure_same_type var,type||val.class
     if not @variableValues.contains(var.name) or mod!='default' and @interpret
       @variableValues[var.name] =val
     end
@@ -1237,10 +1270,11 @@ class EnglishParser < Parser
     return false
   end
 
+  # already existing
   def variable a=nil
     a  ||=article?
     a  =nil if a!='a' #hack for a variable
-    typ=typeName?
+    typ=typeNameMapped? # DOESN'T BELONG HERE!  e.g. int i++
     p  =__? possessive_pronouns
     # all=p ? [p] : []
     all=one_or_more { word } rescue (a=='a' ? all=[a] : (raise NotMatching))
@@ -1275,15 +1309,29 @@ class EnglishParser < Parser
     # noun
   end
 
+  # NOT SAME AS should_not_start_with!!!
+  def should_not_contain words
+    for w in [words].flatten
+      if w.match(/^\w/)
+        bad=@string.match(/^\w#{w}^\w/im)
+      else
+        if @string.match /;/
+          bad=@string.match /#{escape_token(w)}.*?;/
+        else
+          bad=@string.match /#{escape_token(w)}/
+        end
+      end
+      if bad
+        raise ShouldNotMatchKeyword.new w
+      end
+    end
+  end
+
   def must_not_start_with words
-    should_not_match words
+    should_not_start_with words
   end
 
-  def must_not_match words
-    should_not_match words
-  end
-
-  def should_not_match words
+  def should_not_start_with words
     bad=starts_with? words
     return @OK if not bad
     verbose "should_not_match DID match #{bad}" if bad
@@ -1291,7 +1339,7 @@ class EnglishParser < Parser
   end
 
   def no_keyword_except except=[]
-    should_not_match keywords-except
+    should_not_start_with keywords-except
   end
 
   def no_keyword
@@ -1336,7 +1384,7 @@ class EnglishParser < Parser
           maybe { nod }
       #rest_of_line # TOOBIG HERE!
     }
-    typ    =typeName if _?('as')
+    typ    =typeNameMapped if _?('as')
     x      =cast(x, typ) if typ
     x
   end
@@ -1363,7 +1411,7 @@ class EnglishParser < Parser
     article? #todo use a vs the ?
     a=variable?
     return Argument.new name: a.name, type: a.type, preposition: pre, position: position if a
-    type=typeName?
+    type=typeNameMapped?
     v   =endNode
     name=pre+ (a ? a.name : "")
     Argument.new preposition: pre, name: name, type: type, position: position, value: v
@@ -1747,6 +1795,12 @@ class EnglishParser < Parser
     c
   end
 
+  def typeNameMapped
+    x=typeName
+    return Integer if x=="int"
+    x
+  end
+
   def typeName
     classConstDefined? || tokens(type_names)
   end
@@ -1996,7 +2050,7 @@ class EnglishParser < Parser
           maybe { fileName } ||
           maybe { linuxPath } ||
           maybe { quote } || #redundant with value !
-          maybe { article?; typeName } ||
+          maybe { article?; typeNameMapped } ||
           maybe { evaluate_property }||
           maybe { selectable } ||
           maybe { true_variable } ||
@@ -2071,7 +2125,7 @@ class EnglishParser < Parser
   end
 
   def evaluate_index
-    must_not_start_with '['
+    should_not_start_with '['
     must_contain '[', ']'
     v=endNode # true_variable
     _ '['

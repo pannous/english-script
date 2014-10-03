@@ -154,6 +154,9 @@ class Class
   def wrap
     return self.to_s #TODO!?
   end
+  def is_a
+
+  end
 end
 
 class Array
@@ -653,13 +656,13 @@ class Numeric
     return true if className=="number"
     return true if className=="real"
     return true if className=="float"
+    # Integer = ALL : Fixnum = small int  AND ... Bignum = big : 2 ** (1.size * 8 - 2)
     return true if self.is_a? Integer and className=="integer" #todo move
     return true if self.is_a? Integer and className=="int" #todo move
     return true if className==self.to_s.downcase #KINDA
     return true if self.is clazz
     return false
   end
-
 
   def add x
     self+x
