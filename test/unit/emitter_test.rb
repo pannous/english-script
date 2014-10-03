@@ -64,8 +64,14 @@ class EmitterTest < ParserBaseTest
     assert_result_emitted "printf 'hello world'",'hello world'
   end
 
-  def test_function
+  def test_function_call
     assert_result_emitted "i=7;i minus one",6
+  end
+
+  def test_function
+    assert_result_emitted "def test{puts 'yay'};test",'yay'
+    # assert_result_emitted "def test{puts 'yay'};test()",'yay'
+    # assert_result_emitted "def inverte c: c.invert;done;xs=[1,4,7];inverte xs",[7,4,1]
   end
 
   def test_function2

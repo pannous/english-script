@@ -25,6 +25,14 @@ class NativeCEmitter < Emitter
     meth
   end
 
+  def method_definition context,node
+    function=node.value #==Function
+    m="VALUE #{function.name}(VALUE arg){\n"
+    m+=descend context,node
+    m+="return result;\n}"
+    return m
+  end
+
   def emit_algebra lhs,op,rhs
     return "result=i(#{lhs.c}#{op}#{rhs.c});"
     # return "result=#{lhs}#{op}#{rhs.wrap};"
@@ -52,6 +60,7 @@ class NativeCEmitter < Emitter
     descend  interpretation, interpretation.root
     @file.write("return result;\n");
     @file.write("}")
+    @methods.each_value{|v|@file.write("\n"+v+"\n")}
     @file.close
     `rm /tmp/main;`
     puts ""
@@ -67,7 +76,7 @@ class NativeCEmitter < Emitter
     puts command
     ok=`#{command}`
     # puts STDERR.methods
-    if $?.exitstatus==1 || $?.exitstatus==127
+    if $?.exitstatus!=0
       puts "ERROR COMPILING!"
       exit!
     end

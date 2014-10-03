@@ -1,6 +1,10 @@
 #common Functionality for all immatures
 class Emitter
 
+  def initialize
+    @methods={}
+  end
+
   def args_match meth, args
     [@chars]
   end
@@ -67,6 +71,8 @@ class Emitter
       command=if_then_else context, node
     when :json_hash then
       command=json_hash(context, node)
+    when :method_definition then
+      @methods[node.value.name]=method_definition context, node
     end
     if command
       puts command

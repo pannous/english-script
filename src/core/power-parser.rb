@@ -301,6 +301,7 @@ class Parser #<MethodInterception
   def allow_rollback n=0
     @rollback_depths =[] if n<0
     @no_rollback_depth =@rollback_depths.pop||-1
+    @original_string=@string # if following no_rollback !
   end
 
   def adjust_rollback depth=caller_depth
@@ -314,11 +315,11 @@ class Parser #<MethodInterception
     #return if checkEnd
     # allow_rollback 1
     @depth=@depth+1
-    old   =@string
     if (caller_depth>@max_depth)
       raise SystemStackError.new "if(@nodes.count>@max_depth)"
     end
 
+    old   =@string # NOT overwritten, instead of:
     @original_string=@string||"" if @original_string.blank?
     begin
       old_nodes=@nodes.clone
@@ -333,6 +334,7 @@ class Parser #<MethodInterception
       @last_node=@current_node
       return result
     rescue NotMatching, EndOfLine => e
+      # old=@original_string # REALLY>??
       verbose e
       @current_value=nil
       @string       =old
@@ -426,7 +428,9 @@ class Parser #<MethodInterception
   # GETS FUCKED UP BY @string.strip! !!! ???
   def pointer
     #@line_number copy by ref?????????
-    Pointer.new @line_number, @original_string.length-(@string||"").length, self
+    line=lines[@line_number]+"$$$"
+    offset=line.offset(@string+"$$$")# @original_string.length-(@string||"").length
+    Pointer.new @line_number, offset, self
   end
 
   class Pointer

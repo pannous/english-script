@@ -435,6 +435,10 @@ class String
     self+x
   end
 
+  def offset x
+    index x
+  end
+
   def - x
     self.gsub(x,"")
     # self[0..self.index(x)-1]+self[self.index(x)+x.length..-1]

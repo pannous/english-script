@@ -105,8 +105,8 @@ class EnglishParser < Parser
       maybe { newline } ||
           maybe { requirements } ||
           maybe { method_definition } ||
+          # maybe { ruby_def } || # SHOULD BE just as method_definition !!
           maybe { assert_that } ||
-          maybe { ruby_def } ||
           maybe { block and checkNewline }|| # {x=1;x} todo
           maybe { statement and end_expression } || # x=1+1
           maybe { expressions and end_expression } || # 1+1
@@ -187,7 +187,7 @@ class EnglishParser < Parser
     newlines
     #NL
     block
-    done
+    done # done context!!!
   end
 
 
@@ -275,19 +275,25 @@ class EnglishParser < Parser
 
   # see read_block for RAW blocks! (</EOF> type)
   # EXCLUDING start_block & end_block !!!
-  def block
-    start=pointer
-    s    =statement
-    end_of_statement # danger might act as block end!
-    star {#One or more
-      s=statement||s
-      end_of_statement
-    }
-    # end_of_statement?
-
+  def block #type
+    start_block #NEWLINE ALONE == START!!!?!?!
+    @original_string=@string #REALLY??
+    start           =pointer
+    s               =statement #BUUUUUG~~~!!!
+    content         =pointer-start
+    end_of_block    =tokens? done_words
+    if not end_of_block
+      end_of_statement # danger might act as block end!
+      star {#One or more
+        s       =statement||s
+        content =pointer-start
+        end_of_statement
+      }
+      # end_of_statement?
+      end_of_block=end_block
+    end
     @last_result=@result
     return s if check_interpret
-    content =pointer-start
     return content #if not $use_tree
     # if $use_tree
     #   p=parent_node
@@ -608,7 +614,7 @@ class EnglishParser < Parser
     # modifiers=modifiers?
     tokens method_tokens #  how to
     no_rollback!
-    name= noun or verb #  integrate
+    name= noun? or verb #  integrate or word
     # obj=maybe { endNode } # a sine wave  TODO: invariantly get as argument book.close==close(book)
     _? '('
     arg_nr=1
@@ -727,10 +733,11 @@ class EnglishParser < Parser
   def action_once
     must_contain once_words # if not _do and newline
     no_rollback!
-    _do=_? 'do'
-    dont_interpret!
-    b=action if not _do
-    b=block and done? if _do
+    b=action_or_block
+    # _do=_? 'do'
+    # dont_interpret!
+    # b=action if not _do
+    # b=block and done? if _do
     __ once_words
     c=condition
     end_expression
@@ -1021,9 +1028,9 @@ class EnglishParser < Parser
     # not @string.blank?
     a=maybe { action } if not starts_with [':', 'do', '{']
     return a if a
-    start_block && newline?
-    b=block if not a
-    end_block
+    # type=start_block && newline?
+    b=block
+    # end_block
     return b
   end
 
@@ -1031,9 +1038,7 @@ class EnglishParser < Parser
     # dont_interpret  # always?
     a=maybe { action }||maybe { expressions }
     return a if a
-    start_block
-    b=block if not a
-    end_block
+    b=block
     return b
   end
 
@@ -1072,14 +1077,15 @@ class EnglishParser < Parser
     block_parser               =EnglishParser.new
     block_parser.variables     =@variables
     block_parser.variableValues=@variableValues
+    args={arg:args} if not args.is_a?Hash
     for arg, val in args
       v=block_parser.variables[arg]
       if v
-        v      =v.clone
-        v.value=val
+        v                               =v.clone
+        v.value                         =val
         block_parser.variables[arg.to_s]=v # to_sym todo NORM in hash!!!
       else
-        block_parser.variables[arg.to_s]=Variable.new name:arg,value:val
+        block_parser.variables[arg.to_s]=Variable.new name: arg, value: val
       end
     end
     # block_parser.variables+=args

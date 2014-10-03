@@ -52,6 +52,10 @@ class FunctionTest < ParserBaseTest
     # assert_equals f.call(1,2),3
   end
 
+  def test_blue_yay
+    assert_result_is "def test{puts 'yay'};test","yay"
+  end
+
   def test_class_method
     parse("how to list all numbers smaller x: [1..x]")
     g=functions["list"]
