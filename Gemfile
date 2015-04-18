@@ -20,3 +20,4 @@ gem 'minitest-reporters', '>= 0.5.0'
 
 gem 'debase', :groups => [:development]  #if $RUBYMINE
 gem 'ruby-debug-ide' , :groups => [:development] #if $RUBYMINE
+# gem 'did_you_mean', group: [:development, :test]

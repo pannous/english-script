@@ -1,3 +1,7 @@
+TODO
+https://github.com/mephux/envdb !
+
+
 JVM, .Net (CLR/CIL,msil), llvm , apple CLI, WebCL and NaCl??
 asm.js A Mozilla Research project to specify and develop the extremely optimizable subset of JS targeted by compilers like Emscripten, Mandreel, and LLJS. 
 Emscripten: An LLVM-to-JavaScript Compiler

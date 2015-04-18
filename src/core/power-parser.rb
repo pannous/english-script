@@ -565,7 +565,7 @@ class Parser #<MethodInterception
 #end
 
 
-  def ignore_rest_of_line
+  def ignore_rest_of_line !
     return @string="" if not @string.match "\n"
     @string.gsub!(/.*?\n/, "\n")
   end

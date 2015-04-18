@@ -5,6 +5,9 @@
 # require 'llvm' # ACTIVE project ++
 # require 'ruby-llvm'
 
+# AST -> LISP -> LLVM -> NATIVE YEAH!
+# https://github.com/talw/crisp-compiler
+
 # on mac: macRubyc AOT
 # Rubinius is a new virtual machine for Ruby.
 # It leverages LLVM to dynamically compile Ruby code down to machine code using LLVM's JIT. (NOT AOT)

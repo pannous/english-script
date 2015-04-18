@@ -33,13 +33,33 @@ class Class
 end
 
 class File
+  require 'fileutils'
+
   def to_s
     path
   end
 
-  def move to
-    require 'fileutils'
+  def name
+    path
+  end
+  def filename
+    path
+  end
+
+  def mv to
     FileUtils.mv(path, to)
+  end
+
+  def move to
+    FileUtils.mv(path, to)
+  end
+
+  def copy to
+    FileUtils.cp(path, to)
+  end
+
+  def cp to
+    FileUtils.cp(path, to)
   end
 
   def contain x
@@ -106,6 +126,10 @@ end
 
 def nil.test
   "nil.test OK"
+end
+
+def nil.+ x
+  x
 end
 
 #def nil.to_s

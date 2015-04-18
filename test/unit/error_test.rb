@@ -24,7 +24,7 @@ class ErrorTest < ParserBaseTest
     assert_has_no_error "int i=3"
     assert_has_no_error "int i;i=3"
     assert_has_error "const i=1;i=2"
-    assert_has_error "string i=3"
+    assert_has_error "string i=3" # idea: hack 3.to_s
     assert_has_error "int i='hi'"
     assert_has_error "integer i='hi'"
     assert_has_error "an integer i;i='hi'"
