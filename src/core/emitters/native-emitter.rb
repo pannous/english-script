@@ -1,6 +1,7 @@
 # https://github.com/jvoorhis/ruby-llvm
 # http://llvm.org/releases/3.4/docs/index.html
 # https://developer.chrome.com/native-client/reference/pnacl-bitcode-abi
+# http://www.infoq.com/presentations/clojure-scheme -> native!
 
 # require 'llvm' # ACTIVE project ++
 # require 'ruby-llvm'
