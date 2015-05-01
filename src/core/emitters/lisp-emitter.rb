@@ -2,8 +2,7 @@
 
 # http://stackoverflow.com/questions/913671/are-there-lisp-native-code-compilers
 # http://clojure.org/special_forms#var Not to be confused with Clozure CL.
-# http://www.infoq.com/presentations/clojure-scheme -> native!
-#
+# http://www.infoq.com/presentations/clojure-scheme -> native!#
 # fasl == bytecode -> NATIVE
 # gsc Gambit v4.7.5 Scheme -> NATIVE !! gsc
 # gcl - GNU Common Lisp compiler
