@@ -1,13 +1,46 @@
+# via PYTHON:
+
+# Use Cython, which is a Python-like language that is compiled into a Python C extension, Python to C source code translator
+# RPython -> native (via PyPy!)
+# Use PyPy, which has a translator from RPython (a restricted subset of Python that does not support some of the most "dynamic" features of Python) to C or LLVM. # replaced dead Psyco
+# PyPy comes by default with support for stackless mode, providing micro-threads for massive concurrency.
+# TOPAZ A high performance ruby, written in RPython http://topazruby.com lol wtf python -m topaz /path/to/file.rb
+
+
 # https://github.com/jvoorhis/ruby-llvm
 # http://llvm.org/releases/3.4/docs/index.html
 # https://developer.chrome.com/native-client/reference/pnacl-bitcode-abi
 # http://www.infoq.com/presentations/clojure-scheme -> native!
 
+# obviously we don't want to use those obscure programming languages we just want to hijack that compiler pipeline
+# VALA (active! source-to-source compiled to C (!)) C ONLY! :(  used by Baobab - Disk usage analyzer !!
+# vala ~= c#, but would also love to be able to get maximum performance from their hardware. This lets you do that while using your favorite language. I can't see something like this dieing.
+# If you check the Linux Desktop scenario, every 2nd new app seems to be written in Vala. Vala is fast becoming the language of choice on Linux desktop at least.
+
+# Haxe is an open-source high-level multiplatform programming language and compiler that can produce applications and source code for many different platforms from a single code-base.
+# haxe -main World.hx -cpp out   YAY!! big (1/2MB) but FAST exe!!
+
 # require 'llvm' # ACTIVE project ++
 # require 'ruby-llvm'
 
-# AST -> LISP -> LLVM -> NATIVE YEAH!
+# AST -> LISP -> ()LLVM ->) NATIVE YEAH!
+# SCHEME == gambit == gsc !!
+# The compiler can produce standalone executables or compiled modules which can be loaded at run time. Interpreted code and compiled code can be freely mixed.
+# http://stackoverflow.com/questions/913671/are-there-lisp-native-code-compilers
+
 # https://github.com/talw/crisp-compiler
+
+# Compiling Clojure to native code would likely degrade overall performance
+# but may improve startup speed.
+
+# Native?? Even if you get all that straightened out, you still lack a good
+# standard lib. This is what really killed the project for me. Read up
+# on C++ linking sometime. Trying to get something like .JARs or .net
+# assemblies working on a native level is a nightmare to say the least.
+
+# !!! For C it would be easy-ish to create a pinvoke
+# like system. But for C++.....yeaaaahhh.....the way C++ is linked is
+# just wrong.
 
 # on mac: macRubyc AOT
 # Rubinius is a new virtual machine for Ruby.

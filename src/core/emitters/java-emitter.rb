@@ -1,6 +1,11 @@
-# >>> via lightweight clojure approach SEE THERE FOR EMITTER
+# see JVM emitter
 
-# VIA ruby bytecode to java bytecode + magic
+# VIA JAVA! OK with java 8 http://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html
+# OK: add classes!! alias java-repl="java -jar /opt/java-repl/javarepl.jar" # pretty bad
+# New JDK 7 Feature: Support for Dynamically Typed Languages in the Java VirtualM
+# java.sun.com/developer/technicalArticles/DynTypeLang/ -
+# WTF One way to take advantage of them is translating lambdas to invokedynamic bytecode instead of wrapping the lambda in an anonymous inner class which is what Java 8 is doing (for some lambdas which cannot be translated with invokestatic which will be a static method)
+
 
 # VIA JAVA FILES: https://github.com/headius/rubyflux
 

@@ -74,6 +74,15 @@ class File
     raise SecurityError "cannot delete files"
     #FileUtils.remove_dir(to_path, true)
   end
+
+  def self.list(dir)
+    Dir.entries(dir)-['.','..']
+  end
+
+  def self.ls(dir)
+    Dir.entries(dir)-['.','..']
+  end
+
 end
 
 class Dir
@@ -81,6 +90,21 @@ class Dir
     path
   end
 
+  def self.list(dir)
+    Dir.entries(dir)-['.','..']
+  end
+
+  def self.ls(dir)
+    Dir.entries(dir)-['.','..']
+  end
+
+  def list
+    entries(self)
+  end
+
+  def ls
+    entries(self)
+  end
 
   def files
     to_a
@@ -330,6 +354,16 @@ class FalseClass
 end
 
 class String
+
+  def fix_encoding
+    require 'iconv' unless String.method_defined?(:encode)
+    if String.method_defined?(:encode)
+      return self.encode!('UTF-8', 'UTF-8', :invalid => :replace)
+    else
+      ic = Iconv.new('UTF-8', 'UTF-8//IGNORE')
+      return ic.iconv(self)
+    end
+  end
 
   def c
     quoted

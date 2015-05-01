@@ -2,7 +2,6 @@
 require_relative "TreeBuilder"
 require_relative "exceptions"
 require_relative "extensions"
-# encoding: utf-8
 
 module EnglishParserTokens #< MethodInterception
   include TreeBuilder
@@ -315,7 +314,7 @@ module EnglishParserTokens #< MethodInterception
 
 
   def method_tokens
-    ['how to', 'function', 'definition for', 'definition of', 'define', 'method for', 'method', 'func', 'def',
+    ['how to', 'function','fun','ƒ','definition for', 'definition of', 'define', 'method for', 'method', 'func', 'def',
      'in order to', '^to'] # <<< TO == DANGER!! to be or not to be
     # is defined as
     #

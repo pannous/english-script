@@ -62,10 +62,11 @@ int main ( int argc, char ** argv) 	{
     pf("OK, starting program\n");
 	result=rb_protect( run, 0, &error);// call our stuff rb_protect'ed
 //    result=run(0);
-	if(result!=0 && result!=nil && result!=false)p(result);
+//	if(result!=0 && result!=nil && result!=false)// not for native methods like printf!
+//	    p(result);
 	if(error!=0){
-	printf("Ruby ERROR %d\n",error);
-	perror("Ruby ERROR ");
+        printf("Ruby ERROR %d\n",error);
+        perror("Ruby ERROR ");
 //	rb_vm_print_current_exception();
 	// p(get_global_variable("$!"));
 //	pf("rb_errinfo %lx",rb_errinfo());

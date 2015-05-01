@@ -24,7 +24,7 @@ class EmitterTest < ParserBaseTest
     # @parser.full_tree
     # NativeEmitter.new.emit interpretation,run:true
     # assert_result_is x,r # Make sure that at least the interpretation works
-    assert_equals last_result(parse_tree(x,emit:true)),r #parse_tree(r,emit:true)
+    assert_equals last_result(parse_tree(x,true)),r #parse_tree(r,emit:true)
   end
 
   def test_js_emitter #NEEDS TREE

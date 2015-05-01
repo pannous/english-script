@@ -1,6 +1,30 @@
-# http://ironruby.net/ # 1.1.3 released on 2011-3-13 DON't USE!!
-# VIA JAVA! OK with java 8 http://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html
-# VIA CLOSURE(+JAVA) !!!! https://github.com/richhickey/clojure-clr
+# .net (roslyn) OPEN source OK
+# StatementSyntax statement=Syntax.ParseStatement("for (int i = 0; i < 10; i++) { }");
+# http://www.codeproject.com/Articles/113169/C-As-A-Scripting-Language-In-Your-NET-Applications
+# http://www.csscript.net/?
+
+# The Dynamic Language Runtime (DLR) from Microsoft runs on top of the Common Language Runtime
+
+# Microsoft Research Common Compiler Infrastructure (CCI)
+# https://cciast.codeplex.com/
+
+# DEAD http://IRONRUBY.net/ # 1.1.3 released on 2011-3-13 DON't USE!!
+
+# IRONPYTHON is (relatively) alive! LOL and 3 times faster than java (JYTHON)!!!
+# time mono ipy.exe exit
+# real	0m1.156s
+
+# Boo naja (JVM support coming soon) why not python?
+# Fantom (.net+jvm!!) Typing discipline static, dynamic
+
+# me> csharp
+# Mono C# REPL Shell, type "help;" for help
+#
+# Enter statements below.
+# csharp>
+
+
+# VIA CLOSURE(+JAVA) !!!! https://github.com/clojure/clojure-clr  Dynamic Language Runtime (DLR).
 
 # OR vi LLVM: llc -march=msil  DEPRECATED!!!!!!
 # Going from C# or MSIL (CIL) to LLVM IR hasnt been done yet (or at least finished). You'd need a C# Front-End.

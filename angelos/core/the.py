@@ -1,0 +1,20 @@
+string=""
+OK="OK"
+interpret=False
+lines = []
+# super  # needs to be called by hand!
+# verbose=True
+verbose = angel.verbose() and not angel.raking()  # false
+very_verbose = verbose
+original_string = ""  # for string_pointer ONLY!!
+string = ""
+last_pattern = None
+rollback = []
+tree = []
+line_number = 0
+interpret_border = -1
+no_rollback_depth = -1
+rollback_depths = []
+max_depth = 160  # world this method here to resolve the string
+negated=False
+in_params=0

@@ -1,5 +1,18 @@
 #!/usr/bin/env ruby
 
+# via python:  PyPy compiled to 'JavaScript' (emscripten/asmjs)
+# :( !! Loading PyPy.js. It's big, so this might take a while :( http://pypyjs.org/
+
+# TypeScript is a free and open source programming language developed and maintained by Microsoft. It is a strict superset of JavaScript, and adds optional static typing and class-based object-oriented programming to the language.
+
+# VIA CLOSURE! https://github.com/clojure/clojurescript
+
+# obviously we don't want to use those obscure programming languages we just want to hijack that compiler pipeline
+# Dart (programming language), has its own VM, compiles to JS. Type system not very strict, supports mixins.
+
+# Jelly
+# Jelly is a tool for turning XML into executable code.
+
 # mac OSX OSA:
 # https://developer.apple.com/library/prerelease/mac/releasenotes/InterapplicationCommunication/RN-JavaScriptForAutomation/index.html
 
@@ -11,6 +24,8 @@
 # APIS:
 # contacts,mail,... Google's API Node JS Client
 # https://github.com/unconed/TermKit
+
+# later see Rhino + node ECMS 6
 
 "" "
 <!DOCTYPE html>

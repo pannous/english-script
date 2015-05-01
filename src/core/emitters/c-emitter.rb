@@ -5,7 +5,9 @@ class NativeCEmitter < Emitter
   # end
 
   def setter var, val
-    if var.owner #??
+    # if var.name already defined: don't VALUE!
+    # if var.name has Type: VALUE -> Type!
+    if var.owner # has holding object: x.y=z VS y=z
       "VALUE #{var.name}=set_property(#{var.owner},#{var},#{val.wrap});"
     else
       "VALUE #{var.name}=set(#{var.name.quoted},#{val.wrap});"
@@ -18,8 +20,10 @@ class NativeCEmitter < Emitter
   # end
 
   def map_method meth
-    return "-" if meth=="minus"
     return "+" if meth=="plus"
+    return "-" if meth=="minus"
+    return "+" if meth=="add" # AND TYPE is primitive !!
+    return "-" if meth=="substract"
     # return "++" if meth=="increase"
     # return "--" if meth=="decrease"
     meth
@@ -89,6 +93,7 @@ class NativeCEmitter < Emitter
       exit!
     end
     result=`/tmp/main` if do_run
+    puts "RESULT "+result
     result.strip
   end
 

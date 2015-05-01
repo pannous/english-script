@@ -1,0 +1,26 @@
+<Module>
+    <body>
+        <For>
+            <target>
+                <Name ctx='Store' id='i'>
+                </Name>
+            </target>
+            <iter>
+                <Call>
+                    <func>
+                        <Name ctx='Load' id='range'>
+                        </Name>
+                    </func>
+                    <args>
+                        <Num n='10'>
+                        </Num>
+                    </args>
+                </Call>
+            </iter>
+            <body>
+                <Print nl='True' value='dbg'>
+                </Print>
+            </body>
+        </For>
+    </body>
+</Module>

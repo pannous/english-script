@@ -1,6 +1,23 @@
+# multi-platform :
+# haxe  IH GITT! OCAML!!  an open source toolkit based on a modern high level strictly typed programming language, a state-of-the-art light-speed cross-compiler, a complete cross-platform standard library, and ways to access to each platform's native capabilities Nickelodeon, TiVo, Zynga and Prezi.
+# clojure
+# python(!)
+# monkey
+# vala (active! source-to-source compiled to C (!) used by baobab! )
+
+
+# https://wiki.gnome.org/Projects/Vala/
+
+# obviously we don't want to use those obscure programming languages we just want to hijack that compiler pipeline
+
+# rubyast NICE, mirah , jruby
+# javac and .net (roslyn) OPEN source OK
+# https://github.com/dotnet/roslyn
+
+
 ANNOTATIONS: RUBY 'NO'
 # http://stackoverflow.com/questions/3157426/how-to-simulate-java-like-annotations-in-ruby/3157550#3157550
-PYTHON: 
+PYTHON:
 # https://www.python.org/dev/peps/pep-0484/ PYTHON 3 ONLY!!
 # def haul(item: Haulable, *vargs: PackAnimal) -> Distance:
 #   bla
@@ -67,7 +84,7 @@ JVM INSTR swap ;
 
 False, None, 0, '', [ ], {} are all false
 (if x y z)
-(loop while (test) do (f))                    
+(loop while (test) do (f))
 (dotimes (i n) (f i))                         for i in range(n): f(i)
 (loop for x in s do (f x))                    for x in s: f(x) ## works on any sequence
 (loop for (name addr salary) in db do ...)    for (name, addr, salary) in db: ...
@@ -87,5 +104,10 @@ False, None, 0, '', [ ], {} are all false
 
 
 
+require "rubyast"
+ast = RubyAST.parse("(string)", "x = 1") # OK (via SLIM java: jrubyparser-0.2.jar)
+source = RubyAST.to_source(ast)
+p ast
+p source
 
-
+# Ruby on Dart would probably not be any faster than Ruby on JVM, because you'd still have to implement mutable types and growable objects in pretty much the same way. Ruby on PyPy might be able to go farther, since the VM is designed for mutable types and growable objects, but you might have to sacrifice parallelism or accept that straight-line object-manipulating performance won't go all the way to a Java or Dart. Conversely, languages that make those type-static guarantees might be able to beat dynamic languages when running on dynamic language VMs (e.g. dart2js) for exactly the same reasons that they excel on their own VMs: they provide a more consistent view of the world, and offer no surprises to the VM that would hinder optimization. You trade dynamicity at the language level for predictability at the VM level.

@@ -42,7 +42,7 @@ module TreeBuilder
     # "subnode",
   end
 
-  # includes rather than ignore???? or EXPLICIT node construction!!!
+  # todo WHITELIST includes rather than ignore???? or EXPLICIT node construction!!!
   def ignore
     #"newline","newlines","newline?",
     #test_setter Should never be set ("")!?
@@ -65,7 +65,7 @@ module TreeBuilder
          "test_setter", "try_action", "method_missing", "endNode2", "no_rollback!", "raiseEnd",
          "string_pointer", "verbose", "try", "checkEnd", "to_source", "rest", "keywords",
          "starts_with?", "be_words", "no_keyword", "no_keyword_except", "prepositions", "variables_list", "the?",
-         "app_path", "escape_token", "operators", "newline_tokens",
+         "app_path", "escape_token", "operators", "newline_tokens", "should_not_start_with",
          "constants", "comment", "any_ruby_line", "quantifiers", "article"] #"call_is_verb",
   end
 

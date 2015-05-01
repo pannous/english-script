@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'bundler'
 gem 'wordnet'#,'~> 1.0.0'
 gem 'wordnet-defaultdb'
 gem 'rufus-scheduler'

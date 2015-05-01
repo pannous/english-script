@@ -53,6 +53,10 @@ class Function
     self.arguments.count
   end
 
+  def args
+    arguments
+  end
+
   def == x
     return false if not x.is_a? Function
     self.name==x.name &&
@@ -63,8 +67,13 @@ class Function
   end
 
   def call *args
-    # @parser. self.context.
-       EnglishParser.call_function self,args
+    # self.context.
+    # EnglishParser.call_function self,args
+    scope.call_function self,args
+  end
+
+  def eval *args
+    EnglishParser.call_function self,args
   end
 
 end

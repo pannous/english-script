@@ -1,20 +1,27 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
+Encoding.default_external="UTF-8"
 
-require_relative 'Interpretation'
-require_relative 'TreeBuilder'
-require_relative 'CoreFunctions'
-require_relative 'HelperMethods'
-require_relative 'english-tokens'
-require_relative 'power-parser'
-require_relative 'extensions'
-require_relative 'events'
+begin
+  require_relative 'Interpretation'
+  require_relative 'TreeBuilder'
+  require_relative 'CoreFunctions'
+  require_relative 'HelperMethods'
+  require_relative 'english-tokens'
+  require_relative 'power-parser'
+  require_relative 'extensions'
+  require_relative 'events'
 
-require_relative 'grammar/ruby_grammar'
-require_relative 'grammar/loops_grammar'
 
-require_relative 'bindings/shell/betty'
-require_relative 'bindings/native/native-scripting'
+  require_relative 'grammar/ruby_grammar'
+  require_relative 'grammar/loops_grammar'
+
+  require_relative 'bindings/shell/betty'
+  require_relative 'bindings/native/native-scripting'
+rescue
+  puts "Needs ruby 2.x"
+  puts "Trying mruby or rubinius fallback ..."
+end
 # require_relative 'bindings/common-scripting-objects'
 
 require 'linguistics'
@@ -38,22 +45,22 @@ class EnglishParser < Parser
 
   def initialize
     super
-    @interpret     =@did_interpret=true
-    @javascript    =''
-    @context       =''
-    @variables     ={}
+    @interpret =@did_interpret=true
+    @javascript =''
+    @context =''
+    @variables ={}
     @variableTypes ={}
     @variableValues={} #    ={nill: nil}
-    @svg           =[]
-    @lines         =[]
+    @svg =[]
+    @lines =[]
     # @bash_methods=["say"]
-    @c_methods     =['printf']
-    @ruby_methods  =['puts', 'print'] #"puts"=>x_puts !!!
-    @core_methods  =['show', 'now', 'yesterday', 'help'] #difference?
-    @methods       ={} # name->method-node
-    @OK            ='OK'
-    @result        =''
-    @listeners     =[]
+    @c_methods =['printf']
+    @ruby_methods =['puts', 'print'] #"puts"=>x_puts !!!
+    @core_methods =['show', 'now', 'yesterday', 'help'] #difference?
+    @methods ={} # name->method-node
+    @OK ='OK'
+    @result =''
+    @listeners =[]
   end
 
   def now
@@ -68,30 +75,30 @@ class EnglishParser < Parser
   # world this method here to resolve the @string
   def init strings
     @no_rollback_depth=-1
-    @line_number      =0
-    @lines            =strings if strings.is_a? Array
-    @lines            =strings.split("\n") if strings.is_a? String
-    @string           =@lines[0].strip # Postpone the problem
-    @original_string  =@string
-    @root             =nil
-    @nodes            =[]
-    @depth            =0
-    @lhs              =@rhs=@comp =nil
+    @line_number =0
+    @lines =strings if strings.is_a? Array
+    @lines =strings.split("\n") if strings.is_a? String
+    @string =@lines[0].strip # Postpone the problem
+    @original_string =@string
+    @root =nil
+    @nodes =[]
+    @depth =0
+    @lhs =@rhs=@comp =nil
     # @result           =nil NOO, keep old!
   end
 
 
   def interpretation
     @interpretation=Interpretation.new
-    i              = @interpretation #  Interpretation.new
+    i = @interpretation #  Interpretation.new
     super # set tree, nodes
-    i.javascript  =@javascript
-    i.context     =@context
-    i.methods     =@methods
+    i.javascript =@javascript
+    i.context =@context
+    i.methods =@methods
     i.ruby_methods=@ruby_methods
-    i.variables   =@variables
-    i.svg         =@svg
-    i.result      =@result
+    i.variables =@variables
+    i.svg =@svg
+    i.result =@result
     i
   end
 
@@ -129,7 +136,7 @@ class EnglishParser < Parser
     require_relative "bindings/js/javascript_auto_libs"
     # require_relative "javascript_auto_libs"
     dependency.gsub!(/.* /, "") # require javascript bla.js
-    mapped    =$javascript_libs[dependency]
+    mapped =$javascript_libs[dependency]
     dependency=mapped if mapped
     @javascript<<"javascript_require(#{dependency});"
   end
@@ -145,7 +152,7 @@ class EnglishParser < Parser
     match=@string.match(x)
     match||=@string.match(/^\s*#{x}/im)
     raise NotMatching(x) if not match
-    @string       =match.post_match.strip
+    @string =match.post_match.strip
     @current_value=match
   end
 
@@ -164,20 +171,20 @@ class EnglishParser < Parser
   #  (:use [native])
   def requirements
     require_types=%w[javascript script js gcc ruby gem header c cocoa native] # todo c++ c# not tokened!
-    type         =__? require_types
+    type =__? require_types
     __ 'dependencies', 'dependency', 'depends on', 'depends', 'requirement', 'requirements', 'require', 'required',
        'include', 'using',
        'uses', 'needs', 'requires'
     type||=__? require_types
     __? %w[file script header source src]
     __? 'gem', 'package', 'library', 'module', 'context'
-    type      ||= __? require_types
+    type ||= __? require_types
     # source? really?
     dependency=quote?
     no_rollback! 5
     # list_of?{packages}
     dependency||= word #regex "\w+(\/\w*)*(\.\w*)*\.?\*?" # rest_of_line
-    version   =maybe { package_version }
+    version =maybe { package_version }
     includes dependency, type, version if check_interpret rescue nil
     return @result={dependency: {type: type, package: dependency, version: version}}
   end
@@ -219,7 +226,7 @@ class EnglishParser < Parser
     return parent_node if $use_tree and not check_interpret
     @result=result
     if $use_tree and @interpret
-      tree   =parent_node
+      tree =parent_node
       @result=tree.eval_node @variableValues, result if tree rescue result #wasteful!!
     end
     @result
@@ -279,14 +286,14 @@ class EnglishParser < Parser
   def block #type
     start_block #NEWLINE ALONE == START!!!?!?!
     @original_string=@string #REALLY??
-    start           =pointer
-    s               =statement #BUUUUUG~~~!!!
-    content         =pointer-start
-    end_of_block    =end_block? #tokens? done_words
+    start =pointer
+    s =statement #BUUUUUG~~~!!!
+    content =pointer-start
+    end_of_block =end_block? #tokens? done_words
     if not end_of_block
       end_of_statement # danger might act as block end!
       star {#One or more
-        s       =statement||s
+        s =statement||s
         content =pointer-start
         end_of_statement
       }
@@ -316,7 +323,7 @@ class EnglishParser < Parser
     raiseEnd
     if starts_with? t
       @current_value=t.strip
-      @string       =@string[t.length..-1]
+      @string =@string[t.length..-1]
       if /^\w/.match(@string) and /^\w/.match(t)
         raise NotMatching.new(t+" (strings needs whitespace, special chars don't)")
       else
@@ -343,10 +350,11 @@ class EnglishParser < Parser
         match=string.match(/^\s*#{t}/im)
         next if match and match.post_match.match /^\w/ # next must be space or so!
       else #special char
+        string=string.fix_encoding
         match=string.match(/^\s*#{escape_token t}/im)
       end
       if match
-        x       =@current_value=t
+        x =@current_value=t
         @string =match.post_match.strip
         @string2=@string
         return x
@@ -356,6 +364,7 @@ class EnglishParser < Parser
   end
 
   def escape_token t
+    return t if t=='ƒ'
     t.gsub(/([^\w])/, "\\\\\\1")
   end
 
@@ -377,17 +386,17 @@ class EnglishParser < Parser
 
   def nth_item # Also redundant with property evaluation (But okay as a shortcut)
     set=_? 'set'
-    n  =__ numbers+['first', 'last', 'middle']
+    n =__ numbers+['first', 'last', 'middle']
     _? '.'
     type=__ ['item', 'element', 'object', 'word', 'char', 'character']+type_names # noun
     __ ['in', 'of']
     l =resolve(true_variable?)||list?||quote
     return @result=l.join('')[n.parse_integer-1] if type.match(/^char/)
-    l      =l.select { |i| i.is_a type } if type_names.contains type
+    l =l.select { |i| i.is_a type } if type_names.contains type
     @result=l.item(n) # -1 AppleScript style !!! BUT list[0] !!!
     if set
       _ "to"
-      val                 =endNode
+      val =endNode
       l[n.parse_integer-1]=do_evaluate(val)
     end
     return @result
@@ -400,7 +409,7 @@ class EnglishParser < Parser
   # DANGER: INTERFERES WITH LIST?, NAH, NO COMMA: {x > 3}
   def functionalSelector
     _ '{'
-    xs  =true_variable
+    xs =true_variable
     crit=selector
     _ '}'
     filter(xs, crit)
@@ -416,7 +425,7 @@ class EnglishParser < Parser
     #all<<expression(start_brace)
     # $verbose=true #debug
     @inside_list=true
-    first       =endNode?
+    first =endNode?
     @inside_list=false if not first
     raise_not_matching if not first
     all =[first]
@@ -428,7 +437,7 @@ class EnglishParser < Parser
     _ ']' if start_brace=='['
     _ '}' if start_brace=='{'
     _ ')' if start_brace=='('
-    @inside_list  =false
+    @inside_list =false
     @current_value=all
     all
   end
@@ -437,7 +446,7 @@ class EnglishParser < Parser
     must_contain '--'
     v=variable
     _ '--'
-    @result           =do_evaluate(v, v.type)+1 if @interpret
+    @result =do_evaluate(v, v.type)+1 if @interpret
     @variableValues[v]=v.value=@result
   end
 
@@ -446,7 +455,7 @@ class EnglishParser < Parser
     v=variable
     _ '++'
     return parent_node if not @interpret
-    @result                =do_evaluate(v, v.type)+1
+    @result =do_evaluate(v, v.type)+1
     @variableValues[v.name]=v.value=@result
   end
 
@@ -456,26 +465,26 @@ class EnglishParser < Parser
 
   def plusEqual
     must_contain '|=', '&=', '&&=', '||=', '+=', '-=', '/=', '^=', '%=', '#=', '*=', '**=', '<<', '>>'
-    v  =variable
+    v =variable
     mod=__ '|=', '&=', '&&=', '||=', '+=', '-=', '/=', '^=', '%=', '#=', '*=', '**=', '<<', '>>'
     val=v.value
     exp=expressions # value
     arg=do_evaluate(exp, v.type)
     return parent_node if not check_interpret
-    @result                =val|arg if mod=='|='
-    @result                =val||arg if mod=='||='
-    @result                =val&arg if mod=='&='
-    @result                =val&&arg if mod=='&&='
-    @result                =val+arg if mod=='+='
-    @result                =val-arg if mod=='-='
-    @result                =val*arg if mod=='*='
-    @result                =val**arg if mod=='**='
-    @result                =val/arg if mod=='/='
-    @result                =val%arg if mod=='/='
-    @result                =val<<arg if mod=='<<'
-    @result                =val>>arg if mod=='>>'
+    @result =val|arg if mod=='|='
+    @result =val||arg if mod=='||='
+    @result =val&arg if mod=='&='
+    @result =val&&arg if mod=='&&='
+    @result =val+arg if mod=='+='
+    @result =val-arg if mod=='-='
+    @result =val*arg if mod=='*='
+    @result =val**arg if mod=='**='
+    @result =val/arg if mod=='/='
+    @result =val%arg if mod=='/='
+    @result =val<<arg if mod=='<<'
+    @result =val>>arg if mod=='>>'
     @variableValues[v.name]=@result
-    v.value                =@result
+    v.value =@result
   end
 
   def swift_hash
@@ -487,7 +496,7 @@ class EnglishParser < Parser
       key=word
       __? '"', "'"
       _ ':'
-      @inside_list       =true
+      @inside_list =true
       # h[key] = expression0 # no
       h[key.to_s.to_sym] = expressions # no
     }
@@ -516,11 +525,11 @@ class EnglishParser < Parser
     star {
       _? ';' or _ ',' if h.length>0 # not h.blank?
       quoted=__? '"', "'" # optional
-      key   =word
+      key =word
       __ '"', "'" if quoted
       _? '=>' or _? '=' or #  todo a{b=c} vs a{b:c} Property versus hash !!
           starts_with?("{") or _? '=>' or _ ':'
-      @inside_list       =true
+      @inside_list =true
       # h[key] = expression0 # no
       h[key.to_s.to_sym] = expressions # no
     }
@@ -545,7 +554,7 @@ class EnglishParser < Parser
   # keyword expression is reserved by ruby/rails!!! => use hax0r writing or plural
   def expressions fallback=nil
     # raiseNewline ?
-    start  =pointer
+    start =pointer
     @result= ex =any {#expression}
       maybe { algebra } ||
           maybe { json_hash } ||
@@ -579,7 +588,7 @@ class EnglishParser < Parser
     return false if @in_pipe
     must_contain "|"
     @in_pipe=true
-    a       =statement
+    a =statement
     _ '|'
     no_rollback!
     c=true_method or bash_action
@@ -590,7 +599,7 @@ class EnglishParser < Parser
 
   def statement
     raiseNewline #really? why?
-    x           =any {#statement}
+    x =any {#statement}
       return @NEWLINE if checkNewline
       maybe { loops }||
           maybe { if_then_else } ||
@@ -620,10 +629,10 @@ class EnglishParser < Parser
     # obj=maybe { endNode } # a sine wave  TODO: invariantly get as argument book.close==close(book)
     _? '('
     arg_nr=1
-    args  =star {
+    args =star {
       @in_params=true
-      a         =arg(arg_nr)
-      arg_nr    =arg_nr+1
+      a =arg(arg_nr)
+      arg_nr =arg_nr+1
       _? ','
       a
     } # over an interval
@@ -634,7 +643,8 @@ class EnglishParser < Parser
     allow_rollback # for
     dont_interpret!
     b=action_or_block # define z as 7 allowed !!!
-    f=Function.new name: name, arguments: args, return_type: return_type, body: b
+    args=[args] if args.is_a?(Argument)
+    f=Function.new name: name, arguments: args, return_type: return_type, body: b, scope: self
     #,modifiers:modifiers, annotations:annotations
     @methods[name]=f||parent_node||b rescue nil # with args! only in tree mode!!
     f || name
@@ -674,10 +684,10 @@ class EnglishParser < Parser
 
 
   def if_then_else
-    ok      =maybe { if_then } #todo : if 1 then false else 2 => 2 :(
-    ok      ||=action_if
-    ok      = :false if ok==false
-    o       =otherwise? || :false
+    ok =maybe { if_then } #todo : if 1 then false else 2 => 2 :(
+    ok ||=action_if
+    ok = :false if ok==false
+    o =otherwise? || :false
     @result = ok!="OK" ? ok : o
   end
 
@@ -779,7 +789,7 @@ class EnglishParser < Parser
     #args=" "+args+" "
     for variable in @variableValues.keys
       variable=variable.join(' ') if variable.is_a? Array #HOW!?!?!
-      value   =@variableValues[variable]||'nil'
+      value =@variableValues[variable]||'nil'
       #args.gsub!(/\$#{variable}/, "#{variable}") # $x => x !!
       args.gsub!(/.\{#{variable}\}/, "#{value}") #  ruby style #{x} ;}
       args.gsub!(/\$#{variable}$/, "#{value}") # php style $x
@@ -804,9 +814,9 @@ class EnglishParser < Parser
     # args=substitute_variables rest_of_line
     if check_interpret
       begin
-        the_call       =ruby_method+' '+args.to_s
+        the_call =ruby_method+' '+args.to_s
         print_variables=@variableValues.inject("") { |s, v| "#{v[0]}=#{v[1].is_a(String) ? '"'+v[1]+'"' : v[1]};"+s }
-        @result        =eval(print_variables+ the_call)||''
+        @result =eval(print_variables+ the_call)||''
         verbose the_call+'  called successfully with result '+@result.to_s
         return result
       rescue SyntaxError => e
@@ -849,7 +859,7 @@ class EnglishParser < Parser
   def has_args method, clazz=Object, assume=false
     #todo MATCH!   [[:req, :x]] -> required: x
     return method.arity>0 if method.is_a? Method
-    clazz         =clazz.class if not clazz.is_a? Class #lol
+    clazz =clazz.class if not clazz.is_a? Class #lol
     object_method = clazz.method(method) if clazz.method_defined?(method) rescue false
     object_method = clazz.public_instance_method(method) if not object_method rescue false
     if object_method # Bad approach:  that might be another method Tree.beep!
@@ -909,7 +919,7 @@ class EnglishParser < Parser
   # read mail or bla(1) or a.bla(1)  vs ruby_method_call !!
   def generic_method_call obj=nil
     #verb_node
-    method      =true_method
+    method =true_method
     start_brace =__? '(', '{' # '[', list and closure danger: index
     # todo  ?merge with list?
     no_rollback! if start_brace
@@ -925,9 +935,9 @@ class EnglishParser < Parser
     assume_args=true #!starts_with("of")  # true    #<< Redundant with property eventilation!
     if has_args(method, obj, assume_args)
       @current_value=nil
-      @in_args      =true
-      args          =star { arg }
-      args          =obj if not args #and c_method or static etc
+      @in_args =true
+      args =star { arg }
+      args =obj if not args #and c_method or static etc
       # __? ',','and'
     else
       more=_? ','
@@ -951,7 +961,7 @@ class EnglishParser < Parser
   def applescript
     tokens 'tell application', 'tell app'
     no_rollback!
-    app    =quote
+    app =quote
     @result="tell application \"#{app}\""
     if _? 'to'
       @result+=' to '+rest_of_line() # "end tell"
@@ -971,7 +981,7 @@ class EnglishParser < Parser
   def assert_that
     _ 'assert'
     _? 'that'
-    what   =rest_of_line
+    what =rest_of_line
     @result=assert what
   end
 
@@ -1076,15 +1086,15 @@ class EnglishParser < Parser
     return call_function b, args if b.is_a? Function
     b=b.content if b.is_a? TreeNode
     return b if not b.is_a? String # OR ... !!!
-    block_parser               =EnglishParser.new
-    block_parser.variables     =@variables
+    block_parser =EnglishParser.new
+    block_parser.variables =@variables
     block_parser.variableValues=@variableValues
-    args                       ={arg: args} if not args.is_a? Hash
+    args ={arg: args} if not args.is_a? Hash
     for arg, val in args
       v=block_parser.variables[arg]
       if v
-        v                               =v.clone
-        v.value                         =val
+        v =v.clone
+        v.value =val
         block_parser.variables[arg.to_s]=v # to_sym todo NORM in hash!!!
       else
         block_parser.variables[arg.to_s]=Variable.new name: arg, value: val
@@ -1110,12 +1120,12 @@ class EnglishParser < Parser
     __? 'around', 'about'
     # require 'chronic_duration'
     # WAH! every second  VS  every second hour WTF ! lol
-    n    =number? || 1 # every [1] second
-    _to  = maybe { tokens 'to', 'and' }
-    _to  =number if _to
+    n =number? || 1 # every [1] second
+    _to = maybe { tokens 'to', 'and' }
+    _to =number if _to
     _unit=__ time_words # +["am"]
-    _to  ||= __? 'to', 'and'
-    _to  ||=number? if _to
+    _to ||= __? 'to', 'and'
+    _to ||=number? if _to
     return Interval.new(_kind, n, _to, _unit)
   end
 
@@ -1150,7 +1160,7 @@ class EnglishParser < Parser
 #  until_condition ,:while_condition ,:as_long_condition
 
 
-  def assure_same_type var,type
+  def assure_same_type var, type
     oldType=@variableTypes[var.name]
     # begin
     raise WrongType.new "#{oldType} #{type}" if oldType and type and not type<=oldType
@@ -1172,7 +1182,7 @@ class EnglishParser < Parser
   end
 
   def boolean
-    b      =tokens 'true', 'false'
+    b =tokens 'true', 'false'
     @result=(b=='true') ? :true : :false
     # @result=b=='true'
     @result
@@ -1205,15 +1215,15 @@ class EnglishParser < Parser
   def declaration
     should_not_contain '='
     # must_contain_before  be_words+['set'],';'
-    a   =the?
+    a =the?
     mod =modifier?
     type=typeNameMapped
     tokens? 'var', 'val', 'value of'
-    mod          ||=modifier? # public static ...
-    var          =property? || variable(a)
-    assure_same_type var,type
+    mod ||=modifier? # public static ...
+    var =property? || variable(a)
+    assure_same_type var, type
     # var.type     ||=type
-    var.final    =const.contains(mod)
+    var.final =const.contains(mod)
     var.modifier =mod
     return var
   end
@@ -1223,25 +1233,25 @@ class EnglishParser < Parser
   def setter
     must_contain_before ['>', '<', '+', '-', '|', '/', '*'], be_words+['set']
     _let=no_rollback! if let?
-    a   =the?
+    a =the?
     mod =modifier?
     type=typeNameMapped?
     tokens? 'var', 'val', 'value of'
-    mod  ||=modifier? # public static ...
-    var  =property? || variable(a)
+    mod ||=modifier? # public static ...
+    var =property? || variable(a)
     # _?("always") => pointer
     setta=_?('to') || be # or not_to_be 	contain -> add or create
-    val  =adjective? || expressions
+    val =adjective? || expressions
     no_rollback!
     val=[val].flatten if setta=='are' or setta=='consist of' or setta=='consists of'
     assure_same_type_overwrite var, val if _let
     # var.type||=type||val.class #eval'ed! also x is an integer
-    assure_same_type var,type||val.class
+    assure_same_type var, type||val.class
     if not @variableValues.contains(var.name) or mod!='default' and @interpret
       @variableValues[var.name] =val
     end
-    var.value    =val
-    var.final    =const.contains(mod)
+    var.value =val
+    var.final =const.contains(mod)
     var.modifier =mod
     var.owner.send(var.name+"=", val) if var.is_a? Property #todo
     @result =val
@@ -1272,10 +1282,10 @@ class EnglishParser < Parser
 
   # already existing
   def variable a=nil
-    a  ||=article?
-    a  =nil if a!='a' #hack for a variable
+    a ||=article?
+    a =nil if a!='a' #hack for a variable
     typ=typeNameMapped? # DOESN'T BELONG HERE!  e.g. int i++
-    p  =__? possessive_pronouns
+    p =__? possessive_pronouns
     # all=p ? [p] : []
     all=one_or_more { word } rescue (a=='a' ? all=[a] : (raise NotMatching))
     raise_not_matching if not all or all[0]==nil
@@ -1286,7 +1296,7 @@ class EnglishParser < Parser
     oldVal=@variableValues[name]
     # {variable:{name:name,type:typ,scope:@current_node,module:current_context}}
     return @variables[name] if @variables[name]
-    @result         =Variable.new name: name, type: typ, scope: @current_node, module: current_context, value: oldVal
+    @result =Variable.new name: name, type: typ, scope: @current_node, module: current_context, value: oldVal
     @variables[name]=@result
     # @variables[p+' '+name]=@result if p
     @result
@@ -1300,7 +1310,7 @@ class EnglishParser < Parser
     #return false if starts_with? keywords
     match=@string.match(/^\s*[a-zA-Z]+[\w_]*/)
     if (match)
-      @string       =@string[match[0].length..-1].strip
+      @string =@string[match[0].length..-1].strip
       @current_value=match[0].strip
       return match[0]
     end
@@ -1384,8 +1394,8 @@ class EnglishParser < Parser
           maybe { nod }
       #rest_of_line # TOOBIG HERE!
     }
-    typ    =typeNameMapped if _?('as')
-    x      =cast(x, typ) if typ
+    typ =typeNameMapped if _?('as')
+    x =cast(x, typ) if typ
     x
   end
 
@@ -1412,7 +1422,7 @@ class EnglishParser < Parser
     a=variable?
     return Argument.new name: a.name, type: a.type, preposition: pre, position: position if a
     type=typeNameMapped?
-    v   =endNode
+    v =endNode
     name=pre+ (a ? a.name : "")
     Argument.new preposition: pre, name: name, type: type, position: position, value: v
   end
@@ -1616,7 +1626,7 @@ class EnglishParser < Parser
         count=count+1 if @result # "many", "most" : continue count
       end
 
-      min    =@lhs.length/2
+      min =@lhs.length/2
       @result=count>min if quantifier=='most'||quantifier=='many'
       @result=count>=1 if quantifier=='at least one'
       # todo "at least two","at most two","more than 3","less than 8","all but 8"
@@ -1691,10 +1701,10 @@ class EnglishParser < Parser
   end
 
   def condition
-    start     =pointer
-    brace     =_? '('
-    negated   =_? 'not'
-    brace     ||=_? '(' if negated
+    start =pointer
+    brace =_? '('
+    negated =_? 'not'
+    brace ||=_? '(' if negated
     # @a=endNode # NO LISTS (YET)! :(
     quantifier=maybe { tokens quantifiers } # vs selector!
     element_in? if quantifier # -> selector!
@@ -1811,7 +1821,7 @@ class EnglishParser < Parser
     match=@string.match(/^\s*(\w+)ing/)
     return false if not match
     @string=match.post_match
-    pr     =tokens? prepositions # wrapped in
+    pr =tokens? prepositions # wrapped in
     endNode? if pr # silver
     @current_value=match[1]
     @current_value
@@ -1821,7 +1831,7 @@ class EnglishParser < Parser
     match=@string.match(/^\s*(\w+)ed/)
     return false if not match
     @string=match.post_match
-    pr     =tokens? prepositions if not checkEndOfLine # wrapped in
+    pr =tokens? prepositions if not checkEndOfLine # wrapped in
     endNode? if pr and not checkEndOfLine # silver
     @current_value=match[1]
     @current_value
@@ -1835,8 +1845,8 @@ class EnglishParser < Parser
     return false if x.nil?
     verbose 'do_evaluate_property '+x.to_s+' '+y.to_s
     @result=nil #delete old!
-    x      ='class' if x=='type' # !@!@*)($&@) NOO
-    x      =x.value_string if x.is_a? TreeNode
+    x ='class' if x=='type' # !@!@*)($&@) NOO
+    x =x.value_string if x.is_a? TreeNode
     return @result=do_send(y, x, nil) rescue nil #try 1
     return @result=eval(y+'.'+x) rescue nil #try 1
     x=x.join(' ') if x.is_a? Array
@@ -1844,7 +1854,7 @@ class EnglishParser < Parser
     y=y.to_s #if y.is_a? Array
     return @result=eval(y+'.'+x) rescue nil #try 3
     all=x.to_s+' of '+y.to_s
-    x  =x.gsub(' ', ' :')
+    x =x.gsub(' ', ' :')
     begin
       @result=eval(y+'.'+x) rescue nil
       @result=eval("'"+y+"'."+x) if not @result rescue SyntaxError #string method
@@ -1909,15 +1919,24 @@ class EnglishParser < Parser
     EnglishParser.self_modifying method # -lol
   end
 
-# INTERPRET only,  todo cleanup method + argument matching + concept
+  def match_arguments(method, args0)
+    method=@methods[method]
+    for a in method.args
+      variables[a.name]=args0 # only for function context !!!
+    end
+    method
+  end
+
+# INTERPRET only,  todo cleanup method + argument matching + concept ('subparser ok?')
   def do_send obj0, method, args0
-    return false if not check_interpret
-    return false if not method
+    return false if not check_interpret rescue
+        return false if not method
 
     # try direct first!
     # y=y[0] if y.is_a? Array and y.count==1 # SURE??????? ["noo"].length
-    if @methods.contains method
-      return @result=do_execute_block(@methods[method].body, args0)
+    if @methods.contains method # 'internal'
+      method=match_arguments(method, args0)
+      return @result=do_execute_block(method.body, args0)
     end
 
     obj =method.owner if method.is_a? Method
@@ -1925,7 +1944,7 @@ class EnglishParser < Parser
     # obj.map{|x| x.value}
     args=args0
     args=args.name_or_value if args.is_a? Argument
-    args=args.map &:name_or_value if args.is_a? Array and args[0].is_a? Argument
+    args=args.map { |x| x.name_or_value } if args.is_a? Array and args[0].is_a? Argument
     args=eval_string(args) rescue NoMethodError
     args.replace_numerals! if args and args.is_a? String
     # args.strip! if args and args.is_a?String NO! a + " " etc!
@@ -1951,7 +1970,7 @@ class EnglishParser < Parser
       @result=args[1].send(method) if has_args method, obj if (args[0]=='of') rescue NoMethodError #rest of x
     else
       if (obj==Object)
-        m      =method(method_name)
+        m =method(method_name)
         @result=m.call || :nill unless has_args method, obj, false rescue NoMethodError
         @result=m.call(args) || :nill if has_args method, obj, true rescue NoMethodError
       else
@@ -1964,7 +1983,7 @@ class EnglishParser < Parser
 
     # => selfModify todo
     if obj0||args and self_modifying method
-      name                  =(obj0||args).to_sym.to_s #
+      name =(obj0||args).to_sym.to_s #
       @variables[name].value=@result #rescue nil
       @variableValues[name] =@result
     end rescue nil
@@ -1977,10 +1996,10 @@ class EnglishParser < Parser
   end
 
   def do_compare a, comp, b
-    a   =eval_string(a) # NOT: "a=3; 'a' is 3" !!!!!!!!!!!!!!!!!!!!   Todo ooooooo!!
-    b   =eval_string(b)
-    a   =a.to_f if a.match(/^\+?\-?\.?\d/) and b.is_a? Numeric rescue a
-    b   =b.to_f if b.match(/^\+?\-?\.?\d/) and a.is_a? Numeric rescue b
+    a =eval_string(a) # NOT: "a=3; 'a' is 3" !!!!!!!!!!!!!!!!!!!!   Todo ooooooo!!
+    b =eval_string(b)
+    a =a.to_f if a.match(/^\+?\-?\.?\d/) and b.is_a? Numeric rescue a
+    b =b.to_f if b.match(/^\+?\-?\.?\d/) and a.is_a? Numeric rescue b
     comp=comp.strip if comp.is_a? String #what else
     if comp=='smaller'||comp=='tinier'||comp=='comes before'||comp=='<'
       return a<b
@@ -2011,10 +2030,10 @@ class EnglishParser < Parser
     list=get_iterator(list) if not list.is_a? Array
     if $use_tree
       method=criterion[:comparative]||criterion[:comparison]||criterion[:adjective]
-      args  =criterion[:endNode]||criterion[:endNoun]||criterion[:expressions]
+      args =criterion[:endNode]||criterion[:endNoun]||criterion[:expressions]
     else
       method=@comp||criterion
-      args  =@rhs
+      args =@rhs
     end
     list.select { |i|
       do_compare(i, method, args) rescue false #REPORT BUGS!!!
@@ -2084,7 +2103,7 @@ class EnglishParser < Parser
   end
 
   def any_ruby_line
-    line   =@string
+    line =@string
     @string=@string.gsub(/.*/, '')
     checkNewline
     line
@@ -2131,12 +2150,12 @@ class EnglishParser < Parser
     _ '['
     i=endNode
     _ ']'
-    set    =_? '='
-    set    =expressions if set
+    set =_? '='
+    set =expressions if set
     # @result=v.send :index,i if check_interpret
     # @result=do_send v,:[], i  if check_interpret
     # @result=do_send(v,:[]=, [i, set]) if set and check_interpret
-    va     =resolve(v)
+    va =resolve(v)
     @result=va.send :[], i if check_interpret #old value
     @result=va.send :[]=, i, set if set and check_interpret
     v.value=va if set and v.is_a? Variable
@@ -2171,7 +2190,7 @@ class EnglishParser < Parser
 
   def jeannie request
     jeannie_api='https://weannie.pannous.com/api?'
-    params     ='login=test-user&out=simple&input='
+    params ='login=test-user&out=simple&input='
     #raise "empty evaluation" if @current_value.blank?
     download jeannie_api+params+URI.encode(request)
   end
@@ -2220,12 +2239,12 @@ class EnglishParser < Parser
       @line_number =@line_number+1 if @line_number<@lines.count
       if @line_number>=@lines.count #!
         @original_string=''
-        @string         ='' #done!
+        @string ='' #done!
         return @NEWLINE
       end
       #raise EndOfDocument.new if @line_number==@lines.count
-      @string         =@lines[@line_number].strip #LOOSE INDENT HERE!!!
-      @string         =@string.gsub(/\/\/.*/, "") # todo : Grab comment
+      @string =@lines[@line_number].strip #LOOSE INDENT HERE!!!
+      @string =@string.gsub(/\/\/.*/, "") # todo : Grab comment
       @original_string=@string||''
       checkNewline
       return @NEWLINE
@@ -2260,7 +2279,7 @@ class EnglishParser < Parser
 
   def rest_of_statement
     @current_value=@string.match(/(.*?)([\r\n;]|done)/)[1].strip
-    @string       =@string[@current_value.length..-1]
+    @string =@string[@current_value.length..-1]
     return @current_value
   end
 
@@ -2268,12 +2287,12 @@ class EnglishParser < Parser
   def rest_of_line
     if not @string.match(/(.*?)[;\n]/)
       @current_value=@string
-      @string       =nil
+      @string =nil
       return @current_value
     end
-    match         =@string.match(/(.*?)([;\n].*)/) # Need to preserve ;\n Characters for 'end of statement'
+    match =@string.match(/(.*?)([;\n].*)/) # Need to preserve ;\n Characters for 'end of statement'
     @current_value=match[1]
-    @string       =match[2]
+    @string =match[2]
     @current_value.strip!
     return @current_value
   end
@@ -2356,7 +2375,7 @@ class EnglishParser < Parser
   def self.startup
     return start_shell if ARGV.count==0 #and not ARGF
     @all=ARGV.join(' ')
-    a   =ARGV[0].to_s
+    a =ARGV[0].to_s
     # read from commandline argument or pipe!!
     @all=ARGF.read||File.read(a) rescue a
     # @all=File.read(`pwd`.strip+"/"+a) if @all.is_a?(String) and @all.end_with? ".e"
@@ -2367,7 +2386,7 @@ class EnglishParser < Parser
       next if line.blank?
       begin
         interpretation=EnglishParser.new.parse line.encode('utf-8')
-        result        =interpretation.result
+        result =interpretation.result
         puts interpretation.tree if $use_tree
         puts result if result and not result.empty? and not result==:nill
       rescue NotMatching
