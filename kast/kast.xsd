@@ -28,8 +28,12 @@
 
     <element name="let" type="a:let"/>
     <element name="var" type="a:let"/>
-    <element name="set" type="a:let"/>
+    <element name="assign" type="a:let"/>
     <!--nicht ganz das gleiche!-->
+
+    <!--<element name="set" type="a:MATH.SET!!!"/>-->
+
+    <!--<element name="assignment" type="a:let"/>-->
     <!--<element name="set_variable" type="a:let"/>-->
     <!--<element name="defvar" type="a:let"/>-->
     <!--Mark element as deprecated in XSD ? => annotation only 'workaround'-->

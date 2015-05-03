@@ -28,8 +28,12 @@ end
 # p yml.class #HASH!
 p @methods
 
+# >>> file_ast=compile('if 1: z="hiiii"\nelse: 3;', source, 'exec',ast.PyCF_ONLY_AST)
+# >>> ast.dump(file_ast)
+# "Module(body=[If(test=Num(n=1), body=[Assign(targets=[Name(id='z', ctx=Store())], value=Str(s='hiiii'))], orelse=[Expr(value=Num(n=3))])])"
+
 def walk node, body
-  if node=="num"
+  if node=="set"
   p node
   end
   return body if body.is_a? Integer

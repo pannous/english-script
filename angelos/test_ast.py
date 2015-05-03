@@ -27,6 +27,7 @@ contents="\n".join(contents)
 # code=compile(contents, source, 'eval')# import ast -> SyntaxError: invalid syntax  NO IMPORT HERE!
 code=compile(contents, source, 'exec') # code object  AH!!!
 file_ast=compile(contents, source, 'exec',ast.PyCF_ONLY_AST) # AAAAHHH!!!
+ast.dump(file_ast)
 j=ast2json.ast2json(file_ast)
 # print(j)
 # assert code==code2
@@ -51,7 +52,7 @@ print(x)
 
 my_ast=Module(body=[
 	For(
-		target=Name(id='i', ctx=Store(),lineno=1, col_offset=4), 
+		target=Name(id='i', ctx=Store(),lineno=1, col_offset=4),
 		iter=Call(
             func=Name(id='range', ctx=Load(), lineno=1, col_offset=9),
             args=[Num(n=10, lineno=1, col_offset=15)],
@@ -65,8 +66,8 @@ my_ast=Module(body=[
                     lineno=1,
                     col_offset=20
                 )
-		], 
-		orelse=[], 
+		],
+		orelse=[],
 		lineno=1,
 		col_offset=0
 	)

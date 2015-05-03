@@ -11,7 +11,7 @@ class:
     name: fun
     args: x,y
     body:
-      set:
+      assign:
         var: z
         call:
           object: x
