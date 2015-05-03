@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# RubyMotion PLEASE become open source!!
 # ruby2ruby
 # + llvm / rubymotion / j-rubyflux for native !!
 

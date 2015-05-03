@@ -1,6 +1,7 @@
 # coding: interpy "string interpolation #{like ruby}"
 # encoding: utf-8
 import os
+import symtable
 import exceptions
 
 # def print(x # debug!):
@@ -70,7 +71,6 @@ class File(os.file):
     raise SecurityError("cannot delete files")
     #FileUtils.remove_dir(to_path, True)
 
-
 class Directory(os.file): #
   # str(def)(self):
   #   path
@@ -117,6 +117,10 @@ class Directory(os.file): #
     #FileUtils.remove_dir(to_path, True)
 
 
+class Dir(Directory):
+    pass
+
+
 # class Number < Numeric
 # 
 # def not None(self):
@@ -148,9 +152,9 @@ class dict:
   # def []= x,y # NORM only through getter:
   #   super[x.to_sym]=y
   #
-  def __index__(self):
+  def __index__(self,x):
     if not x: return
-    if isinstance(x,Symbol): return orig_index(x)  or  orig_index(str(x))
+    if isinstance(x, symtable.Symbol): return orig_index(x)  or  orig_index(str(x))
     if isinstance(x,str): return orig_index(x)
     # yay! todo: eqls {a:b}=={:a=>b}=={"a"=>b} !!
     orig_index(x)
@@ -174,44 +178,44 @@ class list:
     "rb_ary_new3(#{size}/*size*', #{wraps})" #values
 
   def wraps(self):
-    map(wrap).join(", ") # leave [] which is not compatible with C
+    map(lambda x:x.wrap,self).join(", ") # leave [] which is not compatible with C
 
   def values(self):
-    map(value).join(", ") # leave [] which is not compatible with C
+    map(lambda x:x.value,self).join(", ") # leave [] which is not compatible with C
 
-  def contains_a(type):
+  def contains_a(self,type):
       for a in self:
-          if isinstance(a,Numeric): return True
+          if isinstance(a,type): return True
       return False
 
   def drop(self,x):
-    reject(x)
+    self.reject(x)
 
   def to_s(self):
     self.join(", ")
 
   # ifdef $auto_map:
-  def method_missing(method, *args, block):
-    if args.count==0: return self.map (lambda x: x.send(method ))
-    if args.count>0: return self.map (lambda x: x.send(method, args) )
+  # def method_missing(method, *args, block):
+  #   if args.count==0: return self.map (lambda x: x.send(method ))
+  #   if args.count>0: return self.map (lambda x: x.send(method, args) )
     # super method, *args, block
 
   # def matches(item):
   #   contains item
   #
   # remove: confusing!!
-  def matches(regex):
+  def matches(self,regex):
     for i in self.flatten:
       m=regex.match(i.gsub(r'([^\w])', "\\\\\\1")) #escape_token(i))
       if m:
         return m
     return False
 
-  def And(x):
+  def And(self,x):
     if not isinstance(x,list): self+[x]
     self+x
 
-  def plus(x):
+  def plus(self,x):
     if not isinstance(x,list): self+[x]
     self+x
 
@@ -226,39 +230,39 @@ class list:
   #  select{|y|y.to_s.match(x)}
   #
   def names(self):
-     map(to_s)
+     map(str,self)
 
   def rest(self):
     self[1:-1] # last:-1 after index!!!
 
-  def fix_int(i):
-    if str(i)=="middle": i=count/2
+  def fix_int(self,i):
+    if str(i)=="middle": i=self.count()/2
     if isinstance(i,Numeric): return i-1
     i=str(i).replace_numerals.to_i
     i-1
 
-  def character(nr):
-    item( nr)
+  def character(self,nr):
+    self.item( nr)
 
-  def item(nr): # -1 AppleScript style !!! BUT list[0] !!!
-    self[fix_int(nr)]
+  def item(self,nr): # -1 AppleScript style !!! BUT list[0] !!!
+    self[self.fix_int(nr)]
 
-  def word(nr): # -1 AppleScript style !!! BUT list[0] !!!):
+  def word(self,nr): # -1 AppleScript style !!! BUT list[0] !!!):
     self[fix_int(nr)]
 
   def invert(self):
     reverse
 
-  def get(x):
+  def get(self,x):
     self[index(x)]
 
-  def row(n):
+  def row(self,n):
     at(n)
 
-  def has(x):
+  def has(self,x):
     index(x)
 
-  def contains(x):
+  def contains(self,x):
     ok=index(x)
     if ok : return at(index(x))
     else: return False
@@ -306,10 +310,10 @@ class str:
   def number(self):
     int(self)
 
-  def _in(ary):
+  def _in(self,ary):
     ary.has(self)
 
-  def matches(regex):
+  def matches(self,regex):
     if isinstance(regex,list):
         for x in regex:
             if match(x):
@@ -321,7 +325,7 @@ class str:
   def stripNewline(self):
     strip.sub(r';$', '')
 
-  def join(x):
+  def join(self,x):
     self
 
   # def < x:
@@ -338,41 +342,41 @@ class str:
             if startswith(y):return y
     return startswith(x)
 
-  def show(x=None):
+  def show(self,x=None):
     print(x or self)
     return x or self
 
-  def contains(*things):
+  def contains(self,*things):
     for t in things.flatten:
       if index(t): return True
 
     return False
 
-  def fix_int(i):
+  def fix_int(self,i):
     if str(i)=="middle": i=count/2
     if isinstance(i,Numeric): return i-1
     i=str(i).replace_numerals.to_i #if i.is_a? String:
     i-1
 
-  def sentence(i):
+  def sentence(self,i):
     i=fix_int( i)
     split(r'[\.\?\!\;]')[i]
 
-  def paragraph(i):
+  def paragraph(self,i):
     i=fix_int( i)
     split("\n")[i]
 
-  def word(i):
+  def word(self,i):
     i=fix_int( i)
     split(" ")[i]
 
-  def item(i):
+  def item(self,i):
     word(i)
 
-  def char(i):
+  def char(self,i):
     character(i)
 
-  def character(i):
+  def character(self,i):
     i=fix_int(i)
     self[i-1:i]
 
@@ -382,23 +386,23 @@ class str:
   def invert(self):
     reverse
 
-  def plus(x):
+  def plus(self,x):
     self+x
 
-  def _and(x):
+  def _and(self,x):
     self+x
 
-  def add(x):
+  def add(self,x):
     self+x
 
-  def offset(x):
+  def offset(self,x):
     index (x)
 
   def __sub__(self,x):
     self.gsub(x,"")
     # self[0:self.index(x)-1]+self[self.index(x)+x.length:-1]
 
-  def synsets(param):
+  def synsets(self,param):
     pass
 
 

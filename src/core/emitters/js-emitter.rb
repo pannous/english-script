@@ -1,5 +1,15 @@
 #!/usr/bin/env ruby
 
+# OPAL opal = ruby to js
+# http://opalrb.org/try/
+# require 'opal'
+# Opal code is 264 times slower than the raw JS code!!!
+# VIA LLVM -> emscripten (mruby)
+# OR DIRECTLY!
+
+
+# appcelerator Write in JavaScript, run native on any device and OS
+
 # via python:  PyPy compiled to 'JavaScript' (emscripten/asmjs)
 # :( !! Loading PyPy.js. It's big, so this might take a while :( http://pypyjs.org/
 
@@ -15,11 +25,6 @@
 
 # mac OSX OSA:
 # https://developer.apple.com/library/prerelease/mac/releasenotes/InterapplicationCommunication/RN-JavaScriptForAutomation/index.html
-
-# require 'opal'
-# Opal code is 264 times slower than the raw JS code!!!
-# VIA LLVM -> emscripten (mruby)
-# OR DIRECTLY!
 
 # APIS:
 # contacts,mail,... Google's API Node JS Client

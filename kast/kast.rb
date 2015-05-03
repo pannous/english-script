@@ -1,4 +1,9 @@
+# https://docs.python.org/release/2.7.2/library/ast.html#abstract-grammar
+# https://docs.python.org/release/3.4.2/library/ast.html#abstract-grammar
+# -- ASDL's six builtin types are identifier, int, string, bytes, object, >>> singleton <<< NEW
+
 require_relative '../extensions.rb'
+
 module Kast
 
 class Node
@@ -30,27 +35,29 @@ class Node
 
   def dump level=0
     return if not self.children
-    print "\t"*level+ self.class.to_s.sub("Kast::",'')
+    print "\t"*level+ self.class.to_s.sub("Kast::", '')
     # print "("
     print("\n")
     z=0
-    for k,i in self.children
+    for k, i in self.children
       next if not i or i.blank?
       print("\t"*level+" ")
       print(k)
-      if(k.to_s=='ctx')
+      if (k.to_s=='ctx')
         a=1
       end
       print("=")
       if i.is_a? String or i.is_a? Numeric
-      print i
-      print(",") if z>0
-      z=z+1
+        print i
+        print(",") if z>0
+        z=z+1
       end
       print("\n")
       next if not i
       i.dump level+1 if (i.is_a? Node)
-      i.each do |x| x.dump(level+1) end if (i.is_a? Array)
+      i.each do |x|
+        x.dump(level+1)
+      end if (i.is_a? Array)
     end
     # print "\t"*level+")"
     # print("\n")
@@ -64,11 +71,12 @@ class Module < Node
 
   def interpret
     # return body.map &:interpret
-    return body.each{|statement|statement.interpret}
+    return body.each { |statement| statement.interpret }
   end
 end
+
 def Module(body)
-  Kast::Module.new(body:body)
+  Kast::Module.new(body: body)
 end
 
 class Interactive < Node
@@ -86,6 +94,7 @@ end
 def Expression(body)
   Expression.new({body: body})
 end
+
 
 class Suite < Node
   attr_accessor :body
@@ -109,9 +118,16 @@ class FunctionDef < Node
   end
 end
 
-def FunctionDef(name, args, body=Python3Node, decorator_list, returns)
-  FunctionDef.new({name: name, args: args, body: body, decorator_list: decorator_list, returns: returns})
+# def FunctionDef(name, args, body=Python3Node, decorator_list, returns)
+#   FunctionDef.new({name: name, args: args, body: body, decorator_list: decorator_list, returns: returns})
+# end
+
+def FunctionDef(params={})
+  FunctionDef.new(params)
 end
+
+alias MethodDef FunctionDef
+alias DefDef FunctionDef
 
 class ClassDef < Node
   attr_accessor :name, :bases, :keywords, :starargs, :kwargs, :body, :decorator_list
@@ -121,8 +137,11 @@ class ClassDef < Node
   end
 end
 
-def ClassDef(name, bases, keywords=[], starargs=[], kwargs=[], body, decorator_list)
-  ClassDef.new({name: name, bases: bases, keywords: keywords, starargs: starargs, kwargs: kwargs, body: body, decorator_list: decorator_list})
+# def ClassDef(name, bases, keywords=[], starargs=[], kwargs=[], body, decorator_list)
+#   ClassDef.new({name: name, bases: bases, keywords: keywords, starargs: starargs, kwargs: kwargs, body: body, decorator_list: decorator_list})
+# end
+def ClassDef(params={})
+  ClassDef.new(params)
 end
 
 class Return < Node
@@ -171,11 +190,18 @@ end
 
 class If < Node
   attr_accessor :test, :body, :orelse
+  alias condition test
+  alias then body
+  alias else body #DANGER!!
 end
 
-def If(test, body, orelse)
-  If.new({test: test, body: body, orelse: orelse})
-end
+# def If(test, body, orelse)
+#   If.new({test: test, body: body, orelse: orelse})
+# end
+  def If(params={})
+    params[:orelse]||=params[:else] # DANGER KEYWORD!
+    If.new(params)
+  end
 
 class For < Node
   attr_accessor :target, :iter, :body, :orelse
@@ -221,6 +247,7 @@ end
 
 class Import < Node
   attr_accessor :names
+
   def interpret
     return body.map &:interpret
   end
@@ -237,9 +264,12 @@ def ImportFrom(module_=nil, names=nil, level=0)
   ImportFrom.new({module_: module_, names: names, level: level})
 end
 
-  class None<NilClass;end
-  class True<TrueClass;end
-  class False<FalseClass;end
+class None<NilClass;
+end
+class True<TrueClass;
+end
+class False<FalseClass;
+end
 # True =true
 # None =nil
 # False=false
@@ -295,14 +325,16 @@ end
 class BoolOp < Node
   attr_accessor :op, :values
 end
+
 def BoolOp(op, values)
   BoolOp.new({op: op, values: values})
 end
 
 class BinOp < Node
   attr_accessor :left, :op, :right
+
   def interpret
-    left.interpret.send(op.to_s,right.interpret)
+    left.interpret.send(op.to_s, right.interpret)
   end
 end
 
@@ -346,7 +378,7 @@ end
 
 
 # DANGER: CONFLICT if Set not in module (Kast)
-  class Set < Node
+class Set < Node
   attr_accessor :elts
 
   def initialize(elts)
@@ -358,6 +390,8 @@ def Set(elts)
   # Set.new({elts:elts})
   Set.new(elts)
 end
+
+alias Let Set
 
 class SetComp < Node
   attr_accessor :elt, :generators
@@ -419,15 +453,28 @@ end
 
 class Call < Node
   attr_accessor :func, :args, :keywords, :starargs, :kwargs
+  alias method func
+  alias function func
+  alias arg args
+  alias arguments args
+  alias argument args
+end
+# def Call(func, args, keywords, starargs=[], kwargs=[], body, decorator_list)
+#   Call.new({func: func, args: args, keywords: keywords, starargs: starargs, kwargs: kwargs})
+# end
+
+def Call(params={})
+  # params[:keywords]||=[]
+  Call.new(params)
 end
 
-def Call(func, args, keywords, starargs=[], kwargs=[], body, decorator_list)
-  Call.new({func: func, args: args, keywords: keywords, starargs: starargs, kwargs: kwargs})
-end
+alias Construct Call
+# alias Constructor Call
 
 
 class Num < Node
   attr_accessor :n
+
   def interpret
     n.to_i # or to_f ??
   end
@@ -439,6 +486,7 @@ end
 
 class Str < Node
   attr_accessor :s
+
   def interpret
     s
   end
@@ -814,6 +862,7 @@ end
 # self.value=Call(func=Name(id='print',ctx=Load()), args=values,keywords=[], starargs=None, kwargs=None)
 class Print < Node
   attr_accessor :dest, :values, :nl
+
   def interpret
     puts(values.interpret)
     # print(values.interpret)
@@ -823,4 +872,18 @@ end
 def Print dest=nil, values=nil, nl=True
   Print.new dest: dest, values: values, nl: nl
 end
+
+  class Condition<Expression
+  end
+  def Condition(body)
+    Condition.new({body: body})
+  end
+
+  class Value<Expression
+  end
+  def Value(body)
+    Value.new({body: body})
+  end
+
+
 end

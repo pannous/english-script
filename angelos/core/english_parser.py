@@ -25,6 +25,7 @@ from english_tokens import *
 from the import *
 from angel import parent_node
 from angel import *
+from extensions import *
 import the
 
 function=__builtin__.function
@@ -1493,7 +1494,7 @@ def number_or_word():
 
 
 def arg(position=1):
-    if calling("BY"): pre = _try(preposition) or ""  #  might be superfluous
+    pre = _try(preposition) or ""  #  might be superfluous if calling"BY":
     _try(article)  #todo use a vs the ?
     a = _try(variable)
     if a: return Argument(name=a.name, type=a.type, preposition=pre, position=position)
@@ -1982,7 +1983,7 @@ def do_evaluate(x, type=None):
         if isinstance(x, TreeNode): return x.eval_node(variableValues)
         if isinstance(x, str) and match_path(x): return resolve(x)
         # :. todo METHOD / Function!
-        if isinstance(x, Method): return x.call  #Whoot
+        if isinstance(x, extensions.Method): return x.call  #Whoot
         if isinstance(x, function): return x.call  #Whoot
         if isinstance(x, str): return x
         if isinstance(x, str): return eval(x)  #  except x
@@ -1996,8 +1997,8 @@ def do_evaluate(x, type=None):
 
 
 def resolve(x):
-    if is_dir(x): return Dir(x)
-    if is_file(x): return File(x)
+    if is_dir(x): return extensions.Directory(x)
+    if is_file(x): return extensions.File(x)
     if isinstance(x, Variable): return x.value
     if interpret and variableValues.has_key(x): return variableValues[x.strip]
     x
@@ -2008,8 +2009,8 @@ def self_modifying(method):
 
 
 #
-def self_modifying(method):
-    EnglishParser.self_modifying(method)  # -lol
+# def self_modifying(method):
+#     EnglishParser.self_modifying(method)  # -lol
 
 
 # INTERPRET only,  todo cleanup method + argument matching + concept

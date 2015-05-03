@@ -6,16 +6,29 @@
 # PyPy comes by default with support for stackless mode, providing micro-threads for massive concurrency.
 # TOPAZ A high performance ruby, written in RPython http://topazruby.com lol wtf python -m topaz /path/to/file.rb
 
+# What are you trying to achieve?
+#
+# If it's faster code execution, the primary slowdown with a very
+# high-level language like Python is caused by high-level data structures
+# (introspection, everything being an object, etc.), not the code itself.
+
+# A native compiler would still have to use high-level data structures to
+# work with all Python code, so the speed increase wouldn't be very much.
+#
+# If you just think a compiler would be cool, check out Psyco, Pyrex, it even combats the speed issue by allowing native C types
+# to be used in addition to Python high-level types.
+
 
 # https://github.com/jvoorhis/ruby-llvm
 # http://llvm.org/releases/3.4/docs/index.html
 # https://developer.chrome.com/native-client/reference/pnacl-bitcode-abi
 # http://www.infoq.com/presentations/clojure-scheme -> native!
 
-# obviously we don't want to use those obscure programming languages we just want to hijack that compiler pipeline
+# obviously we don't want to use those obscure programming languages we just want to hijack that compiler pipeline / toolchain
 # VALA (active! source-to-source compiled to C (!)) C ONLY! :(  used by Baobab - Disk usage analyzer !!
 # vala ~= c#, but would also love to be able to get maximum performance from their hardware. This lets you do that while using your favorite language. I can't see something like this dieing.
 # If you check the Linux Desktop scenario, every 2nd new app seems to be written in Vala. Vala is fast becoming the language of choice on Linux desktop at least.
+# The main drawback of the GObject framework is its verbosity. Large amounts of boilerplate code, such as manual definitions of type casting macros and obscure type registration incantations, are necessary to create a new class. The GObject Builder, or GOB2, is a tool that attempts to remedy this problem by offering a template syntax reminiscent of Java. Code written using GOB2 is pre-processed into vanilla C code prior to compilation. Another compiler-to-C for the GObject type system is Vala, which uses a C#-style syntax.
 
 # Haxe is an open-source high-level multiplatform programming language and compiler that can produce applications and source code for many different platforms from a single code-base.
 # haxe -main World.hx -cpp out   YAY!! big (1/2MB) but FAST exe!!

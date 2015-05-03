@@ -1,5 +1,7 @@
 # see JVM emitter
 
+# RubyMotion PLEASE become open source!!
+
 # VIA JAVA! OK with java 8 http://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html
 # OK: add classes!! alias java-repl="java -jar /opt/java-repl/javarepl.jar" # pretty bad
 # New JDK 7 Feature: Support for Dynamically Typed Languages in the Java VirtualM

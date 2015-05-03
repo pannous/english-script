@@ -106,6 +106,13 @@ types={ # see _ast.py , F12:
 "With":With
     }
 
+mapped_types={
+    "Condition":expr,
+    "Value":expr,
+    "Then":expr #Value
+}
+
+types.update(mapped_types)
 
  # PYTHON 3 HACK!!
 # class Print(stmt):

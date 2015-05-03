@@ -1,6 +1,7 @@
-file='kast.yml'
-# require 'yml'
 require_relative 'kast.rb'
+# require 'yml'
+
+file='kast.yml'
 obs=Object.methods
 # p Kast.methods-obs
 yml=YAML::load(File.open(file)) # HASH!!

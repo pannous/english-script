@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 
+gem 'nokogiri'
+# gem 'xml'
+
 gem 'bundler'
 gem 'wordnet'#,'~> 1.0.0'
 gem 'wordnet-defaultdb'

@@ -1,9 +1,11 @@
+# The Dynamic Language Runtime (DLR) from Microsoft runs on top of the Common Language Runtime
+
 # .net (roslyn) OPEN source OK
+# mono.cecil syntax tree Better
+
 # StatementSyntax statement=Syntax.ParseStatement("for (int i = 0; i < 10; i++) { }");
 # http://www.codeproject.com/Articles/113169/C-As-A-Scripting-Language-In-Your-NET-Applications
 # http://www.csscript.net/?
-
-# The Dynamic Language Runtime (DLR) from Microsoft runs on top of the Common Language Runtime
 
 # Microsoft Research Common Compiler Infrastructure (CCI)
 # https://cciast.codeplex.com/

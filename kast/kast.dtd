@@ -1,0 +1,32 @@
+<!ELEMENT module (class*) >
+
+        <!ELEMENT value (#PCDATA) >
+        <!ELEMENT name (#PCDATA) >
+        <!ELEMENT description (#PCDATA) >
+
+        <!ELEMENT class (name?, description?, method*, object*, field*)>
+
+        <!ELEMENT method (name?) >
+        <!ATTLIST name>
+
+        <!ATTLIST name>
+        <!ATTLIST database
+                id ID #IMPLIED
+                >
+
+        <!ELEMENT object (name?) >
+        <!ELEMENT field (name?) >
+
+        <!ELEMENT null EMPTY >
+
+        <!ELEMENT colref EMPTY>
+        <!ATTLIST colref
+                linkend IDREF #REQUIRED
+                >
+
+        <!ELEMENT row-identificator (colref+) >
+
+        <!ELEMENT row (value*) >
+        <!ATTLIST row
+                vendor-controlled (0|1) #IMPLIED
+                >
