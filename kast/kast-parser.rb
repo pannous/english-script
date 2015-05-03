@@ -51,6 +51,8 @@ end
 @methods[:args]=:Expression
 @methods[:argument]=:Expression # Danger: kast expects plural!
 @methods[:arguments]=:Expression
+@methods[:body]=:Expression
+@methods[:class_method]=:MethodDef #TODO!!
 
 def walk type, node
   p type
@@ -74,12 +76,16 @@ def walk type, node
   for att in node.attribute_nodes
     content[att.name]=att.value
   end
+  contents=[]
   for element in node.element_children
     k=element.name
     v=element
-    content[k]=walk k,v
-    # contents[k]<<walk(k,v) # many defs ...
+    elem=walk k,v
+    content[k]=elem
+    contents<<elem # many defs ...
   end
+  contents=node.text if not node.element_children or node.element_children.count==0
+  content[:body]||=contents
   # p content
   constructor.call(content)
 end

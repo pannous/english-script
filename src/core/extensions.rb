@@ -1,10 +1,10 @@
 # encoding: utf-8
 
-def puts x # debug!
-  print x
-  print "\n"
-  x
-end
+# def puts x # debug!
+#   print x
+#   print "\n"
+#   x
+# end
 
 def put x
   print x
@@ -794,6 +794,16 @@ end
 # class Enumerator
 
 class Object
+
+  def class_name
+    self.class.name.split('::').last || ''
+  end
+
+  def short_name
+    self.class.name.split('::').last || ''
+  end
+
+
   def value
     self
   end

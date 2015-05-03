@@ -32,6 +32,7 @@
     <!--nicht ganz das gleiche!-->
     <!--<element name="set_variable" type="a:let"/>-->
     <!--<element name="defvar" type="a:let"/>-->
+    <!--Mark element as deprecated in XSD ? => annotation only 'workaround'-->
 
     <element name="call" type="a:call"/>
     <element name="construct" substitutionGroup="a:call"/>

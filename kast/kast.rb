@@ -58,9 +58,22 @@ class Node
       i.each do |x|
         x.dump(level+1)
       end if (i.is_a? Array)
+      i.each do |x,y|
+        begin
+        y.dump(level+1)
+        rescue
+          p "WTF"
+          end
+      end if (i.is_a? Hash)
     end
+    return "" #ALREADY DUMPED!!
     # print "\t"*level+")"
     # print("\n")
+  end
+
+  def to_s
+    type.name
+    # dump
   end
 end
 
@@ -76,7 +89,9 @@ class Module < Node
 end
 
 def Module(body)
-  Kast::Module.new(body: body)
+  m=Kast::Module.new(body: body)
+  # assert(m.body==body)
+  m
 end
 
 class Interactive < Node
@@ -152,11 +167,16 @@ class Return < Node
   end
 end
 
-def Return(value=nil)
-  Return.new(value: value)
+# def Return(value=nil)
+#   Return.new(value: value)
+# end
+
+def Return(params={})
+    Return.new(params)
 end
 
-class Delete < Node
+
+  class Delete < Node
   attr_accessor :targets
 end
 
@@ -458,6 +478,7 @@ class Call < Node
   alias arg args
   alias arguments args
   alias argument args
+
 end
 # def Call(func, args, keywords, starargs=[], kwargs=[], body, decorator_list)
 #   Call.new({func: func, args: args, keywords: keywords, starargs: starargs, kwargs: kwargs})
