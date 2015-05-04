@@ -66,7 +66,7 @@ module LoopsGrammar
     _? 'then'
     b=action_or_block #Danger when interpreting it might contain conditions and breaks
     begin
-    r=do_execute_block b while (check_condition c) if check_interpret
+    r=do_execute_block b while (check_condition(c)==true) if check_interpret
     rescue
       puts $!
     end

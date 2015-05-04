@@ -16,12 +16,12 @@ end
 
 def say x
   puts x
-  system "say '#{x}'" #mac only!
+  system "say '#{x}'" rescue nil #mac only!
 end
 
 def beep
   print "\aBEEP "
-  system "say 'beep'"
+  system "say 'beep'" rescue nil
   'beeped'
 end
 

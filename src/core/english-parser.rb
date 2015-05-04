@@ -1687,7 +1687,7 @@ class EnglishParser < Parser
       result=!result if negate # XOR result=result ^ negate
       if not result
         verbose "condition not met #{cond} #{@lhs} #{@comp} #{@rhs}"
-        result=:false
+        result=:false #incompatible with 'while (check_condition c)'
       end
       return result
     rescue => e
