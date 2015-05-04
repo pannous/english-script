@@ -24,6 +24,9 @@ Here are some of our favorite examples from the [tests](test/unit), **working to
 
 `counter is zero; repeat three times: add 1 to counter; done repeating; assert that the counter is 3`
 
+`delete all files in my home folder that end with 'bak'`
+
+`with all mails by peter: mark it as read if its subject contains 'SPAM'`
 
 `last item in 'hi','you' is equal to 'you'`
 
@@ -37,8 +40,8 @@ Done
 
 ```
 How to check if someone is online on Skype
-	Call java Skype.checkStaus(someone)
-	Return yes If Result equals "online"
+	Skype.checkStatus(someone)
+	Return yes if result equals "online"
 	Return no otherwise
 Done
 ```
