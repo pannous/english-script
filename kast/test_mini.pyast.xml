@@ -1,0 +1,6 @@
+<For target="i">
+    <iter>
+        <Call func="range" args="10"/>
+    </iter>
+    <Print values="i"/>
+</For>
