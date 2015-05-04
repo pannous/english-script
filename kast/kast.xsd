@@ -61,6 +61,7 @@
             <element name="value" type="a:value"/>
             <element name="int" type="a:int"/>
             <element name="if" type="a:if"/>
+            <element name="for" type="a:for"/>
             <element name="construct" type="a:call"/>
             <!--<element name="condition" type="a:expression"/>-->
             <element name="condition" type="a:valueOrExpression"/>
@@ -177,6 +178,7 @@
     <simpleType name="variable">
         <restriction base="string"/>
     </simpleType>
+
     <simpleType name="methodName">
         <restriction base="string"/>
     </simpleType>
@@ -274,40 +276,50 @@
 
 
     <!--<complexType name="construct">-->
-        <!--<annotation>-->
-            <!--<documentation>-->
-                <!--Use construct(object=type) , not construct(type=type)-->
-            <!--</documentation>-->
-        <!--</annotation>-->
-        <!--<complexContent>-->
-            <!--<extension base="a:call">-->
-                <!--<attribute name="object"/>-->
-                <!--<attribute name="type" use="prohibited"/>-->
-            <!--</extension>-->
-        <!--</complexContent>-->
+    <!--<annotation>-->
+    <!--<documentation>-->
+    <!--Use construct(object=type) , not construct(type=type)-->
+    <!--</documentation>-->
+    <!--</annotation>-->
+    <!--<complexContent>-->
+    <!--<extension base="a:call">-->
+    <!--<attribute name="object"/>-->
+    <!--<attribute name="type" use="prohibited"/>-->
+    <!--</extension>-->
+    <!--</complexContent>-->
     <!--</complexType>-->
 
 
     <!--mixed="true" means it can have TEXT too !!!-->
     <!--<complexType name="condition"  mixed="true">-->
-        <!--<complexContent mixed="true">-->
-            <!--<extension base="a:valueOrExpression"/>-->
-        <!--</complexContent>-->
+    <!--<complexContent mixed="true">-->
+    <!--<extension base="a:valueOrExpression"/>-->
+    <!--</complexContent>-->
     <!--</complexType>-->
 
-    <complexType name="valueOrExpression"  mixed="true">
+    <complexType name="valueOrExpression" mixed="true">
         <!--<complexContent  mixed="true">-->
-            <!--<extension base="a:expression">-->
+        <!--<extension base="a:expression">-->
 
-                <!--<sequence minOccurs="1" maxOccurs="1">-->
-                <!--<element name="body" type="a:expression"/>-->
-                <!--</choice>-->
-                <choice minOccurs="0" maxOccurs="1">
-                    <group ref="a:expressions"/>
-                </choice>
-                <attribute name="value" type="a:valueType"/>
-            <!--</extension>-->
+        <!--<sequence minOccurs="1" maxOccurs="1">-->
+        <!--<element name="body" type="a:expression"/>-->
+        <!--</choice>-->
+        <choice minOccurs="0" maxOccurs="1">
+            <group ref="a:expressions"/>
+        </choice>
+        <attribute name="value" type="a:valueType"/>
+        <!--</extension>-->
         <!--</complexContent>-->
     </complexType>
 
+    <complexType name="for">
+        <sequence>
+            <element name="target" type="a:variable"/>
+            <!-- todo for x in list -> for x:String in list / for(String x : list)-->
+
+            <element name="iter" type="a:expression"/>
+            <element name="body" type="a:block"/>
+        </sequence>
+        <attribute name="target" type="a:variable"/>
+    </complexType>
 </schema>

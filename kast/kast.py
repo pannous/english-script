@@ -1,5 +1,40 @@
+# https://docs.python.org/release/2.7.2/library/ast.html#abstract-grammar
+# https://docs.python.org/release/3.4.2/library/ast.html#abstract-grammar
+
 from ast import *
 import ast
+import sys
+import _ast
+
+
+class Print(ast.Print):
+    # todo : more beautiful defaults
+      def __init__(self, **kwargs):
+          super(Print, self).__init__(*kwargs)
+          if not "nl" in kwargs:
+              self.nl=True
+
+
+if sys.version_info > (3,0):
+     # PYTHON 3 HACK!!
+    class Print(stmt):
+        _fields = (
+            'dest',
+            'values',
+            'nl',
+        )
+    # | Exec(expr body, expr? globals, expr? locals)
+    class Exec(Call):
+        _fields = (
+            'body',
+            'globals',
+            'locals',
+        )
+
+
+class Name(ast.Name):
+    def __str__(self):
+         return "<kast.Name id='%s'>"%self.id
 
 types={ # see _ast.py , F12:
     "class":ast.ClassDef,
@@ -106,28 +141,13 @@ types={ # see _ast.py , F12:
 "With":With
     }
 
+# workaround: alias is keyword in ruby!
 mapped_types={
+    "Alias":alias,
+    "int":Num,
     "Condition":expr,
     "Value":expr,
     "Then":expr #Value
 }
 
 types.update(mapped_types)
-
- # PYTHON 3 HACK!!
-# class Print(stmt):
-#     # no doc
-#     def __init__(self, *args, **kwargs): # real signature unknown
-#         pass
-#
-#     _fields = (
-#         'dest',
-#         'values',
-#         'nl',
-#     )
-# class Print(ast.Pass):pass
-# class Print(ast.Expr):pass
-# class Print(ast.Expression):pass #TypeError: expected some sort of stmt,
-
-class Alias(alias):
-    pass

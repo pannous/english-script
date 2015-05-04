@@ -1,14 +1,21 @@
 # https://github.com/dmw/pyxser/blob/master/src/pyxser_serializer.c
-import ast
-from ast import *
-import xml.etree.ElementTree as ET
 import kast
-from kast import Alias
+from kast import *
+
+import xml.etree.ElementTree as ET
+# from lxml import etree
+# parser = etree.XMLParser(dtd_validation=True)
+# doc = etree.parse(xast_file)
+# xmlschema = etree.XMLSchema(etree.parse("kast.xsd"))
+# xmlschema.validate(doc)
 
 # xast_file='test.xast'
-xast_file='../test.xast'
-xast_file='../test_full.xast'
-ast_file='../demo.kast'
+xast_file='test.xast'
+xast_file='test_full.xast'
+# ast_file='demo.pyast'
+xast_file='test.kast.xml'
+schema_file='kast.xsd'
+
 tree = ET.parse(xast_file)
 root = tree.getroot()
 

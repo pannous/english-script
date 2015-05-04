@@ -200,6 +200,8 @@ module Kast
     Assign.new(params)
   end
 
+  # x += 8
+  # x *= 8
   class AugAssign < Node
     attr_accessor :targets, :op, :value
   end

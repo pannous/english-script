@@ -19,6 +19,10 @@
             </iter>
             <body>
                 <Print nl='True' value='dbg'>
+                    <values>
+                        <Name col_offset='26' ctx='Load' id='i' lineno='1'>
+                        </Name>
+                    </values>
                 </Print>
             </body>
         </For>
