@@ -1070,7 +1070,7 @@ class EnglishParser < Parser
     newline?
     ok=tokens done_words
     token type if type #optional?
-    ignore_rest_of_line
+    ignore_rest_of_line!
     ok
   end
 
@@ -1605,11 +1605,13 @@ class EnglishParser < Parser
   end
 
   def is_comparator c
-    ok=comparison_words.contains(c) ||
-        comparison_words.contains(c-"is ") ||
+    return false if not c.is_a?String
+    # puts "is_comparator #{c}"
+    ok=comparison_words.contains(c)
+    ok||=comparison_words.contains(c-"is ") ||
         comparison_words.contains(c-"are ") ||
         comparison_words.contains(c-"the ") ||
-        class_words.contains(c)
+        class_words.contains(c) #rescue false
     ok
   end
 
