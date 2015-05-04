@@ -1250,12 +1250,13 @@ class EnglishParser < Parser
     var =property? || variable(a)
     # _?("always") => pointer
     setta=_?('to') || be # or not_to_be 	contain -> add or create
+    do_interpret!
     val =adjective? || expressions
     no_rollback!
     val=[val].flatten if setta=='are' or setta=='consist of' or setta=='consists of'
     assure_same_type_overwrite var, val if _let
     # var.type||=type||val.class #eval'ed! also x is an integer
-    assure_same_type var, type||val.class
+    assure_same_type var, type||val.class if check_interpret # todo : type analysis via tree
     if not @variableValues.contains(var.name) or mod!='default' and @interpret
       @variableValues[var.name] =val
     end
