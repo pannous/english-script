@@ -1,9 +1,10 @@
 extra/
-extra
 ./extra
-core/emitters/bash-commands-auto-index.rb
-core/emitters/bash-commands-auto-index.rb -f
-main.bc
 extra
+src/core/emitters/bash-commands-auto-index.rb
+main.bc
 xtra
 Gemfile.lock
+__pycache__
+kast/__pycache__/
+out
