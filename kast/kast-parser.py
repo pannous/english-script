@@ -30,6 +30,8 @@ def parseString(a, v):
         for arg in args:
             if(arg.isdigit()):v.append(Num(int(arg)))
             else:v.append(Name(id=arg,ctx=Load()))
+    elif(v.startswith("'")):
+        v=Str(v[1:-1])
     elif(a!='id'):
         ctx=Load()
         if a=='func' or a=='value' or a=='values':
@@ -60,6 +62,7 @@ def build(node):
         elem.__setattr__(a,v)
 
     children=node.getchildren()
+    body=[]
     for c in children:
         if not c.tag in kast.types: #i.e.: body=...
             babies=c.getchildren()
@@ -70,12 +73,11 @@ def build(node):
         else:
             child=build(c)
             if(isinstance(child,list)):
-                elem.body=child
+                body=child
             else:
-                elem.body=[child]
-            # slot=c.tag
-            # elem.slot=build(c)
-
+                body.append(child)
+    if len(body)>0:
+        elem.body=body
     attribs=dir(elem)
     if not 'keywords' in attribs:
         elem.keywords=[] #hack

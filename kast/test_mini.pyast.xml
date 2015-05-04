@@ -2,5 +2,6 @@
     <iter>
         <Call func="range" args="10"/>
     </iter>
+    <Print values="'yay, a string'"/>
     <Print values="i"/>
 </For>
