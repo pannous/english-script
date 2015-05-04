@@ -24,10 +24,14 @@ rescue
 end
 # require_relative 'bindings/common-scripting-objects'
 
-require 'linguistics'
 require 'wordnet'
+begin
+require 'linguistics'
 #require 'wordnet-defaultdb'
 Linguistics.use(:en, :monkeypatch => true)
+rescue Exception=>e
+			  puts "linguistics component needs ruby 2.x, ignoring"
+end
 #http://99designs.com/tech-blog/ More magic
 
 # look at java AST http://groovy.codehaus.org/Compile-time+Metaprogramming+-+AST+Transformations

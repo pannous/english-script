@@ -7,7 +7,7 @@ gem 'bundler'
 gem 'wordnet'#,'~> 1.0.0'
 gem 'wordnet-defaultdb'
 gem 'rufus-scheduler'
-gem 'linguistics'
+#gem 'linguistics' #needs ruby 2.0!!
 # gem 'linkparser','~> 1.1.3'
 # gem 'ruby-stemmer'#,'~> 0.9.3'
 # gem 'whenever', :require => false
@@ -23,7 +23,7 @@ gem 'minitest-reporters', '>= 0.5.0'
 # gem "minitest", "4.7.5" #if $RUBYMINE
 
 
-$RUBYMINE=ENV['RUBYMINE']||true
+$RUBYMINE=ENV['RUBYMINE']#||true
 
 group :development do
   gem 'debase', :groups => [:development]  if $RUBYMINE
