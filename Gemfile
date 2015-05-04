@@ -18,6 +18,7 @@ gem 'rufus-scheduler'
 # gem 'simplecov'#,'~> 0.6.4'
 
 gem 'rake'
+gem 'test-unit'
 gem "minitest" , "~> 5.3.3"
 gem 'minitest-reporters', '>= 0.5.0'
 # gem "minitest", "4.7.5" #if $RUBYMINE

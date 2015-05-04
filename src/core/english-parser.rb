@@ -293,6 +293,7 @@ class EnglishParser < Parser
     start =pointer
     s =statement #BUUUUUG~~~!!!
     content =pointer-start
+    allow_rollback
     end_of_block =end_block? #tokens? done_words
     if not end_of_block
       end_of_statement # danger might act as block end!
@@ -300,6 +301,7 @@ class EnglishParser < Parser
         s =statement||s
         content =pointer-start
         end_of_statement
+        allow_rollback
       }
       # end_of_statement?
       end_of_block=end_block

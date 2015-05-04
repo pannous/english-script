@@ -1,8 +1,8 @@
 ENV["RAILS_ENV"] = "test"
 $testing=true
 
-require "test/unit"
-require_relative "../core/english-parser"
+require 'test/unit' # gem install test-unit
+require_relative '../core/english-parser'
 
 # use as MODULE!
 class ParserBaseTest <   #Test::Unit::TestCase
