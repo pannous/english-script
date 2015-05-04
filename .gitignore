@@ -10,3 +10,4 @@ kast/__pycache__/
 out
 *.pyc
 **/*.pyc
+.idea
