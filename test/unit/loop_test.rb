@@ -20,14 +20,14 @@ class LoopTest < ParserBaseTest
     assert_equals parse('c=0;while c<1:c++;beep;done'), "beeped"
   end
 
-  def test_repeat_while #todo
-    parse 'x=0;repeat while x<4: x++'
-    assert_equals variables["x"], 4
-    parse 'repeat x++ while x<4'
-    assert_equals variables["x"], 4
-    parse 'repeat x++ until x>4'
-    assert_equals variables["x"], 5
-  end
+  # def test_repeat_while #todo
+  #   parse 'x=0;repeat while x<4: x++'
+  #   assert_equals variables["x"], 4
+  #   parse 'repeat x++ while x<4'
+  #   assert_equals variables["x"], 4
+  #   parse 'repeat x++ until x>4'
+  #   assert_equals variables["x"], 5
+  # end
 
 
   def test_while_loop
