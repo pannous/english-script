@@ -6,9 +6,26 @@ import ast
 import sys
 import _ast
 
+# todo : more beautiful mappings / defaults
+class Import(ast.Import):
+    def __init__(self, **kwargs):
+        super(ast.Import, self).__init__(*kwargs)
+      # if not "names" in kwargs:
+      #     self.names=kwargs["package"]
+
+    def set_package(self,package):
+        self.names=[package]
+    def get_package(self):
+        return self.names
+    package = property(get_package , set_package )
+
+class ClassDef(ast.ClassDef):
+    def __init__(self, **kwargs):
+      super.__init__(*kwargs)
+      if not "nl" in kwargs:
+          self.nl=True
 
 class Print(ast.Print):
-    # todo : more beautiful defaults
       def __init__(self, **kwargs):
           super(Print, self).__init__(*kwargs)
           if not "nl" in kwargs:
@@ -37,7 +54,9 @@ class Name(ast.Name):
          return "<kast.Name id='%s'>"%self.id
 
 types={ # see _ast.py , F12:
-    "class":ast.ClassDef,
+
+"Raise":Raise,
+"class":ast.ClassDef,
 "operator":operator,
 "Add":Add,
 "alias":alias,
@@ -145,9 +164,14 @@ types={ # see _ast.py , F12:
 mapped_types={
     "Alias":alias,
     "int":Num,
+    "let":Assign,
     "Condition":expr,
     "Value":expr,
     "Then":expr #Value
 }
 
 types.update(mapped_types)
+for k,v in types.items():
+    if(k=='Raise'):continue
+    if(k=='Let'):continue
+    types[k.lower()]=types[k]

@@ -95,8 +95,10 @@
             <!-- ^^ allow any code in file-->
             <element name="import" type="a:import"/>
             <element name="class" type="a:class"/>
+            <!--<element name="decorators" type="a:decorators"/>-->
             <xs:group ref="a:expressions"/>
         </choice>
+        <!--<attribute name="decorators" type="a:decorator_list"/>-->
         <attribute name="name" type="string"/>
         <attribute name="parent" type="string"/>
         <attribute name="enabled" type="boolean" use="optional"/>

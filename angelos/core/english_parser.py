@@ -695,7 +695,7 @@ def statement():
     def lamb():
         # statement)
         if checkNewline(): return NEWLINE
-        # maybe( if_then ) or 
+        # maybe( if_then ) or
         maybe(loops) or \
         maybe(if_then_else) or \
         maybe(once) or \
@@ -1016,7 +1016,7 @@ def thing_dot_method_call():
 
 
 def method_call(obj=None):
-    # _try(ruby_method_call)  or 
+    # _try(ruby_method_call)  or
     _try(thing_dot_method_call) or generic_method_call(obj)
 
     # read mail or bla(1) or a.bla(1)  vs ruby_method_call !!
@@ -1274,10 +1274,10 @@ def for_i_in_collection():
 def assure_same_type(var, type):
     oldType = variableTypes[var.name]
     # try:
-    if oldType and type and not type <= oldType: raise WrongType("#{oldType) #{type)")
-    if oldType and var.type and not var.type <= oldType: raise WrongType("#{oldType) #{var.type)")
+    if oldType and type and not type <= oldType: raise WrongType("#{var.name} has type #{oldType), can't set to #{type)")
+    if oldType and var.type and not var.type <= oldType: raise WrongType("#{var.name} has type {oldType), can't set to #{var.type)")
+    if type and var.type and not (var.type <= type or var.type >= type): raise WrongType("#{var.name} has type #{var.type), can't set to  #{type)")
     # if type and var.type and not var.type>=type: raise WrongType.new "#{type) #{var.type)"
-    if type and var.type and not (var.type <= type or var.type >= type): raise WrongType("#{type) #{var.type)")
     # except
     #   p e
     #
@@ -1724,7 +1724,7 @@ def check_condition(cond=None, negate=False):
     if cond == True or cond == 'True': return True
     if cond == False or cond == 'False': return False
     if cond != None and not isinstance(cond, TreeNode) and not isinstance(cond, str): return cond
-    # cond==None  or 
+    # cond==None  or
     # if cond==false: return false
     try:
         # else: use state variables todo better!
@@ -1863,7 +1863,7 @@ def gerundium():
 
 
 def verbium():
-    comparison or verb and adverb  # be or have or 
+    comparison or verb and adverb  # be or have or
 
 
 def the_noun_that():
@@ -2150,7 +2150,7 @@ def ranger():
 def endNode():
     raiseEnd
     x = any(lambda:  # NODE )
-            #_try( plural) or 
+            #_try( plural) or
             maybe(list) or
             maybe(rubyThing) or
             maybe(fileName) or

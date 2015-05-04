@@ -202,9 +202,6 @@ class Class
   def wrap
     return self.to_s #TODO!?
   end
-  def is_a
-
-  end
 end
 
 class Array

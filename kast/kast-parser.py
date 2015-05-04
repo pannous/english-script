@@ -14,9 +14,9 @@ file='test.kast.xml'
 schema_file='kast.xsd'
 # xast_file='test.pyast.xml'
 # xast_file='test_mini.pyast.xml'
-xast_file='test_full.pyast.xml'
+# xast_file='test_full.pyast.xml'
 # xast_file='test.xast'
-# xast_file='test.kast.xml'
+xast_file='test.kast.xml'
 # ast_file='demo.pyast'
 tree = ET.parse(xast_file)
 root = tree.getroot()
@@ -43,7 +43,7 @@ def parseString(a, v):
 
 
 def build(node):
-    tag=node.tag
+    tag=node.tag.split("}")[1]
     construct= kast.types[tag]
     elem=construct()
     # 'data'
@@ -64,12 +64,13 @@ def build(node):
     children=node.getchildren()
     body=[]
     for c in children:
-        if not c.tag in kast.types: #i.e.: body=...
+        childName=c.tag.split("}")[1]
+        if not childName in kast.types: #i.e.: body=...
             babies=c.getchildren()
-            if len(babies)==1 and not c.tag in ['args','body','values']:#
-                elem.__setattr__(c.tag,build(babies[0]))
+            if len(babies)==1 and not childName in ['args','body','values']:#
+                elem.__setattr__(childName,build(babies[0]))
             else:
-                elem.__setattr__(c.tag,[build(n) for n in babies])
+                elem.__setattr__(childName,[build(n) for n in babies])
         else:
             child=build(c)
             if(isinstance(child,list)):
