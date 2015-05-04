@@ -8,3 +8,5 @@ Gemfile.lock
 __pycache__
 kast/__pycache__/
 out
+*.pyc
+**/*.pyc
