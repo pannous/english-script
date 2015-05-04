@@ -67,6 +67,10 @@ class EnglishParser < Parser
     @listeners =[]
   end
 
+  def to_s
+    "<EnglishParser>"
+  end
+
   def now
     Time.now
   end
@@ -301,7 +305,6 @@ class EnglishParser < Parser
         s =statement||s
         content =pointer-start
         end_of_statement
-        allow_rollback
       }
       # end_of_statement?
       end_of_block=end_block
@@ -1684,6 +1687,7 @@ class EnglishParser < Parser
       result=!result if negate # XOR result=result ^ negate
       if not result
         verbose "condition not met #{cond} #{@lhs} #{@comp} #{@rhs}"
+        result=:false
       end
       return result
     rescue => e
@@ -1725,7 +1729,7 @@ class EnglishParser < Parser
     _ ')' if brace
     negate = (negated||@not)&& !(negated and @not)
     subnode negate: negate
-    return negate ? !@lhs : @lhs if not @comp # optional, i.e.   return true IF 1
+    # return negate ? !@lhs : @lhs if not @comp # optional, i.e.   return true IF 1
 
     # 1,2,3 are smaller 4  VS 1,2,3 contains 4
     quantifier||="all" if @lhs.is_a? Array and not @lhs.respond_to?(@comp) and not @rhs.is_a? Array

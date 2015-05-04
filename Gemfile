@@ -24,7 +24,7 @@ gem 'minitest-reporters', '>= 0.5.0'
 # gem "minitest", "4.7.5" #if $RUBYMINE
 
 
-$RUBYMINE=ENV['RUBYMINE']#||true
+$RUBYMINE=ENV['RUBYMINE']||true
 
 group :development do
   gem 'debase', :groups => [:development]  if $RUBYMINE
