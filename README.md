@@ -81,17 +81,15 @@ Run it and see yourself!
 
 `./bin/angle "6 plus six"`
 
-`./bin/angle "xs be 2,3,7,9; xs that are smaller than 7"`
-
 `./bin/angle examples/test.e`
 
 `./bin/angle` (no args to start the shell)
 
 `⦠ 6 plus six`
 
-`⦠ x is 2; if all 0,2,4 are smaller 5 then increase x`
-
 `⦠ beep three times`
+
+`⦠ x is 2; if all 0,2,4 are smaller 5 then increase x`
 
 **Test**
 
