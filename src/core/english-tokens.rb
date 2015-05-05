@@ -10,93 +10,6 @@ module EnglishParserTokens #< MethodInterception
 ##################/
 # Lexemes = simple words
 ##################
-  def csharp_keywords_todo_merge
-    ['abstract', 'as', 'base', 'bool', 'break', 'byte', 'case', 'catch', 'char', 'checked', 'class', 'const', 'continue', 'decimal', 'default', 'delegate', 'do', 'double', 'else', 'enum', 'event', 'explicit', 'extern', 'false', 'finally', 'fixed', 'float', 'for', 'foreach', 'goto', 'if', 'implicit', 'in', 'int', 'interface', 'internal', 'is', 'lock', 'long', 'namespace', 'new', 'null', 'object', 'operator', 'out', 'override', 'params', 'private', 'protected', 'public', 'readonly', 'ref', 'return', 'sbyte', 'sealed', 'short', 'sizeof', 'stackalloc', 'static', 'string', 'struct', 'switch', 'this', 'throw', 'true', 'try', 'typeof', 'uint', 'ulong', 'unchecked', 'unsafe', 'ushort', 'using', 'virtual', 'void', 'volatile', 'while','from', 'let', 'where', 'join', 'on', 'equals', 'into', 'orderby', 'ascending', 'descending', 'select', 'group', 'by', 'partial', 'alias', 'yield', 'get', 'set', 'add', 'remove', 'dynamic', 'arglist']
-  end
-  
- #  
- # storage_class_specifier
- #  : 'extern'
- #  | 'static'
- #  | 'auto'
- #  | 'register'
- #  ;
- # 
- # type_specifier
- #  : 'void'
- #  | 'char'
- #  | 'short'
- #  | 'int'
- #  | 'long'
- #  | 'float'
- #  | 'double'
- #  | 'signed'
- #  | 'unsigned'
- #  | struct_or_union_specifier
- #  | enum_specifier
- #  | type_id
- #  ;
-
-
-# 
-# additive_expression
-#   : (multiplicative_expression) ('+' multiplicative_expression | '-' multiplicative_expression)*
-#   ;
-# 
-# multiplicative_expression
-#   : (cast_expression) ('*' cast_expression | '/' cast_expression | '%' cast_expression)*
-#   ;
-# 
-# cast_expression
-#   : '(' type_name ')' cast_expression
-#   | unary_expression
-#   ;
-# 
-# unary_expression
-#   : postfix_expression
-#   | '++' unary_expression
-#   | '--' unary_expression
-#   | unary_operator cast_expression
-#   | 'sizeof' unary_expression
-#   | 'sizeof' '(' type_name ')'
-#   ;
-# 
-# postfix_expression
-#   :   primary_expression
-#         (   '[' expression ']'
-#         |   '(' ')'
-#         |   '(' argument_expression_list ')'
-#         |   '.' IDENTIFIER
-#         |   '->' IDENTIFIER
-#         |   '++'
-#         |   '--'
-#         )*
-#   ;
-# 
-# 
-# assignment_operator
-#   : '='
-#   | '*='
-#   | '/='
-#   | '%='
-#   | '+='
-#   | '-='
-#   | '<<='
-#   | '>>='
-#   | '&='
-#   | '^='
-#   | '|='
-#   ;
-
-
-# unary_operator
-#   : '&'
-#   | '*'
-#   | '+'
-#   | '-'
-#   | '~'
-#   | '!'
-#   ; 
 
   def numbers
     %w[1 2 3 4 5 6 7 8 9 0
@@ -403,6 +316,94 @@ module EnglishParserTokens #< MethodInterception
   end
 
 
+
+  def csharp_keywords_todo_merge
+    ['abstract', 'as', 'base', 'bool', 'break', 'byte', 'case', 'catch', 'char', 'checked', 'class', 'const', 'continue', 'decimal', 'default', 'delegate', 'do', 'double', 'else', 'enum', 'event', 'explicit', 'extern', 'false', 'finally', 'fixed', 'float', 'for', 'foreach', 'goto', 'if', 'implicit', 'in', 'int', 'interface', 'internal', 'is', 'lock', 'long', 'namespace', 'new', 'null', 'object', 'operator', 'out', 'override', 'params', 'private', 'protected', 'public', 'readonly', 'ref', 'return', 'sbyte', 'sealed', 'short', 'sizeof', 'stackalloc', 'static', 'string', 'struct', 'switch', 'this', 'throw', 'true', 'try', 'typeof', 'uint', 'ulong', 'unchecked', 'unsafe', 'ushort', 'using', 'virtual', 'void', 'volatile', 'while','from', 'let', 'where', 'join', 'on', 'equals', 'into', 'orderby', 'ascending', 'descending', 'select', 'group', 'by', 'partial', 'alias', 'yield', 'get', 'set', 'add', 'remove', 'dynamic', 'arglist']
+  end
+
+  #
+  # storage_class_specifier
+  #  : 'extern'
+  #  | 'static'
+  #  | 'auto'
+  #  | 'register'
+  #  ;
+  #
+  # type_specifier
+  #  : 'void'
+  #  | 'char'
+  #  | 'short'
+  #  | 'int'
+  #  | 'long'
+  #  | 'float'
+  #  | 'double'
+  #  | 'signed'
+  #  | 'unsigned'
+  #  | struct_or_union_specifier
+  #  | enum_specifier
+  #  | type_id
+  #  ;
+
+  #
+  # additive_expression
+  #   : (multiplicative_expression) ('+' multiplicative_expression | '-' multiplicative_expression)*
+  #   ;
+  #
+  # multiplicative_expression
+  #   : (cast_expression) ('*' cast_expression | '/' cast_expression | '%' cast_expression)*
+  #   ;
+  #
+  # cast_expression
+  #   : '(' type_name ')' cast_expression
+  #   | unary_expression
+  #   ;
+  #
+  # unary_expression
+  #   : postfix_expression
+  #   | '++' unary_expression
+  #   | '--' unary_expression
+  #   | unary_operator cast_expression
+  #   | 'sizeof' unary_expression
+  #   | 'sizeof' '(' type_name ')'
+  #   ;
+  #
+  # postfix_expression
+  #   :   primary_expression
+  #         (   '[' expression ']'
+  #         |   '(' ')'
+  #         |   '(' argument_expression_list ')'
+  #         |   '.' IDENTIFIER
+  #         |   '->' IDENTIFIER
+  #         |   '++'
+  #         |   '--'
+  #         )*
+  #   ;
+  #
+  #
+  # assignment_operator
+  #   : '='
+  #   | '*='
+  #   | '/='
+  #   | '%='
+  #   | '+='
+  #   | '-='
+  #   | '<<='
+  #   | '>>='
+  #   | '&='
+  #   | '^='
+  #   | '|='
+  #   ;
+
+
+  # unary_operator
+  #   : '&'
+  #   | '*'
+  #   | '+'
+  #   | '-'
+  #   | '~'
+  #   | '!'
+  #   ;
+
   def question
     tokens question_words
   end
@@ -689,44 +690,44 @@ module EnglishParserTokens #< MethodInterception
   end
 
 end
-# 
-# 
+#
+#
 # conditional_expression
 #   : logical_or_expression ('?' expression ':' conditional_expression)?
 #   ;
-# 
+#
 # logical_or_expression
 #   : logical_and_expression ('||' logical_and_expression)*
 #   ;
-# 
+#
 # logical_and_expression
 #   : inclusive_or_expression ('&&' inclusive_or_expression)*
 #   ;
-# 
+#
 # inclusive_or_expression
 #   : exclusive_or_expression ('|' exclusive_or_expression)*
 #   ;
-# 
+#
 # exclusive_or_expression
 #   : and_expression ('^' and_expression)*
 #   ;
-# 
+#
 # and_expression
 #   : equality_expression ('&' equality_expression)*
 #   ;
 # equality_expression
 #   : relational_expression (('=='|'!=') relational_expression)*
 #   ;
-# 
+#
 # relational_expression
 #   : shift_expression (('<'|'>'|'<='|'>=') shift_expression)*
 #   ;
-# 
+#
 # shift_expression
 #   : additive_expression (('<<'|'>>') additive_expression)*
 #   ;
 
-# 
+#
 # jump_statement
 #   : 'goto' IDENTIFIER ';'
 #   | 'continue' ';'
@@ -739,12 +740,12 @@ end
 # COMMENT
 #     :   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
 #     ;
-# 
+#
 # LINE_COMMENT
 #     : '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
 #     ;
-# 
+#
 # // ignore #line info for now
-# LINE_COMMAND 
+# LINE_COMMAND
 #     : '#' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
 #     ;

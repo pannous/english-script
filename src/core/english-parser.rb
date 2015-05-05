@@ -1732,7 +1732,7 @@ class EnglishParser < Parser
     subnode negate: negate
     # return negate ? !@lhs : @lhs if not @comp # optional, i.e.   return true IF 1
 
-    # 1,2,3 are smaller 4  VS 1,2,3 contains 4
+    # 1,2,3 that are smaller 4  VS 1,2,3 contains 4
     quantifier||="all" if @lhs.is_a? Array and not @lhs.respond_to?(@comp) and not @rhs.is_a? Array
     # return  negate ? !@a : @a if not @comp
     if check_interpret
