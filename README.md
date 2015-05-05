@@ -79,7 +79,7 @@ Run it and see yourself!
 
 **experiment** by typing
 
-`./bin/angle "6 plus six"
+`./bin/angle "6 plus six"`
 
 `./bin/angle "xs be 2,3,7,9; xs that are smaller than 7"`
 
