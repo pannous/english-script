@@ -60,8 +60,8 @@ Read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIE
 "Premature optimization is the root of all evil." Many programming languages 'optimize' on the syntax level in order to optimize the resulting applications. Maybe [this](http://www.cs.utexas.edu/~EWD/transcriptions/EWD06xx/EWD667.html) is a mistake.
 
 To check out the current capabilities of English Script have a look at the [tests](https://github.com/pannous/english-script/tree/master/test/unit),
-[keywords](https://github.com/pannous/english-script/blob/master/lib/english-script/core/src/english-tokens.rb) and
-[grammar](https://github.com/pannous/english-script/blob/master/lib/english-script/core/src/english-parser.rb)
+[keywords](https://github.com/pannous/english-script/blob/master/english-script/core/src/english-tokens.rb) and
+[grammar](https://github.com/pannous/english-script/blob/master/english-script/core/src/english-parser.rb)
 
 INSTALL
 -------
