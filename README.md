@@ -22,12 +22,6 @@ Here are some of our favorite examples from the [tests](test/unit), **working to
 
 `beep every three seconds`
 
-`counter is zero; repeat three times: add 1 to counter; done repeating; assert that the counter is 3`
-
-`delete all files in my home folder that end with 'bak'`
-
-`with all mails by peter: mark it as read if its subject contains 'SPAM'`
-
 `last item in 'hi','you' is equal to 'you'`
 
 
@@ -49,10 +43,20 @@ Done
 Todo (soon):
 `add one to every odd number in 1,2,3 == 2,2,4`
 
+`delete all files in my home folder that end with 'bak'`
+
+The implicit list filter '*that*' applies the selection criterion to all elements.
+
+`with all mails by peter: mark it as read if its subject contains 'SPAM'`
+
+The implicit lambda variable '*it*' translates to ruby
+
+mails(by: Peter).each{|it| it.mark(:read) if it.subject.match('SPAM')}
+
 
 Language Specification
 ----------------------
-Read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md) for a more complete **language specification**, vision and some background. The grammar is not meant to be linguistically complete, but [functionality complete](https://en.wikipedia.org/wiki/Functional_completeness) and easily extendable. It is currently running in the [ruby](https://www.ruby-lang.org/en/) environment, but will soon compile to the [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine), JavaScript, [CLR](https://en.wikipedia.org/wiki/Common_Language_Runtime) and as a final aim run natively through [LLVM](https://en.wikipedia.org/wiki/LLVM).
+Read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md) for a more complete **language specification**, vision and some background. The grammar is not meant to be linguistically complete, but [functionality complete](https://en.wikipedia.org/wiki/Functional_completeness) and easily extendable. It is currently running in the [ruby](https://www.ruby-lang.org/en/) environment, but will soon compile to the [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine), JavaScript, [CLR](https://en.wikipedia.org/wiki/Common_Language_Runtime) and as a final aim run natively through [LLVM](https://en.wikipedia.org/wiki/LLVM) or [Vala](https://en.wikipedia.org/wiki/Vala_%28programming_language%29).
 "Premature optimization is the root of all evil." Many programming languages 'optimize' on the syntax level in order to optimize the resulting applications. Maybe [this](http://www.cs.utexas.edu/~EWD/transcriptions/EWD06xx/EWD667.html) is a mistake.
 
 To check out the current capabilities of English Script have a look at the [tests](https://github.com/pannous/natural-english/tree/master/test/unit),
@@ -102,12 +106,7 @@ Todos
 * Implement event system: Beep three times whenever the disc space is over 80%
 * Hook into more existing libraries (java,ifttt,rubyosa?,...)
 * IntelliJ plugin
-* Promote the ease of use of this language:
-`set xs to all positive natural numbers smaller than 3; assert that xs.count==2 and xs' lenght equals the size of xs`
-
-Also check out cool similar projects:
-[kal](https://github.com/rzimmerman/kal)
-[dogescript](https://github.com/remixz/dogescript)
+* Promote
 
 This language might soon be used in our successful beloved Jeannie assistant, which has over 4 million downloads so far:
 http://www.voice-actions.com
