@@ -1,4 +1,5 @@
 require_relative 'emitter'
+
 class NativeCEmitter < Emitter
   # def if_then_else context, node
   #   call(:checkCondition)

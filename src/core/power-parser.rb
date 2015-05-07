@@ -515,6 +515,7 @@ class Parser #<MethodInterception
     last_string =""
     begin
       while true
+        allow_rollback
         break if @string=="" or @string==last_string
         last_string=@string
         match      =yield # <------!!!!!!!!!!!!!!!!!!!

@@ -111,7 +111,8 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
     @parser.init string
   end
 
-  def variables
+  # todo: proxy or check: NO VALUES HERE!
+  def variables #[] k,v
     @parser.variables
     # @parser.variableValues
   end

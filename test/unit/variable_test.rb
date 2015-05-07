@@ -34,11 +34,14 @@ class VariableTest  < ParserBaseTest
     assert_has_error "const i='hi';i='ho'"
   end
 
-  def test_vars
-    variables['counter']=3
+  def test_vars2
     init "counter=3"
     assert @parser.condition #don't change var!
     assert "counter=3"
+  end
+
+  def test_vars
+    variables['counter']=Variable.new name:'counter', value:3
     parse "counter =2"
     assert_equals variables['counter'],2
     # fix_variables string->symbol

@@ -1,0 +1,25 @@
+
+# ruby++ better blocks + lambdas !!!
+# ruby+ jruby better, class extensions
+# ruby+ def 'properties'
+# ruby- less modules, more beautiful language => less need for angle!
+# ruby-- NO types/type hints!!
+# ruby-- no annotations!
+# python ++: more modules
+# python ++: ironpython ok!
+# python ++: type hints (py3)
+# python ++: annotations
+# python ++: TO/FRO bytecode, NATIVE (sometimes)
+# python ++: Ast better integrated(!!)
+# python +: list concatenation
+# python +-: functions proper(!) 1st class citizens [problem: () not default!]
+# python +-: properties
+# python - annoying (self), : , () -> DANGEROUS!! (ok if generated?)
+# python - NO class extensions for builtins! (ok with 'macros' / subclass construction (?))
+# python --- explicit global/class(self) variable scope nightmare!! lambdas + block variable scope !!!!! 'nonlocal' keyword :(
+
+# both ++ mixins  python:class Request(BaseRequest, AcceptMixin), ruby: include AcceptMixin
+
+
+# What separates a mixin from multiple inheritance? Is it just a matter of semantics?
+Yes.

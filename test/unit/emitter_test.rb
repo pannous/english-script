@@ -28,13 +28,13 @@ class EmitterTest < ParserBaseTest
   end
 
   def test_js_emitter #NEEDS TREE
-    # skip if not $use_tree
+    skip if not $use_tree
     assert_result_emitted "x=5;increase x",6
   end
 
 
   def test_int_setter #NEEDS TREE
-    # skip if not $use_tree
+    skip if not $use_tree
     assert_result_emitted "x=5;puts x",5
   end
 

@@ -122,6 +122,10 @@ class ConditionTest < ParserBaseTest
     # assert parse 'x=2;if x is either smaller 1 or bigger 8 then true'
   end
 
+  def test_else
+    assert_equals parse("if 1 then false else 2"),false
+  end
+
   def test_if_smaller
     parse 'x=2;if x is smaller 3 then x++'
     assert_equals variables['x'], 3

@@ -7,7 +7,7 @@
 # Platform Targets - For most of the targets, multiple runtimes with different purposes exist. JavaScript, for instance, is in widespread use as a scripting language in browsers, game-engines, office-applications, as server-side language for runtimes like NodeJs, and much more.
 # External Modules - Extern type definitions ("extern class" in Haxe) all describe the types of platform-native APIs, as well as those of runtimes and libraries written in the target language, to the Haxe compiler, so that static type-checking can be applied.
 
-
+# see ruby-vs-python.txt
 # ruby++ better blocks + lambdas !!!
 # ruby+ jruby better, class extensions
 # ruby- less modules, more beautiful language => less need for angle!

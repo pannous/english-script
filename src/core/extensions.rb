@@ -800,6 +800,10 @@ class Object
     self.class.name.split('::').last || ''
   end
 
+  def name
+    to_s
+  end
+
 
   def value
     self

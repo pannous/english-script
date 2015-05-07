@@ -56,6 +56,7 @@ class FunctionTest < ParserBaseTest
     assert("identity(5) is 5")
   end
 
+
   def test_programs
     dir = 'programs/'
     for file in File.ls(dir)

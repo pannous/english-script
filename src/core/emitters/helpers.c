@@ -21,8 +21,8 @@ VALUE get(char* name){return rb_ivar_get(context,id(name));}
  // rb_set_errinfo(Qnil);
 VALUE require_extensions(){
     require("./extensions.rb");
-    return Qnil;
 //    require("./src/core/extensions.rb");
+    return Qnil;
 }
 int main ( int argc, char ** argv) 	{
 //    rb_set_debug_option(getenv("RUBY_DEBUG"));
@@ -50,7 +50,7 @@ int main ( int argc, char ** argv) 	{
 //    require("./src/core/extensions.rb");
 //    try(require_extensions, Qnil, error_handler,s("require"), rb_eException, s("require"));
     try2(require_extensions, Qnil, error_handler,s("require"), rb_eException, 0);
-    pf("OK, loading extensions\n");
+//    pf("OK, loading extensions\n");
 	Object=eval("Object");
 	context=Object;// rb_ivar_set etc
 //	rb_load(s("extensions.rb"),0);
@@ -59,11 +59,11 @@ int main ( int argc, char ** argv) 	{
 //    rb_rescue2(error_handler, Qnil, error_handler, Qnil, rb_eException, (VALUE)0);
 
     // result=rb_rescue(test_require, Qnil, error_handler, rb_str_new2("require"));
-    pf("OK, starting program\n");
+//    pf("OK, starting program\n");
 	result=rb_protect( run, 0, &error);// call our stuff rb_protect'ed
 //    result=run(0);
-//	if(result!=0 && result!=nil && result!=false)// not for native methods like printf!
-//	    p(result);
+	if(result!=0 && result!=nil && result!=false)// not for native methods like printf!
+	    p(result);
 	if(error!=0){
         printf("Ruby ERROR %d\n",error);
         perror("Ruby ERROR ");
