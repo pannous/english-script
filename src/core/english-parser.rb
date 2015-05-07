@@ -872,6 +872,7 @@ class EnglishParser < Parser
     object_method = clazz.public_instance_method(method) if not object_method rescue false
     if object_method # Bad approach:  that might be another method Tree.beep!
       # puts "has_args method.parameters : #{object_method} #{object_method.parameters}"
+      return true if object_method.arity<0 # possible! DEFAULT ARGS
       return object_method.arity>0
     end
     return false if method.in ['invert', '++', '--'] # increase by 8
@@ -941,11 +942,14 @@ class EnglishParser < Parser
       # obj=maybe { nod? || list? || expression } if not @in_args # todo: expression
     end
     assume_args=true #!starts_with("of")  # true    #<< Redundant with property eventilation!
-    if has_args(method, obj, assume_args)
+    if has_args(method, obj, assume_args) # NOT KNOWN YET!!
       @current_value=nil
       @in_args      =true
       args          =star { arg }
-      args          =obj if not args #and c_method or static etc
+      if not args and is_object_method(method) #and c_method or static etc
+        args          =obj
+        obj=Object
+      end
       # __? ',','and'
     else
       more=_? ','
@@ -1912,8 +1916,9 @@ class EnglishParser < Parser
     begin
       return do_evaluate(x[0]) if x.is_a? Array and x.length==1
       return x if x.is_a? Array and x.length!=1
+      return x.to_f if type and type.is_a? Numeric and x.is_a? String
       return x.value || @variableValues[x.name] if x.is_a? Variable
-      return x.to_f if x.is_a? String and type and type.is_a? Numeric
+      return @variableValues[x]||@variables[x].value if @variables[x]
       return @variableValues[x] if @variableValues.contains x
       return x if x==true or x==false
       return x.to_f if x.is_a? String and type and type.is_a? Fixnum
@@ -1979,6 +1984,7 @@ class EnglishParser < Parser
     obj =method.owner if method.is_a? Method
     obj ||=resolve(obj0)
     # obj.map{|x| x.value}
+    # obj=obj0 if obj0.is_a?Variable and self_modifying(method) #todo better!!
     args=args0
     args=args.name_or_value if args.is_a? Argument
     args=args.map { |x| x.name_or_value } if args.is_a? Array and args[0].is_a? Argument
@@ -2012,18 +2018,19 @@ class EnglishParser < Parser
         @result=m.call(args) || :nill if has_args method, obj, true rescue NoMethodError
       else
         @result=obj.send(method) unless has_args method, obj, false rescue NoMethodError
-        @result=obj.send(method, args) if has_args method, obj, true rescue NoMethodError #SyntaxError,
+        @result=obj.send(method, args) if has_args method, obj, true #rescue NoMethodError #SyntaxError,
       end
     end
     #todo: call FUNCTIONS!
     # puts object_method.parameters #todo MATCH!
 
     # => selfModify todo
-    if obj0||args and self_modifying method
+    selfModify=obj0||args and self_modifying method #and not obj0.is_a?Variable
+    if selfModify
       name                  =(obj0||args).to_sym.to_s #
       @variables[name].value=@result #rescue nil
       @variableValues[name] =@result
-    end rescue nil
+    end #rescue nil
 
     # todo : nil OK, error not!
     msg="ERROR CALLING #{obj}.#{method}(#{args})" if @result==NoMethodError

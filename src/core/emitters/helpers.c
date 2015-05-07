@@ -26,7 +26,7 @@ VALUE require_extensions(){
 }
 int main ( int argc, char ** argv) 	{
 //    rb_set_debug_option(getenv("RUBY_DEBUG"));
-    pf("loading ruby vm\n");
+//    pf("loading ruby vm\n");
 //	ruby_sysinit(&argc, &argv);
 
     const char *progname = argv[0];
@@ -62,8 +62,8 @@ int main ( int argc, char ** argv) 	{
 //    pf("OK, starting program\n");
 	result=rb_protect( run, 0, &error);// call our stuff rb_protect'ed
 //    result=run(0);
-	if(result!=0 && result!=nil && result!=false)// not for native methods like printf!
-	    p(result);
+//	if(result!=0 && result!=nil && result!=false)// not for native methods like printf!
+//	p(result);
 	if(error!=0){
         printf("Ruby ERROR %d\n",error);
         perror("Ruby ERROR ");

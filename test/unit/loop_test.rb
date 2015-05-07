@@ -75,6 +75,8 @@ class LoopTest < ParserBaseTest
     assert_result_is 'counter =0; repeat three times: counter=counter+1; okay',3
     # parse 'counter =0; repeat three times: counter=counter+1; okay'
     # assert 'counter =3' #if $use_tree # counter=counter+1 not repeatable as string
+    assert_result_is 'counter =0; repeat while counter < 3: counter=counter+1; okay',3
+
   end
 
   def test_repeat1

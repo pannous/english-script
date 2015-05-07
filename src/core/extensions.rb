@@ -724,11 +724,11 @@ class Numeric
   end
 
   def increase by=1
-    self+by # Can't change the value of numeric self!!
+    self+(by||1) # Can't change the value of numeric self!!
   end
 
   def decrease by=1
-    self-by # Can't change the value of numeric self!!
+    self-(by||1) # Can't change the value of numeric self!!
   end
 
   def bigger? x

@@ -167,16 +167,24 @@ class FunctionTest < ParserBaseTest
     parse "Math.ancestors"
   end
 
-  def test_add_to_zero
+  def test_x_name
     variables['x']=Variable.new name:'x',value:7
     init "x"
     assert_equals @parser.nod.name, "x" #Variable.new "x"
     # 0->false->"" ERROR!!!
+  end
+
+  def test_add_to_zero
     parse "counter is zero; repeat three times: increase counter by 1; done repeating;"
     assert_equals variables['counter'], 3
     # parse "counter is zero; repeat three times: add 1 to counter; done repeating;"
+  end
+
+  def test_var_check
+    variables['counter']=Variable.new name:'counter',value:3
     assert "the counter is 3"
   end
+
 
   def test_array_arg
     assert_equals((parse "rest of [1,2,3]"), [2, 3])

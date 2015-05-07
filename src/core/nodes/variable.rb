@@ -28,10 +28,14 @@ class Variable
     "<Variable #{type} #{name}=#{value}>"
   end
 
-  def increase
-    self.value = self.value+1
-    self.value
+  def to_sym
+    name
   end
+  #
+  # def increase by=1
+  #   # self.value = self.value+by # don't self modify here!!
+  #   by+self.value
+  # end
 
 
   def == x

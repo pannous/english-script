@@ -95,8 +95,8 @@ class ListTest < ParserBaseTest # <  EnglishParser
 
   def test_concatenation
     parse "x is 1,2,3;y=4,5,6"
-    assert(variables['x']== [1, 2, 3]);
-    assert(variables['y'].count== 3);
+    assert(variables['x'].value== [1, 2, 3]);
+    assert(variables['y'].value.count== 3);
     init "x + y"
     z=@parser.algebra
     assert_equals z.length, 6
@@ -183,8 +183,8 @@ class ListTest < ParserBaseTest # <  EnglishParser
     parse "x be 1,2,3;y= class of x"
     assert variables['y']==Array
     assert_equals variables['x'].type, Array
-    assert_equals variables['x'].class, Array
-    assert_equals variables['x'].kind, Array
+    assert_equals variables['x'].value.class, Array
+    assert_equals variables['x'].value.kind, Array
     assert_equals variables['y'], Array
     assert("y is a Array")
     assert("y is an Array")
@@ -196,7 +196,7 @@ class ListTest < ParserBaseTest # <  EnglishParser
   end
 
   def test_type4
-    variables['x']=[1, 2, 3]
+    variable['x']=Variable.new name:'x',value: [1, 2, 3]
     assert("class of x is Array")
     assert("kind of x is Array")
     assert("type of x is Array")
