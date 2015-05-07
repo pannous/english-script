@@ -3,10 +3,9 @@
 Encoding.default_external="UTF-8"
 
 begin
-  require_relative 'Interpretation'
-  require_relative 'TreeBuilder'
-  require_relative 'CoreFunctions'
-  require_relative 'HelperMethods'
+  require_relative 'interpretation'
+  require_relative 'tree-builder'
+  require_relative 'core-functions'
   require_relative 'english-tokens'
   require_relative 'power-parser'
   require_relative 'extensions'
@@ -1688,7 +1687,7 @@ class EnglishParser < Parser
       result=!result if negate # XOR result=result ^ negate
       if not result
         verbose "condition not met #{cond} #{@lhs} #{@comp} #{@rhs}"
-        result=:false #incompatible with 'while (check_condition c)'
+        # result=:false why? #incompatible with 'while (check_condition c)'
       end
       return result
     rescue => e

@@ -1,5 +1,6 @@
 # encoding: utf-8
-require_relative "TreeBuilder"
+
+require_relative 'tree-builder'
 require_relative "exceptions"
 require_relative "extensions"
 

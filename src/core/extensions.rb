@@ -21,7 +21,7 @@ end
 
 def beep
   print "\aBEEP "
-  system "say 'beep'" rescue nil
+  system "say 'beep'" rescue nil if not $testing
   'beeped'
 end
 
