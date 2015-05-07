@@ -1,11 +1,12 @@
 require_relative 'kast.rb'
-# require 'xml'
+# require 'file'
 require 'nokogiri'
 # require 'libxml' #  identical : XML::Document.new == LibXML::XML::Document.new
-# require 'xml/libxml' # if ^^ fails!
+# require 'file/libxml' # if ^^ fails!
 
 
-file='test.kast.xml'
+fileName   ='test.kast.xml'
+fileName   ='kast.yml'
 schema_file='kast.xsd'
 
 @obs=obs=Object.methods
@@ -14,44 +15,58 @@ begin
   schema = Nokogiri::XML::Schema(File.read(schema_file))
 rescue Nokogiri::XML::SyntaxError => e
   puts "Invalid XML Schema! "+e.to_s
+  exit
 end
 
 
-if not schema.valid?( file )
-  puts schema.validate( file ).join("\n")
-  raise "Invalid XML file #{file} under schema #{schema_file}!"
+def yml2xml builder, body, tabs=0
+  builder.puts "<module xmlns='http://angle-lang.org'>" if (tabs==0 and body.length>1)
+  body.each_pair do |k, v|
+    val=v.is_a? Integer
+    val||=v.is_a? Fixnum
+    val||=v.is_a? String
+    val||=v.is_a? TrueClass
+    val||=v.is_a? FalseClass
+    if val
+      builder.puts "\t"*tabs+"<#{k}>#{v}</#{k}>"
+    else
+      builder.puts "\t"*tabs+"<#{k}>"
+      yml2xml builder, v, tabs+1
+      builder.puts "\t"*tabs+"</#{k}>"
+    end
+  end
+  builder.puts "</module>" if (tabs==0 and body.length>1)
+  return builder
+end
+
+file=File.open(fileName)
+if fileName.end_with? "yml"
+  file =yml2xml(StringIO.new, YAML::load(file)).string
+end
+doc = Nokogiri::XML(file)
+# puts doc.to_xml
+if not schema.valid?(doc)
+  puts schema.validate(doc).join("\n")
+  raise "Invalid XML fileName #{fileName} under schema #{schema_file}!"
+else
+  p"schema OK"
 end
 
 # doc = XML::Parser.string(xml_data).parse
-doc = Nokogiri::XML(File.open(file))
-
-# doc.find('//method').each{|p|
-doc.xpath('//method').each{|p|
-  puts p
-  # puts  (p.find_first "id").to_s
-  # puts  (p.find_first "id[@name='bla']").content.to_s  #content!!
-  # attribute =(offer.find_first "@produktsku").value.to_s  #value!!
-}
-
 node=doc.root
-# p (node.methods-obs).sort
-# [:%, :/, :<<, :[], :[]=, :accept, :add_child, :add_namespace, :add_namespace_definition, :add_next_sibling, :add_previous_sibling, :after, :all?, :any?, :at, :at_css, :at_xpath, :attr, :attribute, :attribute_nodes, :attribute_with_ns, :attributes, :before, :canonicalize, :cdata?, :child, :children, :children=, :chunk, :collect, :collect_concat, :comment?, :content, :content=, :count, :create_external_subset, :create_internal_subset, :css, :css_path, :cycle, :decorate!, :default_namespace=, :delete, :description, :detect, :do_xinclude, :document, :drop, :drop_while, :each, :each_cons, :each_entry, :each_slice, :each_with_index, :each_with_object, :elem?, :element?, :element_children, :elements, :encode_special_chars, :entries, :external_subset, :find, :find_all, :find_index, :first, :first_element_child, :flat_map, :fragment, :fragment?, :get_attribute, :grep, :group_by, :has_attribute?, :html?, :inject, :inner_html, :inner_html=, :inner_text, :internal_subset, :key?, :keys, :last_element_child, :lazy, :line, :map, :matches?, :max, :max_by, :member?, :min, :min_by, :minmax, :minmax_by, :name=, :namespace, :namespace=, :namespace_definitions, :namespace_scopes, :namespaced_key?, :namespaces, :native_content=, :next, :next=, :next_element, :next_sibling, :node_name, :node_name=, :node_type, :none?, :one?, :parent, :parent=, :parse, :partition, :path, :pointer_id, :previous, :previous=, :previous_element, :previous_sibling, :read_only?, :reduce, :reject, :remove, :remove_attribute, :replace, :reverse_each, :search, :select, :serialize, :set_attribute, :slice_before, :sort, :sort_by, :swap, :take, :take_while, :text, :text?, :to_a, :to_h, :to_html, :to_set, :to_str, :to_xhtml, :to_xml, :traverse, :unlink, :values, :write_html_to, :write_to, :write_xhtml_to, :write_xml_to, :xml?, :xpath, :zip]
 
 @methods={}
-for method in Kast.instance_methods
-  # methods[method]=method
-  # methods[method.to_s]=method
-  # methods[method.to_s.downcase]=method
-  @methods[method.to_s.downcase.sub(/def$/, '')]=method#
+for method in Kast.instance_methods # module.methods == Classes!!
+  @methods[method.to_s.downcase.sub(/def$/, '')]=method #
 end
 
-@methods[:then]=:Expression
-@methods[:else]=:Expression
-@methods[:arg]=:Expression # Danger: expects plural!
-@methods[:args]=:Expression
-@methods[:argument]=:Expression # Danger: kast expects plural!
-@methods[:arguments]=:Expression
-@methods[:body]=:Expression
+@methods[:then]        =:Expression
+@methods[:else]        =:Expression
+@methods[:arg]         =:Expression # Danger: expects plural!
+@methods[:args]        =:Expression
+@methods[:argument]    =:Expression # Danger: kast expects plural!
+@methods[:arguments]   =:Expression
+@methods[:body]        =:Expression
 @methods[:class_method]=:MethodDef #TODO!!
 
 def walk type, node
@@ -78,18 +93,18 @@ def walk type, node
   end
   contents=[]
   for element in node.element_children
-    k=element.name
-    v=element
-    elem=walk k,v
+    k         =element.name
+    v         =element
+    # if k=="name"
+    elem      =walk k, v
     content[k]=elem
     contents<<elem # many defs ...
   end
-  contents=node.text if not node.element_children or node.element_children.count==0
+  contents      =node.text if not node.element_children or node.element_children.count==0
   content[:body]||=contents
-  # p content
+  p content
   constructor.call(content)
 end
+
 tree=walk :module, node
 p tree
-# yml.
-# IO.readlines(file) do l

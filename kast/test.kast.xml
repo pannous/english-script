@@ -7,22 +7,26 @@
     <import package="io"/>
     <!--Waah! text!!-->
     <class name="Test">
-        <method name="fun" args="[x,y]" static="true">
-            <let var="z" modifier="const">
-                <call object='x' method='*' argument='y'/>
-            </let>
-            <return value="z"/>
+        <method name="fun" args="[x,y]" static="true" returns="int">
+            <body>
+                <let var="z" modifier="const">
+                    <call object='x' method='*' argument='y'/>
+                </let>
+                <return value="z"/>
+            </body>
         </method>
         <!--Waah! text!!-->
         <def name="block_fun" returns="int">
-            <let var="block_variable" modifier="final">
-                <call object='test' method='power' argument='y'/>
-            </let>
-            <return>
-                <call object='call_with_block' method='map'>
-                    <let var="block_variable" value="3"/>
-                </call>
-            </return>
+            <body>
+                <let var="block_variable" modifier="final">
+                    <call object='test' method='power' argument='y'/>
+                </let>
+                <return>
+                    <call object='call_with_block' method='map'>
+                        <let var="block_variable" value="3"/>
+                    </call>
+                </return>
+            </body>
         </def>
     </class>
     <let var="test">

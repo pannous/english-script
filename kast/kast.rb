@@ -2,7 +2,7 @@
 # https://docs.python.org/release/3.4.2/library/ast.html#abstract-grammar
 # -- ASDL's six builtin types are identifier, int, string, bytes, object, >>> singleton <<< NEW
 
-require_relative '../extensions.rb'
+# require_relative '../extensions.rb'
 
 module Kast
 

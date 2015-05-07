@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+
 # https://github.com/dmw/pyxser/blob/master/src/pyxser_serializer.c
 # import ast
 # from ast import *
-import xml.etree.ElementTree as ET
+import io
+import xml.etree.ElementTree as Xml
 import kast
 from kast import *
 
@@ -10,16 +13,50 @@ from kast import *
 # xml=parse(file)
 # print xml.toxml()
 
-file='test.kast.xml'
-schema_file='kast.xsd'
-# xast_file='test.pyast.xml'
-# xast_file='test_mini.pyast.xml'
-# xast_file='test_full.pyast.xml'
-# xast_file='test.xast'
-xast_file='test.kast.xml'
-# ast_file='demo.pyast'
-tree = ET.parse(xast_file)
-root = tree.getroot()
+# schema_file='kast.xsd'
+# kast_file='test.pyast.xml'
+kast_file='test_mini.pyast.xml'
+# kast_file='test_full.pyast.xml'
+# kast_file='test.xast'
+# kast_file='test.kast.xml'
+kast_file='kast.yml'
+# pyast_file='demo.pyast'
+
+def yml2xml(builder, body, tabs=0):
+    if(tabs==0 and len(body)>1): builder.write( "<module xmlns='http://angle-lang.org'>\n")
+    if isinstance(body,list):
+        builder.write(str(body))
+        return
+    for elem in body:
+        k=elem
+        v=body[k]
+        val=isinstance(v,int)
+        val=val or isinstance(v,float)
+        val=val or isinstance(v,str)
+        val=val or isinstance(v,bool)
+        if val:
+            builder.write( "\t"*tabs+"<%s>%s</%s>\n"%(k,v,k))
+        else:
+            builder.write( "\t"*tabs+"<%s>\n"%k)
+            yml2xml(builder, v, tabs+1)
+            builder.write("\t"*tabs+"</%s>\n"%k)
+    if (tabs==0 and len(body)>1): builder.write("</module>")
+    return builder
+
+file=open(kast_file)
+if kast_file.endswith("yml"):
+    import yaml
+    from cStringIO import StringIO
+    xml =yml2xml(StringIO(),yaml.load(file)).getvalue()
+    kast_file = xml # StringIO 'file' ;)
+    print(xml)
+    root = Xml.fromstring(xml)
+else:
+    tree = Xml.parse(kast_file)
+    root = tree.getroot()
+import re
+xmlns=re.sub("\}.*","}",root.tag)
+# if xmlns!=root.tag: xmlns=xmlns[1:-1]
 
 
 def parseString(a, v):
@@ -43,7 +80,12 @@ def parseString(a, v):
 
 
 def build(node):
-    tag=node.tag.split("}")[1]
+    global xmlns
+    tag=node.tag.replace(xmlns,"")
+    if(tag=="name"):
+        return Name(id=node.text)
+    elif(tag=="num"):
+        return Num(n=int(node.text))
     construct= kast.types[tag]
     elem=construct()
     # 'data'
@@ -62,21 +104,36 @@ def build(node):
         elem.__setattr__(a,v)
 
     children=node.getchildren()
+    expect=elem._fields # [x for x in dir(elem) if not x.startswith("_")]
     body=[]
+    # if(isinstance(node,Name)):
+    #     print("KL")
+    # if children==[] and node.text and node.text.strip()!="": #// too late!
+    #     val=parseString(tag, node.text)
+    #     elem.__setattr__(tag, val)
+    #     if(len(expect)==1):
+    #         elem=construct(val)
     for c in children:
-        childName=c.tag.split("}")[1]
-        if not childName in kast.types: #i.e.: body=...
+        childName=c.tag.replace(xmlns,"")
+        if(childName=="name"):
+            child=parseString(childName,c.text.strip())
+        elif(childName=="num"):
+            child=Num(n=int(c.text))
+        elif not childName in kast.types: #i.e.: body=...
             babies=c.getchildren()
-            if len(babies)==1 and not childName in ['args','body','values']:#
-                elem.__setattr__(childName,build(babies[0]))
+            if babies==[] and c.text and c.text.strip()!="":
+                child=parseString(childName, c.text)
+            elif len(babies)==1 and not childName in ['args','body','values']:#
+                child=build(babies[0])
             else:
-                elem.__setattr__(childName,[build(n) for n in babies])
+                child=[build(n) for n in babies]
         else:
             child=build(c)
             if(isinstance(child,list)):
                 body=child
             else:
                 body.append(child)
+        elem.__setattr__(childName, child)
     if len(body)>0:
         elem.body=body
     attribs=dir(elem)
@@ -119,7 +176,7 @@ print(x)
 import codegen
 print(codegen.to_source(my_ast))
 
-code=compile(my_ast, xast_file, 'exec')#flags=None, dont_inherit=None
+code=compile(my_ast, kast_file, 'exec')#flags=None, dont_inherit=None
 # TypeError: required field 'lineno' missing from stmt
 # no, what you actually mean is "tuple is not a statement" LOL WTF ;)
 

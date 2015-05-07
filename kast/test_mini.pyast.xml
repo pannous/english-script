@@ -1,7 +1,10 @@
-<For target="i">
+<?xml-model href="http://angle-lang.org/kast.xsd"?>
+<module xmlns="http://angle-lang.org">
+<for target="i">
     <iter>
-        <Call func="range" args="10"/>
+        <call func="range" args="10"/>
     </iter>
-    <Print values="'yay, a string'"/>
-    <Print values="i"/>
-</For>
+    <print values="'yay, a string'"/>
+    <print values="i"/>
+</for>
+</module>

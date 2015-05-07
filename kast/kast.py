@@ -6,28 +6,48 @@ import ast
 import sys
 import _ast
 
+
+class Assign(ast.Assign):
+    def set_var(self,var):self.targets=[var]
+    var = property(lambda self:self.targets, set_var)
+    variable = property(lambda self:self.targets, set_var)
+    variables = property(lambda self:self.targets, set_var)
+    object = property(lambda self:self.targets, set_var)
+
+class Call(ast.Call):
+    def set_method(self,method):self.func=method
+    method = property(lambda self:self.func, set_method)
+    def set_object(self,o):self.targets=[o]
+    object = property(lambda self:self.targets, set_object)
+    # method = property(lambda self:self.func, lambda self,method:[0 for self.func in [method]])
+
+class ClassDef(ast.ClassDef):
+    def __init__(self, **kwargs):
+        super(ast.ClassDef,self).__init__(*kwargs)
+        if not "nl" in kwargs:
+            self.nl=True
+        if not "decorator_list" in kwargs:
+            self.decorator_list=[]
+        if not "bases" in kwargs:
+            self.bases=[]
+
 # todo : more beautiful mappings / defaults
 class Import(ast.Import):
-    def __init__(self, **kwargs):
-        super(ast.Import, self).__init__(*kwargs)
-      # if not "names" in kwargs:
-      #     self.names=kwargs["package"]
-
     def set_package(self,package):
         self.names=[package]
     def get_package(self):
         return self.names
     package = property(get_package , set_package )
 
-class ClassDef(ast.ClassDef):
+class FunctionDef(ast.FunctionDef):
     def __init__(self, **kwargs):
-      super.__init__(*kwargs)
-      if not "nl" in kwargs:
-          self.nl=True
+        super(ast.FunctionDef,self).__init__(*kwargs)
+        if not "decorator_list" in kwargs:
+            self.decorator_list=[]
 
 class Print(ast.Print):
       def __init__(self, **kwargs):
-          super(Print, self).__init__(*kwargs)
+          super(ast.Print,self).__init__(*kwargs)
           if not "nl" in kwargs:
               self.nl=True
 
@@ -50,13 +70,14 @@ if sys.version_info > (3,0):
 
 
 class Name(ast.Name):
+    # def __init__(self, **kwargs):
+    #     super(ast.Name,self).__init__(*kwargs)
     def __str__(self):
          return "<kast.Name id='%s'>"%self.id
 
 types={ # see _ast.py , F12:
-
-"Raise":Raise,
-"class":ast.ClassDef,
+"Raise":Raise,#danger raise keyword
+"class":ClassDef,
 "operator":operator,
 "Add":Add,
 "alias":alias,
@@ -138,7 +159,7 @@ types={ # see _ast.py , F12:
 "Pass":Pass,
 "Pow":Pow,
 "Print":Print,
-"Raise":Raise,
+'Raise':Raise,
 "Repr":Repr,
 "Return":Return,
 "RShift":RShift,
@@ -163,6 +184,7 @@ types={ # see _ast.py , F12:
 # workaround: alias is keyword in ruby!
 mapped_types={
     "Alias":alias,
+    "class_method":FunctionDef,
     "int":Num,
     "let":Assign,
     "Condition":expr,
@@ -175,3 +197,5 @@ for k,v in types.items():
     if(k=='Raise'):continue
     if(k=='Let'):continue
     types[k.lower()]=types[k]
+    types["{http://angle-lang.org}"+k.lower()]=types[k]
+

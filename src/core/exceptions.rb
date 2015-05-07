@@ -35,3 +35,8 @@ module Exceptions
   end
 
 end
+
+# hack to enable true.is_a?(Boolean) #=> true
+module Boolean; end
+class TrueClass; include Boolean; end
+class FalseClass; include Boolean; end

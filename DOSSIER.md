@@ -280,15 +280,11 @@ Thirdly modern C++ parsers probably have a much higher complexity of what we wan
 
 And lastly (this is only partly a joke and should illustrate some limitations of grandma theory): if we say that each statement has to be less then 100 Wurts we are not faced with a class 0 language but with a class four Grammar, namely a finite set of commands. Of course the practical truth lies in between.
 
-★ TL;DR ★
+★ Summary TL;DR ★
 ---------
 In the near future a new programming language will appear which has the unique property of being speakable.
-It will get rid of all those braces and brakets, and it will consistently use English like syntax.
+It will get rid of all those braces and brakets, and it will consistently use (English like syntax)[https://github.com/pannous/english-script/tree/master/examples].
 
-The following test, embedded in Ruby, passes TODAY!
-def test_selector0
-```
-  parse "xs be 2, 3, 8 and 9"
-  z=parse "let z be xs that are smaller than 7 "
-  assert_equals z,[2,3]
-```
+Programming is one of the most empowering experiences you can have!
+It is like writing a book that can interact with the world in many dimensions.
+I want to bring the joy of writing software to everyone, including your mom.

@@ -9,14 +9,15 @@ class:
   name: test
   class_method:
     name: fun
-    args: x,y
+    args: [x,y]
     body:
       assign:
         var: z
-        call:
-          object: x
-          method: add
-          args: y
+        value:
+          call:
+            object: x
+            method: add
+            args: y
       return:
         value: z
 

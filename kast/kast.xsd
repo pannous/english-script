@@ -28,11 +28,9 @@
 
     <element name="let" type="a:let"/>
     <element name="var" type="a:let"/>
-    <element name="assign" type="a:let"/>
+    <element name="assign" substitutionGroup="a:let"/>
     <!--nicht ganz das gleiche!-->
-
     <!--<element name="set" type="a:MATH.SET!!!"/>-->
-
     <!--<element name="assignment" type="a:let"/>-->
     <!--<element name="set_variable" type="a:let"/>-->
     <!--<element name="defvar" type="a:let"/>-->
@@ -44,6 +42,7 @@
     <element name="invocation" substitutionGroup="a:call"/>
 
     <element name="method" type="a:method"/>
+    <element name="class_method" substitutionGroup="a:method"/>
     <element name="function" substitutionGroup="a:method"/>
     <element name="def" substitutionGroup="a:method"/>
     <element name="fun" substitutionGroup="a:method"/>
@@ -57,16 +56,28 @@
             <element name="method" type="a:method"/>
             <element name="def" type="a:method"/>
             <element name="let" type="a:let"/>
+            <element name="var" type="a:let"/>
+            <element name="assign" type="a:let"/>
+            <!--<element name="assign" substitutionGroup="a:let"/>-->
             <element name="call" type="a:call"/>
-            <element name="value" type="a:value"/>
+            <element name="print" type="a:print"/>
+            <!--<element name="value" type="a:value"/>-->
+            <!--<element name="value" type="a:valueOrExpression"/>-->
             <element name="int" type="a:int"/>
+            <element name="num" type="a:int"/>
             <element name="if" type="a:if"/>
             <element name="for" type="a:for"/>
             <element name="construct" type="a:call"/>
+            <element name="return" type="a:valueOrExpression"/>
             <!--<element name="condition" type="a:expression"/>-->
             <element name="condition" type="a:valueOrExpression"/>
         </xs:choice>
     </xs:group>
+
+
+    <!--<choice maxOccurs="unbounded" minOccurs="0">-->
+    <!--<group ref="a:expressions"/>-->
+    <!--</choice>-->
 
     <complexType name="block">
         <choice maxOccurs="unbounded" minOccurs="0">
@@ -78,21 +89,13 @@
 
     <!-- mixed="true" really? what does text mean??-->
     <complexType name="expression">
-        <!--<all minOccurs="1"> any order and MUST occur once!-->
-        <!--<all minOccurs="0">-->
         <choice maxOccurs="1" minOccurs="0">
-            <!--<sequence minOccurs="0" maxOccurs="1">-->
             <group ref="a:expressions"/>
         </choice>
-        <!--</sequence>-->
-        <!--</all>-->
     </complexType>
 
     <complexType name="module">
-        <!--<complexContent>-->
-        <!--<extension base="a:block">-->
         <choice maxOccurs="unbounded">
-            <!-- ^^ allow any code in file-->
             <element name="import" type="a:import"/>
             <element name="class" type="a:class"/>
             <!--<element name="decorators" type="a:decorators"/>-->
@@ -102,19 +105,18 @@
         <attribute name="name" type="string"/>
         <attribute name="parent" type="string"/>
         <attribute name="enabled" type="boolean" use="optional"/>
-        <attribute name="implicit-return" type="boolean" use="optional"/>
+        <!--<attribute name="implicit-return" type="boolean" use="optional"/>-->
         <!--todo: put implicit-return in meta header-->
-        <!--</extension>-->
-        <!--</complexContent>-->
     </complexType>
 
     <complexType name="class">
         <complexContent>
             <extension base="a:block">
-                <!--<choice maxOccurs="unbounded">-->
-                <!--<element name="name" type="string"/>-->
-                <!--</choice>-->
-                <attribute name="name" type="string" use="required"/>
+                <choice maxOccurs="unbounded">
+                    <element name="name" type="string"/>
+                    <element name="class_method" type="a:method"/>
+                </choice>
+                <attribute name="name" type="string"/>
                 <attribute name="enabled" type="boolean" use="optional"/>
             </extension>
         </complexContent>
@@ -124,24 +126,29 @@
     <complexType name="method">
         <choice maxOccurs="unbounded">
             <element name="name" type="string"/>
-            <element name="let" type="a:let"/>
-            <element name="return" type="a:valueOrExpression"/>
+            <element name="returns" type="a:type"/>
+            <element name="argument" type="a:argument"/>
+            <element name="args" type="a:arguments"/>
+            <!--<element name="let" type="a:let"/> ??-->
+            <element name="body" type="a:block"/>
+            <!-- IMPLICIT: BODY!!-->
+            <!--<element name="return" type="a:valueOrExpression"/> in body is NOT the same as returns !!!-->
         </choice>
         <attribute name="name" type="string"/>
-        <attribute name="args" type="a:args"/>
-        <attribute name="static" type="boolean"/>
         <attribute name="returns" type="a:type"/>
-
+        <attribute name="args" type="a:arguments"/>
+        <!-- list of variables?? very ruby !-->
+        <attribute name="static" type="boolean"/>
     </complexType>
 
     <simpleType name="url">
         <restriction base="xs:anyURI"/>
     </simpleType>
 
-    <simpleType name="args">
+    <simpleType name="arguments">
         <restriction base="xs:string">
             <minLength value="0"/>
-            <pattern value="\[((\w)+,?)*\]"/>
+            <pattern value="\[?((\w)+,?)*\]?"/>
         </restriction>
     </simpleType>
 
@@ -167,11 +174,17 @@
         <complexContent>
             <extension base="a:expression">
                 <choice maxOccurs="unbounded" minOccurs="0">
+                    <element name="object" type="a:variable"/>
+                    <element name="method" type="a:methodName"/>
+                    <element name="func" type="a:methodName"/>
                     <element name="argument" type="a:argument"/>
+                    <element name="args" type="a:argument"/>
                 </choice>
                 <attribute name="object" type="a:variable"/>
                 <attribute name="method" type="a:methodName"/>
+                <attribute name="func" type="a:methodName"/>
                 <attribute name="argument" type="a:valueOrVariable"/>
+                <attribute name="args" type="a:valueOrVariable"/>
             </extension>
         </complexContent>
     </complexType>
@@ -206,12 +219,6 @@
         </complexContent>
     </complexType>
 
-    <complexType name="value">
-        <complexContent>
-            <extension base="a:expression">
-            </extension>
-        </complexContent>
-    </complexType>
 
     <complexType name="statement">
         <complexContent>
@@ -299,6 +306,14 @@
     <!--</complexContent>-->
     <!--</complexType>-->
 
+
+    <complexType name="value">
+        <complexContent>
+            <extension base="a:expression">
+            </extension>
+        </complexContent>
+    </complexType>
+
     <complexType name="valueOrExpression" mixed="true">
         <!--<complexContent  mixed="true">-->
         <!--<extension base="a:expression">-->
@@ -308,6 +323,7 @@
         <!--</choice>-->
         <choice minOccurs="0" maxOccurs="1">
             <group ref="a:expressions"/>
+            <element name="value" type="a:valueOrExpression"/>
         </choice>
         <attribute name="value" type="a:valueType"/>
         <!--</extension>-->
@@ -315,13 +331,22 @@
     </complexType>
 
     <complexType name="for">
-        <sequence>
+        <!--<sequence minOccurs="0">-->
+        <choice minOccurs="0" maxOccurs="unbounded">
             <element name="target" type="a:variable"/>
             <!-- todo for x in list -> for x:String in list / for(String x : list)-->
-
             <element name="iter" type="a:expression"/>
             <element name="body" type="a:block"/>
-        </sequence>
+            <!-- BODY HACK:-->
+            <group ref="a:expressions"/>
+        </choice>
         <attribute name="target" type="a:variable"/>
+    </complexType>
+
+    <complexType name="print">
+        <choice minOccurs="0">
+            <element name="values" type="a:expression"/>
+        </choice>
+        <attribute name="values" type="string"/>
     </complexType>
 </schema>
