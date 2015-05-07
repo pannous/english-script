@@ -34,9 +34,10 @@ class VariableTest  < ParserBaseTest
     assert_has_error "const i='hi';i='ho'"
   end
 
-  def test_vars2
-    init "counter=3"
-    assert @parser.condition #don't change var!
+  def test_var_condition_unmodified
+    variables['counter']=Variable.new name:'counter', value:3
+    init "counter=2"
+    assert false==@parser.condition #don't change var!
     assert "counter=3"
   end
 
