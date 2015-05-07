@@ -155,7 +155,9 @@ module LoopsGrammar
     _ 'repeat'
     n=number
     _ 'times'
-    no_rollback!
+    # no_rollback!
+    start_block?
+    newline?
     dont_interpret!
     b=action_or_block
     n.times { do_execute_block b } if check_interpret

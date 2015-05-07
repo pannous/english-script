@@ -168,9 +168,9 @@ class FunctionTest < ParserBaseTest
   end
 
   def test_add_to_zero
-    variables['x']=7
+    variables['x']=Variable.new name:'x',value:7
     init "x"
-    assert_equals @parser.nod, "x" #Variable.new "x"
+    assert_equals @parser.nod.name, "x" #Variable.new "x"
     # 0->false->"" ERROR!!!
     parse "counter is zero; repeat three times: increase counter by 1; done repeating;"
     assert_equals variables['counter'], 3
