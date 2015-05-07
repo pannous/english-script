@@ -1241,6 +1241,13 @@ class EnglishParser < Parser
     return var
   end
 
+
+  def auto_type val
+    return val.class if not val.is_a?String
+    return val.name if not val.is_a?TreeNode
+    return do_evaluate(val).class
+  end
+
   #  CAREFUL WITH WATCHES!!! THEY manipulate the current system, especially variable
   #/*	 let nod be nods */
   def setter
@@ -1258,6 +1265,7 @@ class EnglishParser < Parser
     val =adjective? || expressions
     no_rollback!
     val=[val].flatten if setta=='are' or setta=='consist of' or setta=='consists of'
+    var.type||=type||auto_type(val)
     assure_same_type_overwrite var, val if _let
     # var.type||=type||val.class #eval'ed! also x is an integer
     # assure_same_type var, type||val.class if check_interpret # todo : type analysis via tree
@@ -1380,9 +1388,13 @@ class EnglishParser < Parser
   end
 
   def do_cast x, typ
-    return x.to_f if typ.is_a? Float
-    return x.to_i if typ.is_a? Fixnum
+    return x.to_i if typ==Integer
+    return x.to_f if typ==Float
+    return x.to_i if typ==Fixnum
     return x.to_i if typ.is_a "int" #todo!
+    return x.to_f if typ.is_a "number" #todo!
+    return x.to_f if typ.is_a "float" #todo!
+    return x.to_f if typ.is_a "real" #todo!
     return x.to_i if typ=="int"
     return x.to_s if typ.is_a "String"
     #todo!
@@ -1437,7 +1449,7 @@ class EnglishParser < Parser
     return Argument.new name: a.name, type: a.type, preposition: pre, position: position if a
     type=typeNameMapped?
     v   =endNode?
-    name=pre+ (a ? a.name : type) # daring! def integrate(number) !!
+    name=pre+ (a ? a.name : type||"") # daring! def integrate(number) !!
     Argument.new preposition: pre, name: name, type: type, position: position, value: v
   end
 

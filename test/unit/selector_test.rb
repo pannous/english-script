@@ -29,6 +29,8 @@ class SelectorTest < ParserBaseTest
     init "xs that are smaller than 7" # BUG 'maller t'
     z=@parser.selectable # BUG! def pointer.-
     assert_equals z,[2,3]
+    z=parse "let z be all xs that are smaller than 7 "
+    assert_equals z,[2,3]
     z=parse "let z be xs that are smaller than 7 "
     assert_equals z,[2,3]
     #assert " {xs<7} = 2,3 "

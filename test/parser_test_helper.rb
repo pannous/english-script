@@ -116,6 +116,9 @@ class ParserBaseTest <Minitest::Test # Test::Unit::TestCase #< EnglishParser
     @parser.variables
     # @parser.variableValues
   end
+  def variableValues
+         @parser.variableValues
+  end
 
   def functions
     @parser.methods
