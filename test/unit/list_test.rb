@@ -196,10 +196,20 @@ class ListTest < ParserBaseTest # <  EnglishParser
   end
 
   def test_type4
-    variable['x']=Variable.new name:'x',value: [1, 2, 3]
+    variables['x']=Variable.new name:'x',value: [1, 2, 3]
     assert("class of x is Array")
     assert("kind of x is Array")
     assert("type of x is Array")
+  end
+
+
+  def test_length
+    variables['xs']=Variable.new name:'xs',value: [1, 2, 3]
+    assert("length of xs is 3")
+    assert("size of xs is 3")
+    assert("count of xs is 3")
+    # assert("number of elements in xs is 3")
+    # assert("number of items in xs is 3")
   end
 
   def test_map #needs auto-map !!!
