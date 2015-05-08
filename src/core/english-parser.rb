@@ -892,6 +892,10 @@ class EnglishParser < Parser
     method_call obj
   end
 
+  def call_arguments
+    endNode #may be list
+  end
+
   def method_call obj=nil
     # ruby_method_call? ||
     thing_dot_method_call? || generic_method_call(obj)
@@ -917,7 +921,7 @@ class EnglishParser < Parser
     if has_args(method, obj, assume_args) # NOT KNOWN YET!!
       @current_value=nil
       @in_args      =true
-      args          =star { arg }
+      args          =call_arguments
       if not args and is_object_method(method) #and c_method or static etc
         args =obj
         obj  =Object
@@ -1371,6 +1375,7 @@ class EnglishParser < Parser
     type=typeNameMapped?
     v   =endNode?
     name=pre+ (a ? a.name : type||"") # daring! def integrate(number) !!
+    return false if name.blank?
     Argument.new preposition: pre, name: name, type: type, position: position, value: v
   end
 

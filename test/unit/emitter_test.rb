@@ -59,7 +59,6 @@ class EmitterTest < ParserBaseTest
     assert_equals result,"hello world"
   end
 
-
   def test_printf_1
     assert_result_emitted "printf 'hello world'",'hello world'
   end

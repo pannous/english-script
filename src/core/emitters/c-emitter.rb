@@ -9,9 +9,9 @@ class NativeCEmitter < Emitter
     # if var.name already defined: don't VALUE!
     # if var.name has Type: VALUE -> Type!
     if var.owner # has holding object: x.y=z VS y=z
-      "VALUE #{var.name}=set_property(#{var.owner},#{var},#{val.wrap});"
+      "VALUE #{var.name}=set_property(#{var.owner},#{var},#{val.wrap});\n"
     else
-      "VALUE #{var.name}=set(#{var.name.quoted},#{val.wrap});"
+      "VALUE #{var.name}=set(#{var.name.quoted},#{val.wrap});\n"
     end
   end
 
@@ -50,6 +50,7 @@ class NativeCEmitter < Emitter
 
   def emit_method_call obj,meth,params,native=false
     set=EnglishParser.self_modifying(meth) ? obj.name+"=result=" :"result="
+    set="" if(native) # todo ignore printf vs result=Wrap_C_value(...)
     # rb_thread_critical = Qtrue;
     return "#{set}#{meth}(#{params.values});" if native  # static_cast<int> etc
     return "#{set}#{meth}(#{params.wraps});" if @methods[meth] # static_cast<int> etc
@@ -93,7 +94,9 @@ class NativeCEmitter < Emitter
       puts $?
       exit!
     end
-    result=`/tmp/main` if do_run
+    `cp /tmp/main .`
+    result=`./main` if do_run
+    # result=`/tmp/main` if do_run
     puts "RESULT "+result
     result.strip
   end

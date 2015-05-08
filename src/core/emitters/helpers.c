@@ -60,10 +60,14 @@ int main ( int argc, char ** argv) 	{
 
     // result=rb_rescue(test_require, Qnil, error_handler, rb_str_new2("require"));
 //    pf("OK, starting program\n");
-	result=rb_protect( run, 0, &error);// call our stuff rb_protect'ed
+
+    ///////////////////////////////////////
+	result = rb_protect( run, 0, &error);// <<<<<<<<< CENTRAL CALL TO emitted.c !!
+	/////////////////////^^^///////////////
+
 //    result=run(0);
-//	if(result!=0 && result!=nil && result!=false)// not for native methods like printf!
-//	p(result);
+	if(result!=0 && result!=nil && result!=false)// not for native methods like printf!
+	    p(result);
 	if(error!=0){
         printf("Ruby ERROR %d\n",error);
         perror("Ruby ERROR ");
