@@ -42,6 +42,7 @@ class File
   def name
     path
   end
+
   def filename
     path
   end
@@ -76,11 +77,11 @@ class File
   end
 
   def self.list(dir)
-    Dir.entries(dir)-['.','..']
+    Dir.entries(dir)-['.', '..']
   end
 
   def self.ls(dir)
-    Dir.entries(dir)-['.','..']
+    Dir.entries(dir)-['.', '..']
   end
 
 end
@@ -91,11 +92,11 @@ class Dir
   end
 
   def self.list(dir)
-    Dir.entries(dir)-['.','..']
+    Dir.entries(dir)-['.', '..']
   end
 
   def self.ls(dir)
-    Dir.entries(dir)-['.','..']
+    Dir.entries(dir)-['.', '..']
   end
 
   def list
@@ -167,27 +168,28 @@ class Hash
 
   # CAREFUL! MESSES with rails etc!!
   alias_method :orig_index, :[]
-
-
-  # Careful hash.map returns an Array, not a map as expected
-  # Therefore we need a new method:
-  # {a:1,b:2}.map_values{|x|x*3} => {a:3,b:6}
-  def map_values
-    self.inject({}) do |newhash, (k,v)|
-      newhash[k] = yield(v)
-      newhash
-    end
-  end
-
+  # alias_method :orig_index_setter, :[]=
 
   # DANGER: NOT surjective if not normed here too!!
-  # def []= x,y # NORM only through getter
-  #   super[x.to_sym]=y
+  # def []= x, y
+  #   orig_index_setter(x.to_s, y)
   # end
-  def has key
+  #
+  # def [] x
+  #   return if not x
+  #   orig_index(x.to_s)
+  # end
+
+  # OR:
+  def key? key
+    return keys.contains(key) || keys.contains(key.to_s) if key.is_a? Symbol
+    return keys.contains(key) || keys.contains(key.to_sym) if key.is_a? String
     keys.contains key
   end
+  alias has key?
+  alias contains key?
 
+  # NORM only through getter
   def [] x
     return if not x
     return orig_index(x) || orig_index(x.to_s) if x.is_a? Symbol
@@ -196,9 +198,26 @@ class Hash
     orig_index(x)
   end
 
-  def contains key
-    keys.contains key
+  #
+  # def has key
+  #   keys.contains key or keys.contains key.to_s
+  # end
+  #
+  # def contains key
+  #   keys.contains key or keys.contains key.to_s
+  # end
+
+
+  # Careful hash.map returns an Array, not a map as expected
+  # Therefore we need a new method:
+  # {a:1,b:2}.map_values{|x|x*3} => {a:3,b:6}
+  def map_values
+    self.inject({}) do |newhash, (k, v)|
+      newhash[k] = yield(v)
+      newhash
+    end
   end
+
 end
 
 class Class
@@ -226,7 +245,7 @@ class Array
   end
 
   def contains_a type
-    each{|x| return true if x.is_a?type }
+    each { |x| return true if x.is_a? type }
     false
   end
 
@@ -345,9 +364,11 @@ class FalseClass
   def blank?
     true
   end
+
   def wrap
     self
   end
+
   def c
     self
   end
@@ -382,7 +403,7 @@ class String
   end
 
   def value
-    self  # variable
+    self # variable
     # quoted
   end
 
@@ -429,8 +450,8 @@ class String
 
   def starts_with? x
     # puts "WARNING: start_with? missspelled as starts_with?"
-    if x.is_a?Array
-      x.each{|y| return y if start_with? y}
+    if x.is_a? Array
+      x.each { |y| return y if start_with? y }
     end
     return start_with? x
   end
@@ -507,7 +528,7 @@ class String
   end
 
   def - x
-    self.gsub(x,"")
+    self.gsub(x, "")
     # self[0..self.index(x)-1]+self[self.index(x)+x.length..-1]
   end
 
@@ -553,7 +574,7 @@ class String
   end
 
   def shift n=1
-    n.times{self.gsub!(/^./,"")}
+    n.times { self.gsub!(/^./, "") }
     # self[n..-1]
   end
 

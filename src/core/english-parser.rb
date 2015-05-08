@@ -2029,7 +2029,7 @@ class EnglishParser < Parser
     selfModify=self_modifying method
     selfModify=selfModify and (obj0||args) #and not obj0.is_a?Variable
     if selfModify
-      name =(obj0||args).to_sym
+      name =(obj0||args).to_sym.to_s
       if @variables.has name
         @variables[name].value=@result #rescue nil
         @variableValues[name] =@result
