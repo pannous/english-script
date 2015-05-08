@@ -160,7 +160,9 @@ module LoopsGrammar
     newline?
     dont_interpret!
     b=action_or_block
-    n.times { do_execute_block b } if check_interpret
+    n.times {
+      do_execute_block b
+    } if check_interpret
     b
     #parent_node if $use_tree
   end
