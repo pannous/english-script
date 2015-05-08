@@ -61,7 +61,7 @@ module RubyGrammar
   end
 
   def ruby_require dependency
-    if check_interpret
+    if interpreting?
       # todo obj.include !!
       # todo mapping + reflection
       begin

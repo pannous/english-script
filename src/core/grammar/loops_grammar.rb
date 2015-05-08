@@ -66,7 +66,7 @@ module LoopsGrammar
     _? 'then'
     b=action_or_block #Danger when interpreting it might contain conditions and breaks
     begin
-    r=do_execute_block b while (check_condition(c)==true) if check_interpret
+    r=do_execute_block b while (check_condition(c)==true) if interpreting?
     rescue
       puts $!
     end
@@ -83,7 +83,7 @@ module LoopsGrammar
     c=condition
     _? 'repeat'
     b=action_or_block #Danger when interpreting it might contain conditions and breaks
-    r=do_execute_block b until (check_condition c) if check_interpret
+    r=do_execute_block b until (check_condition c) if interpreting?
     r
   end
 
@@ -95,8 +95,8 @@ module LoopsGrammar
     a=action # or semi-block
     __ 'as long as', 'while'
     c=condition
-    return a if !check_interpret
-    @result=do_execute_block a while (check_condition c) if check_interpret
+    return a if !interpreting?
+    @result=do_execute_block a while (check_condition c) if interpreting?
     @result
   end
 
@@ -108,8 +108,8 @@ module LoopsGrammar
     a=action # or semi-block
     _'until'
     c=condition
-    return a if !check_interpret
-    @result=do_execute_block a until (check_condition c) if check_interpret
+    return a if !interpreting?
+    @result=do_execute_block a until (check_condition c) if interpreting?
     @result
   end
 
@@ -135,7 +135,7 @@ module LoopsGrammar
     n=number if not n
     _ 'times'
     end_block
-    n.to_i.times { @result=do_evaluate a } if check_interpret
+    n.to_i.times { @result=do_evaluate a } if interpreting?
   end
 
   def n_times_action
@@ -147,7 +147,7 @@ module LoopsGrammar
     _? 'repeat'
     dont_interpret!
     a=action_or_block
-    n.to_i.times { @result=do_evaluate a } if check_interpret
+    n.to_i.times { @result=do_evaluate a } if interpreting?
   end
 
   def repeat_n_times
@@ -162,7 +162,7 @@ module LoopsGrammar
     b=action_or_block
     n.times {
       do_execute_block b
-    } if check_interpret
+    } if interpreting?
     b
     #parent_node if $use_tree
   end
@@ -176,7 +176,7 @@ module LoopsGrammar
     a= action
     _ 'forever'
     @forever=true
-    do_execute_block a while (@forever) if check_interpret
+    do_execute_block a while (@forever) if interpreting?
   end
 
   def as_long_condition_block
@@ -185,7 +185,7 @@ module LoopsGrammar
     start_block
     a=block #  danger, block might contain condition
     end_block
-    do_execute_block a while (check_condition c) if check_interpret
+    do_execute_block a while (check_condition c) if interpreting?
   end
 
 

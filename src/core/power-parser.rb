@@ -199,7 +199,7 @@ class Parser #<MethodInterception
     @interpret=false
   end
 
-  def check_interpret n=0
+  def interpreting? n=0
     if (@interpret_border>=caller_depth-n)
       @interpret       = @did_interpret
       @interpret_border=-1
@@ -338,7 +338,7 @@ class Parser #<MethodInterception
       verbose e
       @current_value=nil
       @string       =old
-      check_interpret 2
+      interpreting? 2
       verbose "Tried #{to_source block}" if @verbose
       verbose e
       string_pointer if @verbose
