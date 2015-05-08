@@ -35,8 +35,8 @@ class FunctionTest < ParserBaseTest
     assert fib.args[0].name=='number'
     f10=fib.call(10)
     puts f10
-    assert f10==55
-    assert parse("fibonacci of 10")==55
+    assert_equals f10,55
+    assert_equals parse("fibonacci of 10"),55
     puts parse("assert fibonacci of 10 is 55")
   end
 
@@ -230,5 +230,8 @@ class FunctionTest < ParserBaseTest
     assert_equals("circle.color", "green")
   end
 
+  def test_incr
+    assert "increase 1 == 2"
+  end
 
 end

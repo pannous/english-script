@@ -25,7 +25,8 @@ class Variable
   end
 
   def to_s
-    "<Variable #{type} #{name}=#{value}>"
+    # "<Variable '#{name}' #{type}:#{value}>"
+    "<Variable #{name}=#{value}>"
   end
 
   def to_sym

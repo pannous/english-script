@@ -184,6 +184,9 @@ class Hash
   # def []= x,y # NORM only through getter
   #   super[x.to_sym]=y
   # end
+  def has key
+    keys.contains key
+  end
 
   def [] x
     return if not x
@@ -669,6 +672,10 @@ class Numeric
     self.to_s #"NUM2INT(#{self.to_s})"
   end
 
+  def to_sym
+    to_s.to_sym
+  end
+
   def value
     self
   end
@@ -804,6 +811,9 @@ class Object
     to_s
   end
 
+  # def to_sym #a debatable default!
+  #   to_s.to_sym
+  # end
 
   def value
     self
