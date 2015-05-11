@@ -921,7 +921,7 @@ class EnglishParser < Parser
     if has_args(method, obj, assume_args) # NOT KNOWN YET!!
       @current_value=nil
       @in_args      =true
-      args          =call_arguments
+      args          =call_arguments?
       if not args and is_object_method(method) #and c_method or static etc
         args =obj
         obj  =Object

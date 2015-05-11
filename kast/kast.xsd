@@ -57,6 +57,7 @@
             <element name="def" type="a:method"/>
             <element name="let" type="a:let"/>
             <element name="var" type="a:let"/>
+            <element name="switch" type="a:switch"/>
             <element name="assign" type="a:let"/>
             <!--<element name="assign" substitutionGroup="a:let"/>-->
             <element name="call" type="a:call"/>
@@ -164,8 +165,9 @@
         <complexContent>
             <extension base="a:valueOrExpression">
                 <attribute name="var" type="a:variable"/>
-                <attribute name="modifier" type="a:variable-modifier"/>
-                <attribute name="modifiers" type="a:variable-modifiers"/>
+                <attribute name="type" type="a:type"/>
+                <attribute name="modifier" type="a:modifier"/>
+                <attribute name="modifiers" type="a:modifiers"/>
             </extension>
         </complexContent>
     </complexType>
@@ -220,6 +222,7 @@
     </complexType>
 
 
+    <!-- in OUR beautiful world statements are expressions; see Paul Graham-->
     <complexType name="statement">
         <complexContent>
             <extension base="a:expression">
@@ -227,18 +230,7 @@
         </complexContent>
     </complexType>
 
-    <complexType name="modifiers">
-        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
-            <xsd:choice>
-                <xs:element name="public" type="xsd:string"/>
-                <xs:element name="protected" type="xsd:string"/>
-                <xs:element name="static" type="xsd:string"/>
-                <xs:element name="private" type="xsd:string"/>
-            </xsd:choice>
-        </xsd:sequence>
-    </complexType>
-
-    <simpleType name="variable-modifier">
+    <simpleType name="modifier">
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="final"/>
             <xsd:enumeration value="protected"/>
@@ -250,8 +242,8 @@
     </simpleType>
 
 
-    <simpleType name="variable-modifiers">
-        <xs:list itemType="a:variable-modifier"/>
+    <simpleType name="modifiers">
+        <xs:list itemType="a:modifier"/>
     </simpleType>
 
 
@@ -343,10 +335,25 @@
         <attribute name="target" type="a:variable"/>
     </complexType>
 
+    <!-- todo remove from minimal version -->
     <complexType name="print">
         <choice minOccurs="0">
             <element name="values" type="a:expression"/>
         </choice>
         <attribute name="values" type="string"/>
+    </complexType>
+
+    <!-- todo remove from minimal version: it can be simplified by if then statements -->
+    <complexType name="switch">
+        <sequence>
+            <element name="case" type="a:case"/>
+            <element name="default" type="a:block"/>
+        </sequence>
+    </complexType>
+    <complexType name="case">
+        <sequence>
+            <element name="match" type="a:expression"/>
+            <element name="body" type="a:block"/>
+        </sequence>
     </complexType>
 </schema>

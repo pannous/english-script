@@ -262,7 +262,7 @@ end
   end
 
 
-  def do_evaluate the_expression
+  def do_eval the_expression
     subnode statement: the_expression
     @current_value=the_expression
     begin

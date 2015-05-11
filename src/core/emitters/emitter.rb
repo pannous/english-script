@@ -54,6 +54,7 @@ class Emitter
     return node if not node.is_a? TreeNode
     body=""
     # return if not node.valid
+    # todo: use subclasses and 'emit' pattern!
     put node.name
     put "{"
     # method_call context, node, modul, func if node.name==:method_call
