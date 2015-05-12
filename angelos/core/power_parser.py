@@ -148,14 +148,14 @@ def star(block):
             verbose
             "NotMatching star " + str(e)
             # if tokens and len(tokens)>0: verbose "expected any of "+tokens.to_s
-            if verbose: the.string_pointer
+            if verbose: string_pointer
 
     except EndOfDocument as e:
         # raise e
         verbose("EndOfDocument")
         #break
         #return false
-    except Exception as e:
+    except IgnoreException as e:
         error(e)
         error("error in star " + to_source(block))
         # warn e
@@ -211,7 +211,7 @@ def error(e, force=False):
         # print(e.str(clazz )+" "+e.str(message))
         # print(clean_backtrace e.backtrace)
         # print(e.str( class )+" "+e.str(message))
-        the.string_pointer()
+        string_pointer()
         if angel.use_tree:
             import TreeBuilder
             TreeBuilder.show_tree()
@@ -338,8 +338,8 @@ def init(strings):
     no_rollback_depth = -1
     rollback_depths=[]
     line_number = 0
-    if isinstance(the.strings, list): lines = the.strings
-    if isinstance(the.strings, str): lines = the.strings.split("\n")
+    if isinstance(strings, list): lines = strings
+    if isinstance(strings, str): lines = strings.split("\n")
     the.string= lines[0].strip()  # Postpone angel.problem
     original_string = the.string
     root = None
@@ -387,9 +387,9 @@ def error_position():
     pass
 
 
-def interpretation():
-    interpretation.error_position = error_position()
-    return interpretation
+# def interpretation():
+#     interpretation.error_position = error_position()
+#     return interpretation
 
 
 # gem 'debugger'
@@ -432,7 +432,7 @@ def must_contain(*args):
         return must_contain_before(args[-1]['before'], args[0:-2])
     for x in flatten(args):
         if re.search(r'^\s*\w+\s*$',x):
-            if (" %s "%the.string).match(r'[^\w]#{x}[^\w]'):
+            if re.search(r'[^\w]%s[^\w]'%x," %s "%the.string):
                 return True
         else:  # token
             if x in the.string:
@@ -446,7 +446,7 @@ def must_contain_before(before, *args):  #,before():None
     args = flatten(args)
     for x in flatten(args):
         if re.search(r'^\s*\w+\s*$',x):
-            good = good or re.search(r'[^\w]%s[^\w]'%x,the.string).start()
+            good = good or re.search(r'[^\w]%s[^\w]'%x,the.string)
             if(type(good).__name__=="SRE_Match"):
                 good=good.start()
             if good and before and good.pre_match in before and before.index(good.pre_match):
@@ -566,8 +566,8 @@ def any(block):
         error(e)
 
     if result: verbose("Succeeded with any #{to_source(block)}")
-    if verbose and not result: the.string_pointer()
-    last_token = the.string_pointer_s()  #if not last_token:
+    if verbose and not result: string_pointer()
+    last_token = string_pointer_s()  #if not last_token:
     if check_rollback_allowed(): the.string = oldString
     throwing = was_throwing
     #throwing[level]=True
@@ -622,10 +622,14 @@ def allow_rollback(n=0):
 
 
 def adjust_rollback(depth=-10):
-    global  no_rollback_depth
-    if depth==-10: depth=caller_depth()
-    if depth + 2 < no_rollback_depth:
-        no_rollback_depth = rollback_depths.pop() or -1
+    try:
+        global  no_rollback_depth
+        if depth==-10: depth=caller_depth()
+        if depth + 2 < no_rollback_depth:
+            no_rollback_depth = rollback_depths.pop() or -1
+    except Error as e:
+        error(e)
+
 
 
 # todo ? trial and error -> evidence based 'parsing' ?
@@ -640,8 +644,38 @@ def invalidate_obsolete(old_nodes):
                 n.destroy()
 
 
+
+def block():  # type):
+    global last_result,original_string
+    from english_parser import start_block,statement,end_of_statement,end_block
+    start_block()  # NEWLINE ALONE == START!!!?!?!
+    original_string = the.string  # _try(REALLY)?
+    start = pointer()
+    statements=[statement()]
+    content = pointer() - start
+    end_of_block = maybe(end_block)  # ___ done_words
+    if not end_of_block:
+        end_of_statement()  # danger might act as block end!
+        def lamb():
+            statements.append(statement())
+            content = pointer() - start
+            end_of_statement
+
+        star(lamb)
+        # _try(end_of_statement)
+        end_of_block = end_block()
+
+    last_result = the.result
+    if interpreting(): return statements[-1]
+    return content
+    # if angel.use_tree:
+    # p=parent_node()
+    # if p: p.content=content
+    #   p
+    #
+
 def maybe(block):
-    global  original_string, last_node, current_value, depth,nodes,current_node,last_token
+    global original_string, last_node, current_value, depth,nodes,current_node,last_token
     #if checkEnd: return
     # allow_rollback 1
     depth = depth + 1
@@ -668,7 +702,7 @@ def maybe(block):
         the.string = old
         interpreting(2) #?
         if verbose: verbose("Tried #{to_source(block)}")
-        if verbose: the.string_pointer()
+        if verbose: string_pointer()
         invalidate_obsolete(old_nodes)
         # (nodes - old_nodes).each(lambda n: n.destroy())  #n.valid=false;
         #caller.index(last_try caller)]
@@ -683,7 +717,7 @@ def maybe(block):
         #
         if cc < rb:  #and not cc+2<rb # not check_rollback_allowed:
             error("NO ROLLBACK, GIVING UP!!!")
-            if verbose: print(last_token or the.string_pointer())  # ALWAYS!
+            if verbose: print(last_token or string_pointer())  # ALWAYS!
             if angel.use_tree:
                 import TreeBuilder
                 TreeBuilder.show_tree()  #Not reached
@@ -695,13 +729,13 @@ def maybe(block):
             m0 = bt[0].match(r'`.*')  #except "XX"
             m1 = bt[1].match(r'`.*')  #except "YY"
             ex = GivingUp(
-                "Expecting #{m0} in #{m1} ... maybe related: #{attempt}\n#{last_token  or  the.string_pointer}")
+                "Expecting #{m0} in #{m1} ... maybe related: #{attempt}\n#{last_token  or  string_pointer}")
             ex.set_backtrace(bt)
             raise ex
             # error e #exit
             # raise SyntaxError(e)
     except EndOfDocument as e:
-        (nodes - old_nodes).each(lambda n: n.destroy())
+        invalidate_obsolete(old_nodes)
         the.string = old
         verbose("EndOfDocument")
         #raise e
@@ -745,7 +779,7 @@ def many(block):
             #puts nodes-old_tree
             if(not the.string or len(the.string)==0 ):break  # TODO! loop criterion too week: break
             if not result or result == []:
-                raise NotMatching(to_source(block) + "\n" + the.string_pointer_s())
+                raise NotMatching(to_source(block) + "\n" + string_pointer_s())
         except IgnoreException as e:
             import traceback
             traceback.print_stack() # backtrace
@@ -777,7 +811,7 @@ class IgnoreException(Exception):
 
 def parse(s):
     global  last_result,result
-    if not the.string: return
+    if not s: return
     verbose("PARSING")
     try:
         allow_rollback()
@@ -795,7 +829,7 @@ def parse(s):
     verbose("PARSED SUCCESSFULLY!!")
     # show_tree()
     # puts svg
-    return interpretation  # # result
+    return english_parser.interpretation()  # # result
 
     # def start_parser:
     #   a=ARGV[0]  or  app_path+"/../examples/test.e"

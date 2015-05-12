@@ -816,14 +816,18 @@ class Object:
 
 
 def match_path(p):
+    if(not isinstance(p,str)):return False
     m = re.search(r'^(\/[\w\'\.]+)',p)
     if not m: return False
     return m
 
 
 def is_file(p, must_exist=True):
+    if(not isinstance(p,str)):return False
+    if re.search(r'^\d*\.\d+',p): return False
     if str(p).match(r'^\d*\.\d+'): return False
-    m = str(p).match(r'^([\w\/\.]*\.\w+)') or match_path(the.string)
+    m = re.search(r'^(\/[\w\'\.]+)',p)
+    m = m or re.search(r'^([\w\/\.]*\.\w+)',p)
     if not m: return False
     return must_exist and m and os.path.isfile(m) or m
 

@@ -39,6 +39,7 @@ class TestParser(TestCase):
 
     def test_parse(self):
         six=p.parse("3+3")
+        print(six)
         assert six==6
 
     def test_parser(self):

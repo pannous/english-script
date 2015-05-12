@@ -5,7 +5,7 @@ import traceback
 import sys
 import __builtin__ # class function(object) etc
 
-import Interpretation
+import interpretation
 import HelperMethods
 import events
 from nodes import Function, Argument, Variable, Property
@@ -100,18 +100,17 @@ def it():
 
 
 def value():
+    global current_value
     current_value = None
     no_keyword_except(constants + numbers + result_words + nill_words + ['+', '-'])
-    x = any(lambda:
-            maybe(quote) or \
+    x = maybe(quote) or \
             maybe(nill) or \
             maybe(number) or \
             maybe(true_variable) or \
             maybe(boolean) or \
             maybe(constant) or \
             maybe(it) or \
-            maybe(nod)
-            )
+            nod
     the.result = current_value = x
     # rest_of_line # TOOBIG HERE!
     if ___('as'):
@@ -179,8 +178,11 @@ def yesterday():
 
 
 def interpretation():
-    interpretation = Interpretation()
+    import interpretation
+    interpretation = interpretation.Interpretation()
     i = interpretation  # Interpretation.new
+    i.result = the.result
+    i.error_position = error_position()
     # super  # set tree, nodes
     i.javascript = javascript
     i.context = context
@@ -188,7 +190,6 @@ def interpretation():
     i.ruby_methods = ruby_methods
     i.variables = variables
     i.svg = svg
-    i.result = the.result
     return i
 
     # beep when it rains
@@ -207,30 +208,16 @@ def end_expression():
 
 
 def rooty():
-    def lamb():
-         return maybe(expressions) or\
+    r=maybe(expressions) or\
                 maybe(requirements) or \
                 maybe(method_definition) or \
                 maybe(assert_that) or \
                 maybe(lambda: block() and checkNewline()) or \
                 maybe(statement and end_expression) or \
                 maybe(expressions and end_expression) or \
-                maybe(lambda: condition() or comp) or \
+                maybe(lambda: condition() or the.comp) or \
                 maybe(context)
-    r= power_parser.many(lamb)
     return r
-
-    return power_parser.many(lambda:
-                maybe(expressions) or\
-                maybe(requirements) or \
-                maybe(method_definition) or \
-                maybe(assert_that) or \
-                maybe(lambda: block() and checkNewline()) or \
-                maybe(statement and end_expression) or \
-                maybe(expressions and end_expression) or \
-                maybe(lambda: condition() or comp()) or \
-                maybe(context)
-                )
     # # maybe( ruby_def )or\ # SHOULD BE just as method_definition !!:
 
 
@@ -333,19 +320,18 @@ def operator():
 def algebra():
     # global result
     must_contain_before([be_words, ',', ';', ':'], operators)
-    the.result=result = _try(value) or bracelet()  # any { maybe( value ) or maybe( bracelet ) )
+    the.result= maybe(value) or bracelet()  # any { maybe( value ) or maybe( bracelet ) )
     def lamb():
         op = operator()  # operator KEYWORD!?! ==> the.string="" BUG     4 and 5 == TROUBLE!!!
         if not op == 'and': no_rollback()
-        # the.string=""+the.string2 #==> the.string="" BUG _try(WHY)?
         y = maybe(value) or bracelet()
         if interpreting():  # and not angel.use_tree:
             if op == "/":  # 3'4==0 ? NOT WITH US!!:
                 y=float(y)
             try:
                 the.result = do_send(the.result, op, y or the.result)
-            except SyntaxError:
-                print("x")
+            except SyntaxError as e:
+                error(e)
         return the.result or True
     the.result=star(lamb)
 #         if angel.use_tree and not interpreting():
@@ -384,42 +370,11 @@ def ruby_block():
 def special_blocks():
     return _try(html_block) or _try(ruby_block) or javascript_block
 
-
-def end_of_statement():
-    return checkNewline() or end_expression
     # or end_expression #end_block #newlines
 
     # see read_block for RAW blocks! (</EOF> type)
     # EXCLUDING start_block & end_block !!!
 
-
-def block():  # type):
-    ## global the.string
-    start_block()  # NEWLINE ALONE == START!!!?!?!
-    original_string = the.string  # _try(REALLY)?
-    start = pointer()
-    statements=[statement]
-    content = pointer() - start
-    end_of_block = _try(end_block)  # ___ done_words
-    if not end_of_block:
-        end_of_statement()  # danger might act as block end!
-        def lamb():
-            statements.append(statement)
-            content = pointer() - start
-            end_of_statement
-
-        star(lamb)
-        # _try(end_of_statement)
-        end_of_block = end_block()
-
-    last_result = the.result
-    if interpreting(): return statements[-1]
-    return content
-    # if angel.use_tree:
-    # p=parent_node()
-    # if p: p.content=content
-    #   p
-    #
 
 
 def nth_item():  # Also redundant with property evaluation (But okay as a shortcut)):
@@ -940,13 +895,14 @@ def has_args(method, clazz=object, assume=False):
     if callable(method): return method.arity > 0
     if not isinstance(clazz, type):  #lol:
         clazz = type(clazz)
-    if clazz.method_defined(method): object_method = clazz.method(method)
-    if not object_method: object_method = clazz.public_instance_method(method)
+    object_method=None
+    if method in dir(clazz): object_method = getattr(clazz, method)
+    # if not object_method: object_method = clazz.public_instance_method(method)
     if object_method:  #that might be another method Tree.beep!
         # puts "has_args method.parameters : #{object_method) #{object_method.parameters)"
         return object_method.arity > 0
 
-    if ['invert', '++', '--'].index(method):  # increase by 8:
+    if method in ['invert', '++', '--']:  # increase by 8:
         return False
     return assume  #false # True
 
@@ -1983,17 +1939,29 @@ def resolve(x):
     if is_file(x): return extensions.File(x)
     if isinstance(x, Variable): return x.value
     if interpret and variableValues.has_key(x): return variableValues[x.strip]
-    x
+    return x
 
 
 def self_modifying(method):
-    method == 'increase' or method == 'decrease' or re.search(r'\!$',method)
+    return method == 'increase' or method == 'decrease' or re.search(r'\!$',method)
 
 
 #
 # def self_modifying(method):
 #     EnglishParser.self_modifying(method)  # -lol
 
+def is_math(method):
+    return method in ['+','-','/','*']
+def do_math(a,op,b):
+    if op=='+': return a+b
+    if op=='-': return a-b
+    if op=='/': return a/b
+    if op=='%': return a%b
+    if op=='*': return a*b
+    if op=='**':return a**b
+    if op=='^': return a^b
+    if op=='|': return a|b
+    raise Exception("UNKNOWN OPERATOR "+op)
 
 # INTERPRET only,  todo cleanup method + argument matching + concept
 def do_send(obj0, method, args0):
@@ -2002,12 +1970,12 @@ def do_send(obj0, method, args0):
 
     # try direct first!
     # if _try(y.is_a) Array and len(y)==1: y=y[0]
-    if methods.contains(method):
+    if method in methods:
         the.result = do_execute_block(methods[method].body, args0)
         return the.result
 
     if callable(method): obj = method.owner
-    obj = obj or resolve(obj0)
+    obj = resolve(obj0)
     # obj.map{|x| x.value)
     args = args0
     if isinstance(args, Argument): args = args.name_or_value
@@ -2033,18 +2001,19 @@ def do_send(obj0, method, args0):
     else:
         if (obj == Object):
             m = method(method_name)
-            if not has_args(method, obj, False): the.result = m.call or Nil
-            if has_args(method, obj, True): the.result = m.call(args) or Nil
+            if not has_args(method, obj, False): the.result = m or Nil
+            elif has_args(method, obj, True): the.result = m(args) or Nil
         else:
-            if not has_args(method, obj, False): the.result = obj.send(method)
-            if has_args(method, obj, True): the.result = obj.send(method, args)
+            if is_math(method_name): the.result = do_math(obj,method_name,args)
+            elif not has_args(method, obj, False): the.result = method(obj)
+            elif has_args(method, obj, True): the.result =  method(obj, args) #obj='self'
 
 
     #todo: call FUNCTIONS!
     # puts object_method.parameters #todo MATCH!
 
     # => selfModify todo
-    if obj0 or args and self_modifying(method):
+    if (obj0 or args) and self_modifying(method):
         name = str(obj0 or args)#.to_sym()  #
         variables[name].value = the.result  #
         variableValues[name] = the.result
@@ -2171,13 +2140,16 @@ def any_ruby_line():
 
 def start_block(type=None):
     if type:
-        xmls = maybe_token('<')
+        xmls = _('<')
         _(type)
         if xmls: _('>')
 
     if checkNewline(): return OK
     return ___(':', 'do', '{', 'first you ', 'second you ', 'then you ', 'finally you ')
 
+
+def end_of_statement():
+    return checkNewline() or end_expression()
 
 def english_to_math(s):
     s = s.replace_numerals
@@ -2582,8 +2554,7 @@ def fraction():
 
 
 def number():
-    _try(real) or _try(fraction) or _try(integer) or _try(number_word)
-
+   return _try(real) or _try(fraction) or _try(integer) or _try(number_word)
 
 # _try(complex)  or
 

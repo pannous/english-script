@@ -11,8 +11,7 @@ class Parser(object):
 
     # @property
     def parse(self,code):
-        parse(code)
-        rooty()
+        return parse(code).result
         # return root(self)
         # return self.root()
 
