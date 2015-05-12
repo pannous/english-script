@@ -8,7 +8,7 @@ class MethodTest < ParserBaseTest
   include ParserTestHelper
 
   def test_result
-    parse "show 3"
+    parse "alias show puts;show 3"
     assert_equals result,"3"
     parse "how to test:show 3;ok"
     assert methods.count>0

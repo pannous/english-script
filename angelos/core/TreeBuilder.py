@@ -34,7 +34,7 @@ class MethodInterception:
     #   ,"ruby_method_call"
     #   ,"quote"
 
-  def dont_add_node()(self):
+  def dont_add_node(self):
     return ["integer"]
 
   # includes rather than ignore???? or EXPLICIT node construction!!!

@@ -14,12 +14,24 @@
 # python +: list concatenation
 # python +-: functions proper(!) 1st class citizens [problem: () not default!]
 # python +-: properties
+# python -- LESS FORGIVING! ValueError: list.remove(x): x not in list , if string.index(x): ValueError: substring not found ETC ETC
+# python -- missing SO MANY FUNCTIONS! :
+# python - unsupported operand type(s) for -: 'list' and 'list', AttributeError: 'list' object has no attribute 'each' ETC **
 # python - annoying (self), : , () -> DANGEROUS!! (ok if generated?)
 # python - NO class extensions for builtins! (ok with 'macros' / subclass construction (?))
 # python --- explicit global/class(self) variable scope nightmare!! lambdas + block variable scope !!!!! 'nonlocal' keyword :(
 
 # both ++ mixins  python:class Request(BaseRequest, AcceptMixin), ruby: include AcceptMixin
-
+# both ++ alias neu alt  python: neu=alt def neu(): alt()
 
 # What separates a mixin from multiple inheritance? Is it just a matter of semantics?
 Yes.
+
+ ValueError: list.remove(x): x not in list
+** RUBY: # (the.nodes - old_nodes).each(lambda n: n.invalid())
+            for fuck in old_nodes:
+                if fuck in nodes:
+                    nodes.remove(fuck)
+            the.nodes.each(lambda n: n.invalid())
+             AttributeError: 'list' object has no attribute 'each' WTF -=->
+for n in the.nodes: n.invalid()

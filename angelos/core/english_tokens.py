@@ -1,6 +1,6 @@
 # encoding: utf-8
 import os
-import TreeBuilder
+# import TreeBuilder
 import angel
 from exceptions import *
 import extensions
@@ -16,7 +16,7 @@ import extensions
 ##################
     # def __init__(self):
 from nodes import Quote
-from power_parser import app_path, verbose
+from power_parser import * #app_path, verbose
 bash_commands=['ls','cd']
 main_verbs=['be', 'have', 'do', 'get', 'make', 'want', 'try', 'buy', 'take', 'apply', 'make', 'get', 'eat', 'drink',
                'go', 'know', 'take', 'see', 'come', 'think', 'look', 'give', 'use', 'find', 'tell', 'ask', 'work', 'seem', 'feel',
@@ -184,3 +184,9 @@ keywords=prepositions+modifiers+be_words+comparison_words+fillers+nill_words+don
 
 TRUE="True"
 FALSE="False"
+
+other_verbs=['increase','decrease','square','invert','test']
+special_verbs=['evaluate', 'eval']
+system_verbs=['contains', 'contain']+special_verbs+auxiliary_verbs
+
+newline_tokens=["\.\n", "\. ", "\n", "\r\n", ';']

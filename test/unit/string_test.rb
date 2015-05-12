@@ -93,8 +93,22 @@ class StringTest < ParserBaseTest
 
   def test_concatenation_c
     parse "x is 'hi'"
-    parse "y is ' you';
-       z is x + y"
+    parse "y is ' you'"
+    parse "z is x + y"
+    # parse "y is ' you';
+    #    z is x + y"
+    assert_equals(variables['z'],'hi you');
+  end
+
+  def test_newline_statements
+    parse "x is 'hi';
+           z='ho'"
+    assert_equals(variables['z'],'ho');
+  end
+
+  def test_concatenation_c3
+    parse "x is 'hi'"
+    parse "y is ' you';z is x + y"
     assert_equals(variables['z'],'hi you');
   end
 

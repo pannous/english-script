@@ -225,16 +225,17 @@ end
     # block_parser.classes =@classes
     # block_parser.modules =@modules
     block_parser.variableValues=@variableValues
-    args                       ={arg: args} if not args.is_a? Hash
+    # if not args.is_a? Hash:
+    #   args={'arg': args}
     # see match_arguments for preparation!
-    for arg, val in args
+    for arg, val in args.items()
       v=block_parser.variables[arg]
       if v
         v                               =v.clone
         v.value                         =val
         block_parser.variables[arg.to_s]=v # to_sym todo NORM in hash!!!
       else
-        block_parser.variables[arg.to_s]=Variable.new name: arg, value: val
+        block_parser.variables[arg.to_s]=Variable.new(name= arg, value=val)
       end
     end
     # block_parser.variables+=args
@@ -263,7 +264,8 @@ end
 
 
   def do_eval the_expression
-    subnode statement: the_expression
+    # subnode(statement= the_expression)
+    subnode({'statement':the_expression})
     @current_value=the_expression
     begin
       @result=eval(english_to_math the_expression) #if @result.blank?

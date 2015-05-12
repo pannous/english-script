@@ -2,6 +2,7 @@
 
 # why not return parser??
 class Interpretation:
+    pass
   #  don't put this into the parser!! it conflicts with the  grammar patterns
   #attr_accessor :result,:methods,:ruby_methods,:svg,:javascript,:variables,:context
   #attr_accessor :root,:tree,:nodes  # needs method interception which might not be available in debugging

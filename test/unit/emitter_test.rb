@@ -10,6 +10,13 @@ require_relative '../../src/core/emitters/c-emitter'
 
 class EmitterTest < ParserBaseTest
 
+  def init
+    $use_tree=true
+  end
+  def initialize
+    $use_tree=true
+  end
+
   include ParserTestHelper
 
   def last_result x

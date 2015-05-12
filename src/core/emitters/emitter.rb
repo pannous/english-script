@@ -12,6 +12,7 @@ class Emitter
   def norm a,context
     a=a.value if a.is_a?(TreeNode)
     a=a.name_or_value if a.is_a?(Argument)
+    a=a.value if a.is_a?(Variable) #HOW?
     a=map_method a #if ...!
     a
   end

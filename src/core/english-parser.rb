@@ -3,20 +3,20 @@
 Encoding.default_external="UTF-8"
 
 # begin
-  require_relative 'interpreter'
-  require_relative 'interpretation'
-  require_relative 'tree-builder'
-  require_relative 'core-functions'
-  require_relative 'english-tokens'
-  require_relative 'power-parser'
-  require_relative 'extensions'
-  require_relative 'events'
+require_relative 'interpreter'
+require_relative 'interpretation'
+require_relative 'tree-builder'
+require_relative 'core-functions'
+require_relative 'english-tokens'
+require_relative 'power-parser'
+require_relative 'extensions'
+require_relative 'events'
 
-  require_relative 'grammar/ruby_grammar'
-  require_relative 'grammar/loops_grammar'
+require_relative 'grammar/ruby_grammar'
+require_relative 'grammar/loops_grammar'
 
-  require_relative 'bindings/shell/betty'
-  require_relative 'bindings/native/native-scripting'
+require_relative 'bindings/shell/betty'
+require_relative 'bindings/native/native-scripting'
 # rescue
 #   puts "Needs ruby 2.x"
 #   puts "Trying mruby or rubinius fallback ..."
@@ -61,6 +61,8 @@ class EnglishParser < Parser
     @c_methods     =['printf']
     @ruby_methods  =['puts', 'print'] #"puts"=>x_puts !!!
     @core_methods  =['show', 'now', 'yesterday', 'help'] #difference?
+    @modules       ={}
+    @classes       ={}
     @methods       ={} # name->method-node
     @OK            ='OK'
     @result        =''
@@ -270,22 +272,25 @@ class EnglishParser < Parser
   end
 
   def end_of_statement
-    checkNewline||end_expression
+    c=checkNewline||end_expression
     # ||end_expression #end_block #newlines
+    checkNewline if c and @string.blank?
+    c
   end
 
   # see read_block for RAW blocks! (</EOF> type)
-  # EXCLUDING start_block & end_block !!!
+  # EXCLUDING start_block & end_block ! really ?:
   def block #type
-    start_block #NEWLINE ALONE == START!!!?!?!
+    start_block #NEWLINE ALONE == START!?!?!
     @original_string=@string #REALLY??
     start           =pointer
     s               =statement #BUUUUUG~~~!!!
     content         =pointer-start
     allow_rollback
+    # newline?
+    end_of_statement # danger might act as block end!
     end_of_block =end_block? #tokens? done_words
     if not end_of_block
-      end_of_statement # danger might act as block end!
       star {#One or more
         s       =statement||s
         content =pointer-start
@@ -591,6 +596,15 @@ class EnglishParser < Parser
     puts do_send(a, c, args) if interpreting?
   end
 
+  def aliases
+    _ 'alias'
+    aliaz=word
+    ref  =word
+    @methods.put aliaz, @methods[ref] if @methods.has ref
+    @variables.put aliaz, @variables[ref] if @variables.has ref
+    @classes.put aliaz, @classes[ref] if @classes.has ref
+  end
+
   def statement
     raiseNewline #really? why?
     x           =any {#statement}
@@ -602,6 +616,7 @@ class EnglishParser < Parser
           maybe { piped_actions } ||
           maybe { declaration } ||
           maybe { setter } ||
+          maybe { aliases } ||
           maybe { returns } ||
           maybe { breaks } ||
           maybe { constructor } ||
@@ -798,7 +813,7 @@ class EnglishParser < Parser
     args
   end
 
-    # todo : why special? direct eval, rest_of_line
+  # todo : why special? direct eval, rest_of_line
   def ruby_method_call
     call=tokens? 'call', 'execute', 'run', 'start', 'evaluate', 'invoke'
     no_rollback! if call # remove later
@@ -807,7 +822,7 @@ class EnglishParser < Parser
     args=rest_of_line
     # args=substitute_variables rest_of_line
     checkNewline
-    return do_call_ruby_method(ruby_method,args) if interpreting?
+    return do_call_ruby_method(ruby_method, args) if interpreting?
     #raiseEnd
     subnode method: ruby_method #why not auto??
     subnode args: args
@@ -892,7 +907,7 @@ class EnglishParser < Parser
     method_call obj
   end
 
-  def call_arguments
+  def call_arguments #todo:named args etc!
     endNode #may be list
   end
 
@@ -921,7 +936,7 @@ class EnglishParser < Parser
     if has_args(method, obj, assume_args) # NOT KNOWN YET!!
       @current_value=nil
       @in_args      =true
-      args          =call_arguments?
+      args          =call_arguments? #todo:named args etc!
       if not args and is_object_method(method) #and c_method or static etc
         args =obj
         obj  =Object
@@ -1201,21 +1216,21 @@ class EnglishParser < Parser
     # _?("always") => pointer
     setta=_?('to') || be # or not_to_be 	contain -> add or create
     # do_interpret!
-    val =adjective? || expressions
+    val  =adjective? || expressions
     no_rollback!
     val     =[val].flatten if setta=='are' or setta=='consist of' or setta=='consists of'
     var.type||=type||auto_type(val)
     assure_same_type_overwrite var, val if _let
     # var.type||=type||val.class #eval'ed! also x is an integer
     # assure_same_type var, type||val.class if check_interpret # todo : type analysis via tree
+    @variableValues[var.name] =val #this might be nonsense if it is not interpreting
+    var.value                 =val
     if @interpret and (not @variableValues.contains(var.name) or mod!='default')
-      @variableValues[var.name] =val
-      var.value    =val
       var.owner.send(var.name+"=", val) if var.is_a? Property #todo
     end
     var.final    =const.contains(mod)
     var.modifier =mod
-    @result =val
+    @result      =val
     # end_expression via statement!
     # return var if @interpret
 
@@ -1328,7 +1343,7 @@ class EnglishParser < Parser
 
   def cast x, typ
     return do_cast x, typ if interpreting?
-    return Cast(x,typ)
+    return Cast(x, typ)
   end
 
   def value
@@ -1792,7 +1807,6 @@ class EnglishParser < Parser
     @current_value=match[1]
     @current_value
   end
-
 
 
   def self.self_modifying method

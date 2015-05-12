@@ -1,17 +1,88 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
-from lib2to3.btm_utils import tokens
-from TreeBuilder import show_tree
-from english_parser import result, maybe, comment, condition
+# from TreeBuilder import show_tree
+# from english_parser import result, comment, condition, root
+import const
+import english_tokens
+import re
 
 import exceptions
+from exceptions import *
+from nodes import Pointer
+# from exceptions import NotMatching
 import nodes
 import angel
-import IO
-from exceptions import *
-from const import *
+# from exceptions import *
+from english_tokens import NEWLINE
 from the import *
 import the
+# global string
+
+#
+# class NotMatching(StandardError):
+#     pass
+
+class StandardError(Exception):
+    pass
+
+class Error(Exception):
+    pass
+
+class NoMethodError(StandardError):
+    pass
+
+class InternalError(StandardError):
+    pass
+
+class NotMatching(StandardError):
+    pass
+
+class UnknownCommandError(StandardError):
+    pass
+
+class SecurityError(StandardError):
+    pass
+
+# NotPassing = Class.new StandardError
+class NotPassing(StandardError):
+    pass
+
+class NoResult(NotMatching):
+    pass
+
+class EndOfDocument(StandardError):
+    pass
+
+class EndOfLine(NotMatching):
+    pass
+
+class MaxRecursionReached(StandardError):
+    pass
+
+class EndOfBlock(NotMatching):
+    pass
+
+class GivingUp(StandardError):
+    pass
+
+class ShouldNotMatchKeyword(NotMatching):
+    pass
+
+class KeywordNotExpected(NotMatching):
+    pass
+
+class UndefinedRubyMethod(NotMatching):
+    pass
+
+class WrongType(StandardError):
+    pass
+
+class ImmutableVaribale(StandardError):
+    pass
+
+class SystemStackError(StandardError):
+    pass
+
 
 
 def app_path():
@@ -26,10 +97,25 @@ def isnumeric(start):
     return isinstance(start, int) or isinstance(start, float)  # or isinstance(start, long)
 
 
+        # def current_context():
+        # context: tree / per node
+
+        # def javascript:
+        # _try(script_block)
+        #   __(current_context)=='javascript' ? 'script' : 'java script', 'javascript', 'js'
+        #   no_rollback() 10
+        #   javascript+=rest_of_line+';'
+        #   newline22
+        #   return javascript
+        #   #if not javascript: block and done
+        #
+
+
+
 def star(block):
     # checkEnd
-    if (the.nodes.count > max_depth):
-        raise SystemStackError("if(nodes.count>max_depth)")
+    if (len(the.nodes) > max_depth):
+        raise SystemStackError("if(len(nodes)>max_depth)")
 
     was_throwing = the.throwing
     throwing = True
@@ -38,29 +124,29 @@ def star(block):
     current = 0
     good = []
     # try:
-    old_nodes = the.nodes.clone
-    # entry_node_offset=nodes.count-1
+    old_nodes = list(the.nodes) #clone
+    # entry_node_offset=len(nodes)-1
     # if(entry_node_offset>48)
     # entry_node=last_node
     #
-    oldString = the.string
+    oldstring = the.string
     last_string = ""
     try:
         while True:
             if the.string == "" or the.string == last_string: break
             last_string = the.string
-            match = yield  # <------!!!!!!!!!!!!!!!!!!!
+            match = block() # yield  # <------!!!!!!!!!!!!!!!!!!!
             if not match: break
-            oldString = the.string  # (partial)  success
+            oldstring = the.string  # (partial)  success
             good.append(match)
             if current > max and the.throwing: raise " too many occurrences of " + to_source(block)
 
     except NotMatching as e:
-        string = oldString  # partially reconstruct
+        the.string = oldstring  # partially reconstruct
         if very_verbose and not good:
             verbose
             "NotMatching star " + str(e)
-            # if tokens and tokens.count>0: verbose "expected any of "+tokens.to_s
+            # if tokens and len(tokens)>0: verbose "expected any of "+tokens.to_s
             if verbose: string_pointer
 
     except EndOfDocument as e:
@@ -73,14 +159,12 @@ def star(block):
         error("error in star " + to_source(block))
         # warn e
 
-    if good.length == 1: return good[0]
+    if len(good) == 1: return good[0]
     if not not good: return good
     # else: restore!
     the.throwing = was_throwing
-    the.string = oldString
-    for n in the.nodes - old_nodes:
-        n.destroy()
-
+    the.string = oldstring
+    # invalidate_obsolete(old_nodes)
     the.nodes = old_nodes
     # cleanup_nodes_till entry_node
     # for i in entry_node_offset...nodes.size:
@@ -96,14 +180,14 @@ def star(block):
 
 
 def ignore_rest_of_line():
-    if not the.string.match("\n"):
+    if not re.search("\n",the.string):
         the.string = ""
         return
     return string.replace(r'.*?\n', "\n")
 
 
 def string_pointer_s():
-    offset = original_string.length - string.length
+    offset = len(original_string) - len(string)
     if offset < 0: offset = 0
     return original_string + "\n" + " " * (offset) + "^^^" + "\n"
 
@@ -113,7 +197,7 @@ def string_pointer():
 
 
 def clean_backtrace(x):
-    x = x.select(lambda x: not x.match(r'ruby')).join("\n")
+    x = x.select(lambda x: not re.search(r'ruby')).join("\n",x)
     x
 
 
@@ -126,7 +210,9 @@ def error(e, force=False):
         # print(clean_backtrace e.backtrace)
         # print(e.str( class )+" "+e.str(message))
         string_pointer()
-        show_tree()
+        if angel.use_tree:
+            import TreeBuilder
+            TreeBuilder.show_tree()
         if not angel.verbose: raise e  # SyntaxError(e):
         # exit
 
@@ -136,13 +222,14 @@ def warn(e):
 
 
 def one(*matches):
+    # global string
     oldString = the.string
     for match in matches:
         try:
-            string = oldString
+            the.string = oldString
             # if match and not isinstance(match, Symbol): return match
             # if isinstance(match, Symbol): result = send(match)
-            return result  # if result:
+            return angel.result  # if result:
         except NotMatching as e:
             verbose("NotMatching one " + str(match) + "(" + str(e) + ")")
             # raise GivingUp.new
@@ -152,7 +239,7 @@ def one(*matches):
             error(e)
             return e
 
-    if check_rollback_allowed: string = oldString
+    if check_rollback_allowed: the.string = oldString
     if the.throwing: verbose
     "Should have matched one of " + str(matches)
     raise NotMatching()
@@ -169,9 +256,9 @@ def one(*matches):
 #     if (syms.endswith("?")):
 #         old_last = last_pattern
 #         last_pattern = cut
-#         if args.count == 0: x = maybe(send(cut)}
-#         if args.count == 1: x = maybe(send(cut, args[0])}
-#         if args.count > 1: x = maybe(send(cut, args)}
+#         if len(args) == 0: x = maybe(send(cut)}
+#         if len(args) == 1: x = maybe(send(cut, args[0])}
+#         if len(args) > 1: x = maybe(send(cut, args)}
 #         last_pattern = old_last
 #         depth = depth - 1
 #         return x
@@ -194,20 +281,21 @@ def one(*matches):
 
 def caller():
     import inspect
-
     curframe = inspect.currentframe()
     calframe = inspect.getouterframes(curframe, 2)
-    calframe_ = calframe[1][3]
-    print('caller name:', calframe_)
-    return calframe_
+    # calframe_ = calframe[1][3]
+    # print('caller name:', calframe_)
+    return calframe
 
 
 def verbose(info):
-    if angel.verbose: print(info)
+    # if angel.verbose:
+        print(info)
 
 
 def error(info):
-    if angel.verbose: print(info)
+    if angel.verbose:
+        print(info)
 
 
 def caller_depth():
@@ -219,7 +307,7 @@ def to_source(block):
 
 
 def filter_backtrace(e):
-    pass
+    return e
 
 
 def maybe_tokens(x):
@@ -244,12 +332,14 @@ def maybe_tokens(*x):
 # def __init__():
 
 def init(strings):
+    global no_rollback_depth,rollback_depths,line_number,original_string,root,lines,nodes,depth,lhs,rhs,comp,string
     no_rollback_depth = -1
+    rollback_depths=[]
     line_number = 0
     if isinstance(strings, list): lines = strings
     if isinstance(strings, str): lines = strings.split("\n")
-    string = lines[0].strip  # Postpone the problem
-    original_string = string
+    the.string=the.string = lines[0].strip()  # Postpone angel.problem
+    the.original_string = string
     root = None
     nodes = []
     depth = 0
@@ -268,7 +358,7 @@ def assert_equals(a, b):
 
 
 def doassert(x=None, block=None):
-    if not x and block: x = yield
+    if not x and block: x = block() #yield
     # if not x: raise Exception.new (to_source(block))
     if block and not x: raise NotPassing(to_source(block))
     if not x: raise NotPassing()
@@ -276,7 +366,8 @@ def doassert(x=None, block=None):
         try:
             #if string: root
             s(x)
-            ok = condition()
+            import english_parser
+            ok = english_parser.condition()
         except SyntaxError as e:
             raise e  # ScriptError.new "NOT PASSING: SyntaxError : "+x+" \t("+e.class.to_s+") "+e.to_s
         except Exception as e:
@@ -315,8 +406,8 @@ def interpretation():
 #
 def raiseEnd():
     if not string:
-        if line_number >= lines.count: raise EndOfDocument()
-        #string=lines[++line_number];
+        if line_number >= len(lines): raise EndOfDocument()
+        #the.string=lines[++line_number];
         raise EndOfLine()
 
 
@@ -326,40 +417,52 @@ def checkEndOfLine():
 
 
 def checkEndOfFile():
-    return line_number >= lines.count and not string
+    return line_number >= len(lines) and not string
 
 
 def remove_tokens(*tokenz):
-    for t in tokenz.flatten:
-        string = string.replace(r' *%s *' % t, " ")
+    for t in flatten(tokenz):
+        the.string = string.replace(r' *%s *' % t, " ")
 
 
-def must_contain(**args):
-    if isinstance(args[-1], dict): before = args[-1]['before']
-    if before: args = args[0:-2]
-    before = before or []
-    return must_contain_before(before, args)
-
+def must_contain(*args):
+    if isinstance(args[-1], dict):
+        return must_contain_before(args[-1]['before'], args[0:-2])
+    for x in flatten(args):
+        if re.search(r'^\s*\w+\s*$',x):
+            if (" %s "%string).match(r'[^\w]#{x}[^\w]'):
+                return True
+        else:  # token
+            if x in string:
+                return True
 
 def must_contain_before(before, *args):  #,before():None
     raiseEnd()
     good = False
     if before and isinstance(before, str): before = [before]
-    if before: before = before.flatten() + [';']
-    args = args.flatten()
-    for x in args.flatten:
-        if x.match(r'^\s*\w+\s*$'):
-            good = good or (" #{string} ").match(r'[^\w]#{x}[^\w]')
-            if good and before and before.matches(good.pre_match): good = None
+    if before: before = flatten(before) + [';']
+    args = flatten(args)
+    for x in flatten(args):
+        if re.search(r'^\s*\w+\s*$',x):
+            good = good or re.search(r'[^\w]%s[^\w]'%x,string).start()
+            if(type(good).__name__=="SRE_Match"):
+                good=good.start()
+            if good and before and good.pre_match in before and before.index(good.pre_match):
+                good = None
         else:  # token
-            good = good or string.index(x)
-            if good and before and before.matches(string[0:good]): good = None
+            good = good or re.search(escape_token(x),string)
+            if(type(good).__name__=="SRE_Match"):
+                good=good.start()
+            sub=string[0:good]
+            if good and before and sub in before and before.index(sub):
+                good = None
 
         if good: break
 
     if not good: raise (NotMatching(x))
-    if str(good).contains(newline_tokens()): raise (NotMatching(x))  # ;while
-    if good.pre_match.contains(newline_tokens()): raise (NotMatching(x))  #
+    for nl in english_tokens.newline_tokens:
+        if nl in str(good): raise (NotMatching(x))  # ;while
+        # if nl in str(good.pre_match): raise (NotMatching(x))  # ;while
     return OK
 
 
@@ -385,7 +488,7 @@ def _2(x):
 
 def last_try(stack):
     for s in stack:
-        if s.match("try"):
+        if re.search("try",s):
             return s
 
 
@@ -393,30 +496,31 @@ def caller_name():
     return caller()
 
 
-# for i in 0..(caller.count):
+# for i in 0..(len(caller)):
 #   if not caller[i].match(r'parser'): next
 #   name=caller[i].match(r'`(.*)'')[1]
 #   if caller[i].index("parser"): return name
 
 
-def do_interpret11():
+def do_interpret():
+    global interpret,interpret_border,did_interpret 
     interpret_border = -1
-    did_interpret = the.interpret
-    the.interpret = True
+    did_interpret = angel.interpret
+    angel.interpret = True
 
 
-def dont_interpret11():
-    if the.interpret_border < 0:
-        the.interpret_border = caller_depth
-        the.did_interpret = the.interpret
-    the.interpret = False
+def dont_interpret():
+    if angel.interpret_border < 0:
+        angel.interpret_border = caller_depth
+        the.did_interpret = angel.interpret
+    angel.interpret = False
 
 
 def interpreting(n=0):
-    if (the.interpret_border >= caller_depth() - n):
-        the.interpret = the.did_interpret
-        the.interpret_border = -1
-    return the.interpret
+    if (angel.interpret_border >= caller_depth() - n):
+        angel.interpret = the.did_interpret
+        angel.interpret_border = -1
+    return angel.interpret
 
 
 def check_rollback_allowed():
@@ -430,21 +534,21 @@ def check_rollback_allowed():
 
 
 def any(block):
+    # global string,result
     raiseEnd()
     #if checkEnd: return
     last_try = 0
     #if level>20: throw "Max recursion reached #{to_source(block)}"
-    if caller().count > 180: raise MaxRecursionReached(to_source(block))
+    if len(caller()) > 180: raise MaxRecursionReached(to_source(block))
     was_throwing = the.throwing
     throwing = False
     #throwing[level]=false
     oldString = the.string
     try:
-        result = yield  # <--- !!!!!
+        the.result = block() # yield  # <--- !!!!!
         if not result:
-            string = oldString
+            the.string = oldString
             raise NoResult(to_source(block))
-
         return result
     except EndOfDocument:
         verbose("EndOfDocument")
@@ -455,31 +559,31 @@ def any(block):
     except NotMatching:
         verbose("NotMatching")
         #retry
-    except Exception as e:
-        verbose("Error in #{to_source(block)}")
+    except IgnoreException as e:
+        verbose("Error in %s"%to_source(block))
         error(e)
 
-    if result: verbose("Succeeded with any #{to_source(block)}")
+    if the.result: verbose("Succeeded with any #{to_source(block)}")
     if verbose and not result: string_pointer()
     last_token = string_pointer_s()  #if not last_token:
-    if check_rollback_allowed(): string = oldString
+    if check_rollback_allowed(): the.string = oldString
     throwing = was_throwing
     #throwing[level]=True
     #level=level-1
-    if result: return result
+    if the.result: return the.result
     raise NotMatching(to_source(block))
     #throw "Not matching #{to_source(block)}"
 
 
-def to_source(x):
+def read_source(x):
     if last_pattern or not x: return last_pattern
-    #proc=block.to_source(:strip_enclosure => True) except "Sourcify::MultipleMatchingProcsPerLineError"
+    #proc=block.to_source(:strip()_enclosure => True) except "Sourcify::MultipleMatchingProcsPerLineError"
     res = x.source_location[0] + ":" + x.source_location[1].to_s + "\n"
     lines = IO.readlines(x.source_location[0])
     i = x.source_location[1] - 1
     while True:
         res += lines[i]
-        if i >= lines.length or lines[i].match("}") or lines[i].match("end"): break
+        if i >= len(lines) or lines[i].match("}") or lines[i].match("end"): break
         i = i + 1
     return res
 
@@ -487,7 +591,7 @@ def to_source(x):
 def caller_depth():
     # c= depth #if angel.use_tree doesn't speed up:
     # if angel.use_tree: c= depth
-    c = caller.count
+    c = len(caller())
     if c > max_depth:
         raise SystemStackError("depth overflow")
     return c
@@ -495,7 +599,8 @@ def caller_depth():
 
 
 def no_rollback11(n=0):
-    depth = caller_depth - 1
+    global depth,no_rollback_depth
+    depth = caller_depth() - 1
     while (rollback_depths[-1] or -1) > depth:
         rollback_depths.pop()
 
@@ -505,35 +610,52 @@ def no_rollback11(n=0):
 
 
 def allow_rollback(n=0):
+    global depth,no_rollback_depth,rollback_depths,original_string
     if n < 0: rollback_depths = []
-    no_rollback_depth = rollback_depths.pop or -1
-    original_string = string  #if following(no_rollback11):
+    if len(rollback_depths)>1 :
+        no_rollback_depth = rollback_depths.pop()
+    else:
+         no_rollback_depth = -1
+    the.original_string = string  #if following(no_rollback11):
 
 
-def adjust_rollback(depth=caller_depth):
+def adjust_rollback(depth=-10):
+    global no_rollback_depth
+    if depth==-10: depth=caller_depth()
     if depth + 2 < the.no_rollback_depth:
-        no_rollback_depth = rollback_depths.pop or -1
+        no_rollback_depth = rollback_depths.pop() or -1
 
 
 # todo ? trial and error -> evidence based 'parsing' ?
+def invalidate_obsolete(old_nodes):
+    #DANGER RETURNING false as VALUE!! use RAISE ONLY todo
+            # (the.nodes - old_nodes).each(lambda n: n.invalid())
+            for fuck in old_nodes:
+                if fuck in nodes:
+                    nodes.remove(fuck)
+            for n in the.nodes:
+                n.invalid()
+                n.destroy()
+
+
 def maybe(block):
+    global string,original_string, last_node, current_value, depth
     #if checkEnd: return
     # allow_rollback 1
     depth = the.depth + 1
-    if (caller_depth > max_depth):
-        raise SystemStackError("if(nodes.count>max_depth)")
+    if (caller_depth() > max_depth):
+        raise SystemStackError("if(len(nodes)>max_depth)")
 
     old = the.string  # NOT overwritten, instead of:
-    if not the.original_string: original_string = the.string or ""
+    if not the.original_string: the.original_string = the.string or ""
     try:
-        old_nodes = the.nodes.clone
-        result = yield
+        old_nodes = list(the.nodes)#.clone()
+        result = block() #yield
         if result:
             adjust_rollback()
         else:
-            #DANGER RETURNING false as VALUE!! use RAISE ONLY todo
-            (the.nodes - old_nodes).each(lambda n: n.invalid())
-            string = old
+            invalidate_obsolete(old_nodes)
+            the.string = old
 
         last_node = the.current_node
         return result
@@ -541,14 +663,15 @@ def maybe(block):
         # old=original_string # REALLY>??
         verbose(e)
         current_value = None
-        string = old
-        interpreting()()
+        the.string = old
+        interpreting(2) #?
         if verbose: verbose("Tried #{to_source(block)}")
         if verbose: string_pointer()
-        (the.nodes - old_nodes).each(lambda n: n.destroy())  #n.valid=false;
+        invalidate_obsolete(old_nodes)
+        # (the.nodes - old_nodes).each(lambda n: n.destroy())  #n.valid=false;
         #caller.index(last_try caller)]
-        #puts rollback[caller.count]
-        #puts caller.count
+        #puts rollback[len(caller)]
+        #puts len(caller)
         #puts rollback
         cc = caller_depth()
         rb = no_rollback_depth - 2
@@ -559,9 +682,11 @@ def maybe(block):
         if cc < rb:  #and not cc+2<rb # not check_rollback_allowed:
             error("NO ROLLBACK, GIVING UP!!!")
             if verbose: print(the.last_token or string_pointer())  # ALWAYS!
-            show_tree()  #Not reached
+            if angel.use_tree:
+                import TreeBuilder
+                TreeBuilder.show_tree()  #Not reached
             attempt = str(e).gsub("[", "").gsub("]", "")
-            from0 = 0  #e.backtrace.count-no_rollback_depth-2
+            from0 = 0  #len(e.backtrace)-no_rollback_depth-2
             bt = e.backtrace
             bt = bt[from0:-1]  #if from>10:
             # bt = filter_stack()
@@ -573,28 +698,27 @@ def maybe(block):
             raise ex
             # error e #exit
             # raise SyntaxError(e)
-
     except EndOfDocument as e:
         (the.nodes - old_nodes).each(lambda n: n.destroy())
-        string = old
+        the.string = old
         verbose("EndOfDocument")
         #raise e
         return False
         #return True
     except GivingUp as e:
-        # string=old #to mark??
+        # the.string=old #to mark??
         # maybe => OK !?
         error(e)
         #if not check_rollback_allowed:
-        #     if rollback[caller.count-1]!="NO" #:
-    except Exception as e:  # NoMethodError etc
-        string = old
+        #     if rollback[len(caller)-1]!="NO" #:
+    except IgnoreException as e:  # NoMethodError etc
+        the.string = old
         error(e)
         verbose(e)
     finally:
         adjust_rollback()
     depth = depth - 1
-    string = old  #if rollback:
+    the.string = old  #if rollback:
     nodes = old_nodes  # restore
     return False
 
@@ -602,40 +726,41 @@ def maybe(block):
 def one_or_more(block):
     all = [block()]
     current_value = []
-    all + [star(block)].flatten()
+    return all + [star(block)].flatten()
 
 
 def to_source(block):
-    pass
-
+    return ""
 
 def many(block):
+    global old_tree,result
     while True:
         try:
             maybe(comment)
-            old_tree = nodes.clone
-            result = yield
+            old_tree = list(nodes)#.clone
+            result = block() # yield
             # puts "------------------"
             #puts nodes-old_tree
-            if not string:  # TODO! loop criterion too week: break
-                if not result or result == []:  #or string==""
-                    raise NotMatching(to_source(block) + "\n" + string_pointer_s())
-                    #exit
-        except Exception as e:
+            if(not string or len(string)==0 ):break  # TODO! loop criterion too week: break
+            if not result or result == []:
+                raise NotMatching(to_source(block) + "\n" + string_pointer_s())
+        except IgnoreException as e:
+            import traceback
+            traceback.print_stack() # backtrace
             error(e)
 
-
-# GETS FUCKED UP BY string.strip! !!! ???
+# GETS FUCKED UP BY string.strip()! !!! ???
 def pointer():
-    if not lines or line_number >= lines.size: return Pointer(line_number, 0, )
+    if not lines or line_number >= len(lines): return Pointer(line_number, 0, parser)
     # line_number copy by ref?????????
     line = lines[line_number] + "$$$"
-    offset = line.offset(string + "$$$")  # original_string.length-(string or "").length
-    Pointer(line_number, offset or 0, )
+    offset = line.find(string + "$$$")  # len(original_string)-(string or "").length
+    return Pointer(line_number, offset or 0,parser)
 
 
 def isnumeric(start):
-    isinstance(start)
+    return start.isdigit()
+    # isinstance(start)
 
 
 def app_path():
@@ -643,22 +768,29 @@ def app_path():
     # File.expand_path(File.dirname(__FILE__)).to_s
 
 
+class IgnoreException(Exception):
+    pass
+
+
 def parse(string):
+    global last_result,result
     if not string: return
-    verbose
-    "PARSING"
+    verbose("PARSING")
     try:
         allow_rollback()
         init(string)
-        root()
+        import english_parser
+        english_parser.rooty()
         last_result = the.result
-    except Exception as e:
+    except IgnoreException as e:
+        import traceback
+        traceback.print_stack() # backtrace
         last_result = result = None
-        filter_backtrace(e)
+        e=filter_backtrace(e)
         error(e)
 
     verbose("PARSED SUCCESSFULLY!!")
-    show_tree()
+    # show_tree()
     # puts svg
     return interpretation  # # result
 
@@ -672,22 +804,16 @@ def parse(string):
     #   parse lines[0]
 
 
-def newline_tokens():
-    return ["\.\n", "\. ", "\n", "\r\n", ';']  # ,'\.\.\.' ,'end','done' NO!! OPTIONAL!
-    # direct_token: WITH space!
-    #todo: proper token stream, pre-lex'ed
-
-
 def token(t):
     if isinstance(t, list): return tokens(t)
     # if checkEnd: return None
     # if t.is_a? Array #HOW TH ?? method_missing: t=t[0]
-    string = the.string.strip()
+    the.string = the.string.strip()
     if string.startswith('/*'): comment_block()
     raiseEnd()
     if starts_with(t):
-        current_value = t.strip
-        string = string[t.length: - 1]
+        current_value = t.strip()
+        the.string = string[len(t): - 1]
         if r'^\w '.match(string) and r'^\w '.match(t):
             raise NotMatching(t + " (strings needs whitespace, special chars don't)")
         else:
@@ -700,25 +826,32 @@ def token(t):
         #todo: proper token stream, pre-lex'ed
 
 
+def flatten(l):
+  from itertools import chain
+  return list(chain.from_iterable(l))
+
 def tokens(*tokenz):
     # encoding: utf-8
+    if isinstance(tokenz,classmethod):
+        tokenz=tokenz()
+    tokenz=flatten(tokenz)
     raiseEnd()
     if the.string.startswith('/*'): comment_block()
-    string = the.string.strip + ' '
-    for t in tokenz.flatten:
+    the.string = the.string.strip() + ' '
+    for t in flatten(tokenz):
         # if t.is_a Variable: next
         # if t=='' # todo debug HOW: next
         if (t == "\n" and not string): return True
-        if t.match(r'^\w'):
-            match = string.match(r'(?im)^\s*#{t}')
-            if match and match.post_match.match(r'^\w'):
+        if re.search(r'^\w',t):
+            match = re.search(r'(?im)^\s*'+t,string)
+            if match and re.search(r'^\w',string[match.end():]):
                 continue  # next must be space or so!: next
         else:  # special char
-            match = string.match(r'(?im)^\s*#{escape_token t}')
+            match = re.search(r'(?im)^\s*'+escape_token(t),string)
 
         if match:
             x = current_value = t
-            string = match.post_match.strip
+            the.string = string[match.end():].strip()
             string2 = string
             return x
     raise NotMatching(result)
@@ -726,76 +859,109 @@ def tokens(*tokenz):
 
 
 def escape_token(t):
-    return t.replace(r'([^\w])', "\\\\\\1")
+    z=re.sub(r'([^\w])', "\\\\\\1",t)
+    return z
 
 
 def starts_with(tokenz):
     if checkEndOfLine(): return False
-    string = the.string + ' '  # todo: as regex?
+    the.string = the.string + ' '  # todo: as regex?
     if isinstance(tokenz, str): tokenz = [tokenz]
     for t in tokenz:
         # RUBY BUG?? string.start_with?(r'#{t}[^\w]')
-        if t.match(r'\w'):
-            if string.match(r'(?im)^#{t}[^\w]'): return t
+        if re.search(r'\w',t):
+            if re.search(r'(?im)^%s[^\w]'%t,string): return t
         else:
             if string.startswith(t): return t  # escape_token []
 
     return False
 
 
-class Pointer:
-    # def parser():
-    #     self.parser
-    # attr_accessor(line_number,offset,parser)
-
-    def __str__(self):
-        print("<Pointer #{line_number} #{offset} '#{parser.lines[line_number][offset..-1]}'>")
-
-    # def to_s:
-    #   line_number.to_s+" "+offset.to_s #+" "+parser.lines[line_number][offset]
-    #
-    def __sub__(self, start):
-        if isinstance(start, str): start = start.length
-        if isnumeric(start):
-            p = self.clone()
-            p.offset -= start.length
-            if p.offset < 0: p.offset = 0
-            return p
-
-        if start > self.content_between(): return
-        start
-        return self.content_between()
-        start,
-
-    def __gt__(self, x):
-        return self.line_number >= x.line_number and self.offset > x.offset()
+def stripNewline():
+    pass
 
 
-    def __init__(self, line_number, offset, parser):
-        line_number = line_number
-        self.parser = parser
-        self.offset = offset
-        if line_number >= parser.lines.count: offset = 0
+def newline22():
+    maybe(newline)
 
 
-    def content_between(start_pointer, end_pointer):
-        line = start_pointer.line_number
-        all = []
-        if line >= lines.count: return all
-        if line == end_pointer.line_number:
-            return lines[line][start_pointer.offset:end_pointer.offset - 1]
-        else:
-            all.append(lines[line][start_pointer.offset: - 1])
+def raiseNewline():
+    if not the.string: raise EndOfLine()
 
-        line = line + 1
-        while line < end_pointer.line_number and line < lines.count():
-            all.append(lines[line])
-            line = line + 1
 
-        chars = end_pointer.offset - 1
-        if line < lines.count and chars > 0: all.append(lines[line][0..chars])
-        all.map
-        stripNewline()
-        if all.length == 1: return all[0]
-        return all
+def checkNewline():
+    if not not the.string: comment()
+    if not the.string or not the.string.strip():
+        if the.line_number < len(lines): line_number = the.line_number + 1
+        if line_number >= len(lines):
+            the.the.original_string = ''
+            the.string = ''  #done!
+            return english_tokens.NEWLINE
 
+        #if line_number==len(lines): raise EndOfDocument.new
+        the.string = lines[line_number].strip()  #LOOSE INDENT HERE!!!
+        the.string = re.sub(r'\/\/.*', "",the.string)  # todo : Grab comment()
+        the.the.original_string = the.string or ''
+        checkNewline()
+        return english_tokens.NEWLINE
+
+
+def newline():
+    if checkNewline() == NEWLINE: return NEWLINE
+    found = tokens(newline_tokens)
+    if checkNewline() == NEWLINE:  # get new line: return NEWLINE
+        return found
+    return False
+
+
+def newlines():
+    #one_or_more{newline)
+    return star(newline)
+
+
+def NL():
+    return tokens('\n', '\r')
+
+
+def NLs():
+    return tokens('\n', '\r')
+
+
+def rest_of_statement():
+    current_value =re.search(r'(.*?)([\r\n;]|done)',the.string)[1].strip()
+    the.string = the.string[len(current_value):-1]
+    return current_value
+
+
+# todo merge ^> :
+def rest_of_line():
+    if not re.search(r'(.*?)[;\n]',the.string):
+        current_value = the.string
+        the.string = None
+        return current_value
+
+    match = re.search(r'(.*?)([;\n].*)',the.string)  # Need to preserve ;\n Characters for 'end of statement'
+    current_value = match.groups()[0]
+    the.string = match.groups()[1]
+    current_value = current_value.strip()
+    return current_value
+
+
+def comment_block():
+    token('/*')
+    while not re.search(r'\*\/',the.string):
+        rest_of_line()
+        newline22()  #_try(weg)
+
+    the.string.gsub('.*?\*\/', '')
+    #token '*/'
+    # add_tree_node
+
+
+def comment():
+    global string
+    if the.string == None: raiseEnd()
+    the.string = the.string.replace(r' -- .*', '')
+    the.string = the.string.replace(r'\/\/.*', '')  # todo
+    the.string = the.string.replace(r'#.*', '')
+    if not the.string: checkNewline()

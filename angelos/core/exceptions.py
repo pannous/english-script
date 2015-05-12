@@ -2,8 +2,14 @@
 # import minitest
   # DONT ROLLBACK StandardError
   # DO ROLLBACK all NotMatching
-
+global NotMatching
 class StandardError(Exception):
+    pass
+
+class Error(Exception):
+    pass
+
+class NoMethodError(StandardError):
     pass
 
 class InternalError(StandardError):

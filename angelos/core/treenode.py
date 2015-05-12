@@ -1,3 +1,7 @@
+import re
+import nodes
+
+
 class TreeNode:
 
   #attr_accessor :name
@@ -13,15 +17,39 @@ class TreeNode:
   #attr_accessor :end_line
   #attr_accessor :start_offset
   #attr_accessor :end_offset
+  def __init__(self):
+    self.name
+    self.content
+    self.value
+    self.parent
+    self.nodes
+    self.valid
+    self.startPointer
+    self.endPointer
+    self.alues
+    self.start_line
+    self.end_line
+    self.start_offset
+    self.end_offset
+
+  def __init__(self,args={}):
+    self.parent=None  or  args['parent']
+    if self.parent: self.parent.nodes.append(self)
+    self.nodes=[]
+    self.valid=False
+    self.value=None  or  args['value']
+    self.name =None  or  args['name']
+
+
 
   def show_node(self):
     # self.value or not self.nodes.empty?
-    if node.valid: self.valid and (self.value or not not self.nodes) #
+    if self.node.valid: self.valid and (self.value or not not self.nodes) #
 
-  def find(x):
-    return self.nodes[x] if(isinstance(x,Numeric))
+  def find(self,x):
+    if(x.isdigit()):return self.nodes[x]
     for n in self.nodes:
-      if( n.name==x or n.str(name)==str(x))
+      if( n.name==x or n.str(self.name)==str(x)):
         if n.value:
           return n.value
 
@@ -30,17 +58,17 @@ class TreeNode:
 
         return n
 
-      ok=n.find x
+      ok=n.find(x)
       if ok: return ok
 
     # puts "WARN: No such property #{x} in #{self}"
     # raise Exception.new "No such property #{x} in #{self}"
     False
 
-  def all(x):
+  def all(self,x):
     all=[]
     for n in self.nodes:
-      if (x=="*" or  n.name==x or n.str(name)==str(x)):
+      if (x=="*" or  n.name==x or n.str(self.name)==str(x)):
         if n.value:
           all.append(n.value)
 
@@ -50,14 +78,14 @@ class TreeNode:
 
     all
 
-  def [] x(self):
-    find x
+  def __index__(self,x):
+    return self.find(x)
 
-  not def(self):
-    not show_node
+  def blank(self):
+    return not self.show_node()
 
   def is_leaf(self):
-    not nodes
+    return not self.nodes
 
   def good_value(self):
     # if self.nodes.count==1: return self.nodes[0].good_value
@@ -65,56 +93,48 @@ class TreeNode:
     return str(self.name) + ":" + str(self.value)
 
   def full_value(self):
-    if value:
-      if self.variableValues and (self.variableValues[value]):
-        return self.variableValues[value]
+    if self.value:
+      if self.variableValues and (self.variableValues[self.value]):
+        return self.variableValues[self.value]
       else:
-        if isinstance(value,Quote): return "'#{value}'"
-        return value
+        if isinstance(self.value, nodes.Quote): return "'#{value}'"
+        return self.value
 
-    elsif self.nodes.count>0:
-      return self.nodes.map(&:full_value).join(" ")
+    elif self.nodes.count>0:
+      return self.nodes.map(self.full_value).join(" ")
     else:
       return ""
 
 
   def value_string(self):
     if self.nodes.count==0:
-      if value and valid #OR NAME ??? !!! CONFUSION!!!: return value.to_s
+      if self.value and self.valid : return self.value.to_s
+      #OR NAME ??? !!! CONFUSION!!!
       return None #no value!!
 
     r="" # argument hack
     for n in nodes:
-      if n.is_leaf and n.value and n.valid: r=n.str(value)+" "+r
+      if n.is_leaf and n.value and n.valid: r=n.str(self.value)+" "+r
 
-    r.strip!
-    return r
+    return r.strip()
     #x=x.full_value.flip  # argument hack NEEE color= green  color of the sun => sun.green --
 
   #BAD method
-  def eval_node(variables, fallback):
-    self.variableValues or =variables #woot?
-    whot           =full_value
+  def eval_node(self, variables, fallback):
+    # self.variableValues  =variables #woot?
+    whot           =self.full_value()
     try:
-      whot.gsub!("\\", "") # where from?? token?
-      res=eval(whot) except fallback ## v0.0
+      whot=re.gsub("\\", "",whot) # where from?? token?
+      res=eval(whot)# except fallback ## v0.0
       return res
     except SyntaxError as se:
       return fallback
 
 
-  str(def)(self):
-    good_value
+  def __str__(self):
+    self.good_value()
 
   def destroy(self):
     self.valid=False
     if self.parent: self.parent.nodes.delete(self)
-
-  def __init__(args={}):
-    self.parent=None  or  args['parent']
-    if self.parent: self.parent.nodes.append(self)
-    self.nodes=[]
-    self.valid=False
-    self.value=None  or  args['value']
-    self.name =None  or  args['name']
 

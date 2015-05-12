@@ -1,16 +1,21 @@
 from unittest import TestCase
 from parser import Parser
+# from core.parser import Parser
+# from core import parser
+# from core import power_parser
+# from core import *
 __author__ = 'me'
 
 
 class TestParser(TestCase):
+    global p,_p
     p=Parser()
     _p=Parser
-    global p,_p
+    global fun
+
     def fun(self):
         pass
 
-    global fun
 
     def setUp(self):
         # p=Parser() # CANT BE ASSIGNED without double global
@@ -32,15 +37,15 @@ class TestParser(TestCase):
         self.assertEquals(p,self.p)
 
 
-    def test_something(self):
-        self.assertEqual(True, False)
-        self.fail()
-
     def test_parse(self):
+        six=p.parse("3+3")
+        assert six==6
+
+    def test_parser(self):
         self.assertIsInstance(p,Parser)
         self.assertRaises(Exception,p.parse)
 
-    def test_parse(self):
+    def test_parser1(self):
         self.assertIsInstance(self.p,Parser)
         self.assertRaises(Exception,self.p.parse)
         self.assertRaises(Exception,self._p.parse)

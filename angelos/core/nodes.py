@@ -1,7 +1,11 @@
+# import core.the
+# from import *
+# import the
+from the import *
 
 class Quote(str):
   def is_a(className):
-    if isinstance(className,Class): isinstance(return,className)
+    # if isinstance(className,type): isinstance(return,className)
     if isinstance(className,str): className=className.lower()
     if className=="quote": return True
     return className=="string"
@@ -45,17 +49,17 @@ class Function:
   def argc(self):
     self.arguments.count
 
-  def == x(self):
+  def __eq__(self, x):
     if not isinstance(x,Function): return False
-    self.name==x.name  and
-        self.scope==x.scope  and
-        self.clazz==x.clazz  and
-        self.object==x.object  and
+    return self.name==x.name  and\
+        self.scope==x.scope  and\
+        self.clazz==x.clazz  and\
+        self.object==x.object  and\
         self.arguments==x.arguments
 
-  def call(*args):
+  # def call(*args):
     # self.parser. self.context.
-       EnglishParser.call_function self,args
+    #    EnglishParser.call_function self,args
 
 class FunctionCall:
 
@@ -64,8 +68,8 @@ class FunctionCall:
   def __init__(self, **args):
     self.name     =args['name']
     self.scope    =args['scope']
-    self.clazz    =args['class']:
-    self.clazz   =args['module']:
+    self.clazz    =args['class']
+    self.clazz   =args['module']
     self.object   =args['object']
     self.arguments=args['arguments']
 
@@ -139,3 +143,65 @@ class Variable:
 class Property(Variable):
     pass
   # attr_accessor :name, :owner
+
+
+class Pointer:
+    # def parser():
+    #     self.parser
+    # attr_accessor(line_number,offset,parser)
+
+
+    def __str__(self):
+        print("<Pointer #{line_number} #{offset} '#{parser.lines[line_number][offset..-1]}'>")
+
+    # def to_s:
+    #   line_number.to_s+" "+offset.to_s #+" "+parser.lines[line_number][offset]
+    #
+    def __sub__(self, start):
+        if isinstance(start, str): start = start.length
+        if isinstance(start,int):
+            p = self.clone()
+            p.offset -= start.length
+            if p.offset < 0: p.offset = 0
+            return p
+
+        if start > self.content_between(self,start):
+            return start
+        return self.content_between(start,self)
+
+
+    def __gt__(self, x):
+        if(isinstance(x,list)):return True
+        return self.line_number >= x.line_number and self.offset > x.offset()
+
+
+    def __init__(self, line_number, offset, parser):
+        self.line_number = line_number
+        self.parser = parser
+        self.offset = offset
+        if line_number >= len(parser['lines']): offset = 0
+        # if line_number >= len(parser.lines): offset = 0
+
+
+    def content_between(self,start_pointer, end_pointer):
+        line = start_pointer.line_number
+        all = []
+        if len(lines)==0: return all #WTF!!
+        if line >= lines.count: return all
+        if line == end_pointer.line_number:
+            return lines[line][start_pointer.offset:end_pointer.offset - 1]
+        else:
+            all.append(lines[line][start_pointer.offset: - 1])
+
+        line = line + 1
+        while line < end_pointer.line_number and line < lines.count():
+            all.append(lines[line])
+            line = line + 1
+
+        chars = end_pointer.offset - 1
+        if line < lines.count and chars > 0: all.append(lines[line][0..chars])
+        all.map
+        # stripNewline()
+        if all.length == 1: return all[0]
+        return all
+
