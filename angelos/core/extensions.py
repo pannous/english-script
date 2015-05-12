@@ -812,3 +812,24 @@ class Object:
         if isinstance(self, list) and self.length == 1 and x.is_(self[0]): return True
         if isinstance(x, list) and x.length == 1 and self.is_(x[0]):  return True
         return False
+
+
+
+def match_path(p):
+    m = re.search(r'^(\/[\w\'\.]+)',p)
+    if not m: return False
+    return m
+
+
+def is_file(p, must_exist=True):
+    if str(p).match(r'^\d*\.\d+'): return False
+    m = str(p).match(r'^([\w\/\.]*\.\w+)') or match_path(the.string)
+    if not m: return False
+    return must_exist and m and os.path.isfile(m) or m
+
+
+def is_dir(x, must_exist=True):
+    #(the.string+" ").match(r'^(\')?([^\/\\0]+(\')?)+ ')
+    m = match_path(x)
+    return must_exist and m and os.path.isdirectory(m[0]) or m
+

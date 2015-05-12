@@ -14,33 +14,23 @@ import unittest
 #     z()
 #     return x + 1
 from globals import *
-hi=4
+# import test2
+# global ho
+# ho='ho'
+from test2 import test_global2
+print(hi)
+hi='test'
 print(hi)
 def test_global():
-    global hi,ho
-    hi=5
-    ho=6
-
-def test_global2():
+    hi='test_global'
+    print(hi)
     print(ho)
 test_global()
+print(hi)
+print(ho)
+# test2.test_global2()
+setHo()
 test_global2()
 print(hi)
-assert hi==5
-
-the_expression=1
-def subnode(param={}):
-    print(param)
-# subnode(statement= the_expression)
-subnode({'statement':the_expression})
-
-#
-# def test_answer():
-#     assert func(3) == 5
-
-# test_answer()
-
-def do_test(self):
-    dir(self)
-
-do_test()
+print(ho)
+# assert hi=='test_global2'
