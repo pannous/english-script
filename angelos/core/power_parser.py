@@ -701,7 +701,7 @@ def maybe(block):
         current_value = None
         the.string = old
         interpreting(2) #?
-        if verbose: verbose("Tried #{to_source(block)}")
+        if verbose: verbose("Tried "+to_source(block))
         if verbose: string_pointer()
         invalidate_obsolete(old_nodes)
         # (nodes - old_nodes).each(lambda n: n.destroy())  #n.valid=false;
@@ -766,7 +766,7 @@ def one_or_more(block):
 
 
 def to_source(block):
-    return ""
+    return str(block)
 
 def many(block):
     global  old_tree,result
