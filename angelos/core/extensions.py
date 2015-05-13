@@ -177,6 +177,13 @@ class Class:
 
 # WOW YAY WORKS!!!!!
 class list(list):
+    def __sub__(self, other):
+        clone=list(self)
+        for o in other:
+            if o in clone:
+                clone.remove(o)
+        return clone
+
     def c(self):
         return map(str.c, self).join(", ")  # leave [] which is not compatible with C
 

@@ -7,7 +7,7 @@ gem 'bundler'
 gem 'wordnet'#,'~> 1.0.0'
 gem 'wordnet-defaultdb'
 gem 'rufus-scheduler'
-
+gem 'rubyast'
 # gem 'libxslt-ruby'
 
 #gem 'linguistics' #needs ruby 2.0!!

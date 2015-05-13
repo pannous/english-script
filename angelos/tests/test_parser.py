@@ -42,6 +42,11 @@ class TestParser(TestCase):
         print(six)
         assert six==6
 
+    def test_call(self):
+        six=p.parse("puts 'hello world'")
+        print(six)
+        assert six=='hello world'
+
     def test_parser(self):
         self.assertIsInstance(p,Parser)
         self.assertRaises(Exception,p.parse)

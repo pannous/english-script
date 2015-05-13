@@ -16,7 +16,7 @@ svg = []
 lines = []
 # bash_methods=["say"]
 c_methods = ['printf']
-ruby_methods = ['puts', 'print']  # "puts"=>x_puts !!!
+builtin_methods = ['puts', 'print']  # "puts"=>x_puts !!!
 core_methods = ['show', 'now', 'yesterday', 'help']  # _try(difference)
 methods = {}  # name->method-node
 OK = 'OK'

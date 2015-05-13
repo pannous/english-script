@@ -676,6 +676,8 @@ def block():  # type):
 
 def maybe(block):
     global original_string, last_node, current_value, depth,nodes,current_node,last_token
+    if not callable(block):
+        block=lambda: tokens(block)
     #if checkEnd: return
     # allow_rollback 1
     depth = depth + 1
@@ -687,6 +689,8 @@ def maybe(block):
     try:
         old_nodes = list(nodes)#.clone()
         result = block() #yield
+        if(callable(result)):
+            raise Exception("CALLABLE "+str(result))
         if result:
             adjust_rollback()
         else:

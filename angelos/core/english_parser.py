@@ -145,12 +145,8 @@ def value():
 #     pass
 
 
-def __(token):
+def __(*token):
     return tokens(token)
-
-
-def ___(*tokens0):
-    return _try(lambda: tokens(tokens0))
 
 
 def ___(*tokens0):
@@ -187,7 +183,7 @@ def interpretation():
     i.javascript = javascript
     i.context = context
     i.methods = methods
-    i.ruby_methods = ruby_methods
+    i.ruby_methods = builtin_methods
     i.variables = variables
     i.svg = svg
     return i
@@ -209,14 +205,14 @@ def end_expression():
 
 def rooty():
     r=maybe(expressions) or\
-                maybe(requirements) or \
-                maybe(method_definition) or \
-                maybe(assert_that) or \
-                maybe(lambda: block() and checkNewline()) or \
-                maybe(statement and end_expression) or \
-                maybe(expressions and end_expression) or \
-                maybe(lambda: condition() or the.comp) or \
-                maybe(context)
+      maybe(requirements) or \
+      maybe(method_definition) or \
+      maybe(assert_that) or \
+      maybe(lambda: block() and checkNewline()) or \
+      maybe(statement and end_expression) or \
+      maybe(expressions and end_expression) or \
+      maybe(lambda: condition() or the.comp) or \
+      context()
     return r
     # # maybe( ruby_def )or\ # SHOULD BE just as method_definition !!:
 
@@ -260,7 +256,7 @@ def package_version():
     c = maybe_token(comparison_words)
     __('v'), 'version'
     c = c or maybe_token(comparison_words)
-    subnode(bigger= c)
+    subnode({'bigger': c})
     # current_value=
     the.result = c + " " + regex('\d(\.\d)*')[0]
     ___("or later")
@@ -307,9 +303,9 @@ def context():
 
 
 def bracelet():
-    subnode(brace= _('('))
+    subnode({'brace': _('(')})
     a=algebra()
-    subnode(brace= _(')'))
+    subnode({'brace': _(')')})
     return a
 
 
@@ -368,7 +364,7 @@ def ruby_block():
 
 
 def special_blocks():
-    return _try(html_block) or _try(ruby_block) or javascript_block
+    return _try(html_block) or _try(ruby_block) or javascript_block()
 
     # or end_expression #end_block #newlines
 
@@ -391,7 +387,7 @@ def nth_item():  # Also redundant with property evaluation (But okay as a shortc
     the.result = l.item(n)  # -1 AppleScript style !!! BUT list[0] !!!
     if set:
         _('to')
-        val = endNode
+        val = endNode()
         l[n.parse_integer - 1] = do_evaluate(val)
 
     return the.result
@@ -458,7 +454,7 @@ def plusPlus():
 
 
 def selfModify():
-    return maybe(plusEqual) or maybe(plusPlus) or minusMinus
+    return maybe(plusEqual) or maybe(plusPlus) or minusMinus()
 
 
 def plusEqual():
@@ -570,8 +566,7 @@ def immediate_json_hash():  # a:{b) OR a{b():c)):
 def expressions(fallback=None):
     # raiseNewline ?
     start = pointer()
-    the.result = ex = any(lambda:
-                      maybe(algebra) or \
+    the.result = ex = maybe(algebra) or \
                       maybe(json_hash) or \
                       maybe(swift_hash) or \
                       maybe(evaluate_index) or \
@@ -579,8 +574,7 @@ def expressions(fallback=None):
                       maybe(liste) or \
                       maybe(evaluate_property) or \
                       maybe(selfModify) or \
-                      maybe(endNode)
-                      )
+                      endNode()
     # or ['one'].has(fallback) ? 1 : false # WTF todo better quantifier one beer vs one==1
     # expression)
     if not interpreting() and not angel.use_tree: return pointer() - start
@@ -624,11 +618,10 @@ def piped_actions():
 def statement():
     raiseNewline  # _try(really) _try(why)
 
-    def lamb():
-        # statement)
-        if checkNewline(): return NEWLINE
+    if checkNewline(): return NEWLINE
+
         # maybe( if_then ) or
-        maybe(loops) or \
+    x=  maybe(loops) or \
         maybe(if_then_else) or \
         maybe(once) or \
         maybe(piped_actions) or \
@@ -638,12 +631,8 @@ def statement():
         maybe(breaks) or \
         maybe(constructor) or \
         maybe(action) or \
-        maybe(expressions)  # AS RETURN VALUE! DANGER!
-
-    x = _any(lamb)
-
-    if x: last_result = x
-    # last_result=last_result or x
+        expressions  # AS RETURN VALUE! DANGER!
+    if x: the.result = x
     # one :action, :if_then ,:once , :looper
     # any{action  or  if_then  or  once  or  looper)
 
@@ -696,7 +685,7 @@ def bash_action():
     remove_tokens('execute', 'command', 'commandline', 'run', 'shell', 'shellscript', 'script', 'bash')
     command = maybe(quote)  # danger bash "hi">echo
     command = command or rest_of_line
-    subnode(bash=command)
+    subnode({'bash':command})
     # any{ _try(  ) or   statements )
     if interpreting():
         try:
@@ -849,7 +838,7 @@ def print_variables():
 def ruby_method_call():
     call = ___('call', 'execute', 'run', 'start', 'evaluate', 'invoke')
     if call: no_rollback()
-    ruby_method = ___(ruby_methods + core_methods)
+    ruby_method = ___(builtin_methods + core_methods)
     if not ruby_method: raise UndefinedRubyMethod(word())
     args = rest_of_line
     # args=substitute_variables rest_of_line
@@ -869,8 +858,8 @@ def ruby_method_call():
 
     checkNewline()
     #raiseEnd
-    subnode(method=ruby_method)  #why not _try(auto)?
-    subnode(args=args)
+    subnode({'method':ruby_method})  #why not _try(auto})?
+    subnode({'args':args})
     current_value = ruby_method
     return current_value
     # return Object.method ruby_method.to_sym
@@ -925,8 +914,7 @@ def true_method():
     no_keyword()
     should_not_start_with(auxiliary_verbs)
     # _try(lambda:tokens(methods.keys+"ed")) sorted files -> sort files ?
-    v = _try(c_method) or _try(verb) or tokens_(methods.keys) or _try(lambda: tokens(ruby_methods)) or _try(
-        lambda: tokens(core_methods)) or _try(builtin_method)
+    v = _try(c_method) or _try(verb) or _try(methods.keys) or _try(builtin_methods) or _try(core_methods) or _try(builtin_method)
     if not v: raise NotMatching('no method found')
     v  #.to_s
 
@@ -942,7 +930,7 @@ def strange_eval(obj):
 
 def thing_dot_method_call():
     must_contain_before['='], '.'  # before:.?
-    obj = endNode
+    obj = endNode()
     if maybe_token('(') and interpreting(): return strange_eval(obj)
     _('.')
     method_call(obj)
@@ -956,6 +944,7 @@ def method_call(obj=None):
 
 
 def generic_method_call(obj=None):
+    global in_args
     #verb_node
     method =true_method()
     start_brace = ___('(', '{')  # '[', list and closure danger: index)
@@ -985,8 +974,8 @@ def generic_method_call(obj=None):
     if start_brace == '(': _(')')
     if start_brace == '[': _(']')
     if start_brace == '{': _(')')
-    subnode(object=obj)
-    subnode(arguments=args)
+    subnode({'object':obj})
+    subnode({'arguments':args})
     if not interpreting(): return FunctionCall(name=method, arguments=args, object=obj)  #parent node!!!
     the.result = do_send(obj, method, args)
     return the.result
@@ -1185,20 +1174,22 @@ def datetime():
 def collection():
     any(lambda:
         maybe(ranger) or
-        maybe(true_variable()) or
+        maybe(true_variable) or
         action_or_expressions  #of type list !!
         )
 
 
 def for_i_in_collection():
+    must_contain('for')
     maybe_token('repeat')
-    __('for', 'with')
+    ___('for', 'with')
     maybe_token('all')
     v = variable()  # selector() !
-    __('in', 'from')
+    ___('in', 'from')
     c = collection()
     b = action_or_block()
     for i in c:
+        v.value=i
         do_execute_block(b)
     if interpreting(): end()
 
@@ -1302,8 +1293,8 @@ def setter():
     # end_expression via statement!
     # if interpret: return var
 
-    subnode(var=var)
-    subnode(val=val)
+    subnode({'var':var})
+    subnode({'val':val})
     if interpreting(): return val
     return var
     # if angel.use_tree: return parent_node()
@@ -1371,9 +1362,9 @@ def word(include=[]):
     #if _try(starts_with) keywords: return false
     match = re.search(r'^\s*[a-zA-Z]+[\w_]*',the.string)
     if (match):
-        the.string = the.string[match[0].length:-1].strip()
-        current_value = match[0].strip()
-        return match[0]
+        current_value = the.string[:match.end()]
+        the.string = the.string[match.end():].strip()
+        return current_value
 
         #fad35
         #unknown
@@ -1415,7 +1406,7 @@ def cast(x, typ):
 def nod():  #options{generateAmbigWarnings=false)):
     return maybe(number) or \
            maybe(quote) or \
-           maybe(true_variable()) or \
+           maybe(true_variable) or \
            maybe(the_noun_that)  # or
     #_try( variables_that ) # see selectable
 
@@ -1434,7 +1425,7 @@ def arg(position=1):
     a = _try(variable)
     if a: return Argument(name=a.name, type=a.type, preposition=pre, position=position)
     type = _try(typeNameMapped)
-    v = endNode
+    v = endNode()
     name = pre + (a and a.name or "")
     return Argument({preposition: pre, name: name, type: type, position: position, value: v})
 
@@ -1452,8 +1443,8 @@ def compareNode():
 
 def whose():
     _('whose')
-    endNoun
-    compareNode  # is bigger than live
+    endNoun()
+    return compareNode()  # is bigger than live
 
 
 # things that stink
@@ -1462,11 +1453,13 @@ def whose():
 # the input, which has caused problems
 #images which only vary horizontally
 def that_do():
+    global comp
     __('that', 'who', 'which')
     star(adverb)  # only
     comp = verb  # live
     maybe_token('s')  # lives
-    star(lambda: _try(adverb) or maybe(preposition) or maybe(endNoun))
+    s=star(lambda: _try(adverb) or maybe(preposition) or maybe(endNoun))
+    return comp
 
 
 # more easisly
@@ -1494,7 +1487,8 @@ def null_comparative():
     verb()
     c = comparative()
     endNode_()
-    if c.startswith('more') or c.ends_with('er'): return c
+    if c.startswith('more') or c.ends_with('er'):
+        return c
 
 
 #  faster than ever
@@ -1509,6 +1503,7 @@ def comparative():
     c = _try(more_comparative) or adverb
     if c.startswith('more') or _try(lambda: c.ends_with('er')):
         comp = c
+    return c
 
 
 def that_are():
@@ -1525,18 +1520,18 @@ def that_object_predicate():
     tokens('that', 'which', 'who', 'whom')
     _try(pronoun) or endNoun
     verbium
-    star(
-        _try(adverb) or _try(preposition) or _try(endNoun)
-    )
+    s=star(lambda :_try(adverb) or _try(preposition) or _try(endNoun))
+    return s
 
 
 def that():
-    filter = maybe(that_do) or maybe(that_are) or whose
+    filter = maybe(that_do) or maybe(that_are) or whose()
+    return filter
 
 
 def where():
     tokens('where')  # NOT: ,'who','whose','which'
-    condition
+    return condition
 
 
 # _try(ambivalent)  delete james from china
@@ -1565,14 +1560,15 @@ def selector():
 # contains
 def verb_comparison():
     star(adverb)
-    comp = verb  # WEAK !?
+    comp = verb()  # WEAK !?
     _try(preposition)
-    comp
+    return comp
 
 
 def comparison():  # WEAK _try(pattern)):
-    comp = maybe(verb_comparison) or \
-           comparation()  # are bigger than
+    global comp
+    comp = maybe(verb_comparison) or comparation()  # are bigger than
+    return comp
 
 
 # is more or less
@@ -1599,8 +1595,8 @@ def comparation():
     comp = comp and pointer() - start or eq
     # if Jens.smaller then ok:
     maybe_token('than')  #, 'then' #_22'then' ;) danger:
-    subnode(comparation=comp)
-    comp
+    subnode({'comparation':comp})
+    return comp
 
 
 def either_or():
@@ -1610,7 +1606,7 @@ def either_or():
     value
     ___('or', 'nor')
     _try(comparation)
-    value
+    return value
 
 
 def is_comparator(c):
@@ -1619,7 +1615,7 @@ def is_comparator(c):
          comparison_words.contains(c - "are ") or \
          comparison_words.contains(c - "the ") or \
          class_words.contains(c)
-    ok
+    return ok
 
 
 def check_list_condition(quantifier,lhs,comp,rhs):
@@ -1652,7 +1648,6 @@ def check_list_condition(quantifier,lhs,comp,rhs):
     except Exception as e:
         #debug x #soft message
         error(e)  #exit!
-
     return False
 
 
@@ -1694,12 +1689,11 @@ def check_condition(cond=None, negate=False):
     except Exception as e:
         #debug x #soft message
         error(e)  #exit!
-
     return False
 
 
 def action_or_expressions(fallback=None):
-    maybe(action) or expressions(fallback)
+    return maybe(action) or expressions(fallback)
     # maybe(expressions(fallback))
     # expressions(fallback)
 
@@ -1709,8 +1703,9 @@ def action_or_expressions(fallback=None):
 
 
 def element_in():
-    _try(noun)
+    n=noun()
     __('in'), "of"
+    return n
 
 
 def condition():
@@ -1729,7 +1724,7 @@ def condition():
     if comp: rhs = action_or_expressions(None)
     if brace: _(')')
     negate = (negated or _not) and not (negated and _not)
-    subnode(negate=negate)
+    subnode({'negate':negate})
     if not comp: lhs
 
     # 1,2,3 are smaller 4  VS 1,2,3.contains(4)
@@ -1776,13 +1771,13 @@ def condition_tree(recurse=True):
 
 
 def otherwise():
-    newline22
+    _try(newline)
     must_contain('else:', 'otherwise')
     ___('else:', 'otherwise')
     # if :. ! _try(OK): else:
-    e = expressions
-    ___('else:', 'otherwise' and newline)
-    e
+    e = expressions()
+    ___('else:', 'otherwise')and newline()
+    return e
 
 
 # todo  I hate to :.
@@ -1790,16 +1785,16 @@ def loveHateTo():
     ___('would', "wouldn't")
     ___('do', 'not', "don't")
     __['want', 'like', 'love', 'hate']
-    _('to')
+    return _('to')
 
 
 def gerundium():
     verb
-    token('ing')
+    return token('ing')
 
 
 def verbium():
-    comparison or verb and adverb  # be or have or
+    return comparison or verb and adverb  # be or have or
 
 
 def the_noun_that():
@@ -1807,16 +1802,12 @@ def the_noun_that():
     n = noun
     if not n: raise_not_matching("no noun")
     star(selector)
-    n
+    return n
 
 
 #def plural:
 #  word #todo
 #
-
-
-def const_defined(c):
-    pass
 
 
 def classConstDefined():
@@ -1827,17 +1818,17 @@ def classConstDefined():
         raise NotMatching()
 
     if interpreting(): c = do_get_class_constant(c)
-    c
+    return c
 
 
 def typeNameMapped():
-    x = typeName
+    x = typeName()
     if x == "int": return int
-    x
+    return x
 
 
 def typeName():
-    _try(classConstDefined) or tokens(type_names)
+    return _try(classConstDefined) or tokens(type_names)
 
 
 def gerund():
@@ -1849,7 +1840,7 @@ def gerund():
     pr = ___(prepositions)  # wrapped in
     if pr: _try(endNode)
     current_value = match[1]
-    current_value
+    return current_value
 
 
 def postjective():  # 4 squared , 'bla' inverted, buttons pushed in, mail read by James):
@@ -1860,7 +1851,7 @@ def postjective():  # 4 squared , 'bla' inverted, buttons pushed in, mail read b
     if not checkEndOfLine(): pr = ___(prepositions)  # wrapped in
     if pr and not checkEndOfLine(): _try(endNode)  # silver
     current_value = match[1]
-    current_value
+    return current_value
 
     # TODO: big cleanup!
     # see resolve, eval_string,  do_evaluate, do_evaluate_property, do_s
@@ -2054,7 +2045,7 @@ def do_compare(a, comp, b):
 
 
 def filter(liste, criterion):
-    # global rhs,lhs,comp
+    global rhs,lhs,comp
     if not criterion: return liste
     mylist = eval_string(liste)
     # if not isinstance(mylist, mylist): mylist = get_iterator(mylist)
@@ -2067,14 +2058,10 @@ def filter(liste, criterion):
     mylist.select(lambda i: do_compare(i, method, args))  #REPORT BUGS!!! except False
 
 
-def selector(args):
-    pass
-
-
 def selectable():
     must_contain('that', 'whose', 'which')
     ___('every', 'all', 'those')
-    xs = resolve(true_variable) or endNoun
+    xs = resolve(true_variable()) or endNoun()
     s = maybe(selector)  # rhs=xs, lhs implicit! (BAD!)
     if interpret: x = filter(xs, s)  # except xs
     return x
@@ -2103,8 +2090,8 @@ def endNode():
             maybe(lambda: _try(article) and typeNameMapped) or
             maybe(evaluate_property) or
             maybe(selectable) or
-            maybe(true_variable()) or
-            maybe(_try(article) and word) or
+            maybe(true_variable) or
+            maybe(article) and word() or
             maybe(ranger) or  # not params!
             maybe(value) or
             maybe(token('a'))  # variable 'a' not as article DANGER!
@@ -2112,6 +2099,7 @@ def endNode():
     po = maybe(postjective)  # inverted
     if po and interpret: x = do_send(x, po, None)
     x
+
 
 
 def endNoun(included=[]):
@@ -2177,9 +2165,9 @@ def english_to_math(s):
 def evaluate_index():
     should_not_start_with('[')
     must_contain('[', ']')
-    v = endNode  # true_variable()
+    v = endNode()  # true_variable()
     _('[')
-    i = endNode
+    i = endNode()
     _(']')
     set = maybe_token('=')
     if set: set = expressions
@@ -2247,14 +2235,14 @@ def evaluate():
     ___('what is', 'evaluate', 'how much', 'what are', 'calculate', 'eval')
     no_rollback()
     the_expression = rest_of_line
-    subnode(statement=the_expression)
+    subnode({'statement':the_expression})
     current_value = the_expression
     try:
         the.result = eval(english_to_math(the_expression))  #if not the.result:
     except:
         the.result = jeannie(the_expression)
 
-    subnode(result=the.result)  #: via automagic)
+    subnode({'result':the.result})  #: via automagic})
     current_value = the.result
     return current_value
 
@@ -2398,8 +2386,8 @@ def adverb():
 
 
 def verb():
-    no_keyword_except(system_verbs - be_words)
-    found_verb = ___(other_verbs + system_verbs - be_words - ['do'])  #verbs,
+    no_keyword_except(remove_from_list(system_verbs ,be_words))
+    found_verb = ___(list(other_verbs + system_verbs) - be_words - ['do'])  #verbs,
     if not found_verb: raise_not_matching("no verb")
     if not angel.use_wordnet(): return found_verb
     current_value = found_verb or wordnet_is_verb()  # call_is_verb
@@ -2425,12 +2413,12 @@ def wordnet_is_noun():  # expensive!!!):
 
 def wordnet_is_adjective():  # expensive!!!):
     ### global the.string
-    if re.search(r'^\s*(\w+)'): the_adjective =the.the.string.match(r'^\s*(\w+)',the.the.string)[1]  #
+    if re.search(r'^\s*(\w+)'): the_adjective =the.string.match(r'^\s*(\w+)',the.string)[1]  #
     if boolean_words.has(the_adjective): raise NotMatching("no boolean adjectives")
     #if not the_adjective: return false
     if not the_adjective: raise NotMatching("no adjective word")
     if not the_adjective.is_adjective: raise NotMatching("no adjective")
-    the.the.string = the.the.string.strip[len(the_adjective):-1]
+    the.string = the.string.strip[len(the_adjective):-1]
     the_adjective
 
 
@@ -2513,11 +2501,11 @@ def true_variable():
     #tokens(variables_list # todo: remove (in endNodes, selectors,:.))
 
 
-def noun(self,include=[]):
+def noun(include=[]):
     a = _try(the)
     if not a: should_not_start_with(system_verbs())
     if not angel.use_wordnet(): return word(include)
-    #if true_variable: return True
+    #if true_variable(): return True
     no_keyword_except(include)
     current_value = wordnet_is_noun()  # expensive!!!
     #current_value=call_is_noun # expensive!!!
@@ -2626,14 +2614,14 @@ def linuxPath():
 
 
 def rubyThing():
-    ## global the.the.string
+    ## global the.string
     raiseEnd()
-    match = re.search(r'^[A-Z]\w+\.\w+',the.the.string)
+    match = re.search(r'^[A-Z]\w+\.\w+',the.string)
     if not match:
         return False
     thing = match[0]
-    the.the.string = match.post_match.strip()
-    args = re.search(r'^\(.*?\)',the.the.string)
+    the.string = match.post_match.strip()
+    args = re.search(r'^\(.*?\)',the.string)
     if args: the.string = args.post_match.strip()
     args = args or " #{value22 or '')"
     thing = thing + "#{args)"
@@ -2693,7 +2681,7 @@ def repeat_action_while():
 
 def while_loop():
     ___( 'repeat')
-    __ ('while','as long as')
+    __('while','as long as')
     dont_interpret()
     no_rollback() #no_rollback 13 # arbitrary value ! :{
     c=condition()

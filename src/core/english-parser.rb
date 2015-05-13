@@ -1114,6 +1114,7 @@ class EnglishParser < Parser
     c=collection
     b=action_or_block
     for i in c
+      v.value=i
       do_execute_block b
     end if interpreting?
   end
