@@ -1,4 +1,10 @@
 #!/usr/bin/env ruby
+# JRuby+Truffle can achieve peak performance well beyond that possible in JRuby at the same time as being a significantly simpler system.
+
+# We can also look at what Rubinius produces, using the command:
+# rbenv shell rbx-2.2.2
+# ruby -Xjit.dump_code=4 test.rb
+
 # RubyMotion PLEASE become open source!!
 # ruby2ruby
 # + llvm / rubymotion / j-rubyflux for native !!

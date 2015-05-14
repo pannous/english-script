@@ -1,5 +1,6 @@
 
 # ruby++ better blocks + lambdas !!!
+# ruby++ much more forgiving and convenient, i.e. z=map[x] vs if x in map: map[x]
 # ruby+ jruby better, class extensions
 # ruby+ def 'properties'
 # ruby- less modules, more beautiful language => less need for angle!
@@ -14,6 +15,8 @@
 # python +: list concatenation
 # python +-: functions proper(!) 1st class citizens [problem: () not default!]
 # python +-: properties
+# python +: in operator
+# python +: stricter: i.e. ruby z=map[x] (NIL) vs if x in map: map[x]
 # python -- LESS FORGIVING! ValueError: list.remove(x): x not in list , if string.index(x): ValueError: substring not found ETC ETC
 # python -- missing SO MANY FUNCTIONS! :
 # python - unsupported operand type(s) for -: 'list' and 'list', AttributeError: 'list' object has no attribute 'each' ETC **

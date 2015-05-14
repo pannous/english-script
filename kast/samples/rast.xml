@@ -1,0 +1,3656 @@
+<Block>
+  <Defn name='put'>
+    <Argument name='put'/>
+    <Args>
+      <List>
+        <Argument name='x'/>
+      </List>
+    </Args>
+    <FCall name='print'>
+      <Array>
+        <LocalVar name='x'/>
+      </Array>
+    </FCall>
+  </Defn>
+  <Defn name='grep'>
+    <Argument name='grep'/>
+    <Args>
+      <List>
+        <Argument name='xs'/>
+        <Argument name='x'/>
+      </List>
+    </Args>
+    <Call name='select'>
+      <LocalVar name='xs'/>
+      <List>
+      </List>
+      <Iter>
+        <Args>
+          <List>
+            <Argument name='y'/>
+          </List>
+        </Args>
+        <Call name='match'>
+          <Call name='to_s'>
+            <DVar name='y'/>
+            <List>
+            </List>
+          </Call>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Iter>
+    </Call>
+  </Defn>
+  <Defn name='say'>
+    <Argument name='say'/>
+    <Args>
+      <List>
+        <Argument name='x'/>
+      </List>
+    </Args>
+    <Block>
+      <FCall name='puts'>
+        <Array>
+          <LocalVar name='x'/>
+        </Array>
+      </FCall>
+      <Rescue>
+        <RescueBody>
+          <Nil name='nil'/>
+        </RescueBody>
+        <FCall name='system'>
+          <Array>
+            <DStr>
+              <Str>say '
+              </Str>
+              <EvStr>
+                <LocalVar name='x'/>
+              </EvStr>
+              <Str>'
+              </Str>
+            </DStr>
+          </Array>
+        </FCall>
+      </Rescue>
+    </Block>
+  </Defn>
+  <Defn name='beep'>
+    <Argument name='beep'/>
+    <Args>
+    </Args>
+    <Block>
+      <FCall name='print'>
+        <Array>
+          <Str value='BEEP '/>
+        </Array>
+      </FCall>
+      <If>
+        <Call name='!'>
+          <GlobalVar name='$testing'/>
+          <List>
+          </List>
+        </Call>
+        <Rescue>
+          <RescueBody>
+            <Nil name='nil'/>
+          </RescueBody>
+          <FCall name='system'>
+            <Array>
+              <Str>say 'beep'
+              </Str>
+            </Array>
+          </FCall>
+        </Rescue>
+      </If>
+      <Str value='beeped'/>
+    </Block>
+  </Defn>
+  <Class>
+    <Colon2Implicit name='Class'/>
+    <Defn name='blank?'>
+      <Argument name='blank?'/>
+      <Args>
+      </Args>
+      <False name='false'/>
+    </Defn>
+  </Class>
+  <Class>
+    <Colon2Implicit name='File'/>
+    <Block>
+      <FCall name='require'>
+        <Array>
+          <Str value='fileutils'/>
+        </Array>
+      </FCall>
+      <Defn name='to_s'>
+        <Argument name='to_s'/>
+        <Args>
+        </Args>
+        <VCall name='path'/>
+      </Defn>
+      <Defn name='name'>
+        <Argument name='name'/>
+        <Args>
+        </Args>
+        <VCall name='path'/>
+      </Defn>
+      <Defn name='filename'>
+        <Argument name='filename'/>
+        <Args>
+        </Args>
+        <VCall name='path'/>
+      </Defn>
+      <Defn name='mv'>
+        <Argument name='mv'/>
+        <Args>
+          <List>
+            <Argument name='to'/>
+          </List>
+        </Args>
+        <Call name='mv'>
+          <Const name='FileUtils'/>
+          <Array>
+            <VCall name='path'/>
+            <LocalVar name='to'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='move'>
+        <Argument name='move'/>
+        <Args>
+          <List>
+            <Argument name='to'/>
+          </List>
+        </Args>
+        <Call name='mv'>
+          <Const name='FileUtils'/>
+          <Array>
+            <VCall name='path'/>
+            <LocalVar name='to'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='copy'>
+        <Argument name='copy'/>
+        <Args>
+          <List>
+            <Argument name='to'/>
+          </List>
+        </Args>
+        <Call name='cp'>
+          <Const name='FileUtils'/>
+          <Array>
+            <VCall name='path'/>
+            <LocalVar name='to'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='cp'>
+        <Argument name='cp'/>
+        <Args>
+          <List>
+            <Argument name='to'/>
+          </List>
+        </Args>
+        <Call name='cp'>
+          <Const name='FileUtils'/>
+          <Array>
+            <VCall name='path'/>
+            <LocalVar name='to'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='contain'>
+        <Argument name='contain'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='index'>
+          <VCall name='path'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='contains'>
+        <Argument name='contains'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='index'>
+          <VCall name='path'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='delete'>
+        <Argument name='delete'/>
+        <Args>
+        </Args>
+        <FCall name='raise'>
+          <Array>
+            <FCall name='SecurityError'>
+              <Array>
+                <Str value='cannot delete files'/>
+              </Array>
+            </FCall>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defs name='list'>
+        <Self name='self'/>
+        <Argument name='list'/>
+        <Args>
+          <List>
+            <Argument name='dir'/>
+          </List>
+        </Args>
+        <Call name='-'>
+          <Call name='entries'>
+            <Const name='Dir'/>
+            <Array>
+              <LocalVar name='dir'/>
+            </Array>
+          </Call>
+          <Array>
+            <Array>
+              <Str value='.'/>
+              <Str value='..'/>
+            </Array>
+          </Array>
+        </Call>
+      </Defs>
+      <Defs name='ls'>
+        <Self name='self'/>
+        <Argument name='ls'/>
+        <Args>
+          <List>
+            <Argument name='dir'/>
+          </List>
+        </Args>
+        <Call name='-'>
+          <Call name='entries'>
+            <Const name='Dir'/>
+            <Array>
+              <LocalVar name='dir'/>
+            </Array>
+          </Call>
+          <Array>
+            <Array>
+              <Str value='.'/>
+              <Str value='..'/>
+            </Array>
+          </Array>
+        </Call>
+      </Defs>
+    </Block>
+  </Class>
+  <Class>
+    <Colon2Implicit name='Dir'/>
+    <Block>
+      <Defn name='to_s'>
+        <Argument name='to_s'/>
+        <Args>
+        </Args>
+        <VCall name='path'/>
+      </Defn>
+      <Defs name='list'>
+        <Self name='self'/>
+        <Argument name='list'/>
+        <Args>
+          <List>
+            <Argument name='dir'/>
+          </List>
+        </Args>
+        <Call name='-'>
+          <Call name='entries'>
+            <Const name='Dir'/>
+            <Array>
+              <LocalVar name='dir'/>
+            </Array>
+          </Call>
+          <Array>
+            <Array>
+              <Str value='.'/>
+              <Str value='..'/>
+            </Array>
+          </Array>
+        </Call>
+      </Defs>
+      <Defs name='ls'>
+        <Self name='self'/>
+        <Argument name='ls'/>
+        <Args>
+          <List>
+            <Argument name='dir'/>
+          </List>
+        </Args>
+        <Call name='-'>
+          <Call name='entries'>
+            <Const name='Dir'/>
+            <Array>
+              <LocalVar name='dir'/>
+            </Array>
+          </Call>
+          <Array>
+            <Array>
+              <Str value='.'/>
+              <Str value='..'/>
+            </Array>
+          </Array>
+        </Call>
+      </Defs>
+      <Defn name='list'>
+        <Argument name='list'/>
+        <Args>
+        </Args>
+        <FCall name='entries'>
+          <Array>
+            <Self name='self'/>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='ls'>
+        <Argument name='ls'/>
+        <Args>
+        </Args>
+        <FCall name='entries'>
+          <Array>
+            <Self name='self'/>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='files'>
+        <Argument name='files'/>
+        <Args>
+        </Args>
+        <VCall name='to_a'/>
+      </Defn>
+      <Defn name='contains'>
+        <Argument name='contains'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <FCall name='select'>
+          <List>
+          </List>
+          <Iter>
+            <Args>
+              <List>
+                <Argument name='f'/>
+              </List>
+            </Args>
+            <Call name='=='>
+              <DVar name='f'/>
+              <Array>
+                <LocalVar name='x'/>
+              </Array>
+            </Call>
+          </Iter>
+        </FCall>
+      </Defn>
+      <FCall name='require'>
+        <Array>
+          <Str value='fileutils'/>
+        </Array>
+      </FCall>
+      <Defn name='remove_leaves'>
+        <Argument name='remove_leaves'/>
+        <Args>
+          <Block>
+            <OptArg value='#<Rjb::Rjb_JavaProxy:0x007f8d350b5be8>'/>
+            <OptArg value='#<Rjb::Rjb_JavaProxy:0x007f8d350b5418>'/>
+          </Block>
+        </Args>
+        <Call name='chdir'>
+          <Const name='Dir'/>
+          <Array>
+            <LocalVar name='dir'/>
+          </Array>
+          <Iter>
+            <Args>
+            </Args>
+            <Block>
+              <DAsgn name='entries'>
+                <Call name='reject'>
+                  <Call name='entries'>
+                    <Const name='Dir'/>
+                    <Array>
+                      <Call name='pwd'>
+                        <Const name='Dir'/>
+                        <List>
+                        </List>
+                      </Call>
+                    </Array>
+                  </Call>
+                  <List>
+                  </List>
+                  <Iter>
+                    <Args>
+                      <List>
+                        <Argument name='e'/>
+                      </List>
+                    </Args>
+                    <Or>
+                      <Call name='=='>
+                        <DVar name='e'/>
+                        <Array>
+                          <Str value='.'/>
+                        </Array>
+                      </Call>
+                      <Call name='=='>
+                        <DVar name='e'/>
+                        <Array>
+                          <Str value='..'/>
+                        </Array>
+                      </Call>
+                    </Or>
+                  </Iter>
+                </Call>
+              </DAsgn>
+              <If>
+                <And>
+                  <Call name='=='>
+                    <Call name='size'>
+                      <DVar name='entries'/>
+                      <List>
+                      </List>
+                    </Call>
+                    <Array>
+                      <Fixnum value='1'/>
+                    </Array>
+                  </Call>
+                  <Call name='=='>
+                    <Call name='first'>
+                      <DVar name='entries'/>
+                      <List>
+                      </List>
+                    </Call>
+                    <Array>
+                      <LocalVar name='matching'/>
+                    </Array>
+                  </Call>
+                </And>
+                <Block>
+                  <FCall name='puts'>
+                    <Array>
+                      <DStr>
+                        <Str value='Removing '/>
+                        <EvStr>
+                          <Call name='pwd'>
+                            <Const name='Dir'/>
+                            <List>
+                            </List>
+                          </Call>
+                        </EvStr>
+                      </DStr>
+                    </Array>
+                  </FCall>
+                  <Call name='rm_rf'>
+                    <Const name='FileUtils'/>
+                    <Array>
+                      <Call name='pwd'>
+                        <Const name='Dir'/>
+                        <List>
+                        </List>
+                      </Call>
+                    </Array>
+                  </Call>
+                </Block>
+                <Call name='each'>
+                  <DVar name='entries'/>
+                  <List>
+                  </List>
+                  <Iter>
+                    <Args>
+                      <List>
+                        <Argument name='e'/>
+                      </List>
+                    </Args>
+                    <If>
+                      <Call name='directory?'>
+                        <Const name='File'/>
+                        <Array>
+                          <DVar name='e'/>
+                        </Array>
+                      </Call>
+                      <FCall name='remove_leaves'>
+                        <Array>
+                          <DVar name='e'/>
+                        </Array>
+                      </FCall>
+                    </If>
+                  </Iter>
+                </Call>
+              </If>
+            </Block>
+          </Iter>
+        </Call>
+      </Defn>
+      <Defn name='delete'>
+        <Argument name='delete'/>
+        <Args>
+        </Args>
+        <FCall name='raise'>
+          <Array>
+            <FCall name='SecurityError'>
+              <Array>
+                <Str value='cannot delete directories'/>
+              </Array>
+            </FCall>
+          </Array>
+        </FCall>
+      </Defn>
+    </Block>
+  </Class>
+  <Defs name='blank?'>
+    <Nil name='nil'/>
+    <Argument name='blank?'/>
+    <Args>
+    </Args>
+    <Return>
+      <True name='true'/>
+    </Return>
+  </Defs>
+  <Defs name='test'>
+    <Nil name='nil'/>
+    <Argument name='test'/>
+    <Args>
+    </Args>
+    <Str value='nil.test OK'/>
+  </Defs>
+  <Defs name='+'>
+    <Nil name='nil'/>
+    <Argument name='+'/>
+    <Args>
+      <List>
+        <Argument name='x'/>
+      </List>
+    </Args>
+    <LocalVar name='x'/>
+  </Defs>
+  <Class>
+    <Colon2Implicit name='Hash'/>
+    <Block>
+      <FCall name='alias_method'>
+        <Array>
+          <Symbol name='orig_index'/>
+          <Symbol name='[]'/>
+        </Array>
+      </FCall>
+      <Defn name='key?'>
+        <Argument name='key?'/>
+        <Args>
+          <List>
+            <Argument name='key'/>
+          </List>
+        </Args>
+        <Block>
+          <If>
+            <Call name='is_a?'>
+              <LocalVar name='key'/>
+              <Array>
+                <Const name='Symbol'/>
+              </Array>
+            </Call>
+            <Return>
+              <Or>
+                <Call name='contains'>
+                  <VCall name='keys'/>
+                  <Array>
+                    <LocalVar name='key'/>
+                  </Array>
+                </Call>
+                <Call name='contains'>
+                  <VCall name='keys'/>
+                  <Array>
+                    <Call name='to_s'>
+                      <LocalVar name='key'/>
+                      <List>
+                      </List>
+                    </Call>
+                  </Array>
+                </Call>
+              </Or>
+            </Return>
+          </If>
+          <If>
+            <Call name='is_a?'>
+              <LocalVar name='key'/>
+              <Array>
+                <Const name='String'/>
+              </Array>
+            </Call>
+            <Return>
+              <Or>
+                <Call name='contains'>
+                  <VCall name='keys'/>
+                  <Array>
+                    <LocalVar name='key'/>
+                  </Array>
+                </Call>
+                <Call name='contains'>
+                  <VCall name='keys'/>
+                  <Array>
+                    <Call name='to_sym'>
+                      <LocalVar name='key'/>
+                      <List>
+                      </List>
+                    </Call>
+                  </Array>
+                </Call>
+              </Or>
+            </Return>
+          </If>
+          <Call name='contains'>
+            <VCall name='keys'/>
+            <Array>
+              <LocalVar name='key'/>
+            </Array>
+          </Call>
+        </Block>
+      </Defn>
+      <Alias>
+        <Literal name='has'/>
+        <Literal name='key?'/>
+      </Alias>
+      <Alias>
+        <Literal name='contains'/>
+        <Literal name='key?'/>
+      </Alias>
+      <Defn name='[]'>
+        <Argument name='[]'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Block>
+          <If>
+            <Call name='!'>
+              <LocalVar name='x'/>
+              <List>
+              </List>
+            </Call>
+            <Return>
+              <NilImplicit name='nil'/>
+            </Return>
+          </If>
+          <If>
+            <Call name='is_a?'>
+              <LocalVar name='x'/>
+              <Array>
+                <Const name='Symbol'/>
+              </Array>
+            </Call>
+            <Return>
+              <Or>
+                <FCall name='orig_index'>
+                  <Array>
+                    <LocalVar name='x'/>
+                  </Array>
+                </FCall>
+                <FCall name='orig_index'>
+                  <Array>
+                    <Call name='to_s'>
+                      <LocalVar name='x'/>
+                      <List>
+                      </List>
+                    </Call>
+                  </Array>
+                </FCall>
+              </Or>
+            </Return>
+          </If>
+          <If>
+            <Call name='is_a?'>
+              <LocalVar name='x'/>
+              <Array>
+                <Const name='String'/>
+              </Array>
+            </Call>
+            <Return>
+              <Or>
+                <FCall name='orig_index'>
+                  <Array>
+                    <LocalVar name='x'/>
+                  </Array>
+                </FCall>
+                <FCall name='orig_index'>
+                  <Array>
+                    <Call name='to_sym'>
+                      <LocalVar name='x'/>
+                      <List>
+                      </List>
+                    </Call>
+                  </Array>
+                </FCall>
+              </Or>
+            </Return>
+          </If>
+          <FCall name='orig_index'>
+            <Array>
+              <LocalVar name='x'/>
+            </Array>
+          </FCall>
+        </Block>
+      </Defn>
+      <Defn name='map_values'>
+        <Argument name='map_values'/>
+        <Args>
+        </Args>
+        <Call name='inject'>
+          <Self name='self'/>
+          <Array>
+            <Hash>
+              <Array>
+              </Array>
+            </Hash>
+          </Array>
+          <Iter>
+            <Args>
+              <List>
+                <Argument name='newhash'/>
+                <MultipleAsgn19>
+                  <Array>
+                    <DAsgn name='k'>
+                      <NilImplicit name='nil'/>
+                    </DAsgn>
+                    <DAsgn name='v'>
+                      <NilImplicit name='nil'/>
+                    </DAsgn>
+                  </Array>
+                </MultipleAsgn19>
+              </List>
+            </Args>
+            <Block>
+              <AttrAssign name='[]='>
+                <DVar name='newhash'/>
+                <Array>
+                  <DVar name='k'/>
+                  <Yield>
+                    <DVar name='v'/>
+                  </Yield>
+                </Array>
+              </AttrAssign>
+              <DVar name='newhash'/>
+            </Block>
+          </Iter>
+        </Call>
+      </Defn>
+    </Block>
+  </Class>
+  <Class>
+    <Colon2Implicit name='Class'/>
+    <Defn name='wrap'>
+      <Argument name='wrap'/>
+      <Args>
+      </Args>
+      <Return>
+        <Call name='to_s'>
+          <Self name='self'/>
+          <List>
+          </List>
+        </Call>
+      </Return>
+    </Defn>
+  </Class>
+  <Class>
+    <Colon2Implicit name='Array'/>
+    <Block>
+      <Defn name='c'>
+        <Argument name='c'/>
+        <Args>
+        </Args>
+        <Call name='join'>
+          <FCall name='map'>
+            <BlockPass>
+              <Symbol name='c'/>
+            </BlockPass>
+          </FCall>
+          <Array>
+            <Str value=', '/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='wrap'>
+        <Argument name='wrap'/>
+        <Args>
+        </Args>
+        <DStr>
+          <Str value='rb_ary_new3('/>
+          <EvStr>
+            <VCall name='size'/>
+          </EvStr>
+          <Str value='/*size*/, '/>
+          <EvStr>
+            <VCall name='wraps'/>
+          </EvStr>
+          <Str value=')'/>
+        </DStr>
+      </Defn>
+      <Defn name='wraps'>
+        <Argument name='wraps'/>
+        <Args>
+        </Args>
+        <Call name='join'>
+          <FCall name='map'>
+            <BlockPass>
+              <Symbol name='wrap'/>
+            </BlockPass>
+          </FCall>
+          <Array>
+            <Str value=', '/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='values'>
+        <Argument name='values'/>
+        <Args>
+        </Args>
+        <Call name='join'>
+          <FCall name='map'>
+            <BlockPass>
+              <Symbol name='value'/>
+            </BlockPass>
+          </FCall>
+          <Array>
+            <Str value=', '/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='contains_a'>
+        <Argument name='contains_a'/>
+        <Args>
+          <List>
+            <Argument name='type'/>
+          </List>
+        </Args>
+        <Block>
+          <FCall name='each'>
+            <List>
+            </List>
+            <Iter>
+              <Args>
+                <List>
+                  <Argument name='x'/>
+                </List>
+              </Args>
+              <If>
+                <Call name='is_a?'>
+                  <DVar name='x'/>
+                  <Array>
+                    <LocalVar name='type'/>
+                  </Array>
+                </Call>
+                <Return>
+                  <True name='true'/>
+                </Return>
+              </If>
+            </Iter>
+          </FCall>
+          <False name='false'/>
+        </Block>
+      </Defn>
+      <Defn name='drop!'>
+        <Argument name='drop!'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <FCall name='reject!'>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='to_str'>
+        <Argument name='to_str'/>
+        <Args>
+        </Args>
+        <Call name='join'>
+          <Self name='self'/>
+          <Array>
+            <Str value=', '/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='method_missing'>
+        <Argument name='method_missing'/>
+        <Args>
+          <List>
+            <Argument name='method'/>
+          </List>
+          <RestArg name='args'/>
+          <BlockArg name='block'/>
+        </Args>
+        <Block>
+          <If>
+            <Call name='=='>
+              <Call name='count'>
+                <LocalVar name='args'/>
+                <List>
+                </List>
+              </Call>
+              <Array>
+                <Fixnum value='0'/>
+              </Array>
+            </Call>
+            <Return>
+              <Call name='map'>
+                <Self name='self'/>
+                <List>
+                </List>
+                <Iter>
+                  <Args>
+                    <List>
+                      <Argument name='x'/>
+                    </List>
+                  </Args>
+                  <Call name='send'>
+                    <DVar name='x'/>
+                    <Array>
+                      <LocalVar name='method'/>
+                    </Array>
+                  </Call>
+                </Iter>
+              </Call>
+            </Return>
+          </If>
+          <If>
+            <Call name='>'>
+              <Call name='count'>
+                <LocalVar name='args'/>
+                <List>
+                </List>
+              </Call>
+              <Array>
+                <Fixnum value='0'/>
+              </Array>
+            </Call>
+            <Return>
+              <Call name='map'>
+                <Self name='self'/>
+                <List>
+                </List>
+                <Iter>
+                  <Args>
+                    <List>
+                      <Argument name='x'/>
+                    </List>
+                  </Args>
+                  <Call name='send'>
+                    <DVar name='x'/>
+                    <Array>
+                      <LocalVar name='method'/>
+                      <LocalVar name='args'/>
+                    </Array>
+                  </Call>
+                </Iter>
+              </Call>
+            </Return>
+          </If>
+          <Super>
+            <ArgsCat>
+              <Array>
+                <LocalVar name='method'/>
+              </Array>
+              <LocalVar name='args'/>
+            </ArgsCat>
+            <BlockPass>
+              <ArgsCat>
+                <Array>
+                  <LocalVar name='method'/>
+                </Array>
+                <LocalVar name='args'/>
+              </ArgsCat>
+              <LocalVar name='block'/>
+            </BlockPass>
+          </Super>
+        </Block>
+      </Defn>
+      <Defn name='matches'>
+        <Argument name='matches'/>
+        <Args>
+          <List>
+            <Argument name='regex'/>
+          </List>
+        </Args>
+        <Block>
+          <For>
+            <LocalAsgn name='i'>
+              <NilImplicit name='nil'/>
+            </LocalAsgn>
+            <Block>
+              <LocalAsgn name='m'>
+                <Call name='match'>
+                  <LocalVar name='regex'/>
+                  <Array>
+                    <Call name='gsub'>
+                      <LocalVar name='i'/>
+                      <Array>
+                        <Regexp value='([^\w])'/>
+                        <Str value='\\\1'/>
+                      </Array>
+                    </Call>
+                  </Array>
+                </Call>
+              </LocalAsgn>
+              <If>
+                <LocalVar name='m'/>
+                <Return>
+                  <LocalVar name='m'/>
+                </Return>
+              </If>
+            </Block>
+            <Call name='flatten'>
+              <Self name='self'/>
+              <List>
+              </List>
+            </Call>
+          </For>
+          <Return>
+            <False name='false'/>
+          </Return>
+        </Block>
+      </Defn>
+      <Defn name='and'>
+        <Argument name='and'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Block>
+          <If>
+            <Call name='!'>
+              <Call name='is_a?'>
+                <LocalVar name='x'/>
+                <Array>
+                  <Const name='Array'/>
+                </Array>
+              </Call>
+              <List>
+              </List>
+            </Call>
+            <Call name='+'>
+              <Self name='self'/>
+              <Array>
+                <Array>
+                  <LocalVar name='x'/>
+                </Array>
+              </Array>
+            </Call>
+          </If>
+          <Call name='+'>
+            <Self name='self'/>
+            <Array>
+              <LocalVar name='x'/>
+            </Array>
+          </Call>
+        </Block>
+      </Defn>
+      <Defn name='plus'>
+        <Argument name='plus'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Block>
+          <If>
+            <Call name='!'>
+              <Call name='is_a?'>
+                <LocalVar name='x'/>
+                <Array>
+                  <Const name='Array'/>
+                </Array>
+              </Call>
+              <List>
+              </List>
+            </Call>
+            <Call name='+'>
+              <Self name='self'/>
+              <Array>
+                <Array>
+                  <LocalVar name='x'/>
+                </Array>
+              </Array>
+            </Call>
+          </If>
+          <Call name='+'>
+            <Self name='self'/>
+            <Array>
+              <LocalVar name='x'/>
+            </Array>
+          </Call>
+        </Block>
+      </Defn>
+      <Defn name='blank?'>
+        <Argument name='blank?'/>
+        <Args>
+        </Args>
+        <Or>
+          <FCall name='nil?'>
+            <List>
+            </List>
+          </FCall>
+          <FCall name='empty?'>
+            <List>
+            </List>
+          </FCall>
+        </Or>
+      </Defn>
+      <Defn name='names'>
+        <Argument name='names'/>
+        <Args>
+        </Args>
+        <FCall name='map'>
+          <BlockPass>
+            <Symbol name='to_s'/>
+          </BlockPass>
+        </FCall>
+      </Defn>
+      <Defn name='rest'>
+        <Argument name='rest'/>
+        <Args>
+        </Args>
+        <FCall name='[]'>
+          <Array>
+            <Dot>
+              <Fixnum value='1'/>
+              <Fixnum value='-1'/>
+            </Dot>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='fix_int'>
+        <Argument name='fix_int'/>
+        <Args>
+          <List>
+            <Argument name='i'/>
+          </List>
+        </Args>
+        <Block>
+          <If>
+            <Call name='=='>
+              <Call name='to_s'>
+                <LocalVar name='i'/>
+                <List>
+                </List>
+              </Call>
+              <Array>
+                <Str value='middle'/>
+              </Array>
+            </Call>
+            <LocalAsgn name='i'>
+              <Call name='/'>
+                <VCall name='count'/>
+                <Array>
+                  <Fixnum value='2'/>
+                </Array>
+              </Call>
+            </LocalAsgn>
+          </If>
+          <If>
+            <Call name='is_a?'>
+              <LocalVar name='i'/>
+              <Array>
+                <Const name='Numeric'/>
+              </Array>
+            </Call>
+            <Return>
+              <Call name='-'>
+                <LocalVar name='i'/>
+                <Array>
+                  <Fixnum value='1'/>
+                </Array>
+              </Call>
+            </Return>
+          </If>
+          <LocalAsgn name='i'>
+            <Call name='to_i'>
+              <Call name='replace_numerals!'>
+                <Call name='to_s'>
+                  <LocalVar name='i'/>
+                  <List>
+                  </List>
+                </Call>
+                <List>
+                </List>
+              </Call>
+              <List>
+              </List>
+            </Call>
+          </LocalAsgn>
+          <Call name='-'>
+            <LocalVar name='i'/>
+            <Array>
+              <Fixnum value='1'/>
+            </Array>
+          </Call>
+        </Block>
+      </Defn>
+      <Defn name='character'>
+        <Argument name='character'/>
+        <Args>
+          <List>
+            <Argument name='nr'/>
+          </List>
+        </Args>
+        <FCall name='item'>
+          <Array>
+            <LocalVar name='nr'/>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='item'>
+        <Argument name='item'/>
+        <Args>
+          <List>
+            <Argument name='nr'/>
+          </List>
+        </Args>
+        <FCall name='[]'>
+          <Array>
+            <FCall name='fix_int'>
+              <Array>
+                <LocalVar name='nr'/>
+              </Array>
+            </FCall>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='word'>
+        <Argument name='word'/>
+        <Args>
+          <List>
+            <Argument name='nr'/>
+          </List>
+        </Args>
+        <FCall name='[]'>
+          <Array>
+            <FCall name='fix_int'>
+              <Array>
+                <LocalVar name='nr'/>
+              </Array>
+            </FCall>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='invert'>
+        <Argument name='invert'/>
+        <Args>
+        </Args>
+        <VCall name='reverse'/>
+      </Defn>
+      <Defn name='get'>
+        <Argument name='get'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <FCall name='[]'>
+          <Array>
+            <FCall name='index'>
+              <Array>
+                <LocalVar name='x'/>
+              </Array>
+            </FCall>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='row'>
+        <Argument name='row'/>
+        <Args>
+          <List>
+            <Argument name='n'/>
+          </List>
+        </Args>
+        <FCall name='at'>
+          <Array>
+            <LocalVar name='n'/>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='has'>
+        <Argument name='has'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <FCall name='index'>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='contains'>
+        <Argument name='contains'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Block>
+          <LocalAsgn name='ok'>
+            <FCall name='index'>
+              <Array>
+                <LocalVar name='x'/>
+              </Array>
+            </FCall>
+          </LocalAsgn>
+          <If>
+            <LocalVar name='ok'/>
+            <FCall name='at'>
+              <Array>
+                <FCall name='index'>
+                  <Array>
+                    <LocalVar name='x'/>
+                  </Array>
+                </FCall>
+              </Array>
+            </FCall>
+            <False name='false'/>
+          </If>
+        </Block>
+      </Defn>
+    </Block>
+  </Class>
+  <Class>
+    <Colon2Implicit name='TrueClass'/>
+    <Defn name='blank?'>
+      <Argument name='blank?'/>
+      <Args>
+      </Args>
+      <False name='false'/>
+    </Defn>
+  </Class>
+  <Class>
+    <Colon2Implicit name='FalseClass'/>
+    <Block>
+      <Defn name='blank?'>
+        <Argument name='blank?'/>
+        <Args>
+        </Args>
+        <True name='true'/>
+      </Defn>
+      <Defn name='wrap'>
+        <Argument name='wrap'/>
+        <Args>
+        </Args>
+        <Self name='self'/>
+      </Defn>
+      <Defn name='c'>
+        <Argument name='c'/>
+        <Args>
+        </Args>
+        <Self name='self'/>
+      </Defn>
+    </Block>
+  </Class>
+  <Class>
+    <Colon2Implicit name='String'/>
+    <Block>
+      <Defn name='fix_encoding'>
+        <Argument name='fix_encoding'/>
+        <Args>
+        </Args>
+        <Block>
+          <If>
+            <Call name='method_defined?'>
+              <Const name='String'/>
+              <Array>
+                <Symbol name='encode'/>
+              </Array>
+            </Call>
+            <FCall name='require'>
+              <Array>
+                <Str value='iconv'/>
+              </Array>
+            </FCall>
+          </If>
+          <If>
+            <Call name='method_defined?'>
+              <Const name='String'/>
+              <Array>
+                <Symbol name='encode'/>
+              </Array>
+            </Call>
+            <Return>
+              <Call name='encode!'>
+                <Self name='self'/>
+                <Array>
+                  <Str value='UTF-8'/>
+                  <Str value='UTF-8'/>
+                  <Hash>
+                    <Array>
+                      <Symbol name='invalid'/>
+                      <Symbol name='replace'/>
+                    </Array>
+                  </Hash>
+                </Array>
+              </Call>
+            </Return>
+            <Block>
+              <LocalAsgn name='ic'>
+                <Call name='new'>
+                  <Const name='Iconv'/>
+                  <Array>
+                    <Str value='UTF-8'/>
+                    <Str value='UTF-8//IGNORE'/>
+                  </Array>
+                </Call>
+              </LocalAsgn>
+              <Return>
+                <Call name='iconv'>
+                  <LocalVar name='ic'/>
+                  <Array>
+                    <Self name='self'/>
+                  </Array>
+                </Call>
+              </Return>
+            </Block>
+          </If>
+        </Block>
+      </Defn>
+      <Defn name='c'>
+        <Argument name='c'/>
+        <Args>
+        </Args>
+        <VCall name='quoted'/>
+      </Defn>
+      <Defn name='quoted'>
+        <Argument name='quoted'/>
+        <Args>
+        </Args>
+        <DStr>
+          <Str value='"'/>
+          <EvStr>
+            <Self name='self'/>
+          </EvStr>
+          <Str value='"'/>
+        </DStr>
+      </Defn>
+      <Defn name='id'>
+        <Argument name='id'/>
+        <Args>
+        </Args>
+        <DStr>
+          <Str value='id("'/>
+          <EvStr>
+            <Self name='self'/>
+          </EvStr>
+          <Str value='")'/>
+        </DStr>
+      </Defn>
+      <Defn name='wrap'>
+        <Argument name='wrap'/>
+        <Args>
+        </Args>
+        <DStr>
+          <Str value='s("'/>
+          <EvStr>
+            <Self name='self'/>
+          </EvStr>
+          <Str value='")'/>
+        </DStr>
+      </Defn>
+      <Defn name='value'>
+        <Argument name='value'/>
+        <Args>
+        </Args>
+        <Self name='self'/>
+      </Defn>
+      <Defn name='name'>
+        <Argument name='name'/>
+        <Args>
+        </Args>
+        <Self name='self'/>
+      </Defn>
+      <Defn name='number'>
+        <Argument name='number'/>
+        <Args>
+        </Args>
+        <Call name='to_i'>
+          <Self name='self'/>
+          <List>
+          </List>
+        </Call>
+      </Defn>
+      <Defn name='in'>
+        <Argument name='in'/>
+        <Args>
+          <List>
+            <Argument name='ary'/>
+          </List>
+        </Args>
+        <Call name='has'>
+          <LocalVar name='ary'/>
+          <Array>
+            <Self name='self'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='matches'>
+        <Argument name='matches'/>
+        <Args>
+          <List>
+            <Argument name='regex'/>
+          </List>
+        </Args>
+        <Block>
+          <If>
+            <Call name='is_a?'>
+              <LocalVar name='regex'/>
+              <Array>
+                <Const name='Array'/>
+              </Array>
+            </Call>
+            <Call name='each'>
+              <LocalVar name='regex'/>
+              <List>
+              </List>
+              <Iter>
+                <Args>
+                  <List>
+                    <Argument name='x'/>
+                  </List>
+                </Args>
+                <Block>
+                  <DAsgn name='z'>
+                    <FCall name='match'>
+                      <Array>
+                        <DVar name='x'/>
+                      </Array>
+                    </FCall>
+                  </DAsgn>
+                  <If>
+                    <DVar name='z'/>
+                    <Return>
+                      <DVar name='x'/>
+                    </Return>
+                  </If>
+                </Block>
+              </Iter>
+            </Call>
+            <FCall name='match'>
+              <Array>
+                <LocalVar name='regex'/>
+              </Array>
+            </FCall>
+          </If>
+          <Return>
+            <False name='false'/>
+          </Return>
+        </Block>
+      </Defn>
+      <Defn name='stripNewline'>
+        <Argument name='stripNewline'/>
+        <Args>
+        </Args>
+        <Call name='sub'>
+          <VCall name='strip'/>
+          <Array>
+            <Regexp value=';$'/>
+            <Str value=''/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='join'>
+        <Argument name='join'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Self name='self'/>
+      </Defn>
+      <Defn name='starts_with?'>
+        <Argument name='starts_with?'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Block>
+          <If>
+            <Call name='is_a?'>
+              <LocalVar name='x'/>
+              <Array>
+                <Const name='Array'/>
+              </Array>
+            </Call>
+            <Call name='each'>
+              <LocalVar name='x'/>
+              <List>
+              </List>
+              <Iter>
+                <Args>
+                  <List>
+                    <Argument name='y'/>
+                  </List>
+                </Args>
+                <If>
+                  <FCall name='start_with?'>
+                    <Array>
+                      <DVar name='y'/>
+                    </Array>
+                  </FCall>
+                  <Return>
+                    <DVar name='y'/>
+                  </Return>
+                </If>
+              </Iter>
+            </Call>
+          </If>
+          <Return>
+            <FCall name='start_with?'>
+              <Array>
+                <LocalVar name='x'/>
+              </Array>
+            </FCall>
+          </Return>
+        </Block>
+      </Defn>
+      <Defn name='show'>
+        <Argument name='show'/>
+        <Args>
+          <Block>
+            <OptArg value='#<Rjb::Rjb_JavaProxy:0x007f8d35941488>'/>
+          </Block>
+        </Args>
+        <Block>
+          <FCall name='puts'>
+            <Array>
+              <Or>
+                <LocalVar name='x'/>
+                <Self name='self'/>
+              </Or>
+            </Array>
+          </FCall>
+          <Return>
+            <Or>
+              <LocalVar name='x'/>
+              <Self name='self'/>
+            </Or>
+          </Return>
+        </Block>
+      </Defn>
+      <Defn name='contains'>
+        <Argument name='contains'/>
+        <Args>
+          <RestArg name='things'/>
+        </Args>
+        <Block>
+          <For>
+            <LocalAsgn name='t'>
+              <NilImplicit name='nil'/>
+            </LocalAsgn>
+            <If>
+              <FCall name='index'>
+                <Array>
+                  <LocalVar name='t'/>
+                </Array>
+              </FCall>
+              <Return>
+                <True name='true'/>
+              </Return>
+            </If>
+            <Call name='flatten'>
+              <LocalVar name='things'/>
+              <List>
+              </List>
+            </Call>
+          </For>
+          <Return>
+            <False name='false'/>
+          </Return>
+        </Block>
+      </Defn>
+      <Defn name='fix_int'>
+        <Argument name='fix_int'/>
+        <Args>
+          <List>
+            <Argument name='i'/>
+          </List>
+        </Args>
+        <Block>
+          <If>
+            <Call name='=='>
+              <Call name='to_s'>
+                <LocalVar name='i'/>
+                <List>
+                </List>
+              </Call>
+              <Array>
+                <Str value='middle'/>
+              </Array>
+            </Call>
+            <LocalAsgn name='i'>
+              <Call name='/'>
+                <VCall name='count'/>
+                <Array>
+                  <Fixnum value='2'/>
+                </Array>
+              </Call>
+            </LocalAsgn>
+          </If>
+          <If>
+            <Call name='is_a?'>
+              <LocalVar name='i'/>
+              <Array>
+                <Const name='Numeric'/>
+              </Array>
+            </Call>
+            <Return>
+              <Call name='-'>
+                <LocalVar name='i'/>
+                <Array>
+                  <Fixnum value='1'/>
+                </Array>
+              </Call>
+            </Return>
+          </If>
+          <LocalAsgn name='i'>
+            <Call name='to_i'>
+              <Call name='replace_numerals!'>
+                <Call name='to_s'>
+                  <LocalVar name='i'/>
+                  <List>
+                  </List>
+                </Call>
+                <List>
+                </List>
+              </Call>
+              <List>
+              </List>
+            </Call>
+          </LocalAsgn>
+          <Call name='-'>
+            <LocalVar name='i'/>
+            <Array>
+              <Fixnum value='1'/>
+            </Array>
+          </Call>
+        </Block>
+      </Defn>
+      <Defn name='sentence'>
+        <Argument name='sentence'/>
+        <Args>
+          <List>
+            <Argument name='i'/>
+          </List>
+        </Args>
+        <Block>
+          <LocalAsgn name='i'>
+            <FCall name='fix_int'>
+              <Array>
+                <LocalVar name='i'/>
+              </Array>
+            </FCall>
+          </LocalAsgn>
+          <Call name='[]'>
+            <FCall name='split'>
+              <Array>
+                <Regexp value='[\.\?\!\;]'/>
+              </Array>
+            </FCall>
+            <Array>
+              <LocalVar name='i'/>
+            </Array>
+          </Call>
+        </Block>
+      </Defn>
+      <Defn name='paragraph'>
+        <Argument name='paragraph'/>
+        <Args>
+          <List>
+            <Argument name='i'/>
+          </List>
+        </Args>
+        <Block>
+          <LocalAsgn name='i'>
+            <FCall name='fix_int'>
+              <Array>
+                <LocalVar name='i'/>
+              </Array>
+            </FCall>
+          </LocalAsgn>
+          <Call name='[]'>
+            <FCall name='split'>
+              <Array>
+                <Str value='
+'/>
+              </Array>
+            </FCall>
+            <Array>
+              <LocalVar name='i'/>
+            </Array>
+          </Call>
+        </Block>
+      </Defn>
+      <Defn name='word'>
+        <Argument name='word'/>
+        <Args>
+          <List>
+            <Argument name='i'/>
+          </List>
+        </Args>
+        <Block>
+          <LocalAsgn name='i'>
+            <FCall name='fix_int'>
+              <Array>
+                <LocalVar name='i'/>
+              </Array>
+            </FCall>
+          </LocalAsgn>
+          <Call name='[]'>
+            <FCall name='split'>
+              <Array>
+                <Str value=' '/>
+              </Array>
+            </FCall>
+            <Array>
+              <LocalVar name='i'/>
+            </Array>
+          </Call>
+        </Block>
+      </Defn>
+      <Defn name='item'>
+        <Argument name='item'/>
+        <Args>
+          <List>
+            <Argument name='i'/>
+          </List>
+        </Args>
+        <FCall name='word'>
+          <Array>
+            <LocalVar name='i'/>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='char'>
+        <Argument name='char'/>
+        <Args>
+          <List>
+            <Argument name='i'/>
+          </List>
+        </Args>
+        <FCall name='character'>
+          <Array>
+            <LocalVar name='i'/>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='character'>
+        <Argument name='character'/>
+        <Args>
+          <List>
+            <Argument name='i'/>
+          </List>
+        </Args>
+        <Block>
+          <LocalAsgn name='i'>
+            <FCall name='fix_int'>
+              <Array>
+                <LocalVar name='i'/>
+              </Array>
+            </FCall>
+          </LocalAsgn>
+          <FCall name='[]'>
+            <Array>
+              <Dot>
+                <Call name='-'>
+                  <LocalVar name='i'/>
+                  <Array>
+                    <Fixnum value='1'/>
+                  </Array>
+                </Call>
+                <LocalVar name='i'/>
+              </Dot>
+            </Array>
+          </FCall>
+        </Block>
+      </Defn>
+      <Defn name='flip'>
+        <Argument name='flip'/>
+        <Args>
+        </Args>
+        <Call name='join'>
+          <Call name='reverse'>
+            <FCall name='split'>
+              <Array>
+                <Str value=' '/>
+              </Array>
+            </FCall>
+            <List>
+            </List>
+          </Call>
+          <Array>
+            <Str value=' '/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='invert'>
+        <Argument name='invert'/>
+        <Args>
+        </Args>
+        <VCall name='reverse'/>
+      </Defn>
+      <Defn name='plus'>
+        <Argument name='plus'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='+'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='and'>
+        <Argument name='and'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='+'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='add'>
+        <Argument name='add'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='+'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='offset'>
+        <Argument name='offset'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <FCall name='index'>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='-'>
+        <Argument name='-'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='gsub'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+            <Str value=''/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='is_noun'>
+        <Argument name='is_noun'/>
+        <Args>
+        </Args>
+        <Rescue>
+          <RescueBody>
+            <False name='false'/>
+          </RescueBody>
+          <Or>
+            <Call name='!'>
+              <Call name='empty?'>
+                <FCall name='synsets'>
+                  <Array>
+                    <Symbol name='noun'/>
+                  </Array>
+                </FCall>
+                <List>
+                </List>
+              </Call>
+              <List>
+              </List>
+            </Call>
+            <Call name='!'>
+              <Call name='empty?'>
+                <Call name='synsets'>
+                  <Call name='gsub'>
+                    <Self name='self'/>
+                    <Array>
+                      <Regexp value='s$'/>
+                      <Str value=''/>
+                    </Array>
+                  </Call>
+                  <Array>
+                    <Symbol name='noun'/>
+                  </Array>
+                </Call>
+                <List>
+                </List>
+              </Call>
+              <List>
+              </List>
+            </Call>
+          </Or>
+        </Rescue>
+      </Defn>
+      <Defn name='is_verb'>
+        <Argument name='is_verb'/>
+        <Args>
+        </Args>
+        <Block>
+          <Call name='!'>
+            <Call name='empty?'>
+              <FCall name='synsets'>
+                <Array>
+                  <Symbol name='verb'/>
+                </Array>
+              </FCall>
+              <Array>
+                <VCall name='of'/>
+              </Array>
+            </Call>
+            <List>
+            </List>
+          </Call>
+          <Call name='!'>
+            <Call name='empty?'>
+              <Call name='synsets'>
+                <Call name='gsub'>
+                  <Self name='self'/>
+                  <Array>
+                    <Regexp value='s$'/>
+                    <Str value=''/>
+                  </Array>
+                </Call>
+                <Array>
+                  <Symbol name='verb'/>
+                </Array>
+              </Call>
+              <List>
+              </List>
+            </Call>
+            <List>
+            </List>
+          </Call>
+        </Block>
+      </Defn>
+      <Defn name='is_a'>
+        <Argument name='is_a'/>
+        <Args>
+          <List>
+            <Argument name='className'/>
+          </List>
+        </Args>
+        <Block>
+          <Call name='downcase!'>
+            <LocalVar name='className'/>
+            <List>
+            </List>
+          </Call>
+          <If>
+            <Call name='=='>
+              <LocalVar name='className'/>
+              <Array>
+                <Str value='quote'/>
+              </Array>
+            </Call>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <Return>
+            <Call name='=='>
+              <LocalVar name='className'/>
+              <Array>
+                <Str value='string'/>
+              </Array>
+            </Call>
+          </Return>
+        </Block>
+      </Defn>
+      <Defn name='is_adverb'>
+        <Argument name='is_adverb'/>
+        <Args>
+        </Args>
+        <Call name='!'>
+          <Call name='empty?'>
+            <FCall name='synsets'>
+              <Array>
+                <Symbol name='adverb'/>
+              </Array>
+            </FCall>
+            <List>
+            </List>
+          </Call>
+          <List>
+          </List>
+        </Call>
+      </Defn>
+      <Defn name='is_adjective'>
+        <Argument name='is_adjective'/>
+        <Args>
+        </Args>
+        <Call name='!'>
+          <Call name='empty?'>
+            <FCall name='synsets'>
+              <Array>
+                <Symbol name='adjective'/>
+              </Array>
+            </FCall>
+            <List>
+            </List>
+          </Call>
+          <List>
+          </List>
+        </Call>
+      </Defn>
+      <Defn name='examples'>
+        <Argument name='examples'/>
+        <Args>
+        </Args>
+        <Call name='map'>
+          <Call name='uniq'>
+            <Call name='flatten'>
+              <Call name='map'>
+                <Call name='flatten'>
+                  <Call name='map'>
+                    <Call name='flatten'>
+                      <VCall name='synsets'/>
+                      <List>
+                      </List>
+                    </Call>
+                    <BlockPass>
+                      <Symbol name='hyponyms'/>
+                    </BlockPass>
+                  </Call>
+                  <List>
+                  </List>
+                </Call>
+                <BlockPass>
+                  <Symbol name='words'/>
+                </BlockPass>
+              </Call>
+              <List>
+              </List>
+            </Call>
+            <List>
+            </List>
+          </Call>
+          <BlockPass>
+            <Symbol name='to_s'/>
+          </BlockPass>
+        </Call>
+      </Defn>
+      <Defn name='blank?'>
+        <Argument name='blank?'/>
+        <Args>
+        </Args>
+        <Or>
+          <FCall name='nil?'>
+            <List>
+            </List>
+          </FCall>
+          <FCall name='empty?'>
+            <List>
+            </List>
+          </FCall>
+        </Or>
+      </Defn>
+      <Defn name='lowercase'>
+        <Argument name='lowercase'/>
+        <Args>
+        </Args>
+        <VCall name='downcase'/>
+      </Defn>
+      <Defn name='lowercase!'>
+        <Argument name='lowercase!'/>
+        <Args>
+        </Args>
+        <FCall name='downcase!'>
+          <List>
+          </List>
+        </FCall>
+      </Defn>
+      <Defn name='shift'>
+        <Argument name='shift'/>
+        <Args>
+          <Block>
+            <OptArg value='#<Rjb::Rjb_JavaProxy:0x007f8d35a7b010>'/>
+          </Block>
+        </Args>
+        <Call name='times'>
+          <LocalVar name='n'/>
+          <List>
+          </List>
+          <Iter>
+            <Args>
+            </Args>
+            <Call name='gsub!'>
+              <Self name='self'/>
+              <Array>
+                <Regexp value='^.'/>
+                <Str value=''/>
+              </Array>
+            </Call>
+          </Iter>
+        </Call>
+      </Defn>
+      <Defn name='replace_numerals!'>
+        <Argument name='replace_numerals!'/>
+        <Args>
+        </Args>
+        <Block>
+          <FCall name='gsub!'>
+            <Array>
+              <Regexp value='([a-z])-([a-z])'/>
+              <Str value='\1+\2'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='last'/>
+              <Str value='0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='first'/>
+              <Str value='1'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='tenth'/>
+              <Str value='10'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='ninth'/>
+              <Str value='9'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='eighth'/>
+              <Str value='8'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='seventh'/>
+              <Str value='7'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='sixth'/>
+              <Str value='6'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='fifth'/>
+              <Str value='5'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='fourth'/>
+              <Str value='4'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='third'/>
+              <Str value='3'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='second'/>
+              <Str value='2'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='first'/>
+              <Str value='1'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='zero'/>
+              <Str value='0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='4th'/>
+              <Str value='4'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='3rd'/>
+              <Str value='3'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='2nd'/>
+              <Str value='2'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='1st'/>
+              <Str value='1'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='(d+)th'/>
+              <Str value='\1'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='(d+)rd'/>
+              <Str value='\1'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='(d+)nd'/>
+              <Str value='\1'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='(d+)st'/>
+              <Str value='\1'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='a couple of'/>
+              <Str value='2'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='a dozen'/>
+              <Str value='12'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='ten'/>
+              <Str value='10'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='twenty'/>
+              <Str value='20'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='thirty'/>
+              <Str value='30'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='forty'/>
+              <Str value='40'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='fifty'/>
+              <Str value='50'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='sixty'/>
+              <Str value='60'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='seventy'/>
+              <Str value='70'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='eighty'/>
+              <Str value='80'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='ninety'/>
+              <Str value='90'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='ten'/>
+              <Str value='10'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='eleven'/>
+              <Str value='11'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='twelve'/>
+              <Str value='12'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='thirteen'/>
+              <Str value='13'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='fourteen'/>
+              <Str value='14'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='fifteen'/>
+              <Str value='15'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='sixteen'/>
+              <Str value='16'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='seventeen'/>
+              <Str value='17'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='eighteen'/>
+              <Str value='18'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='nineteen'/>
+              <Str value='19'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='ten'/>
+              <Str value='10'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='nine'/>
+              <Str value='9'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='eight'/>
+              <Str value='8'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='seven'/>
+              <Str value='7'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='six'/>
+              <Str value='6'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='five'/>
+              <Str value='5'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='four'/>
+              <Str value='4'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='three'/>
+              <Str value='3'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='two'/>
+              <Str value='2'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='one'/>
+              <Str value='1'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='dozen'/>
+              <Str value='12'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='couple'/>
+              <Str value='2'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='½'/>
+              <Str value='+1/2.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅓'/>
+              <Str value='+1/3.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅔'/>
+              <Str value='+2/3.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='¼'/>
+              <Str value='+1/4.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='¾'/>
+              <Str value='+3/4.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅕'/>
+              <Str value='+1/5.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅖'/>
+              <Str value='+2/5.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅗'/>
+              <Str value='+3/5.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅘'/>
+              <Str value='+4/5.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅙'/>
+              <Str value='+1/6.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅚'/>
+              <Str value='+5/6.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅛'/>
+              <Str value='+1/8.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅜'/>
+              <Str value='+3/8.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅝'/>
+              <Str value='+5/8.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='⅞'/>
+              <Str value='+7/8.0'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value=' hundred thousand'/>
+              <Str value=' 100000'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value=' hundred'/>
+              <Str value=' 100'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value=' thousand'/>
+              <Str value=' 1000'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value=' million'/>
+              <Str value=' 1000000'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value=' billion'/>
+              <Str value=' 1000000000'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='hundred thousand'/>
+              <Str value='*100000'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='hundred '/>
+              <Str value='*100'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='thousand '/>
+              <Str value='*1000'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='million '/>
+              <Str value='*1000000'/>
+            </Array>
+          </FCall>
+          <FCall name='gsub!'>
+            <Array>
+              <Str value='billion '/>
+              <Str value='*1000000000'/>
+            </Array>
+          </FCall>
+          <Self name='self'/>
+        </Block>
+      </Defn>
+      <Defn name='parse_integer'>
+        <Argument name='parse_integer'/>
+        <Args>
+        </Args>
+        <Block>
+          <FCall name='replace_numerals!'>
+            <List>
+            </List>
+          </FCall>
+          <LocalAsgn name='i'>
+            <Call name='to_i'>
+              <FCall name='eval'>
+                <Array>
+                  <Self name='self'/>
+                </Array>
+              </FCall>
+              <List>
+              </List>
+            </Call>
+          </LocalAsgn>
+          <LocalVar name='i'/>
+        </Block>
+      </Defn>
+      <Defn name='parse_number'>
+        <Argument name='parse_number'/>
+        <Args>
+        </Args>
+        <Block>
+          <FCall name='replace_numerals!'>
+            <List>
+            </List>
+          </FCall>
+          <Call name='to_f'>
+            <FCall name='eval'>
+              <Array>
+                <Self name='self'/>
+              </Array>
+            </FCall>
+            <List>
+            </List>
+          </Call>
+        </Block>
+      </Defn>
+    </Block>
+  </Class>
+  <Class>
+    <Colon2Implicit name='Numeric'/>
+    <Block>
+      <Defn name='c'>
+        <Argument name='c'/>
+        <Args>
+        </Args>
+        <Call name='to_s'>
+          <Self name='self'/>
+          <List>
+          </List>
+        </Call>
+      </Defn>
+      <Defn name='to_sym'>
+        <Argument name='to_sym'/>
+        <Args>
+        </Args>
+        <Call name='to_sym'>
+          <VCall name='to_s'/>
+          <List>
+          </List>
+        </Call>
+      </Defn>
+      <Defn name='value'>
+        <Argument name='value'/>
+        <Args>
+        </Args>
+        <Self name='self'/>
+      </Defn>
+      <Defn name='wrap'>
+        <Argument name='wrap'/>
+        <Args>
+        </Args>
+        <DStr>
+          <Str value='INT2NUM('/>
+          <EvStr>
+            <Call name='to_s'>
+              <Self name='self'/>
+              <List>
+              </List>
+            </Call>
+          </EvStr>
+          <Str value=')'/>
+        </DStr>
+      </Defn>
+      <Defn name='number'>
+        <Argument name='number'/>
+        <Args>
+        </Args>
+        <Self name='self'/>
+      </Defn>
+      <Defn name='and'>
+        <Argument name='and'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='+'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='plus'>
+        <Argument name='plus'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='+'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='minus'>
+        <Argument name='minus'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='-'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='times'>
+        <Argument name='times'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='*'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='<'>
+        <Argument name='<'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Block>
+          <If>
+            <Call name='is_a?'>
+              <LocalVar name='x'/>
+              <Array>
+                <Const name='String'/>
+              </Array>
+            </Call>
+            <Return>
+              <Call name='<'>
+                <Self name='self'/>
+                <Array>
+                  <Call name='to_i'>
+                    <LocalVar name='x'/>
+                    <List>
+                    </List>
+                  </Call>
+                </Array>
+              </Call>
+            </Return>
+          </If>
+          <Call name='<'>
+            <ZSuper>
+            </ZSuper>
+            <Array>
+              <LocalVar name='x'/>
+            </Array>
+          </Call>
+        </Block>
+      </Defn>
+      <Defn name='blank?'>
+        <Argument name='blank?'/>
+        <Args>
+        </Args>
+        <Return>
+          <False name='false'/>
+        </Return>
+      </Defn>
+      <Defn name='is_a'>
+        <Argument name='is_a'/>
+        <Args>
+          <List>
+            <Argument name='clazz'/>
+          </List>
+        </Args>
+        <Block>
+          <LocalAsgn name='className'>
+            <Call name='downcase'>
+              <Call name='to_s'>
+                <LocalVar name='clazz'/>
+                <List>
+                </List>
+              </Call>
+              <List>
+              </List>
+            </Call>
+          </LocalAsgn>
+          <If>
+            <Call name='=='>
+              <LocalVar name='className'/>
+              <Array>
+                <Str value='number'/>
+              </Array>
+            </Call>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <If>
+            <Call name='=='>
+              <LocalVar name='className'/>
+              <Array>
+                <Str value='real'/>
+              </Array>
+            </Call>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <If>
+            <Call name='=='>
+              <LocalVar name='className'/>
+              <Array>
+                <Str value='float'/>
+              </Array>
+            </Call>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <If>
+            <And>
+              <Call name='is_a?'>
+                <Self name='self'/>
+                <Array>
+                  <Const name='Integer'/>
+                </Array>
+              </Call>
+              <Call name='=='>
+                <LocalVar name='className'/>
+                <Array>
+                  <Str value='integer'/>
+                </Array>
+              </Call>
+            </And>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <If>
+            <And>
+              <Call name='is_a?'>
+                <Self name='self'/>
+                <Array>
+                  <Const name='Integer'/>
+                </Array>
+              </Call>
+              <Call name='=='>
+                <LocalVar name='className'/>
+                <Array>
+                  <Str value='int'/>
+                </Array>
+              </Call>
+            </And>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <If>
+            <Call name='=='>
+              <LocalVar name='className'/>
+              <Array>
+                <Call name='downcase'>
+                  <Call name='to_s'>
+                    <Self name='self'/>
+                    <List>
+                    </List>
+                  </Call>
+                  <List>
+                  </List>
+                </Call>
+              </Array>
+            </Call>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <If>
+            <Call name='is'>
+              <Self name='self'/>
+              <Array>
+                <LocalVar name='clazz'/>
+              </Array>
+            </Call>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <Return>
+            <False name='false'/>
+          </Return>
+        </Block>
+      </Defn>
+      <Defn name='add'>
+        <Argument name='add'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='+'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='increase'>
+        <Argument name='increase'/>
+        <Args>
+          <Block>
+            <OptArg value='#<Rjb::Rjb_JavaProxy:0x007f8d34060338>'/>
+          </Block>
+        </Args>
+        <Call name='+'>
+          <Self name='self'/>
+          <Array>
+            <Or>
+              <LocalVar name='by'/>
+              <Fixnum value='1'/>
+            </Or>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='decrease'>
+        <Argument name='decrease'/>
+        <Args>
+          <Block>
+            <OptArg value='#<Rjb::Rjb_JavaProxy:0x007f8d35016340>'/>
+          </Block>
+        </Args>
+        <Call name='-'>
+          <Self name='self'/>
+          <Array>
+            <Or>
+              <LocalVar name='by'/>
+              <Fixnum value='1'/>
+            </Or>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='bigger?'>
+        <Argument name='bigger?'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='>'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='smaller?'>
+        <Argument name='smaller?'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='<'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='to_the_power_of'>
+        <Argument name='to_the_power_of'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='**'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='to_the'>
+        <Argument name='to_the'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='**'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='logarithm'>
+        <Argument name='logarithm'/>
+        <Args>
+        </Args>
+        <Call name='log'>
+          <Const name='Math'/>
+          <Array>
+            <Self name='self'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='e'>
+        <Argument name='e'/>
+        <Args>
+        </Args>
+        <Call name='exp'>
+          <Const name='Math'/>
+          <Array>
+            <Self name='self'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='exponential'>
+        <Argument name='exponential'/>
+        <Args>
+        </Args>
+        <Call name='exp'>
+          <Const name='Math'/>
+          <Array>
+            <Self name='self'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='sine'>
+        <Argument name='sine'/>
+        <Args>
+        </Args>
+        <Call name='sin'>
+          <Const name='Math'/>
+          <Array>
+            <Self name='self'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='cosine'>
+        <Argument name='cosine'/>
+        <Args>
+        </Args>
+        <Call name='cos'>
+          <Const name='Math'/>
+          <Array>
+            <Self name='self'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='root'>
+        <Argument name='root'/>
+        <Args>
+        </Args>
+        <Call name='sqrt'>
+          <Const name='Math'/>
+          <Array>
+            <Self name='self'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='power'>
+        <Argument name='power'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Call name='**'>
+          <Self name='self'/>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='square'>
+        <Argument name='square'/>
+        <Args>
+        </Args>
+        <Call name='*'>
+          <Self name='self'/>
+          <Array>
+            <Self name='self'/>
+          </Array>
+        </Call>
+      </Defn>
+      <Defn name='squared'>
+        <Argument name='squared'/>
+        <Args>
+        </Args>
+        <Call name='*'>
+          <Self name='self'/>
+          <Array>
+            <Self name='self'/>
+          </Array>
+        </Call>
+      </Defn>
+    </Block>
+  </Class>
+  <Class>
+    <Colon2Implicit name='Object'/>
+    <Block>
+      <Defn name='class_name'>
+        <Argument name='class_name'/>
+        <Args>
+        </Args>
+        <Or>
+          <Call name='last'>
+            <Call name='split'>
+              <Call name='name'>
+                <Call name='class'>
+                  <Self name='self'/>
+                  <List>
+                  </List>
+                </Call>
+                <List>
+                </List>
+              </Call>
+              <Array>
+                <Str value='::'/>
+              </Array>
+            </Call>
+            <List>
+            </List>
+          </Call>
+          <Str value=''/>
+        </Or>
+      </Defn>
+      <Defn name='short_name'>
+        <Argument name='short_name'/>
+        <Args>
+        </Args>
+        <Or>
+          <Call name='last'>
+            <Call name='split'>
+              <Call name='name'>
+                <Call name='class'>
+                  <Self name='self'/>
+                  <List>
+                  </List>
+                </Call>
+                <List>
+                </List>
+              </Call>
+              <Array>
+                <Str value='::'/>
+              </Array>
+            </Call>
+            <List>
+            </List>
+          </Call>
+          <Str value=''/>
+        </Or>
+      </Defn>
+      <Defn name='name'>
+        <Argument name='name'/>
+        <Args>
+        </Args>
+        <VCall name='to_s'/>
+      </Defn>
+      <Defn name='value'>
+        <Argument name='value'/>
+        <Args>
+        </Args>
+        <Self name='self'/>
+      </Defn>
+      <Defn name='number'>
+        <Argument name='number'/>
+        <Args>
+        </Args>
+        <False name='false'/>
+      </Defn>
+      <Defn name='blank?'>
+        <Argument name='blank?'/>
+        <Args>
+        </Args>
+        <False name='false'/>
+      </Defn>
+      <Defs name='throw'>
+        <Self name='self'/>
+        <Argument name='throw'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <FCall name='raise'>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </FCall>
+      </Defs>
+      <Defn name='type'>
+        <Argument name='type'/>
+        <Args>
+        </Args>
+        <Call name='class'>
+          <Self name='self'/>
+          <List>
+          </List>
+        </Call>
+      </Defn>
+      <Defn name='kind'>
+        <Argument name='kind'/>
+        <Args>
+        </Args>
+        <Call name='class'>
+          <Self name='self'/>
+          <List>
+          </List>
+        </Call>
+      </Defn>
+      <Defn name='log'>
+        <Argument name='log'/>
+        <Args>
+          <RestArg name='x'/>
+        </Args>
+        <FCall name='puts'>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='debug'>
+        <Argument name='debug'/>
+        <Args>
+          <RestArg name='x'/>
+        </Args>
+        <FCall name='puts'>
+          <Array>
+            <LocalVar name='x'/>
+          </Array>
+        </FCall>
+      </Defn>
+      <Defn name='is_a'>
+        <Argument name='is_a'/>
+        <Args>
+          <List>
+            <Argument name='clazz'/>
+          </List>
+        </Args>
+        <Block>
+          <LocalAsgn name='className'>
+            <Call name='downcase'>
+              <Call name='to_s'>
+                <LocalVar name='clazz'/>
+                <List>
+                </List>
+              </Call>
+              <List>
+              </List>
+            </Call>
+          </LocalAsgn>
+          <Begin>
+            <Rescue>
+              <RescueBody>
+                <FCall name='puts'>
+                  <Array>
+                    <GlobalVar name='$!'/>
+                  </Array>
+                </FCall>
+              </RescueBody>
+              <Block>
+                <LocalAsgn name='ok'>
+                  <Call name='is_a?'>
+                    <Self name='self'/>
+                    <Array>
+                      <LocalVar name='clazz'/>
+                    </Array>
+                  </Call>
+                </LocalAsgn>
+                <If>
+                  <LocalVar name='ok'/>
+                  <Return>
+                    <True name='true'/>
+                  </Return>
+                </If>
+              </Block>
+            </Rescue>
+          </Begin>
+          <If>
+            <Call name='=='>
+              <LocalVar name='className'/>
+              <Array>
+                <Call name='downcase'>
+                  <Call name='to_s'>
+                    <Self name='self'/>
+                    <List>
+                    </List>
+                  </Call>
+                  <List>
+                  </List>
+                </Call>
+              </Array>
+            </Call>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <If>
+            <Call name='is'>
+              <Self name='self'/>
+              <Array>
+                <LocalVar name='clazz'/>
+              </Array>
+            </Call>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <Return>
+            <False name='false'/>
+          </Return>
+        </Block>
+      </Defn>
+      <Defn name='is'>
+        <Argument name='is'/>
+        <Args>
+          <List>
+            <Argument name='x'/>
+          </List>
+        </Args>
+        <Block>
+          <If>
+            <And>
+              <Call name='blank?'>
+                <LocalVar name='x'/>
+                <List>
+                </List>
+              </Call>
+              <Call name='blank?'>
+                <Self name='self'/>
+                <List>
+                </List>
+              </Call>
+            </And>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <If>
+            <Call name='=='>
+              <LocalVar name='x'/>
+              <Array>
+                <Self name='self'/>
+              </Array>
+            </Call>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <If>
+            <Call name='==='>
+              <LocalVar name='x'/>
+              <Array>
+                <Self name='self'/>
+              </Array>
+            </Call>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <If>
+            <Call name='=='>
+              <Call name='downcase'>
+                <Call name='to_s'>
+                  <LocalVar name='x'/>
+                  <List>
+                  </List>
+                </Call>
+                <List>
+                </List>
+              </Call>
+              <Array>
+                <Call name='downcase'>
+                  <Call name='to_s'>
+                    <Self name='self'/>
+                    <List>
+                    </List>
+                  </Call>
+                  <List>
+                  </List>
+                </Call>
+              </Array>
+            </Call>
+            <Return>
+              <True name='true'/>
+            </Return>
+          </If>
+          <If>
+            <And>
+              <Call name='is_a?'>
+                <Self name='self'/>
+                <Array>
+                  <Const name='Array'/>
+                </Array>
+              </Call>
+              <Call name='=='>
+                <Call name='length'>
+                  <Self name='self'/>
+                  <List>
+                  </List>
+                </Call>
+                <Array>
+                  <Fixnum value='1'/>
+                </Array>
+              </Call>
+            </And>
+            <If>
+              <Call name='is'>
+                <LocalVar name='x'/>
+                <Array>
+                  <FCall name='[]'>
+                    <Array>
+                      <Fixnum value='0'/>
+                    </Array>
+                  </FCall>
+                </Array>
+              </Call>
+              <Return>
+                <True name='true'/>
+              </Return>
+            </If>
+          </If>
+          <If>
+            <And>
+              <Call name='is_a?'>
+                <LocalVar name='x'/>
+                <Array>
+                  <Const name='Array'/>
+                </Array>
+              </Call>
+              <Call name='=='>
+                <Call name='length'>
+                  <LocalVar name='x'/>
+                  <List>
+                  </List>
+                </Call>
+                <Array>
+                  <Fixnum value='1'/>
+                </Array>
+              </Call>
+            </And>
+            <If>
+              <Call name='is'>
+                <Self name='self'/>
+                <Array>
+                  <Call name='[]'>
+                    <LocalVar name='x'/>
+                    <Array>
+                      <Fixnum value='0'/>
+                    </Array>
+                  </Call>
+                </Array>
+              </Call>
+              <Return>
+                <True name='true'/>
+              </Return>
+            </If>
+          </If>
+          <Return>
+            <False name='false'/>
+          </Return>
+        </Block>
+      </Defn>
+    </Block>
+  </Class>
+</Block>

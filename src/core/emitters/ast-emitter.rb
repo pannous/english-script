@@ -1,3 +1,10 @@
+# https://github.com/search?q=AST%20interpreter
+
+# https://stackoverflow.com/questions/10554998/ast-interpreter
+# Intepreters are pretty easy to code, once you have an AST:
+
+# At first, YARV is simple stack machine which run pseudo sequential instructions. Old interpreter (matzruby) traverses abstract syntax tree (AST) naively. Obviously it's slow. YARV compile that AST to YARV bytecode and run it.
+
 # multi-platform :
 # haxe  IH GITT! OCAML!!  an open source toolkit based on a modern high level strictly typed programming language, a state-of-the-art light-speed cross-compiler, a complete cross-platform standard library, and ways to access to each platform's native capabilities Nickelodeon, TiVo, Zynga and Prezi.
 # clojure

@@ -34,6 +34,8 @@ end
 #http://99designs.com/tech-blog/ More magic
 
 # look at java AST http://groovy.codehaus.org/Compile-time+Metaprogramming+-+AST+Transformations
+# JRuby+Truffle can achieve peak performance well beyond that possible in JRuby at the same time as being a significantly simpler system.
+# StaticScope represents lexical scoping of variables and module/class constants.
 class EnglishParser < Parser
   include TreeBuilder
   include Interpreter

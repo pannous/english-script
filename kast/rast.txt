@@ -1,0 +1,188 @@
+jruby ast nodes:
+http://jruby.org/apidocs/org/jruby/ast/package-tree.html
+
+org.jruby.ast.Node (implements org.jruby.lexer.yacc.ISourcePositionHolder)
+Alias
+And (BinaryOperator)
+ArgAuxillary
+ArgsCat
+Args
+ArgsNoArg
+ArgsPreOneArg
+ArgsPreTwoArg
+ArgsPush
+Argument (types.IName)
+KeywordRestArg
+RestArg (types.IName)
+UnnamedRestArg
+TypedArgument
+Assignable (types.IArity)
+ClassVarAsgn (types.IName)
+ClassVarDecl (types.IName)
+ConstDecl (types.IName)
+DAsgn (types.IName)
+GlobalAsgn (types.IName)
+InstAsgn (types.IName)
+LocalAsgn (types.IName)
+MultipleAsgn19
+MultipleAsgn
+AttrAssign (IArgument, types.IName)
+AttrAssignOneArg
+AttrAssignThreeArg
+AttrAssignTwoArg
+BackRef
+Begin
+Bignum (types.ILiteral)
+BlockArg18
+BlockArg (types.IName)
+BlockPass
+Break (NonLocalControlFlow)
+Call (BlockAccepting, IArgument, types.IName)
+CallManyArgsBlock
+CallManyArgsBlockPass
+CallManyArgs
+CallNoArgBlock
+CallNoArgBlockPass
+CallNoArg
+CallOneArgBlock
+CallOneArgBlockPass
+CallOneArgFixnum
+CallOneArg
+CallSpecialArgBlock (SpecialArgs)
+CallSpecialArgBlockPass (SpecialArgs)
+CallSpecialArg (SpecialArgs)
+CallThreeArgBlock
+CallThreeArgBlockPass
+CallThreeArg
+CallTwoArgBlock
+CallTwoArgBlockPass
+CallTwoArg
+Case
+Class (IScoping)
+ClassVar (types.IName)
+Colon3 (types.IName)
+Colon2 (types.IName)
+Colon2Const
+Colon2Implicit
+Colon2Method
+Const (types.IName)
+Defined
+Dot
+DVar (types.IName)
+Encoding
+Ensure
+EvStr
+False (types.IEql, types.IName)
+FCall (BlockAccepting, IArgument, types.IName)
+FCallManyArgsBlock
+FCallManyArgsBlockPass
+FCallManyArgs (BlockAccepting, IArgument, types.IName)
+FCallNoArgBlock
+FCallNoArgBlockPass
+FCallNoArg
+FCallOneArgBlock
+FCallOneArgBlockPass
+FCallOneArg
+FCallSpecialArgBlock (SpecialArgs)
+FCallSpecialArgBlockPass (SpecialArgs)
+FCallSpecialArg (SpecialArgs)
+FCallThreeArgBlock
+FCallThreeArgBlockPass
+FCallThreeArg
+FCallTwoArgBlock
+FCallTwoArgBlockPass
+FCallTwoArg
+Fixnum (types.IEql, types.ILiteral)
+Flip
+Float (types.ILiteral)
+GlobalVar (types.IName)
+Hash
+Hash19
+If
+InstVar (types.IArity, types.IName)
+Iter
+For
+Lambda
+PostExe
+PreExe
+PreExe19
+KeywordArg
+List
+Array (types.ILiteral)
+Block
+D
+DRegexp (types.ILiteral)
+DStr (types.ILiteral)
+DSymbol
+DXStr (types.ILiteral)
+Literal (Invisible)
+LocalVar (types.IName)
+Match2
+Match2Capture
+Match3
+Match
+MethodDef (types.IName)
+Defn (types.IName)
+Defs (types.IName)
+Module (IScoping)
+Newline
+Next (NonLocalControlFlow)
+Nil (types.IEql, types.IName)
+NilImplicit (Invisible)
+Not
+NthRef
+OpAsgnAnd (BinaryOperator)
+OpAsgn
+OpAsgnOr (BinaryOperator)
+OpElementAsgn
+OpElementOneArgAndAsgn
+OpElementOneArgAsgn
+OpElementOneArgOrAsgn
+OptArg (types.IName)
+Or (BinaryOperator)
+Redo (NonLocalControlFlow)
+Regexp (types.ILiteral)
+RescueBody
+Rescue
+Retry (NonLocalControlFlow)
+Return (NonLocalControlFlow)
+Root
+SClass
+Self (types.IName)
+Splat
+Splat19
+Star
+Str (types.ILiteral)
+File
+Super (BlockAccepting)
+SValue
+SValue19
+Symbol (types.IEql, types.ILiteral, types.IName)
+ToAry
+True (types.IEql, types.IName)
+Undef
+Until
+VAlias
+VCall (types.IName) :Variable #Name
+When
+WhenOneArg
+While
+XStr (types.ILiteral)
+Yield
+Yield19
+YieldOne
+YieldThree
+YieldTwo
+ZYield
+ZArray (types.ILiteral)
+ZeroArg (types.IArity)
+ZSuper (BlockAccepting, types.IArity)
+// Interface Hierarchy
+BinaryOperator
+BlockAccepting
+IArgument
+Invisible
+IScoping
+NonLocalControlFlow
+SpecialArgs
+// Enum Hierarchy

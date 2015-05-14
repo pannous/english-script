@@ -1,3 +1,5 @@
+# see ast.interpreter!!
+# ^^^^^^^^^^^^^^^^^^^
 
 require_relative 'kast.rb'
 # require_relative 'demo.rb'

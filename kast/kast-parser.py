@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+# https://github.com/tkf/sexpdata S-expression parser for Python
+
 # https://github.com/dmw/pyxser/blob/master/src/pyxser_serializer.c
 # import ast
 # from ast import *

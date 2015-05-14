@@ -1,5 +1,17 @@
 # encoding: utf-8
 
+# def ≔ (U+2254 ≔ colon equals) :=
+# ≟ (U+225F ≟ questioned equal to).
+# ≈ (U+2248, LaTeX \approx)
+# ≃ (U+2243, LaTeX \simeq), a combination of ≈ and =, also used to indicate asymptotic equality
+# ≅ (U+2245, LaTeX \cong), another combination of ≈ and =, which is also sometimes used to indicate isomorphism or congruence
+# ∼ (U+223C), which is also sometimes used to indicate proportionality, being related by an equivalence relation, or to indicate that a random variable is distributed according to a specific probability distribution
+# ∽ (U+223D), which is also used to indicate proportionality
+# ≐ (U+2250, LaTeX \doteq), which can also be used to represent the approach of a variable to a limit
+# ≒ (U+2252), commonly used in Japanese, Taiwanese and Korean
+# ≓ (U+2253)
+
+
 # def puts x # debug!
 #   print x
 #   print "\n"
