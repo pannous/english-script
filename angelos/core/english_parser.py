@@ -929,7 +929,7 @@ def strange_eval(obj):
 
 
 def thing_dot_method_call():
-    must_contain_before['='], '.'  # before:.?
+    must_contain_before('.',['='])  # before:.?
     obj = endNode()
     if maybe_token('(') and interpreting(): return strange_eval(obj)
     _('.')
