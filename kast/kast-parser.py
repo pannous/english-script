@@ -21,7 +21,9 @@ kast_file='test_mini.pyast.xml'
 # kast_file='test_full.pyast.xml'
 # kast_file='test.xast'
 # kast_file='test.kast.xml'
-kast_file='kast.yml'
+# kast_file='kast.yml'
+
+kast_file="/Users/me/dev/ai/english-script/test/rast/number_test.rb.rast"
 # pyast_file='demo.pyast'
 
 def yml2xml(builder, body, tabs=0):
@@ -56,12 +58,18 @@ if kast_file.endswith("yml"):
 else:
     tree = Xml.parse(kast_file)
     root = tree.getroot()
+
+xmlns=""
 import re
-xmlns=re.sub("\}.*","}",root.tag)
+if "}" in xmlns:
+    xmlns=re.sub("\}.*","}",root.tag)
 # if xmlns!=root.tag: xmlns=xmlns[1:-1]
 
 
 def parseString(a, v):
+    if not v: return None
+    # if(isinstance(v,Na)
+    v=v.strip()
     if(v.isdigit()):v=Num(int(v)) #todo: float!
     elif(v.startswith("[")): # too much suggar??
         args=v[1:-1].replace(","," ").split(" ")
@@ -85,12 +93,34 @@ def build(node):
     global xmlns
     tag=node.tag.replace(xmlns,"")
     if(tag=="name"):
-        return Name(id=node.text)
+        return node.text # Name(id=node.text)
     elif(tag=="num"):
         return Num(n=int(node.text))
+    elif(tag=="True"):
+        return Name(id='True', ctx=Load()) #WTF
+    elif(tag=="False"):
+        return Name(id='False', ctx=Load()) #WTF
+    elif(tag=="Str"):
+        return Str(s=node.attrib['value'])
+    elif(tag=="Const"):
+        return Name(id=node.attrib['name'],ctx=Load())
+    elif(tag=="Variable"):
+        return Name(id=node.attrib['name'],ctx=Load())# todo: CALL if in block!
+        # return Name(id=node.attrib['value'], ctx=Load()) #WTF
+    if not tag in kast.types:
+        print("UNKNOWN tag "+str(tag))
+        return
     construct= kast.types[tag]
     elem=construct()
     # 'data'
+    # if(tag=="Call"):
+    #     print("debug!")
+    if(tag=="Class"):
+        print("debug! Class")
+    if(tag=="Method"):
+        print("debug Method!")
+
+
     attribs=node.attrib
     for a in attribs:
         v=attribs[a]
@@ -106,7 +136,7 @@ def build(node):
         elem.__setattr__(a,v)
 
     children=node.getchildren()
-    expect=elem._fields # [x for x in dir(elem) if not x.startswith("_")]
+    # expect=elem._fields # [x for x in dir(elem) if not x.startswith("_")]
     body=[]
     # if(isinstance(node,Name)):
     #     print("KL")
@@ -116,9 +146,32 @@ def build(node):
     #     if(len(expect)==1):
     #         elem=construct(val)
     for c in children:
-        childName=c.tag.replace(xmlns,"")
+        childName=c.tag.replace(xmlns,"").lower()
+        if(childName=="block"):
+            childName="body"
+        if(childName=="const"):
+            if tag=="Class":
+                childName="bases"
+            else:
+                return Name(id=c.attrib['name'], ctx=Load())
         if(childName=="name"):
-            child=parseString(childName,c.text.strip())
+            if "name" in c.attrib:
+                child=c.attrib['name']
+                # child=parseString(childName,c.attrib['name'])
+            else:
+                child=c.text
+                # child=parseString(childName,c.text)
+        elif(childName=="num"):
+            child=Num(n=int(c.text))
+        elif(childName=="true"):
+            childName="value"
+            child=Name(id='True', ctx=Load()) #WTF
+        elif(childName=="false"):
+            childName="value"
+            child=Name(id='False', ctx=Load()) #WTF
+        elif(childName=="str"):
+            childName="value"
+            child=Name(id=c.attrib['value'], ctx=Load()) #WTF
         elif(childName=="num"):
             child=Num(n=int(c.text))
         elif not childName in kast.types: #i.e.: body=...
@@ -129,6 +182,8 @@ def build(node):
                 child=build(babies[0])
             else:
                 child=[build(n) for n in babies]
+                print("Got block")
+                print(child)
         else:
             child=build(c)
             if(isinstance(child,list)):
@@ -139,6 +194,8 @@ def build(node):
     if len(body)>0:
         elem.body=body
     attribs=dir(elem)
+    if not 'args' in attribs:
+        elem.args=[] #hack
     if not 'keywords' in attribs:
         elem.keywords=[] #hack
     # if not 'values'  in attribs:
@@ -171,16 +228,27 @@ def load(file):
     return open(file,'rb').read()
     # return "\n".join(open(file).readlines())
 
-my_ast=ast.fix_missing_locations(my_ast)
 
+my_ast=ast.fix_missing_locations(my_ast)
 x=ast.dump(my_ast, annotate_fields=True, include_attributes=True)
 print(x)
+
+
+import ast_writer
+ast_writer.dump_xml(my_ast)
+
+
 import codegen
 print(codegen.to_source(my_ast))
+
+# code=compile(my_ast, 'file', 'exec')
+# z=exec(code)
+# print(z)
+# print(exec(code))#, glob, loc)
+
 
 code=compile(my_ast, kast_file, 'exec')#flags=None, dont_inherit=None
 # TypeError: required field 'lineno' missing from stmt
 # no, what you actually mean is "tuple is not a statement" LOL WTF ;)
-
 exec(code)
 

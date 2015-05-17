@@ -6,19 +6,53 @@ import ast
 import sys
 import _ast
 
+class Args(list):
+    pass
+
+class Num(ast.Num):
+    def set_value(self,n):self.n=n
+    value = property(lambda self:self.n, set_value)
+
+# class Name(ast.Name):
+#     def set_name(self,id):
+#         if(isinstance(id,Name)):id=id.id #WWWTTTFFF
+#         self.id=id
+#     name=property(lambda self:self.id,set_name)
+
+class Str(ast.Str):
+    def set_value(self,s):self.s=s
+    value = property(lambda self:self.s, set_value)
 
 class Assign(ast.Assign):
     def set_var(self,var):self.targets=[var]
+    def set_val(self,val):self.value=val
+    def set_vals(self,vals):self.value=vals[0]
     var = property(lambda self:self.targets, set_var)
     variable = property(lambda self:self.targets, set_var)
     variables = property(lambda self:self.targets, set_var)
     object = property(lambda self:self.targets, set_var)
+    name = property(lambda self:self.targets, set_var)
+    # body = property(lambda self:self.targets, set_var)
+    body = property(lambda self:self.value, set_vals)
 
+# a.split('b') =>
+# Call(func=Attribute(value=Name(id='a', ctx=Load()), attr='split', ctx=Load()), args=[Str(s='b')]
 class Call(ast.Call):
     def set_method(self,method):self.func=method
     method = property(lambda self:self.func, set_method)
-    def set_object(self,o):self.targets=[o]
-    object = property(lambda self:self.targets, set_object)
+    name = property(lambda self:self.func, set_method)
+
+    def set_object(self,o):
+        self.object=o
+        if(isinstance(self.func,Name)):self.func=Attribute(attr=self.func)
+        if(isinstance(self.func,Attribute)):self.func.value=o
+    def get_object(self):
+        if(isinstance(self.func,Attribute)):return self.func.value
+        return None
+    object = property(get_object, set_object)
+
+    def set_args(self,oas):self.args=oas
+    body = property(lambda self:self.args, set_args)
     # method = property(lambda self:self.func, lambda self,method:[0 for self.func in [method]])
 
 class ClassDef(ast.ClassDef):
@@ -183,14 +217,23 @@ types={ # see _ast.py , F12:
 
 # workaround: alias is keyword in ruby!
 mapped_types={
+    "Block":Module, #NOT REALLY!
+    # "Variable": Name,
+    # "Const": Name, #todo
+    "Class":ClassDef,
     "Alias":alias,
+    # "Arguments":arguments,
+    # "Args":arguments,
+    # "Args":Args,
     "class_method":FunctionDef,
+    "Method":FunctionDef,
     "int":Num,
     "let":Assign,
     "Condition":expr,
     "Value":expr,
     "Then":expr #Value
 }
+
 
 types.update(mapped_types)
 for k,v in types.items():

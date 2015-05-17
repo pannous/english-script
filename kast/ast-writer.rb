@@ -1,15 +1,24 @@
 # http://jruby.org/apidocs/org/jruby/ast/package-tree.html
 require "rubyast" # using jruby/ast in normal ruby!
+require "yaml"
 # sudo gem install ruby_parser sexp->xml
 
 # file="../test/unit/condition_test.rb"
 # file="../src/core/english-parser.rb"
-file="/Users/me/dev/ai/english-script/src/core/extensions.rb"
-@map=YAML::load(File.open('transforms/rast-map.yml')) #Hash
 
+def dump_xml(file, out=STDOUT)
 # ast = RubyAST.parse("(string)", "x = 1") # OK (via SLIM java: jrubyparser-0.2.jar)
-ast = RubyAST.parse(file, IO.read(file))
+  begin
+    ast = RubyAST.parse(file, IO.read(file))
+    walk(out, ast.getBodyNode, ast, 0)
+  rescue
+    puts "CANT PARSE " +file
+  end
+end
 
+# next
+# @map={}
+@map=YAML::load(File.open('transforms/rast-map.yml')) #Hash
 
 # <FCall name='require'> => require<im
 
@@ -19,12 +28,12 @@ end
 
 # source = RubyAST.to_source(ast)
 # p ast.toString
-def walk(node, parent, indent)
-  name=node.getClass.to_s.sub("#<Rjb::", "").sub(/\:.*/, "").gsub(/.*_/, "").gsub(/Node$/, "") #getNodeType
-  name=@map[name] if @map[name]
-  name="Arguments" if parent=="Call" and name=="Array" # Name != Args!!
-  hidden= ["Newline","List","Str","Arguments"].index name
-
+def walk(out, node, parent, indent)
+  name  =node.getClass.to_s.sub("#<Rjb::", "").sub(/\:.*/, "").gsub(/.*_/, "").gsub(/Node$/, "") #getNodeType
+  name  =@map[name] if @map[name]
+  name  ="Args" if parent=="Call" and name=="Array" # Name != Args!!
+  hidden= ["Newline", "List", "Str"].index name #, "Arguments"
+  # hidden=false
   return if parent=="Method" and name=="Argument" # Name != Args!!
 
 
@@ -39,24 +48,24 @@ def walk(node, parent, indent)
       p "VALUE #{hasValue.toString}"
     end
     if node.childNodes.size>0
-      puts "\t"*indent+ "<#{name} name='#{hasName}'>"
+      out.puts "\t"*indent+ "<#{name} name='#{hasName}'>"
     else
-      puts "\t"*indent+ "<#{name} name='#{hasName}'/>"
+      out.puts "\t"*indent+ "<#{name} name='#{hasName}'/>"
       return
     end
   else
     if hasValue
       if (not hasValue.is_a? String or not hasValue.index("'"))
-        puts "\t"*indent+ "<#{name} value='#{hasValue}'/>"
+        out.puts "\t"*indent+ "<#{name} value='#{hasValue}'/>"
         return
       else
-        puts "\t"*indent+ "<#{name}>#{escape_xml(hasValue)}"
+        out.puts "\t"*indent+ "<#{name}>#{escape_xml(hasValue)}"
       end
     else
       if node.childNodes.size>0
-        puts "\t"*indent+ "<#{name}>" unless hidden
+        out.puts "\t"*indent+ "<#{name}>" unless hidden
       else
-        puts "\t"*indent+ "<#{name}/>"
+        out.puts "\t"*indent+ "<#{name}/>"
         return
       end
     end
@@ -65,17 +74,20 @@ def walk(node, parent, indent)
   #   x=1
   # end
   for c in node.childNodes.toArray #forEach # iterator listIterator spliterator stream subList toArray
-    walk c, name, indent+(hidden ? 0 : 1)
+    walk out, c, name, indent+(hidden ? 0 : 1)
   end
-  puts "\t"*indent+ "</#{name}>" unless hidden
+  out.puts "\t"*indent+ "</#{name}>" unless hidden
 end
-
-walk(ast.getBodyNode, ast, 0)
-#skip root
-
-# p source
-
 
 # https://github.com/jruby/jruby/wiki/Truffle
 # JRuby+Truffle - a High-Performance Truffle Backend for JRuby
 # The Truffle runtime of JRuby is an experimental implementation of an interpreter for JRuby using the Truffle AST interpreting framework and the Graal compiler. It’s an alternative to the IR interpreter and bytecode compiler. The goal is to be significantly faster, simpler and to have more functionality than other implementations of Ruby.
+
+
+if __FILE__==$0
+  # this will only run if the script was the main, not load'd or require'd
+  file="/Users/me/dev/ai/english-script/src/core/extensions.rb"
+  # dump_xml(file)
+  ast = RubyAST.parse("(string)", "'abc'.split('b')") # OK (via SLIM java: jrubyparser-0.2.jar)
+  walk(STDOUT, ast.getBodyNode, ast, 0)
+end
