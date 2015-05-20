@@ -9,7 +9,6 @@ class MacTest < ParserBaseTest
   include ParserTestHelper
 
   def test_mail
-
   end
 
   def test_applescript

@@ -5,26 +5,15 @@
 # https://github.com/dmw/pyxser/blob/master/src/pyxser_serializer.c
 # import ast
 # from ast import *
+from kast import *
 import io
 import xml.etree.ElementTree as Xml
 import kast
-from kast import *
 
 # from xml.dom.minidom import parse
 # file=open("test.xast")
 # xml=parse(file)
 # print xml.toxml()
-
-# schema_file='kast.xsd'
-# kast_file='test.pyast.xml'
-kast_file='test_mini.pyast.xml'
-# kast_file='test_full.pyast.xml'
-# kast_file='test.xast'
-# kast_file='test.kast.xml'
-# kast_file='kast.yml'
-
-kast_file="/Users/me/dev/ai/english-script/test/rast/number_test.rb.rast"
-# pyast_file='demo.pyast'
 
 def yml2xml(builder, body, tabs=0):
     if(tabs==0 and len(body)>1): builder.write( "<module xmlns='http://angle-lang.org'>\n")
@@ -47,27 +36,10 @@ def yml2xml(builder, body, tabs=0):
     if (tabs==0 and len(body)>1): builder.write("</module>")
     return builder
 
-file=open(kast_file)
-if kast_file.endswith("yml"):
-    import yaml
-    from cStringIO import StringIO
-    xml =yml2xml(StringIO(),yaml.load(file)).getvalue()
-    kast_file = xml # StringIO 'file' ;)
-    print(xml)
-    root = Xml.fromstring(xml)
-else:
-    tree = Xml.parse(kast_file)
-    root = tree.getroot()
-
-xmlns=""
-import re
-if "}" in xmlns:
-    xmlns=re.sub("\}.*","}",root.tag)
-# if xmlns!=root.tag: xmlns=xmlns[1:-1]
-
 
 def parseString(a, v):
     if not v: return None
+    # if(a=='name'):return v
     # if(isinstance(v,Na)
     v=v.strip()
     if(v.isdigit()):v=Num(int(v)) #todo: float!
@@ -96,30 +68,34 @@ def build(node):
         return node.text # Name(id=node.text)
     elif(tag=="num"):
         return Num(n=int(node.text))
+    elif(tag=="If"):
+        test = build(node._children[0])
+        body = [build(n) for n in node._children[1:]]
+        return If(test=test,body=body,orelse=[])
     elif(tag=="True"):
         return Name(id='True', ctx=Load()) #WTF
     elif(tag=="False"):
         return Name(id='False', ctx=Load()) #WTF
     elif(tag=="Str"):
-        return Str(s=node.attrib['value'])
+        if(hasattr(node,'value')): return Str(s=node.attrib['value'])
+        else:return Str(s=node.text)
     elif(tag=="Const"):
         return Name(id=node.attrib['name'],ctx=Load())
-    elif(tag=="Variable"):
+    elif(tag=="Variable" or tag=="variable"):
         return Name(id=node.attrib['name'],ctx=Load())# todo: CALL if in block!
         # return Name(id=node.attrib['value'], ctx=Load()) #WTF
     if not tag in kast.types:
-        print("UNKNOWN tag "+str(tag))
-        return
+        print("UNKNOWN tag %s"%(tag))
+        if(len(node.getchildren())==0):return
     construct= kast.types[tag]
     elem=construct()
     # 'data'
-    # if(tag=="Call"):
-    #     print("debug!")
+    if(tag=="Call"):
+        print("debug Call!")
     if(tag=="Class"):
-        print("debug! Class")
-    if(tag=="Method"):
+        print("debug Class!")
+    if(tag=="Method"): # FunctionDef
         print("debug Method!")
-
 
     attribs=node.attrib
     for a in attribs:
@@ -130,7 +106,7 @@ def build(node):
         if(v=='False'):v=False
         if(v=='Load'):v=Load()
         if(v=='Store'):v=Store()
-        if(isinstance(v,str)):
+        if(isinstance(v,str) and tag!="Method"):
             v=parseString(a,v)
         if a.endswith("s") and not isinstance(v,list):v=[v]
         elem.__setattr__(a,v)
@@ -146,6 +122,7 @@ def build(node):
     #     if(len(expect)==1):
     #         elem=construct(val)
     for c in children:
+        babies=c.getchildren() # look ahead
         childName=c.tag.replace(xmlns,"").lower()
         if(childName=="block"):
             childName="body"
@@ -153,14 +130,19 @@ def build(node):
             if tag=="Class":
                 childName="bases"
             else:
-                return Name(id=c.attrib['name'], ctx=Load())
-        if(childName=="name"):
+                child=Name(id=c.attrib['name'], ctx=Load())
+        elif(childName=="name"):
             if "name" in c.attrib:
                 child=c.attrib['name']
                 # child=parseString(childName,c.attrib['name'])
             else:
                 child=c.text
-                # child=parseString(childName,c.text)
+        elif(childName=="variable"):
+            if tag=="Call":
+                childName="object"
+                child=c.attrib['name']
+            else:
+                child=Name(id=c.attrib['name'], ctx=Load())
         elif(childName=="num"):
             child=Num(n=int(c.text))
         elif(childName=="true"):
@@ -169,57 +151,79 @@ def build(node):
         elif(childName=="false"):
             childName="value"
             child=Name(id='False', ctx=Load()) #WTF
+        elif(childName=="nil"):
+            childName="value"
+            child=Name(id='None', ctx=Load()) #WTF
         elif(childName=="str"):
             childName="value"
-            child=Name(id=c.attrib['value'], ctx=Load()) #WTF
+            if(hasattr(c,'value')):
+                child=Name(id=c.attrib['value'], ctx=Load()) #WTF
+            else:
+                child=Name(id=c.text, ctx=Load())
         elif(childName=="num"):
             child=Num(n=int(c.text))
         elif not childName in kast.types: #i.e.: body=...
-            babies=c.getchildren()
             if babies==[] and c.text and c.text.strip()!="":
                 child=parseString(childName, c.text)
             elif len(babies)==1 and not childName in ['args','body','values']:#
                 child=build(babies[0])
             else:
                 child=[build(n) for n in babies]
-                print("Got block")
-                print(child)
+                # print("Got block")
+                # print(child)
         else:
             child=build(c)
             if(isinstance(child,list)):
                 body=child
             else:
                 body.append(child)
-        elem.__setattr__(childName, child)
+        if isinstance(elem,FunctionDef) and childName!="body":
+            # if(child==[]):return elem # default []
+            elem.args.__setattr__(childName, child)
+        else:
+            elem.__setattr__(childName, child)
     if len(body)>0:
         elem.body=body
     attribs=dir(elem)
-    if not 'args' in attribs:
-        elem.args=[] #hack
-    if not 'keywords' in attribs:
-        elem.keywords=[] #hack
-    # if not 'values'  in attribs:
-    #     elem.values=[] #
-    if not 'starargs' in attribs:
-        elem.starargs=None #hack
-    if not 'kwargs' in attribs:
-        elem.kwargs=None #hack
-    if not 'dest' in attribs:
-        elem.dest=None #hack
-    if not 'orelse' in attribs:
-        elem.orelse=[] #hack
     if not 'lineno' in attribs:
         elem.lineno=0 #hack
     if not 'col_offset' in attribs:
         elem.col_offset=0 #hack
     return elem
 
-my_ast=build(root)
-if not isinstance(my_ast,Module):
-    if(isinstance(my_ast,list)):
-        my_ast=Module(body=my_ast)
+xmlns=""
+def parse_file(kast_file):
+    global xmlns
+    file=open(kast_file)
+    if kast_file.endswith("yml"):
+        import yaml
+        from cStringIO import StringIO
+        xml =yml2xml(StringIO(),yaml.load(file)).getvalue()
+        kast_file = xml # StringIO 'file' ;)
+        print(xml)
+        root = Xml.fromstring(xml)
     else:
-        my_ast=Module(body=[my_ast])
+        tree = Xml.parse(kast_file)
+        root = tree.getroot()
+
+    import re
+    if "}" in xmlns:
+        xmlns=re.sub("\}.*","}",root.tag)
+    # if xmlns!=root.tag: xmlns=xmlns[1:-1]
+
+    my_ast=build(root)
+    if not isinstance(my_ast,Module):
+        if(isinstance(my_ast,list)):
+            my_ast=Module(body=my_ast)
+        else:
+            my_ast=Module(body=[my_ast])
+
+    my_ast=ast.fix_missing_locations(my_ast)
+    # x=ast.dump(my_ast, annotate_fields=True, include_attributes=True)
+    x=ast.dump(my_ast, annotate_fields=False, include_attributes=False)
+    print("\n".join(x.split("),")))
+
+    return my_ast
 
 
 # correct: Module(body=[For(target=Name(id='i', ctx=Store(), lineno=1, col_offset=4), iter=Call(func=Name(id='range', ctx=Load(), lineno=1, col_offset=9), args=[Num(n=10, lineno=1, col_offset=15)], keywords=[], starargs=None, kwargs=None, lineno=1, col_offset=9), body=[Print(dest=None, values=[Name(id='i', ctx=Load(), lineno=1, col_offset=26)], nl=True, lineno=1, col_offset=20)], orelse=[], lineno=1, col_offset=0)])
@@ -229,26 +233,7 @@ def load(file):
     # return "\n".join(open(file).readlines())
 
 
-my_ast=ast.fix_missing_locations(my_ast)
-x=ast.dump(my_ast, annotate_fields=True, include_attributes=True)
-print(x)
 
 
-import ast_writer
-ast_writer.dump_xml(my_ast)
-
-
-import codegen
-print(codegen.to_source(my_ast))
-
-# code=compile(my_ast, 'file', 'exec')
-# z=exec(code)
-# print(z)
-# print(exec(code))#, glob, loc)
-
-
-code=compile(my_ast, kast_file, 'exec')#flags=None, dont_inherit=None
-# TypeError: required field 'lineno' missing from stmt
-# no, what you actually mean is "tuple is not a statement" LOL WTF ;)
-exec(code)
-
+if __name__ == '__main__':
+    import tests.kast_import

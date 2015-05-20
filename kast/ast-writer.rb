@@ -6,9 +6,13 @@ require "yaml"
 # file="../test/unit/condition_test.rb"
 # file="../src/core/english-parser.rb"
 
-def dump_xml(file, out=STDOUT)
+@map={}
+# <FCall name='require'> => require<im
+
+def dump_xml(file, out=STDOUT,map=true)
 # ast = RubyAST.parse("(string)", "x = 1") # OK (via SLIM java: jrubyparser-0.2.jar)
   begin
+    @map=YAML::load(File.open('transforms/rast-map.yml')) if map #Hash
     ast = RubyAST.parse(file, IO.read(file))
     walk(out, ast.getBodyNode, ast, 0)
   rescue
@@ -16,14 +20,9 @@ def dump_xml(file, out=STDOUT)
   end
 end
 
-# next
-# @map={}
-@map=YAML::load(File.open('transforms/rast-map.yml')) #Hash
-
-# <FCall name='require'> => require<im
 
 def escape_xml(xml)
-  xml
+  xml.gsub("<","&lt;").gsub(">","&gt;")
 end
 
 # source = RubyAST.to_source(ast)
@@ -55,12 +54,12 @@ def walk(out, node, parent, indent)
     end
   else
     if hasValue
-      if (not hasValue.is_a? String or not hasValue.index("'"))
-        out.puts "\t"*indent+ "<#{name} value='#{hasValue}'/>"
-        return
+      if (hasValue.is_a? String)
+        out.puts "\t"*indent+ "<#{name}>#{escape_xml(hasValue)}</#{name}>"
       else
-        out.puts "\t"*indent+ "<#{name}>#{escape_xml(hasValue)}"
+        out.puts "\t"*indent+ "<#{name} value='#{hasValue}'/>"
       end
+        return
     else
       if node.childNodes.size>0
         out.puts "\t"*indent+ "<#{name}>" unless hidden

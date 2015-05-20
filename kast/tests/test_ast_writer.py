@@ -4,16 +4,33 @@ import ast2json
 from ast import *
 import ast_writer
 
+# import codegen
+from astor import codegen
+
 source=os.path.realpath(__file__)
-source='/Users/me/angelos/kast/tests/hi.py'
+# source='/Users/me/angelos/kast/tests/hi.py'
+source='/Users/me/angelos/kast/ast_reader.py'
 print(source)
 contents=open(source).readlines()# all()
 contents="\n".join(contents)
+source="(string)" # compile from inline string source:
+# contents="def x():pass"
+contents="x[1]"
 # It seems that the best way is using tokenize.open(): http://code.activestate.com/lists/python-dev/131251/
 # code=compile(contents, source, 'eval')# import ast -> SyntaxError: invalid syntax  NO IMPORT HERE!
 code=compile(contents, source, 'exec') # code object  AH!!!
 file_ast=compile(contents, source, 'exec',ast.PyCF_ONLY_AST) # AAAAHHH!!!
-ast.dump(file_ast)
+
+
+
+x=ast.dump(file_ast, annotate_fields=True, include_attributes=True)
+print(x)
+
+file_ast=ast.parse(contents ,source,'exec')
+x=ast.dump(file_ast, annotate_fields=False, include_attributes=False)
+print(x)
+
+
 j=ast2json.ast2json(file_ast)
 # print(j)
 # assert code==code2
@@ -29,12 +46,6 @@ j=ast2json.ast2json(file_ast)
 # file_ast=ast.parse(code ,source,'eval')
 
 # x=ast.dump(file_ast, annotate_fields=True, include_attributes=False)
-x=ast.dump(file_ast, annotate_fields=True, include_attributes=True)
-print(x)
-
-file_ast=ast.parse(contents ,source,'exec')
-x=ast.dump(file_ast, annotate_fields=True, include_attributes=False)
-print(x)
 
 my_ast=Module(body=[
     For(
@@ -58,5 +69,9 @@ my_ast=Module(body=[
         col_offset=0
     )
 ])
+
 my_ast=file_ast
-ast_writer.Visitor().visit(my_ast)
+
+ast_writer.Visitor().visit(my_ast) # => XML
+
+print(codegen.to_source(my_ast)) # => CODE

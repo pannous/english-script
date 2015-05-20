@@ -13,45 +13,77 @@ class Num(ast.Num):
     def set_value(self,n):self.n=n
     value = property(lambda self:self.n, set_value)
 
-# class Name(ast.Name):
-#     def set_name(self,id):
-#         if(isinstance(id,Name)):id=id.id #WWWTTTFFF
-#         self.id=id
-#     name=property(lambda self:self.id,set_name)
+    def __repr__(self): return str(self.n)
+
+class Name(ast.Name):
+    def set_name(self,id):
+        if(isinstance(id,Name)):id=id.id #WWWTTTFFF
+        self.id=id
+    name=property(lambda self:self.id,set_name)
 
 class Str(ast.Str):
     def set_value(self,s):self.s=s
     value = property(lambda self:self.s, set_value)
 
+class Return(ast.Return):
+    def set_val(self,val):
+        if isinstance(val,list):val=val[0] #REALLY!!?
+        self.value=val
+    body = property(lambda self:self.value, set_val)
+
+class For(ast.For):
+    def set_assign(self,target):
+        self.target=target
+    assign = property(lambda s:s.target,set_assign)
+    def set_iter(self,iter):
+        self.iter=iter
+    call= property(lambda s:s.iter,set_iter)
+
 class Assign(ast.Assign):
-    def set_var(self,var):self.targets=[var]
-    def set_val(self,val):self.value=val
-    def set_vals(self,vals):self.value=vals[0]
+    def set_var(self,var):
+        if not isinstance(var,list):var=[var]
+        self.targets=var
+    def set_val(self,val):
+        if isinstance(val,list):val=val[0] #REALLY!!?
+        self.value=val
     var = property(lambda self:self.targets, set_var)
-    variable = property(lambda self:self.targets, set_var)
-    variables = property(lambda self:self.targets, set_var)
     object = property(lambda self:self.targets, set_var)
     name = property(lambda self:self.targets, set_var)
+    # variable = property(lambda self:self.targets, set_var)
+    # variables = property(lambda self:self.targets, set_var)
     # body = property(lambda self:self.targets, set_var)
-    body = property(lambda self:self.value, set_vals)
+    body = property(lambda self:self.value, set_val)
+    variable = property(lambda self:self.value, set_val)#REALLY???
+    variables = property(lambda self:self.value, set_val)
 
 # a.split('b') =>
 # Call(func=Attribute(value=Name(id='a', ctx=Load()), attr='split', ctx=Load()), args=[Str(s='b')]
 class Call(ast.Call):
-    def set_method(self,method):self.func=method
+    def __init__(self, **kwargs):
+        self.args=[]
+        self.keywords=[]
+        self.kwargs=self.starargs=None
+        super(ast.Call,self).__init__(*kwargs)
+
+    def set_method(self,method):
+        if isinstance(method,list):method=method[0]
+        self.func=method
     method = property(lambda self:self.func, set_method)
+    const = property(lambda self:self.func, set_method)
     name = property(lambda self:self.func, set_method)
 
     def set_object(self,o):
-        self.object=o
-        if(isinstance(self.func,Name)):self.func=Attribute(attr=self.func)
+        if(isinstance(self.func,Name)):self.func=Attribute(attr=self.func,ctx=Load())
         if(isinstance(self.func,Attribute)):self.func.value=o
     def get_object(self):
         if(isinstance(self.func,Attribute)):return self.func.value
         return None
     object = property(get_object, set_object)
 
-    def set_args(self,oas):self.args=oas
+    def set_args(self,oas):
+        if not isinstance(oas,list):oas=[oas]
+        if not oas[0]: return
+        self.args=self.args+oas
     body = property(lambda self:self.args, set_args)
     # method = property(lambda self:self.func, lambda self,method:[0 for self.func in [method]])
 
@@ -75,9 +107,10 @@ class Import(ast.Import):
 
 class FunctionDef(ast.FunctionDef):
     def __init__(self, **kwargs):
+        self.decorator_list=[]
+        self.body=[Pass()]
+        self.args=arguments(args=[],defaults=[],vararg=None,kwarg=None)
         super(ast.FunctionDef,self).__init__(*kwargs)
-        if not "decorator_list" in kwargs:
-            self.decorator_list=[]
 
 class Print(ast.Print):
       def __init__(self, **kwargs):
@@ -218,14 +251,14 @@ types={ # see _ast.py , F12:
 # workaround: alias is keyword in ruby!
 mapped_types={
     "Block":Module, #NOT REALLY!
-    # "Variable": Name,
-    # "Const": Name, #todo
+    "Variable": Name,
+    "Const": Name, #todo
     "Class":ClassDef,
     "Alias":alias,
     # "Arguments":arguments,
     # "Args":arguments,
     # "Args":Args,
-    "class_method":FunctionDef,
+    "class_method":FunctionDef, # FunctionDef(name='x', args=arguments(args=[], vararg=None, kwarg=None, defaults=[]) WTF
     "Method":FunctionDef,
     "int":Num,
     "let":Assign,

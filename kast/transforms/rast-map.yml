@@ -114,7 +114,7 @@ SValue:                 Value
 SValue19:               Value
 ToAry:                  Call(ToAry)
 VAlias:                 Alias
-VCall:                  Variable
+VCall:                  Call #Variable
 WhenOneArg:             When
 XStr:                   String
 Yield19:                Yield
