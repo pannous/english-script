@@ -34,9 +34,9 @@ Done
 
 ```
 To check if person is online on Skype:
-	Skype.checkStatus(someone)
-	return yes if result equals "online"
-	return no otherwise
+	Skype.checkStatus(person)
+	if result is "online": return yes 
+	else return no
 End
 ```
 
