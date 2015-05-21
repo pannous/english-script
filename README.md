@@ -33,11 +33,11 @@ Done
 ```
 
 ```
-How to check if someone is online on Skype
+To check if person is online on Skype:
 	Skype.checkStatus(someone)
-	Return yes if result equals "online"
-	Return no otherwise
-Done
+	return yes if result equals "online"
+	return no otherwise
+End
 ```
 
 Todo (soon):
