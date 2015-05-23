@@ -1,6 +1,15 @@
 # see JVM emitter
 # http://openjdk.java.net/projects/graal/
 
+# javassist
+ClassPool pool = ClassPool.getDefault();
+CtClass cc = pool.get("test.Rectangle");
+cc.setSuperclass(pool.get("test.Point"));
+CtField f = new CtField(ClassPool.getDefault().get("java.util.ArrayList"), "someList", cc);
+cc.addField(f);
+cc.addField(new CtField(CtClass.intType, "z", cc));
+cc.writeFile();
+
 # RubyMotion PLEASE become open source!!
 
 

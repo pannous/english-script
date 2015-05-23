@@ -55,6 +55,21 @@
 # like system. But for C++.....yeaaaahhh.....the way C++ is linked is
 # just wrong.
 
+
+# Lexical Analysis with Flex: Split input data into a set of tokens (identifiers, keywords, numbers, brackets, braces, etc.)
+# Semantic Parsing with Bison: Generate an AST while parsing the tokens. Bison will do most of the legwork here, we just need to define our AST.
+# class NMethodCall : public NExpression {
+#   public:
+#       const NIdentifier& id;
+#   ExpressionList arguments;
+#   NMethodCall(const NIdentifier& id, ExpressionList& arguments) :
+#       id(id), arguments(arguments) { }
+#   NMethodCall(const NIdentifier& id) : id(id) { }
+#   virtual llvm::Value* codeGen(CodeGenContext& context);
+# };
+# http://gnuu.org/2009/09/18/writing-your-own-toy-compiler
+
+
 # on mac: macRubyc AOT
 # Rubinius is a new virtual machine for Ruby.
 # It leverages LLVM to dynamically compile Ruby code down to machine code using LLVM's JIT. (NOT AOT)

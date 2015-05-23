@@ -1,9 +1,12 @@
-#!r'usr'bin/env ruby
+#!/usr/bin/env python
 # encoding: utf-8
-import time
+# import time
+# import traceback
+# import sys
+# import __builtin__ # class function(object) etc
+import re
+import __builtin__
 import traceback
-import sys
-import __builtin__ # class function(object) etc
 
 import interpretation
 import HelperMethods
@@ -163,14 +166,6 @@ def ___(*tokens0):
     # import ExternalLibraries
 
     # attr_accessor :methods, :result, :last_result, :interpretation, :variables, :variableValues,:variableType #remove the later!
-
-
-def now():
-    return time.clock()
-
-
-def yesterday():
-    return time.clock() - 24 * 60 * 60
 
 
 def interpretation():
@@ -605,7 +600,7 @@ def piped_actions():
     no_rollback()
     c = true_method() or bash_action()
     args = star(arg)
-    if isinstance(c, __builtin__.function): args = [args, Argument(value=a)]  # with owner
+    if callable(c): args = [args, Argument(value=a)]  # with owner
     if interpreting():
         the.result=do_send(a, c, args)
         print(the.result)
@@ -636,6 +631,11 @@ def statement():
     # one :action, :if_then ,:once , :looper
     # any{action  or  if_then  or  once  or  looper)
 
+# nice optional return 'as':
+# define sum x,y as:
+#     x+y
+# end
+# define the sum of numbers x,y and z as number x+y+z
 
 def method_definition():
     # annotations=_try(annotations)
@@ -653,11 +653,9 @@ def method_definition():
         a = arg(len(args))
         maybe_token(',')
         args.append(a)
-
     star(lamb)  # over an interval
-    return_type = ___(('as', 'return', 'returns', 'returning') and _try(typeNameMapped))
-    if maybe_token('->'):  # swift style --:
-        return_type = return_type or typeNameMapped  # _22 '!'
+    return_type = ___('as', 'return', 'returns', 'returning','=','->') and _try(typeNameMapped) #return_type or
+
     in_params = False
     maybe_token(')')
     allow_rollback  # for
@@ -853,6 +851,7 @@ def ruby_method_call():
             print("\n!!!!!!!!!!!!\n ERROR calling #{the_call)\n!!!!!!!!!!!! #{e)\n ")
         except Exception as e:
             print("\n!!!!!!!!!!!!\n ERROR calling #{the_call)\n!!!!!!!!!!!! #{e)\n ")
+            import traceback
             error(traceback.extract_stack())
             print('!!!! ERROR calling ' + the_call)
 

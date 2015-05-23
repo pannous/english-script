@@ -631,6 +631,11 @@ class EnglishParser < Parser
     #any{action || if_then || once || looper}
   end
 
+  def exceptionTypes
+    word
+    star{ _',' ; word }
+  end
+
   def method_definition
     # annotations=annotations?
     # modifiers=modifiers?
@@ -651,6 +656,7 @@ class EnglishParser < Parser
     return_type||=typeNameMapped if _? '->' #_? '!' # swift style --
     @in_params =false
     _? ')'
+    __? 'raises','throws' and exceptionTypes
     allow_rollback # for
     dont_interpret!
     b   =action_or_block # define z as 7 allowed !!!
@@ -1213,7 +1219,7 @@ class EnglishParser < Parser
     a   =the?
     mod =modifier?
     type=typeNameMapped?
-    tokens? 'var', 'val', 'value of'
+    tokens? 'var', 'val', 'value of','variable'
     mod  ||=modifier? # public static ...
     var  =property? || variable(a)
     # _?("always") => pointer

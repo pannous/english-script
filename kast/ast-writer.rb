@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # http://jruby.org/apidocs/org/jruby/ast/package-tree.html
 require "rubyast" # using jruby/ast in normal ruby!
 require "yaml"
@@ -8,11 +9,16 @@ require "yaml"
 
 @map={}
 # <FCall name='require'> => require<im
+def load_map
+  dir=File.symlink?(__FILE__) ? File.dirname( File.readlink(__FILE__)): File.dirname(__FILE__)
+  yml_map_file= dir+'/transforms/rast-map.yml'
+  @map=YAML::load(File.open(yml_map_file)) 
+end
 
 def dump_xml(file, out=STDOUT,map=true)
 # ast = RubyAST.parse("(string)", "x = 1") # OK (via SLIM java: jrubyparser-0.2.jar)
   begin
-    @map=YAML::load(File.open('transforms/rast-map.yml')) if map #Hash
+    load_map if map #Hash   
     ast = RubyAST.parse(file, IO.read(file))
     walk(out, ast.getBodyNode, ast, 0)
   rescue
@@ -83,10 +89,19 @@ end
 # The Truffle runtime of JRuby is an experimental implementation of an interpreter for JRuby using the Truffle AST interpreting framework and the Graal compiler. It’s an alternative to the IR interpreter and bytecode compiler. The goal is to be significantly faster, simpler and to have more functionality than other implementations of Ruby.
 
 
-if __FILE__==$0
+if __FILE__==$0 # shell main
   # this will only run if the script was the main, not load'd or require'd
-  file="/Users/me/dev/ai/english-script/src/core/extensions.rb"
+  # file="/Users/me/dev/ai/english-script/src/core/extensions.rb"
   # dump_xml(file)
-  ast = RubyAST.parse("(string)", "'abc'.split('b')") # OK (via SLIM java: jrubyparser-0.2.jar)
-  walk(STDOUT, ast.getBodyNode, ast, 0)
+  load_map
+  
+  if ARGV.length>0
+    file=ARGV[0] 
+    puts "loading #{file}"
+    dump_xml(file)
+  else
+    content="'abc'.split('b')"
+    ast = RubyAST.parse("(string)", content) # OK (via SLIM java: jrubyparser-0.2.jar)  
+    walk(STDOUT, ast.getBodyNode, ast, 0)
+  end
 end

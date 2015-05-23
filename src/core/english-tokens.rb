@@ -223,7 +223,7 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def exceptionKeywords
-    ['begin','try','rescue','catch','except','raise','throw','finally','die']
+    ['begin','try','rescue','catch','except','raise','throw','finally','die','raises','throws']
   end
 
   def modifierKeywords
@@ -236,7 +236,7 @@ module EnglishParserTokens #< MethodInterception
      'given','go', 'global', 'if', 'ignoring', 'is', 'it', 'its', 'last', 'local', 'me', 'middle', 'mod', 'my',
      'ninth', 'not', 'otherwise','pragma', 'prop', 'property', 'put', 'ref', 'reference',
      'repeat', 'returning','run', 'script', 'second', 'set', 'seventh', 'sixth', 'some', 'tell', 'tenth', 'then', 'third', 'timeout', 'times',
-     'transaction', 'true', 'try', 'where', 'whose', 'until', 'while']
+     'transaction', 'true', 'try', 'where', 'whose', 'until', 'while','let', 'set','declare']
   end
 
 
@@ -293,7 +293,7 @@ module EnglishParserTokens #< MethodInterception
   end
 
   def let
-    tokens 'let', 'set'
+    tokens 'let', 'set','declare'
   end
 
 

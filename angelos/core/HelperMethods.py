@@ -1,3 +1,4 @@
+
 class HelperMethods:
   # def self.:
   def column(self, nr,array):

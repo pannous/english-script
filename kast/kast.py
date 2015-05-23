@@ -63,22 +63,32 @@ class Call(ast.Call):
         self.args=[]
         self.keywords=[]
         self.kwargs=self.starargs=None
+        self.func=None #Attribute(value=Name(id='self',ctx=Load()),attr=None,ctx=Load())
         super(ast.Call,self).__init__(*kwargs)
 
     def set_method(self,method):
-        if isinstance(method,list):method=method[0]
-        self.func=method
+        if isinstance(method,list):
+            method=method[0] #HOW?
+        if(isinstance(self.func,Attribute)):
+            self.func.attr=method
+        else:
+            self.func=method
+            # self.func=Attribute(value=Name(id='self',ctx=Load()),attr=method,ctx=Load())
+
     method = property(lambda self:self.func, set_method)
     const = property(lambda self:self.func, set_method)
     name = property(lambda self:self.func, set_method)
 
+    # self.x() Call(func=Attribute(value=Name('self', Load()), attr='x', Load()))
     def set_object(self,o):
-        if(isinstance(self.func,Name)):self.func=Attribute(attr=self.func,ctx=Load())
-        if(isinstance(self.func,Attribute)):self.func.value=o
+        if(not isinstance(self.func,Attribute)):
+            self.func=Attribute(attr=self.func,ctx=Load(),value=o)
+        self.func.value=o
     def get_object(self):
         if(isinstance(self.func,Attribute)):return self.func.value
         return None
     object = property(get_object, set_object)
+    variable = property(get_object, set_object)
 
     def set_args(self,oas):
         if not isinstance(oas,list):oas=[oas]
@@ -89,13 +99,10 @@ class Call(ast.Call):
 
 class ClassDef(ast.ClassDef):
     def __init__(self, **kwargs):
+        self.nl=True
+        self.decorator_list=[]
+        self.bases=[]
         super(ast.ClassDef,self).__init__(*kwargs)
-        if not "nl" in kwargs:
-            self.nl=True
-        if not "decorator_list" in kwargs:
-            self.decorator_list=[]
-        if not "bases" in kwargs:
-            self.bases=[]
 
 # todo : more beautiful mappings / defaults
 class Import(ast.Import):
@@ -109,7 +116,7 @@ class FunctionDef(ast.FunctionDef):
     def __init__(self, **kwargs):
         self.decorator_list=[]
         self.body=[Pass()]
-        self.args=arguments(args=[],defaults=[],vararg=None,kwarg=None)
+        self.args=arguments(args=[Name(id='self',ctx=Load())],defaults=[],vararg=None,kwarg=None)
         super(ast.FunctionDef,self).__init__(*kwargs)
 
 class Print(ast.Print):
@@ -136,11 +143,12 @@ if sys.version_info > (3,0):
         )
 
 
-class Name(ast.Name):
-    # def __init__(self, **kwargs):
-    #     super(ast.Name,self).__init__(*kwargs)
-    def __str__(self):
-         return "<kast.Name id='%s'>"%self.id
+# class Name(ast.Name):
+#     # def __init__(self, **kwargs):
+#     #     super(ast.Name,self).__init__(*kwargs)
+#     def __str__(self):
+#         if not 'id' in self._attributes: self.id="MISSING_ID!!!"
+#         return "<kast.Name id='%s'>"%self.id
 
 types={ # see _ast.py , F12:
 "Raise":Raise,#danger raise keyword
@@ -258,7 +266,7 @@ mapped_types={
     # "Arguments":arguments,
     # "Args":arguments,
     # "Args":Args,
-    "class_method":FunctionDef, # FunctionDef(name='x', args=arguments(args=[], vararg=None, kwarg=None, defaults=[]) WTF
+    # "class_method":FunctionDef, # FunctionDef(name='x', args=arguments(args=[], vararg=None, kwarg=None, defaults=[]) WTF
     "Method":FunctionDef,
     "int":Num,
     "let":Assign,

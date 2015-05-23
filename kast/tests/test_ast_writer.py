@@ -2,23 +2,36 @@ import ast
 import os
 import ast2json
 from ast import *
-import ast_writer
+import ast_export
 
 # import codegen
 from astor import codegen
 
 source=os.path.realpath(__file__)
 # source='/Users/me/angelos/kast/tests/hi.py'
-source='/Users/me/angelos/kast/ast_reader.py'
+source='/Users/me/angelos/kast/ast_import.py'
 print(source)
 contents=open(source).readlines()# all()
 contents="\n".join(contents)
 source="(string)" # compile from inline string source:
 # contents="def x():pass"
-contents="x[1]"
+contents="from x import *"
+# contents="self.x(1)"
+# contents="x(1)"
+# contents="class T:pass\ndef test(self):self.x=1\nz=T();test(z);print(z.x)" #Assign([Attribute(Name('self', Load()), attr='x', Store())], Num(1))
+# contents="x[1]" # Subscript(Name('x', Load()), Index(Num(1)), Load()))
+# contents="x[1]=3" # Assign(targets=[Subscript(Name('x', Load()), Index(Num(1)), Store())], value=Num(3))
+# <AttrAssign name='[]='>
+# 	<VCall name='variables'/>
+# 	<Array>
+# 		<Str value='x'/> # << TARGET
+# 		<Str value='/Users/me'/> << VALUE!!
+# 	</Array>
+# </AttrAssign>
+
 # It seems that the best way is using tokenize.open(): http://code.activestate.com/lists/python-dev/131251/
 # code=compile(contents, source, 'eval')# import ast -> SyntaxError: invalid syntax  NO IMPORT HERE!
-code=compile(contents, source, 'exec') # code object  AH!!!
+# code=compile(contents, source, 'exec') # code object  AH!!!
 file_ast=compile(contents, source, 'exec',ast.PyCF_ONLY_AST) # AAAAHHH!!!
 
 
@@ -71,7 +84,18 @@ my_ast=Module(body=[
 ])
 
 my_ast=file_ast
+# my_ast=Module([Assign([Attribute(Name('self', Load()), 'x', Store())], Num(1))])
+# my_ast=Module([Assign([Name('self.x', Store())], Num(1))]) # DANGER!! syntaktisch korrekt aber semantisch sich nicht!!
+# my_ast=Module([Assign([Name('self.x', Store())], Num(1)),Print(None, [Name('self.x', Load())], True)])
+# my_ast=Module(body=[Assign(targets=[Attribute(value=Name(id='self', ctx=Load(), lineno=1, col_offset=0), attr='x', ctx=Store(), lineno=1, col_offset=0)], value=Num(n=1, lineno=1, col_offset=7), lineno=1, col_offset=0)])
 
-ast_writer.Visitor().visit(my_ast) # => XML
+ast_export.Visitor().visit(my_ast) # => XML
 
-print(codegen.to_source(my_ast)) # => CODE
+source=codegen.to_source(my_ast)
+print(source) # => CODE
+
+my_ast=ast.fix_missing_locations(my_ast)
+code=compile(my_ast, 'file', 'exec')
+# ast_reader.emit_pyc(code)
+exec(code)
+# print (self.x)

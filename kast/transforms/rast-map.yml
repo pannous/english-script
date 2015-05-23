@@ -19,10 +19,19 @@ InstAsgn:				Assign
 LocalAsgn:				Assign
 MultipleAsgn19:			Assign
 MultipleAsgn:			Assign
-AttrAssign:				Assign
-AttrAssignOneArg:		Assign
-AttrAssignThreeArg:		Assign
-AttrAssignTwoArg:		Assign
+
+# contents="x[1]=3" # Assign(targets=[Subscript(Name('x', Load()), Index(Num(1)), Store())], value=Num(3))
+# <AttrAssign name='[]='>
+# 	<VCall name='variables'/>
+# 	<Array>
+# 		<Str value='x'/> # << TARGET
+# 		<Str value='/Users/me'/> << VALUE!!
+# 	</Array>
+# </AttrAssign>
+AttrAssign:				Assign #Call([]=) Assign
+AttrAssignOneArg:		Assign #Assign
+AttrAssignThreeArg:		Assign #Assign
+AttrAssignTwoArg:		Assign #Assign
 BackRef:
 BlockArg18:				Argument
 BlockArg:				Argument
