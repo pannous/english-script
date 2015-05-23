@@ -31,5 +31,5 @@ class SelfFixer(NodeVisitor):
 
 def fix_missing_self(elem):
     global names
-    names=map(get_name,elem.body)
+    names=map(get_name,[c for c in elem.body if isinstance(c,ClassDef)])
     SelfFixer().visit(elem)

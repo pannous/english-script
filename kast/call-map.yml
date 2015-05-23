@@ -1,0 +1,4 @@
+require_relative: import
+include:        import
+puts:   print
+==:     equals

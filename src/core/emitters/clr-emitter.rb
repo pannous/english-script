@@ -64,3 +64,10 @@
 # A full C# parser is available with our DMS Software Reengineering Toolkit (DMS for short). It has been used to process tens of thousands of C# files accurately. It provides automated AST building, tree traversals, surface-syntax pattern matching and transformation and lots more. As a commercial product it might not work out for a student project.
 
 # ANTLR arguably offers a C# parser, but I don't know complete or robust it is, or whether it actually builds ASTs.
+
+Problem(??):
+delegate vs members !!??
+csharp> t.IsClass()
+(1,48): error CS1955: The member `System.Type.IsClass' cannot be used as method or delegate
+csharp> t.IsClass
+true

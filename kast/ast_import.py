@@ -56,7 +56,7 @@ def parseString(a, v,tag=None):
     # if(isinstance(v,Na)
     v=v.strip()
     if(v.isdigit()):v=Num(int(v)) #todo: float!
-    elif(v.startswith("[")): # too much suggar??
+    elif(v.startswith("[") and tag!="Call" and tag!="Assign"): # too much suggar??
         args=v[1:-1].replace(","," ").split(" ")
         v=[]
         for arg in args:
@@ -75,6 +75,8 @@ def parseString(a, v,tag=None):
 
 
 def name(id,ctx=Load(),tag=None):
+    if id=="" or id==None:
+        return Str(s='')
     if id in const_map:
         id=const_map[id]
     if(tag=="Call"):
@@ -97,16 +99,28 @@ def self():
 
 def do_import(files): # require,require_relative, import, ...
     def to_name(arg):
+        if(isinstance(arg,Name)):return arg
         return name(arg.s.replace("../","").replace(".rb",".py"))
     names=map(to_name,files)
-    for file in files:
-        parse_file(file.s)
+    try:
+        for file in names:
+            parse_file(file.id)
+    except Exception as e:
+        print(e)
     # return Import(names=names)
     return ImportFrom(module=names[0],names=[alias('*',None)],level=0)
+
+
+def flatList(l):
+    if not isinstance(l,list):return [l]
+    if len(l)==0: return l
+    if len(l)==1 and isinstance(l[0],list): return l[0]
+    return l
 
 def build(node,parent=None):
     global xmlns,inClass
     tag=node.tag.replace(xmlns,"")
+    children = node.getchildren()
     if(tag=="name"):
         return node.text # Name(id=node.text)
     elif(tag=="num"):
@@ -114,33 +128,76 @@ def build(node,parent=None):
     elif(tag=="Num"):
         return Num(n=int(node.attrib["value"]))
     elif(tag=="If"):
-        test = build(node._children[0])
-        body = [build(n) for n in node._children[1:]]
-        return If(test=test,body=body,orelse=[])
+        test = build(children[0])
+        body = [build(children[1])]
+        if len(children)>2:
+            orelse=flatList(build(children[2]))
+        else:
+            orelse=[]
+        return If(test=test,body=body,orelse=orelse)
     elif(tag=="True"):
         return name('True') #WTF
     elif(tag=="False"):
         return name('False') #WTF
+    elif(tag=="String"):
+        xs=map(build, children)
+        def bin_add(a,b):
+            return BinOp(a, Add(),b)
+        xss=reduce(bin_add, xs[1:], xs[0]) # nice, Karsten++
+        return xss
     elif(tag=="Str"):
         if(hasattr(node,'value')): return Str(s=node.attrib['value'])
         else:return Str(s=node.text)
     # elif(tag=="Call" and parent=="Assign"):
     #     tag="Variable" #VCall in ruby
+    elif(tag=="Argument"):
+        if(len(children)>0):
+            return build(children[0])
+        return name(node.attrib['name'])
     elif(tag=="Const"):
         return name(node.attrib['name'])
     elif(tag=="Variable" or tag=="variable"):
         return name(node.attrib['name'])# todo: CALL if in block!
         # return Name(id=node.attrib['value'], ctx=Load()) #WTF
+    elif(tag=='Arguments'): # not AST node
+        args=map(build, children)
+        return arguments(args=args,defaults=[],vararg=None,kwarg=None)
+    elif(tag=='Array'): # not AST node
+        args=map(build, children)
+        return List(elts=args,ctx=Load())
+    elif tag=="Alias":
+        return Assign(targets=[build(children[0])],value=build(children[0]))
+    elif tag=="Args":
+        return map(build, children)
+    elif tag=="Or":
+        return Or(body=map(build, children))
+    elif tag=="And":
+        return And(body=map(build, children))
+    elif tag=="Block":
+        return map(build, children)
+    elif(tag=='Hash'): # not AST node
+        args=map(build, children)
+        a=args[0].elts
+        hash=dict(zip(a[0::2], a[1::2])) # nice
+        return Dict(keys=hash.keys(),values=hash.values())
+
+
     if not tag in kast.types:
         print("UNKNOWN tag %s"%(tag))
-        if(len(node.getchildren())==0):return
+        if(len(children)==0):return
     construct= kast.types[tag]
-    elem=construct()
+    if callable(construct):
+        elem=construct()
+    else:elem=construct
     # 'data'
     if(tag=="Call"):
-        print("debug Call!")
+        pass #debug
     if(tag=="Class"):
         inClass=True
+    elif(tag=='Arguments'):
+        pass
+    elif tag=="Self":
+        return elem
     #     print("debug Class!")
     # if(tag=="Method"): # FunctionDef
     #     print("debug Method!")
@@ -155,12 +212,11 @@ def build(node,parent=None):
         if(v=='False'):v=False
         if(v=='Load'):v=Load()
         if(v=='Store'):v=Store()
-        if(isinstance(v,str) and tag!="Method"):
+        if(isinstance(v,str) and not isinstance(elem,Name)) and tag!="Method" :
             v=parseString(a,v,tag)
         if a.endswith("s") and not isinstance(v,list):v=[v]
         elem.__setattr__(a,v)
 
-    children=node.getchildren()
     # expect=elem._fields # [x for x in dir(elem) if not x.startswith("_")]
     body=[]
     # if(isinstance(node,Name)):
@@ -192,7 +248,12 @@ def build(node,parent=None):
                 childName="object"
             child=name(c.attrib['name'])
         elif(childName=="num"):
-            child=Num(n=int(c.text))
+            if 'value' in c.attrib:
+                child=Num(n=int(c.attrib['value']))
+            else:
+                child=Num(n=int(c.text))
+        # elif childName=="default":
+        #     child=build(c)
         elif(childName=="true"):
             childName="value"
             child=name('True')
@@ -202,12 +263,12 @@ def build(node,parent=None):
         elif(childName=="nil"):
             childName="value"
             child=name('None')
-        elif(childName=="str"):
+        elif(childName=="str"): # NAME!!?? REALLY??
             childName="value"
             if(hasattr(c,'value')):
-                child=name(c.attrib['value']) # Name(id=c.attrib['value'], ctx=Load()) #WTF
+                child=Str(c.attrib['value']) # Name(id=c.attrib['value'], ctx=Load()) #WTF
             else:
-                child=name(id=c.text, ctx=Load())
+                child=Str(id=c.text)
         elif not childName in kast.types: #i.e.: body=...
             if babies==[] and c.text and c.text.strip()!="":
                 child=parseString(childName, c.text)
@@ -224,7 +285,8 @@ def build(node,parent=None):
         if isinstance(elem,FunctionDef) and childName!="body":
             if(childName=='args'):
                 for a in child:
-                    elem.args.append(a)
+                    # elem.args.append(a)
+                    elem.args.args.append(a)
             else: body.append(child)
         else:
             elem.__setattr__(childName, child)
@@ -240,7 +302,10 @@ def build(node,parent=None):
             return do_import(elem.args)
     if(tag=="Class"):
         inClass=False
-        classes[elem.name]=elem
+        if isinstance(elem,ClassDef):
+            classes[elem.name]=elem
+    elif tag=="Super":
+        elem.func=name('super')
     return elem
 
 

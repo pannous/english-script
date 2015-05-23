@@ -17,7 +17,12 @@ source="(string)" # compile from inline string source:
 # contents="def x():pass"
 contents="from x import *"
 # contents="self.x(1)"
-# contents="x(1)"
+contents="@classmethod\ndef c():pass"
+# contents='re.match(r"a(.*)b","acb")'
+# contents="x[1:3]" #Subscript(Name('x', Load()), Slice(Num(1), Num(3), None), Load())
+# contents="super(1)"
+# contents="'a %s'%(1)" #BinOp(Str('a %s'), Mod(), Num(1)))
+# contents="'a'+ok+'b'" #BinOp(BinOp(Str('a'), Add(), Name('ok', Load())), Add(), Str('b')))
 # contents="class T:pass\ndef test(self):self.x=1\nz=T();test(z);print(z.x)" #Assign([Attribute(Name('self', Load()), attr='x', Store())], Num(1))
 # contents="x[1]" # Subscript(Name('x', Load()), Index(Num(1)), Load()))
 # contents="x[1]=3" # Assign(targets=[Subscript(Name('x', Load()), Index(Num(1)), Store())], value=Num(3))

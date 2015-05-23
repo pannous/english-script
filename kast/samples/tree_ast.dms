@@ -1,0 +1,327 @@
+
+<?xml version="1.1" encoding="ISO-8859-1"?>
+<!-- Using DMS PrintASTasXML (v.1.03) -->
+<!-- XML generated on 2014/03/01 12:14:49 -->
+<DMSForest>
+  <tree node="Python" type="1" domain="1" id="yk0x" parents="0" line="2" column="1" file="1">
+<tree node="file_input" type="2" domain="1" id="yk0w" line="2" column="1" file="1">
+  <tree node="file_input_element_list" type="4" domain="1" id="yk0v" line="2" column="1" file="1">
+    <tree node="file_input_element_list" type="4" domain="1" id="yjww" line="2" column="1" file="1">
+      <tree node="file_input_element_list" type="4" domain="1" id="yjvc" line="2" column="1" file="1">
+    <tree node="file_input_element_list" type="4" domain="1" id="yjus" line="2" column="1" file="1">
+      <tree node="file_input_element_list" type="3" domain="1" id="ydby" line="2" column="1" file="1"/>
+      <tree node="file_input_element" type="5" domain="1" id="yjuq" line="2" column="1" file="1">
+        <tree node="NEWLINE" type="282" domain="1" id="ydbn" literal="0" line="2" column="1" file="1">
+          <precomment child="0" index="1"># A comment in the header</precomment>
+        </tree>
+      </tree>
+    </tree>
+    <tree node="file_input_element" type="6" domain="1" id="yjvb" line="3" column="1" file="1">
+      <tree node="stmt" type="7" domain="1" id="yjva" line="3" column="1" file="1">
+        <tree node="simple_stmt" type="9" domain="1" id="yjv9" line="3" column="1" file="1">
+          <tree node="small_stmt_list" type="11" domain="1" id="yjv3" line="3" column="1" file="1">
+        <tree node="small_stmt" type="45" domain="1" id="yjv1" line="3" column="1" file="1">
+          <tree node="'import'" type="305" domain="1" id="yjup" literal="0" line="3" column="1" file="1"/>
+          <tree node="dotted_as_name_list" type="53" domain="1" id="yjuz" line="3" column="8" file="1">
+            <tree node="dotted_as_name" type="60" domain="1" id="yjuy" line="3" column="8" file="1">
+              <tree node="dotted_name" type="61" domain="1" id="yjux" line="3" column="8" file="1">
+            <tree node="NAME" type="310" domain="1" id="yjuv" line="3" column="8" file="1">
+              <literal>sys</literal>
+            </tree>
+              </tree>
+            </tree>
+          </tree>
+        </tree>
+          </tree>
+          <tree node="NEWLINE" type="282" domain="1" id="yjuw" literal="0" line="3" column="11" file="1"/>
+        </tree>
+      </tree>
+    </tree>
+      </tree>
+      <tree node="file_input_element" type="6" domain="1" id="yjwv" line="5" column="1" file="1">
+    <tree node="stmt" type="7" domain="1" id="yjwu" line="5" column="1" file="1">
+      <tree node="simple_stmt" type="9" domain="1" id="yjwt" line="5" column="1" file="1">
+        <tree node="small_stmt_list" type="11" domain="1" id="yjwo" line="5" column="1" file="1">
+          <tree node="small_stmt" type="14" domain="1" id="yjwl" line="5" column="1" file="1">
+        <tree node="assign_stmt" type="15" domain="1" id="yjwj" line="5" column="1" file="1">
+          <tree node="target_list" type="215" domain="1" id="yjvg" line="5" column="1" file="1">
+            <tree node="targets" type="217" domain="1" id="yjvf" line="5" column="1" file="1">
+              <tree node="target" type="221" domain="1" id="yjve" line="5" column="1" file="1">
+            <tree node="NAME" type="310" domain="1" id="yjv8" line="5" column="1" file="1">
+              <literal>TOKENBLANKS</literal>
+            </tree>
+              </tree>
+            </tree>
+          </tree>
+          <tree node="'='" type="284" domain="1" id="yjvd" literal="0" line="5" column="12" file="1"/>
+          <tree node="assign_rhs" type="29" domain="1" id="yjwh" line="5" column="13" file="1">
+            <tree node="test_list" type="30" domain="1" id="yjwf" line="5" column="13" file="1">
+              <tree node="tests" type="32" domain="1" id="yjwc" line="5" column="13" file="1">
+            <tree node="test" type="151" domain="1" id="yjwa" line="5" column="13" file="1">
+              <tree node="or_test" type="152" domain="1" id="yjw8" line="5" column="13" file="1">
+                <tree node="and_test" type="154" domain="1" id="yjw4" line="5" column="13" file="1">
+                  <tree node="not_test" type="157" domain="1" id="yjw1" line="5" column="13" file="1">
+                <tree node="comparison" type="158" domain="1" id="yjvz" line="5" column="13" file="1">
+                  <tree node="expr" type="170" domain="1" id="yjvx" line="5" column="13" file="1">
+                    <tree node="xor_expr" type="172" domain="1" id="yjvv" line="5" column="13" file="1">
+                      <tree node="and_expr" type="174" domain="1" id="yjvs" line="5" column="13" file="1">
+                    <tree node="shift_expr" type="176" domain="1" id="yjvq" line="5" column="13" file="1">
+                      <tree node="arith_expr" type="179" domain="1" id="yjvo" line="5" column="13" file="1">
+                        <tree node="term" type="182" domain="1" id="yjvn" line="5" column="13" file="1">
+                          <tree node="factor" type="187" domain="1" id="yjvm" line="5" column="13" file="1">
+                        <tree node="power" type="191" domain="1" id="yjvl" line="5" column="13" file="1">
+                          <tree node="value" type="194" domain="1" id="yjvk" line="5" column="13" file="1">
+                            <tree node="constant" type="197" domain="1" id="yjvj" line="5" column="13" file="1">
+                              <tree node="INTEGER" type="355" domain="1" id="yjvh" literal="1" line="5" column="13" file="1"/>
+                            </tree>
+                          </tree>
+                        </tree>
+                          </tree>
+                        </tree>
+                      </tree>
+                    </tree>
+                      </tree>
+                    </tree>
+                  </tree>
+                </tree>
+                  </tree>
+                </tree>
+              </tree>
+            </tree>
+              </tree>
+            </tree>
+          </tree>
+        </tree>
+          </tree>
+        </tree>
+        <tree node="NEWLINE" type="282" domain="1" id="yjvi" literal="0" line="5" column="14" file="1"/>
+      </tree>
+    </tree>
+      </tree>
+    </tree>
+    <tree node="file_input_element" type="6" domain="1" id="yk0u" line="7" column="1" file="1">
+      <tree node="stmt" type="8" domain="1" id="yk0p" line="7" column="1" file="1">
+    <tree node="compound_stmt" type="143" domain="1" id="yk0s" line="7" column="1" file="1">
+      <tree node="decorators" type="144" domain="1" id="yjwx" line="7" column="1" file="1"/>
+      <tree node="'class'" type="330" domain="1" id="yjws" literal="0" line="7" column="1" file="1"/>
+      <tree node="NAME" type="310" domain="1" id="yjwy" line="7" column="7" file="1">
+        <literal>MyClassNameTranslator</literal>
+      </tree>
+      <tree node="':'" type="314" domain="1" id="yjwz" literal="0" line="7" column="28" file="1"/>
+      <tree node="block" type="115" domain="1" id="yk0q" line="7" column="29" file="1">
+        <tree node="NEWLINE" type="282" domain="1" id="yjx0" literal="0" line="7" column="29" file="1"/>
+        <tree node="INDENT" type="324" domain="1" id="yjx1" literal="0" line="10" column="1" file="1">
+          <precomment child="0" index="1"># get_name looks up name</precomment>
+        </tree>
+        <tree node="stmt_list" type="116" domain="1" id="yk0o" line="10" column="5" file="1">
+          <tree node="stmt" type="8" domain="1" id="yk0j" line="10" column="5" file="1">
+        <tree node="compound_stmt" type="119" domain="1" id="yk0m" line="10" column="5" file="1">
+          <tree node="decorators" type="144" domain="1" id="yjx5" line="10" column="5" file="1"/>
+          <tree node="'def'" type="326" domain="1" id="yjx4" literal="0" line="10" column="5" file="1"/>
+          <tree node="NAME" type="310" domain="1" id="yjx6" line="10" column="9" file="1">
+            <literal>get_name</literal>
+          </tree>
+          <tree node="parameters" type="121" domain="1" id="yjxe" line="10" column="17" file="1">
+            <tree node="'('" type="327" domain="1" id="yjx7" literal="0" line="10" column="17" file="1"/>
+            <tree node="optional_varargslist" type="123" domain="1" id="yjxd" line="10" column="18" file="1">
+              <tree node="varargslist" type="126" domain="1" id="yjw6" line="10" column="18" file="1">
+            <tree node="fpdef_test_list_prefix" type="131" domain="1" id="yjxk" line="10" column="18" file="1">
+              <tree node="fpdef_test_list_prefix" type="130" domain="1" id="yjx9" line="10" column="18" file="1"/>
+              <tree node="fpdef_test_comma" type="132" domain="1" id="yjxh" line="10" column="18" file="1">
+                <tree node="fpdef_test" type="133" domain="1" id="yjxc" line="10" column="18" file="1">
+                  <tree node="fpdef" type="135" domain="1" id="yjxb" line="10" column="18" file="1">
+                <tree node="NAME" type="310" domain="1" id="yjx8" line="10" column="18" file="1">
+                  <literal>self</literal>
+                </tree>
+                  </tree>
+                </tree>
+                <tree node="','" type="297" domain="1" id="yjxa" literal="0" line="10" column="22" file="1"/>
+              </tree>
+            </tree>
+            <tree node="fpdef_test" type="133" domain="1" id="yjw3" line="10" column="24" file="1">
+              <tree node="fpdef" type="135" domain="1" id="yjvw" line="10" column="24" file="1">
+                <tree node="NAME" type="310" domain="1" id="yjxg" line="10" column="24" file="1">
+                  <literal>name</literal>
+                </tree>
+              </tree>
+            </tree>
+              </tree>
+            </tree>
+            <tree node="')'" type="328" domain="1" id="yjvt" literal="0" line="10" column="28" file="1"/>
+          </tree>
+          <tree node="':'" type="314" domain="1" id="yjxl" literal="0" line="10" column="29" file="1"/>
+          <tree node="block" type="115" domain="1" id="yk0k" line="10" column="30" file="1">
+            <tree node="NEWLINE" type="282" domain="1" id="yjxf" literal="0" line="10" column="30" file="1"/>
+            <tree node="INDENT" type="324" domain="1" id="yjxm" literal="0" line="11" column="1" file="1"/>
+            <tree node="stmt_list" type="117" domain="1" id="yk0h" line="11" column="9" file="1">
+              <tree node="stmt_list" type="116" domain="1" id="yjyq" line="11" column="9" file="1">
+            <tree node="stmt" type="7" domain="1" id="yjyp" line="11" column="9" file="1">
+              <tree node="simple_stmt" type="9" domain="1" id="yjyo" line="11" column="9" file="1">
+                <tree node="small_stmt_list" type="11" domain="1" id="yjyk" line="11" column="9" file="1">
+                  <tree node="small_stmt" type="13" domain="1" id="yjyh" line="11" column="9" file="1">
+                <tree node="testlist" type="255" domain="1" id="yjyf" line="11" column="9" file="1">
+                  <tree node="test_plus" type="256" domain="1" id="yjyd" line="11" column="9" file="1">
+                    <tree node="test" type="151" domain="1" id="yjya" line="11" column="9" file="1">
+                      <tree node="or_test" type="152" domain="1" id="yjy7" line="11" column="9" file="1">
+                    <tree node="and_test" type="154" domain="1" id="yjy5" line="11" column="9" file="1">
+                      <tree node="not_test" type="157" domain="1" id="yjy3" line="11" column="9" file="1">
+                        <tree node="comparison" type="158" domain="1" id="yjy1" line="11" column="9" file="1">
+                          <tree node="expr" type="170" domain="1" id="yjxy" line="11" column="9" file="1">
+                        <tree node="xor_expr" type="172" domain="1" id="yjxw" line="11" column="9" file="1">
+                          <tree node="and_expr" type="174" domain="1" id="yjxv" line="11" column="9" file="1">
+                            <tree node="shift_expr" type="176" domain="1" id="yjxu" line="11" column="9" file="1">
+                              <tree node="arith_expr" type="179" domain="1" id="yjxt" line="11" column="9" file="1">
+                            <tree node="term" type="182" domain="1" id="yjxs" line="11" column="9" file="1">
+                              <tree node="factor" type="187" domain="1" id="yjxr" line="11" column="9" file="1">
+                                <tree node="power" type="191" domain="1" id="yjxq" line="11" column="9" file="1">
+                                  <tree node="value" type="194" domain="1" id="yjxp" line="11" column="9" file="1">
+                                <tree node="constant" type="200" domain="1" id="yjxo" line="11" column="9" file="1">
+                                  <tree node="string_sequence" type="208" domain="1" id="yjxj" line="11" column="9" file="1">
+                                    <tree node="STRING" type="362" domain="1" id="yjxn" line="11" column="9" file="1">
+                                      <literal>Get a translation for a real name</literal>
+                                    </tree>
+                                  </tree>
+                                </tree>
+                                  </tree>
+                                </tree>
+                              </tree>
+                            </tree>
+                              </tree>
+                            </tree>
+                          </tree>
+                        </tree>
+                          </tree>
+                        </tree>
+                      </tree>
+                    </tree>
+                      </tree>
+                    </tree>
+                  </tree>
+                </tree>
+                  </tree>
+                </tree>
+                <tree node="NEWLINE" type="282" domain="1" id="yjxi" literal="0" line="11" column="48" file="1"/>
+              </tree>
+            </tree>
+              </tree>
+              <tree node="stmt" type="7" domain="1" id="yk0g" line="12" column="9" file="1">
+            <tree node="simple_stmt" type="9" domain="1" id="yk0f" line="12" column="9" file="1">
+              <tree node="small_stmt_list" type="11" domain="1" id="yk09" line="12" column="9" file="1">
+                <tree node="small_stmt" type="39" domain="1" id="yk06" line="12" column="9" file="1">
+                  <tree node="'return'" type="302" domain="1" id="yjyn" literal="0" line="12" column="9" file="1"/>
+                  <tree node="testlist" type="255" domain="1" id="yk03" line="12" column="16" file="1">
+                <tree node="test_plus" type="256" domain="1" id="yk02" line="12" column="16" file="1">
+                  <tree node="test" type="151" domain="1" id="yk01" line="12" column="16" file="1">
+                    <tree node="or_test" type="152" domain="1" id="yk00" line="12" column="16" file="1">
+                      <tree node="and_test" type="154" domain="1" id="yjzz" line="12" column="16" file="1">
+                    <tree node="not_test" type="157" domain="1" id="yjzy" line="12" column="16" file="1">
+                      <tree node="comparison" type="158" domain="1" id="yjzx" line="12" column="16" file="1">
+                        <tree node="expr" type="170" domain="1" id="yjzw" line="12" column="16" file="1">
+                          <tree node="xor_expr" type="172" domain="1" id="yjzv" line="12" column="16" file="1">
+                        <tree node="and_expr" type="174" domain="1" id="yjzu" line="12" column="16" file="1">
+                          <tree node="shift_expr" type="176" domain="1" id="yjzt" line="12" column="16" file="1">
+                            <tree node="arith_expr" type="179" domain="1" id="yjzs" line="12" column="16" file="1">
+                              <tree node="term" type="182" domain="1" id="yjzr" line="12" column="16" file="1">
+                            <tree node="factor" type="187" domain="1" id="yjzq" line="12" column="16" file="1">
+                              <tree node="power" type="191" domain="1" id="yjzp" line="12" column="16" file="1">
+                                <tree node="value" type="195" domain="1" id="yjzo" line="12" column="16" file="1">
+                                  <tree node="value" type="195" domain="1" id="yjz0" line="12" column="16" file="1">
+                                <tree node="value" type="193" domain="1" id="yjyu" line="12" column="16" file="1">
+                                  <tree node="atom" type="207" domain="1" id="yjyt" line="12" column="16" file="1">
+                                    <tree node="NAME" type="310" domain="1" id="yjyr" line="12" column="16" file="1">
+                                      <literal>self</literal>
+                                    </tree>
+                                  </tree>
+                                </tree>
+                                <tree node="trailer" type="228" domain="1" id="yjyz" line="12" column="20" file="1">
+                                  <tree node="'.'" type="312" domain="1" id="yjys" literal="0" line="12" column="20" file="1"/>
+                                  <tree node="NAME" type="310" domain="1" id="yjyv" line="12" column="21" file="1">
+                                    <literal>realnames</literal>
+                                  </tree>
+                                </tree>
+                                  </tree>
+                                  <tree node="trailer" type="227" domain="1" id="yjzn" line="12" column="30" file="1">
+                                <tree node="index" type="230" domain="1" id="yjzm" line="12" column="30" file="1">
+                                  <tree node="'['" type="358" domain="1" id="yjyy" literal="0" line="12" column="30" file="1"/>
+                                  <tree node="subscript_list" type="234" domain="1" id="yjzj" line="12" column="31" file="1">
+                                    <tree node="subscript" type="249" domain="1" id="yjzi" line="12" column="31" file="1">
+                                      <tree node="test" type="151" domain="1" id="yjzh" line="12" column="31" file="1">
+                                    <tree node="or_test" type="152" domain="1" id="yjzg" line="12" column="31" file="1">
+                                      <tree node="and_test" type="154" domain="1" id="yjzf" line="12" column="31" file="1">
+                                        <tree node="not_test" type="157" domain="1" id="yjze" line="12" column="31" file="1">
+                                          <tree node="comparison" type="158" domain="1" id="yjzd" line="12" column="31" file="1">
+                                        <tree node="expr" type="170" domain="1" id="yjzc" line="12" column="31" file="1">
+                                          <tree node="xor_expr" type="172" domain="1" id="yjzb" line="12" column="31" file="1">
+                                            <tree node="and_expr" type="174" domain="1" id="yjza" line="12" column="31" file="1">
+                                              <tree node="shift_expr" type="176" domain="1" id="yjz9" line="12" column="31" file="1">
+                                            <tree node="arith_expr" type="179" domain="1" id="yjz8" line="12" column="31" file="1">
+                                              <tree node="term" type="182" domain="1" id="yjz7" line="12" column="31" file="1">
+                                                <tree node="factor" type="187" domain="1" id="yjz6" line="12" column="31" file="1">
+                                                  <tree node="power" type="191" domain="1" id="yjz5" line="12" column="31" file="1">
+                                                <tree node="value" type="193" domain="1" id="yjz4" line="12" column="31" file="1">
+                                                  <tree node="atom" type="207" domain="1" id="yjz3" line="12" column="31" file="1">
+                                                    <tree node="NAME" type="310" domain="1" id="yjz1" line="12" column="31" file="1">
+                                                      <literal>name</literal>
+                                                    </tree>
+                                                  </tree>
+                                                </tree>
+                                                  </tree>
+                                                </tree>
+                                              </tree>
+                                            </tree>
+                                              </tree>
+                                            </tree>
+                                          </tree>
+                                        </tree>
+                                          </tree>
+                                        </tree>
+                                      </tree>
+                                    </tree>
+                                      </tree>
+                                    </tree>
+                                  </tree>
+                                  <tree node="']'" type="359" domain="1" id="yjz2" literal="0" line="12" column="35" file="1"/>
+                                </tree>
+                                  </tree>
+                                </tree>
+                              </tree>
+                            </tree>
+                              </tree>
+                            </tree>
+                          </tree>
+                        </tree>
+                          </tree>
+                        </tree>
+                      </tree>
+                    </tree>
+                      </tree>
+                    </tree>
+                  </tree>
+                </tree>
+                  </tree>
+                </tree>
+              </tree>
+              <tree node="NEWLINE" type="282" domain="1" id="yjzl" literal="0" line="12" column="36" file="1"/>
+            </tree>
+              </tree>
+            </tree>
+            <tree node="DEDENT" type="325" domain="1" id="yk0e" literal="0" line="14" column="1" file="1"/>
+          </tree>
+        </tree>
+          </tree>
+        </tree>
+        <tree node="DEDENT" type="325" domain="1" id="yk0i" literal="0" line="14" column="1" file="1"/>
+      </tree>
+    </tree>
+      </tree>
+    </tree>
+  </tree>
+</tree>
+  </tree>
+  <FileIndex>
+<File index="1">C:/DMS/Domains/Python/v2_6/Examples/tiny.py</File>
+  </FileIndex>
+  <DomainIndex>
+<Domain index="1">Python~v3_0</Domain>
+  </DomainIndex>
+</DMSForest>

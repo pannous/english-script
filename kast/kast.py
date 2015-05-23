@@ -6,8 +6,44 @@ import ast
 import sys
 import _ast
 
-class Args(list):
+# class Args(list):
+#     pass
+
+def args():
+   return ast.arguments(args=[Name(id='self',ctx=Load())],defaults=[],vararg=None,kwarg=None)
+
+class Todo(ast.expr):
     pass
+# (self.)call[dot[1..3]]
+# Subscript(Name('x', Load()), Slice(Num(1), Num(3), None), Load())
+
+class TryExcept(ast.TryExcept):
+    def __init__(self, **kwargs):
+        self.orelse=None
+        self.handlers=[]
+
+    def set_rescue(self,r):
+        self.handlers.append(r)
+    rescue = property(lambda self:self.handlers, set_rescue)
+
+class ExceptHandler(ast.ExceptHandler):
+    def __init__(self, **kwargs):
+        self.type=None
+#         name
+
+
+class arguments(ast.arguments):
+    def __init__(self, **kwargs):
+        self.args=[] #[Name(id='self',ctx=Load())]
+        self.defaults=[]
+        self.kwarg=self.vararg=None
+        super(ast.arguments,self).__init__(*kwargs)
+
+    def set_args(self,oas):
+        if not isinstance(oas,list):oas=[oas]
+        if not oas[0]: return
+        self.args=self.args+oas
+    body = property(lambda self:self.args, set_args)
 
 class Num(ast.Num):
     def set_value(self,n):self.n=n
@@ -17,7 +53,8 @@ class Num(ast.Num):
 
 class Name(ast.Name):
     def set_name(self,id):
-        if(isinstance(id,Name)):id=id.id #WWWTTTFFF
+        if(isinstance(id,Name)):
+            id=id.id #WWWTTTFFF
         self.id=id
     name=property(lambda self:self.id,set_name)
 
@@ -32,6 +69,9 @@ class Return(ast.Return):
     body = property(lambda self:self.value, set_val)
 
 class For(ast.For):
+    def __init__(self, **kwargs):
+        self.orelse=None
+
     def set_assign(self,target):
         self.target=target
     assign = property(lambda s:s.target,set_assign)
@@ -92,6 +132,7 @@ class Call(ast.Call):
 
     def set_args(self,oas):
         if not isinstance(oas,list):oas=[oas]
+        # if isinstance(oas[0],arguments):oas=[oas[0].value] #lolwat??
         if not oas[0]: return
         self.args=self.args+oas
     body = property(lambda self:self.args, set_args)
@@ -116,7 +157,7 @@ class FunctionDef(ast.FunctionDef):
     def __init__(self, **kwargs):
         self.decorator_list=[]
         self.body=[Pass()]
-        self.args=arguments(args=[Name(id='self',ctx=Load())],defaults=[],vararg=None,kwarg=None)
+        self.args=args()
         super(ast.FunctionDef,self).__init__(*kwargs)
 
 class Print(ast.Print):
@@ -258,19 +299,36 @@ types={ # see _ast.py , F12:
 
 # workaround: alias is keyword in ruby!
 mapped_types={
-    "Block":Module, #NOT REALLY!
+    "Arguments":arguments,
+    # "Block":Module, #NOT REALLY!
     "Variable": Name,
     "Const": Name, #todo
     "Class":ClassDef,
-    "Alias":alias,
+    # "Alias":alias, Assign a=b
+    "Argument":Name,
+    # "Default":
+    "Hash":Dict,
+    "String":expr, # str or binop('a',add,'b')
+    "Begin":TryExcept,
+    "Defs":Todo, # FunctionDef(name='?', args=args(),body=[],decorator_list=[Name(id='classmethod', ctx=Load())]),
+
     # "Arguments":arguments,
     # "Args":arguments,
-    # "Args":Args,
+    # "Args":List, # Args, AAARRG!!! ;)
+
     # "class_method":FunctionDef, # FunctionDef(name='x', args=arguments(args=[], vararg=None, kwarg=None, defaults=[]) WTF
     "Method":FunctionDef,
     "int":Num,
     "let":Assign,
+    "Symbol":Name,
+    "Literal":Name,
     "Condition":expr,
+    "Dot":Todo,
+    "Regexp":Str, #! r'.' == "." !!!
+    "Rescue":ExceptHandler,
+    "Self":Name(id='self',ctx= Load()),
+    "Super":Call,
+    "Yield":Yield, #NOOO ;)
     "Value":expr,
     "Then":expr #Value
 }

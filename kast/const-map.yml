@@ -1,0 +1,3 @@
+# class Fixnum(int):pass
+Fixnum: int
+Float:  float

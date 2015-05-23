@@ -12,7 +12,7 @@ TypedArgument:			Argument
 Assignable:
 ClassVarAsgn:			Assign
 ClassVarDecl:			Assign
-ConstDecl:				Assign(const)
+ConstDecl:				Const
 DAsgn:					Assign
 GlobalAsgn:				Assign
 InstAsgn:				Assign
@@ -63,6 +63,7 @@ Colon2Implicit:         Name
 Colon2Method:
 Defined:
 Defn:					Method
+Defs:                   ClassDef
 Dot:
 DVar:                   Variable
 Encoding:
@@ -115,13 +116,13 @@ OpElementAsgn:          OperatorAssignment
 OpElementOneArgAndAsgn: OperatorAssignment
 OpElementOneArgAsgn:    OperatorAssignment
 OpElementOneArgOrAsgn:  OperatorAssignment
-OptArg:                 Argument(Default)
+OptArg:                 Default #Argument(Default)
 RescueBody:             Body
 SClass:                 Class
 Splat19:                Splat
 SValue:                 Value
 SValue19:               Value
-ToAry:                  Call(ToAry)
+ToAry:                  Call #(ToAry)
 VAlias:                 Alias
 VCall:                  Call #Variable
 WhenOneArg:             When

@@ -21,15 +21,16 @@ def import_kast_to_python(kast_file,py_file_name="test/output.py"):
     my_ast=ast.fix_missing_locations(my_ast)
     # x=ast.dump(my_ast, annotate_fields=False, include_attributes=False)
     # print("\n".join(x.split("),")))
-    code=compile(my_ast, 'file', 'exec')
-    ast_import.emit_pyc(code)
-    exec(code)
+    # code=compile(my_ast, 'file', 'exec')
+    # ast_import.emit_pyc(code)
+    # exec(code)
     # print(exec(code))#, glob, loc)
 
     # code=compile(my_ast, kast_file, 'exec')#flags=None, dont_inherit=None
     # TypeError: required field 'lineno' missing from stmt
     # no, what you actually mean is "tuple is not a statement" LOL WTF ;)
     # exec(code)
+    return my_ast
 
 
 # schema_file='kast.xsd'
@@ -47,7 +48,7 @@ kast_file="/Users/me/dev/ai/english-script/test/rast/number_test.rb.kast"
 # kast_file="/Users/me/dev/ai/english-script/test/rast/mac_test.rb.kast"
 # pyast_file='demo.pyast'
 import_kast_to_python(kast_file)
-quit()
+# quit()
 # out_folder="/Users/me/dev/ai/english-script/test/python/"
 for f in os.listdir(folder): # ls folder files !
     if not f.endswith(".kast"): continue
