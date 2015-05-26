@@ -1,3 +1,20 @@
+import sched, time
+# >>> s = sched.scheduler(time.time, time.sleep)
+# >>> def print_time(): print "From print_time", time.time()
+# ...
+# >>> def print_some_times():
+# ...     print time.time()
+# ...     s.enter(5, 1, print_time, ())
+# ...     s.enter(10, 1, print_time, ())
+# ...     s.run()
+# ...     print time.time()
+# ...
+# >>> print_some_times()
+# 930343690.257
+# From print_time 930343695.274
+# From print_time 930343700.273
+# 930343700.276
+
 import english_parser
 # try:
 # import observer

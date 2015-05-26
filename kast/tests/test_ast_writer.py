@@ -15,9 +15,13 @@ contents=open(source).readlines()# all()
 contents="\n".join(contents)
 source="(string)" # compile from inline string source:
 # contents="def x():pass"
-contents="from x import *"
+# contents="from x import *"
+contents="x.y=1"
+# contents="x=y[1]"
 # contents="self.x(1)"
-contents="@classmethod\ndef c():pass"
+# contents="(1 or 2) and 0" # 0  BoolOp(And(), [BoolOp(Or(), [Num(1), Num(2)]), Num(0)])
+# contents="1 or 2 and 0" #1   BoolOp(Or(), [Num(1), BoolOp(And(), [Num(2), Num(0)])
+# contents="@classmethod\ndef c():pass"
 # contents='re.match(r"a(.*)b","acb")'
 # contents="x[1:3]" #Subscript(Name('x', Load()), Slice(Num(1), Num(3), None), Load())
 # contents="super(1)"

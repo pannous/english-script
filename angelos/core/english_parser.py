@@ -4,13 +4,15 @@
 # import traceback
 # import sys
 # import __builtin__ # class function(object) etc
+import inspect
 import re
 import __builtin__
 import traceback
+import sys
+import HelperMethods
 
 import interpretation
-import HelperMethods
-import events
+# import HelperMethods
 from nodes import Function, Argument, Variable, Property
 from nodes import FunctionCall
 import power_parser
@@ -187,8 +189,6 @@ def interpretation():
     # listener
 
 
-def add_trigger(condition, action):
-    return listeners.append(events.Observer(condition, action))
 
 
     # todo vs checkNewline() ??
@@ -758,12 +758,11 @@ def once_trigger():
     use_block = _try(start_block)
     if not use_block: b = action and end_expression
     if use_block: b = block and done
-    add_trigger(c, b)
+    interpretation.add_trigger(c, b)
 
 
 def _do():
-    pass
-
+    return _try(lambda : _('do'))
 
 def action_once():
     if not _do() and newline: must_contain(once_words)
@@ -776,7 +775,7 @@ def action_once():
     __(once_words)
     c = condition
     end_expression
-    add_trigger(c, b)
+    interpretation.add_trigger(c, b)
 
 
 def once():
@@ -1167,7 +1166,7 @@ def datetime():
     _unit = __(time_words)  # +["am"]
     _to = _to or ___('to', 'and')
     if _to: _to = _to or _try(number)
-    return events.Interval(_kind, n, _to, _unit)
+    # return events.Interval(_kind, n, _to, _unit)
 
 
 def collection():
@@ -1807,6 +1806,14 @@ def the_noun_that():
 #def plural:
 #  word #todo
 #
+
+
+def const_defined(c):
+    for module in sys.modules:
+         for name, obj in inspect.getmembers(sys.modules[module]):
+            if inspect.isclass(obj):
+                return obj
+    return False
 
 
 def classConstDefined():

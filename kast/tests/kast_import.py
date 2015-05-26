@@ -12,6 +12,15 @@ def import_kast_to_python(kast_file,py_file_name="test/output.py"):
     # import codegen
     from astor import codegen
     source = codegen.to_source(my_ast)
+    source=source.replace(".new(","(") #hack
+    source=source.replace(".+(","+(") #hack
+    source=source.replace(".!=","!=") #hack
+    source=source.replace(".!()","==False") #hack
+    source=source.replace("!(","(") #hack
+    source=source.replace("?(","(") #hack
+    source=source.replace("from ParserTestHelper import *","") #hack
+
+
     print(source)
     if py_file_name:
         py_file=open(py_file_name,"w")
@@ -44,14 +53,18 @@ kast_file='test_mini.pyast.xml'
 folder="/Users/me/dev/ai/english-script/test/rast/"
 out_folder="/Users/me/dev/ai/english-script/angelos/test/"
 
-kast_file="/Users/me/dev/ai/english-script/test/rast/number_test.rb.kast"
+# kast_file="/Users/me/dev/ai/english-script/test/rast/number_test.rb.kast"
+# kast_file="/Users/me/dev/ai/english-script/test/rast/function_test.rb.kast"
+kast_file="/Users/me/dev/ai/english-script/test/rast/parser_test.rb.kast"
 # kast_file="/Users/me/dev/ai/english-script/test/rast/mac_test.rb.kast"
 # pyast_file='demo.pyast'
-import_kast_to_python(kast_file)
+# import_kast_to_python(kast_file)
 # quit()
 # out_folder="/Users/me/dev/ai/english-script/test/python/"
 for f in os.listdir(folder): # ls folder files !
     if not f.endswith(".kast"): continue
+    if f.endswith("main.kast"): continue
+    if f.endswith("extensions.rb.kast"): continue
     if f.startswith("."):continue
     kast_file=folder+f
     py_file = out_folder+ f.replace(".rb.kast", ".py")

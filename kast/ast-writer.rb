@@ -12,13 +12,13 @@ require "yaml"
 def load_map
   dir=File.symlink?(__FILE__) ? File.dirname( File.readlink(__FILE__)): File.dirname(__FILE__)
   yml_map_file= dir+'/transforms/rast-map.yml'
-  @map=YAML::load(File.open(yml_map_file)) 
+  @map=YAML::load(File.open(yml_map_file))
 end
 
 def dump_xml(file, out=STDOUT,map=true)
 # ast = RubyAST.parse("(string)", "x = 1") # OK (via SLIM java: jrubyparser-0.2.jar)
   begin
-    load_map if map #Hash   
+    load_map if map #Hash
     ast = RubyAST.parse(file, IO.read(file))
     walk(out, ast.getBodyNode, ast, 0)
   rescue
@@ -33,10 +33,11 @@ end
 
 # source = RubyAST.to_source(ast)
 # p ast.toString
-def walk(out, node, parent, indent)
-  name  =node.getClass.to_s.sub("#<Rjb::", "").sub(/\:.*/, "").gsub(/.*_/, "").gsub(/Node$/, "") #getNodeType
-  name  =@map[name] if @map[name]
+def walk(out, node, parent, indent, parentNode=nil)
+  name0  =node.getClass.to_s.sub("#<Rjb::", "").sub(/\:.*/, "").gsub(/.*_/, "").gsub(/Node$/, "") #getNodeType
+  name  = @map[name0] ? @map[name0] : name0
   name  ="Args" if parent=="Call" and name=="Array" # Name != Args!!
+  # name  ="Attrib" if parent=="Assign" and name0=="VCall"
   hidden= ["Newline", "List", "Str"].index name #, "Arguments"
   # hidden=false
   return if parent=="Method" and name=="Argument" # Name != Args!!
@@ -44,6 +45,7 @@ def walk(out, node, parent, indent)
 
   hasName=node.getName rescue false
   hasName=false if name=="True" or name=="False" or name=="Self"
+  # hasName=parentNode.getName + "' attr='"+hasName if name  =="Attrib" and parent=="Assign" #HAA
   # hasValue=node.getValueNode rescue false
   hasValue=node.getValue rescue false
 
@@ -79,7 +81,7 @@ def walk(out, node, parent, indent)
   #   x=1
   # end
   for c in node.childNodes.toArray #forEach # iterator listIterator spliterator stream subList toArray
-    walk out, c, name, indent+(hidden ? 0 : 1)
+    walk out, c, name, indent+(hidden ? 0 : 1), node
   end
   out.puts "\t"*indent+ "</#{name}>" unless hidden
 end
@@ -94,14 +96,14 @@ if __FILE__==$0 # shell main
   # file="/Users/me/dev/ai/english-script/src/core/extensions.rb"
   # dump_xml(file)
   load_map
-  
+
   if ARGV.length>0
-    file=ARGV[0] 
+    file=ARGV[0]
     puts "loading #{file}"
     dump_xml(file)
   else
     content="'abc'.split('b')"
-    ast = RubyAST.parse("(string)", content) # OK (via SLIM java: jrubyparser-0.2.jar)  
+    ast = RubyAST.parse("(string)", content) # OK (via SLIM java: jrubyparser-0.2.jar)
     walk(STDOUT, ast.getBodyNode, ast, 0)
   end
 end
