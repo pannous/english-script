@@ -7,6 +7,7 @@
 # from ast import *
 import os
 import xml.etree.ElementTree as Xml
+import re
 import yaml
 import kast
 from kast import *
@@ -82,6 +83,8 @@ def name(id,ctx=Load(),tag=None):
     if(tag=="Call"):
         if id in call_map:
             id=call_map[id]
+    if id.startswith("@@"):
+        return Attribute(Name('_global', Load()), id[2:], ctx)
     if id[0]=="@":
         return Attribute(Name('self', Load()), id[1:], ctx)
     elif id[0]=="$":
@@ -101,6 +104,9 @@ def do_import(files): # require,require_relative, import, ...
     def to_name(arg):
         if(isinstance(arg,Name)):return arg
         return name(arg.s.replace("../","").replace(".rb",".py"))
+    def to_plain(arg):
+        p=re.sub(".*\/","",arg.id)
+        return re.sub("\..*","",p)
     names=map(to_name,files)
     try:
         for file in names:
@@ -108,7 +114,8 @@ def do_import(files): # require,require_relative, import, ...
     except Exception as e:
         print(e)
     # return Import(names=names)
-    return ImportFrom(module=names[0],names=[alias('*',None)],level=0)
+    modules = ",".join(map(to_plain, names))
+    return ImportFrom(module=modules,names=[alias('*',None)],level=0)
 
 
 def flatList(l):
@@ -117,10 +124,22 @@ def flatList(l):
     if len(l)==1 and isinstance(l[0],list): return l[0]
     return l
 
+
+def to_s(x):
+    if isinstance(x, Xml.Element):
+        if 'name' in x.attrib: return x.attrib['name']
+        else: return str(x)+"_TODO" # TODO
+    if isinstance(x,Str):return "'"+x.s+"'"
+    if isinstance(x,Num):return x.n
+    if isinstance(x,Name):return x.id
+    return x
+
 def build(node,parent=None):
     global xmlns,inClass
     tag=node.tag.replace(xmlns,"")
     children = node.getchildren()
+    _name_ = None
+    if 'name' in node.attrib: _name_= node.attrib['name']
     if(tag=="name"):
         return node.text # Name(id=node.text)
     elif(tag=="num"):
@@ -139,6 +158,8 @@ def build(node,parent=None):
         return name('True') #WTF
     elif(tag=="False"):
         return name('False') #WTF
+    elif(tag=="Nil"):
+        return name('None') #WTF
     elif(tag=="String"):
         xs=map(build, children)
         def bin_add(a,b):
@@ -153,11 +174,32 @@ def build(node,parent=None):
     elif(tag=="Argument"):
         if(len(children)>0):
             return build(children[0])
-        return name(node.attrib['name'])
+        return name(_name_)
+    elif tag=="Call" and _name_=='[]':
+        value=name(to_s(children[0]))
+        _slice=map(build,children[1].getchildren())
+        _slice=to_s(_slice[0])
+        return Subscript(value=value,slice=_slice,ctx=Load())
+    elif tag=="Assign":
+        if not _name_ : return map(build,children) # ruby lamda etc
+        # if parent=="For":
+        #     return name(_name_)
+        if _name_[-1]=='=': _name_=_name_[0:-1] # ruby a.b=c name:'b='
+        value = build(children[0])
+        if _name_ =='[]':
+            value=name(children[0].attrib['name'])
+            _slice=build(children[1].getchildren()[0]) # RUBY WTF
+            value2=map(build,children[1].getchildren()[1:])
+            return Assign(targets=[Subscript(value=value,slice=_slice,ctx=Load())],value=value2)
+        if len(children)==2:
+            value2 =map( build,children[1].getchildren())
+            if len(value2)==1: value2=value2[0]
+            return Assign(targets=[Attribute(attr=_name_,value=value)],value=value2)
+        return Assign(targets=[name(_name_)],value=value)
     elif(tag=="Const"):
-        return name(node.attrib['name'])
+        return name(_name_)
     elif(tag=="Variable" or tag=="variable"):
-        return name(node.attrib['name'])# todo: CALL if in block!
+        return name(_name_)# todo: CALL if in block!
         # return Name(id=node.attrib['value'], ctx=Load()) #WTF
     elif(tag=='Arguments'): # not AST node
         args=map(build, children)
@@ -166,13 +208,14 @@ def build(node,parent=None):
         args=map(build, children)
         return List(elts=args,ctx=Load())
     elif tag=="Alias":
-        return Assign(targets=[build(children[0])],value=build(children[0]))
+        return Assign(targets=[build(children[0])],value=build(children[1]))
     elif tag=="Args":
         return map(build, children)
     elif tag=="Or":
         return Or(body=map(build, children))
     elif tag=="And":
         return And(body=map(build, children))
+
     elif tag=="Block":
         return map(build, children)
     elif(tag=='Hash'): # not AST node
@@ -189,6 +232,7 @@ def build(node,parent=None):
     if callable(construct):
         elem=construct()
     else:elem=construct
+
     # 'data'
     if(tag=="Call"):
         pass #debug
@@ -236,6 +280,7 @@ def build(node,parent=None):
                 childName="bases"
                 child=[name(c.attrib['name'])]
             else:
+                childName="object"
                 child=name(c.attrib['name'])
         elif(childName=="name"):
             if "name" in c.attrib:
@@ -263,6 +308,8 @@ def build(node,parent=None):
         elif(childName=="nil"):
             childName="value"
             child=name('None')
+        # elif(childName=="array"):
+        #     body.append(child)
         elif(childName=="str"): # NAME!!?? REALLY??
             childName="value"
             if(hasattr(c,'value')):
@@ -276,12 +323,14 @@ def build(node,parent=None):
                 child=build(babies[0],tag)  # <<<<<<<<<<<<<<<<
             else:
                 child=[build(n,tag) for n in babies] # <<<<<<<
+            if childName in ["array"]: body.append(child)
         else:
             child=build(c,tag) # <<<<<<
             if(isinstance(child,list)):
                 body=child
             else:
-                body.append(child)
+                if not tag=="For": # ...
+                    body.append(child)
         if isinstance(elem,FunctionDef) and childName!="body":
             if(childName=='args'):
                 for a in child:
@@ -306,8 +355,9 @@ def build(node,parent=None):
             classes[elem.name]=elem
     elif tag=="Super":
         elem.func=name('super')
+    elif tag=="For":
+        elem.target=elem.target.targets[0]
     return elem
-
 
 xmlns=""
 
@@ -355,7 +405,7 @@ def parse_file(fileName):
             my_ast=Module(body=[my_ast])
     my_ast.body.insert(0,Import([name('_global')]))
     # alias
-    my_ast.body.insert(0,ImportFrom(module='parser_test_helper',names=[alias('*',None)],level=0)) #asname=None
+    # my_ast.body.insert(0,ImportFrom(module='parser_test_helper',names=[alias('*',None)],level=0)) #asname=None
 
     my_ast=ast.fix_missing_locations(my_ast)
     modules.append(my_ast)

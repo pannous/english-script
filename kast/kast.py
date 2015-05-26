@@ -17,6 +17,16 @@ class Todo(ast.expr):
 # (self.)call[dot[1..3]]
 # Subscript(Name('x', Load()), Slice(Num(1), Num(3), None), Load())
 
+class Return(ast.Return):
+    def __init__(self, **kwargs):
+        self.value=None
+
+    def set_val(self,val):
+        if isinstance(val,list):val=val[0] #REALLY!!?
+        self.value=val
+    body = property(lambda self:self.value, set_val)
+    variable = property(lambda self:self.value, set_val)
+
 class TryExcept(ast.TryExcept):
     def __init__(self, **kwargs):
         self.orelse=None
@@ -53,20 +63,22 @@ class Num(ast.Num):
 
 class Name(ast.Name):
     def set_name(self,id):
-        if(isinstance(id,Name)):
+        if(isinstance(id,ast.Name)):
             id=id.id #WWWTTTFFF
         self.id=id
     name=property(lambda self:self.id,set_name)
 
-class Str(ast.Str):
-    def set_value(self,s):self.s=s
-    value = property(lambda self:self.s, set_value)
+    def __eq__(self, other):
+        return self.id==other or self.id==other.id
 
-class Return(ast.Return):
-    def set_val(self,val):
-        if isinstance(val,list):val=val[0] #REALLY!!?
-        self.value=val
-    body = property(lambda self:self.value, set_val)
+class Str(ast.Str):
+    def set_value(self,s):
+        if isinstance(s,ast.Name):
+            s=s.id
+        self.s=s
+    value = property(lambda self:self.s, set_value)
+    name=property(lambda self:self.s,set_value)
+    def __str__(self):return s
 
 class For(ast.For):
     def __init__(self, **kwargs):
@@ -320,7 +332,7 @@ mapped_types={
     "Method":FunctionDef,
     "int":Num,
     "let":Assign,
-    "Symbol":Name,
+    "Symbol":Str, # Name, a: b => 'a':b !!
     "Literal":Name,
     "Condition":expr,
     "Dot":Todo,
@@ -328,7 +340,7 @@ mapped_types={
     "Rescue":ExceptHandler,
     "Self":Name(id='self',ctx= Load()),
     "Super":Call,
-    "Yield":Yield, #NOOO ;)
+    "Yield":Todo, # Yield, #NOOO ;)
     "Value":expr,
     "Then":expr #Value
 }
@@ -341,3 +353,4 @@ for k,v in types.items():
     types[k.lower()]=types[k]
     types["{http://angle-lang.org}"+k.lower()]=types[k]
 
+assert Name(id='xyz',ctx=Load())=='xyz'
