@@ -844,3 +844,14 @@ def is_dir(x, must_exist=True):
     m = match_path(x)
     return must_exist and m and os.path.isdirectory(m[0]) or m
 
+class File:
+    @classmethod
+    def open(x):return open(x)
+    @classmethod
+    def read(x):return open(x)
+    @classmethod
+    def ls(mypath):
+        import os
+        return os.listdir(mypath)
+class Encoding:
+    pass
