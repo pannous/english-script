@@ -3,9 +3,7 @@ _global.use_tree = False
 _global.verbose = False
 from parser_test_helper import *
 
-
 class ErrorTest(ParserBaseTest):
-    
 
     def test_type(self):
         assert_has_error('x=1,2,y;')
@@ -47,8 +45,9 @@ class ErrorTest(ParserBaseTest):
 
     def test_endNode_as(self):
         init('as')
-        except:
+        try:
             self.parser.arg()
+        except: assert_has_error("as")
 
     def test_rollback(self):
         assert_has_error('if 1>0 then else')
