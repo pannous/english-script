@@ -2,9 +2,11 @@ require_relative: import
 require: import
 include:        import
 puts:   print
-==:     equals
->:  bigger_than
-<:  less_than
 count:  len
 ParserTestHelper: parser_test_helper
 class: type
+throw: raise
+attr_accessor: property
+'==':     equals
+'>':  bigger_than
+'<':  less_than

@@ -1,0 +1,8 @@
+<class name="test">
+  <def name="fun" args="[x,y]">
+    <set var="z">
+      <call object='x' method='power' argument='y'/>
+      <return value="z"/>
+    </set>
+  </def>
+</class>

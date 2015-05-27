@@ -5,7 +5,7 @@ from parser_test_helper import *
 
 
 class ConditionTest(ParserBaseTest):
-
+    
 
     def test_eq(self):
         variables['counter'] = [3, ]

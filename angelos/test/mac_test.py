@@ -4,7 +4,7 @@ from parser_test_helper import *
 
 
 class MacTest(ParserBaseTest):
-
+    
 
     def test_mail(self):
         pass

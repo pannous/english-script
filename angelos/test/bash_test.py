@@ -5,7 +5,7 @@ from parser_test_helper import *
 
 
 class BashTest(ParserBaseTest):
-
+    
 
     def test_pipe(self):
         parse("bash 'ls -al' | column 1")

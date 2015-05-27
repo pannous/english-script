@@ -1,26 +1,34 @@
 import _global
+import english_parser
+import test.parser_test_helper
+
 _global.use_tree = False
-from test_helper import *
+# from test_helper import *
+from test.parser_test_helper import *
+from english_parser import *
+
+
+class ScriptError(Exception):
+    pass
 
 
 class EnglishParserTestParser(EnglishParser):
 
-    def initialize(self):
-        super()
-        super()
+    # def initialize(self):
+        # super()
 
-    def NOmethod_missing(self, sym, args, block):
-        syms = sym.to_s()
-        if _global.parser and contains(sym, _global.parser.methods()):
-            [
-            if equals(0, args.len()):
-                x = maybe(), 
-            if equals(1, args.len()):
-                x = maybe(), 
-            if >(0, args.len()):
-                x = maybe(), 
-            return x, ]
-        super([sym], args, [sym], args)
+    # def NOmethod_missing(self, sym, args, block):
+    #     syms = sym.to_s()
+    #     if _global.parser and contains(sym, _global.parser.methods()):
+    #         [
+    #         if equals(0, args.len()):
+    #             x = maybe(),
+    #         if equals(1, args.len()):
+    #             x = maybe(),
+    #         if >(0, args.len()):
+    #             x = maybe(),
+    #         return x, ]
+    #     super([sym], args, [sym], args)
 
     def test_substitute_variables(self):
         self.variableValues = {'x': 3, }
@@ -187,11 +195,11 @@ class EnglishParserTestParser(EnglishParser):
         tree = algebra()
         assert(tree)
 
-    def assert(self, [None], block):
-        if x==False and block:
-            x = 
-        if x==False:
-            raise(ScriptError(to_source(block)))
+    def do_assert(self,x, block):
+        if not x and block and callable(block):
+            x= block()
+        if not x :
+            raise ScriptError(to_source(block))
         print(x)
         print('!!OK!!')
 
@@ -202,53 +210,29 @@ class EnglishParserTestParser(EnglishParser):
     def test(self):
         print('Starting tests!')
         try:
-            except:
-                s('a bug')
-                test_method3()
-                test_method4()
-                assert(endNode())
-                test_ruby_variables()
-                test_args()
-                test_algebra()
-                test_ruby()
-                test_ruby_def()
-                test_ruby_method_call()
-                test_ruby_all()
-                test_js()
-                test_verb()
-                test_setter2()
-                test_setter3()
-                test_comment()
-                test_block()
-                test_quote()
-                test_while()
-                test_method_call()
-                show_tree()
-                print('++++++++++++++++++\nPARSED successfully!')
-        except:
-            s('a bug')
-            test_method3()
-            test_method4()
+            self.test_method3()
+            self.test_method4()
             assert(endNode())
-            test_ruby_variables()
-            test_args()
-            test_algebra()
-            test_ruby()
-            test_ruby_def()
-            test_ruby_method_call()
-            test_ruby_all()
-            test_js()
-            test_verb()
-            test_setter2()
-            test_setter3()
-            test_comment()
-            test_block()
-            test_quote()
-            test_while()
-            test_method_call()
-            show_tree()
+            self.test_ruby_variables()
+            self.test_args()
+            self.test_algebra()
+            self.test_ruby()
+            self.test_ruby_def()
+            self.test_ruby_method_call()
+            self.test_ruby_all()
+            self.test_js()
+            self.test_verb()
+            self.test_setter2()
+            self.test_setter3()
+            self.test_comment()
+            self.test_block()
+            self.test_quote()
+            self.test_while()
+            self.test_method_call()
+            self.show_tree()
             print('++++++++++++++++++\nPARSED successfully!')
-
+        except Exception as ex:
+            s('a bug')
 
 class EnglishParserTest(ParserBaseTest):
     _global.testParser = EnglishParserTestParser()
@@ -256,16 +240,3 @@ class EnglishParserTest(ParserBaseTest):
     def initialize(self, args):
         self.parser = EnglishParserTestParser()
         super(args)
-
-
-    class <_ast.Name object at 0x10d764250>:
-        self
-        _test
-        print(+(x.to_s()))
-
-    def test_all(self):
-        each(self.parser.methods(), )
-        each(self.parser.methods(), )
-    _test('setter')
-    _test('substitute_variables')
-    _test('jeannie')

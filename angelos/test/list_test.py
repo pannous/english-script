@@ -5,7 +5,7 @@ from parser_test_helper import *
 
 
 class ListTest(ParserBaseTest):
-
+    
 
     def test_type0(self):
         init('1 , 2 , 3')
@@ -151,13 +151,13 @@ class ListTest(ParserBaseTest):
         assert('type of x is Array')
 
     def test_type4(self):
-        variables['x'] = [Variable({'value': [1, 2, 3], 'name': 'x', }), ]
+        variables['x'] = [Variable({'name': 'x', 'value': [1, 2, 3], }), ]
         assert('class of x is Array')
         assert('kind of x is Array')
         assert('type of x is Array')
 
     def test_length(self):
-        variables['xs'] = [Variable({'name': 'xs', 'value': [1, 2, 3], }), ]
+        variables['xs'] = [Variable({'value': [1, 2, 3], 'name': 'xs', }), ]
         assert('length of xs is 3')
         assert('size of xs is 3')
         assert('count of xs is 3')

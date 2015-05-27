@@ -1,22 +1,32 @@
 import _global
-
+Encoding.default_external = 'UTF-8'
 Encoding.default_internal = 'UTF-8'
 _global.use_tree = False
 from parser_test_helper import *
-# from extensions import *
+from extensions import *
 
 
 class FunctionTest(ParserBaseTest):
+    
+
+    def fix_encoding(self, text):
+        if str.method_defined('encode'):
+            from iconv import *
+        if str.method_defined('encode'):
+            return text.encode('UTF-8', 'UTF-8', {'invalid': 'replace', })
+        else:
+            ic = Iconv('UTF-8', 'UTF-8//IGNORE')
+            return ic.iconv(t())
 
     def test_fibonacci(self):
         dir = 'programs/'
-        code = read(dir + ('fibonacci.e'))
+        code = File.read(dir+('fibonacci.e'))
         code = fix_encoding(code)
         p(code)
         print(parse(code))
         fib = functions['fibonacci']
         print(fib)
-        assert (equals('number', fib.args[0].name))  # name(args[0], )))
+        assert(equals('number', name(args[0], )))
         f10 = fib.call(10)
         print(f10)
         assert_equals(f10, 55)
@@ -25,22 +35,22 @@ class FunctionTest(ParserBaseTest):
 
     def test_identity(self):
         dir = 'programs/'
-        code = read(dir + ('identity.e'))
+        code = File.read(dir+('identity.e'))
         code = fix_encoding(code)
         p(code)
         print(parse(code))
         identity = functions['identity']
-        assert (equals('x', identity.args[0].name))
+        assert(equals('x', name(args[0], )))
         print(identity)
         print(identity.call(5))
-        assert (equals(5, identity.call(5)))
+        assert(equals(5, identity.call(5)))
         print(parse('identity(5)'))
-        assert ('identity(5) is 5')
+        assert('identity(5) is 5')
 
     def test_programs(self):
         dir = 'programs/'
         for file in File.ls(dir):
-            code = read(File.open(dir + (file), 'rb', {'encoding': 'UTF-8', 'binary': True, }))
+            code = read(File.open(dir+(file), 'rb', {'encoding': 'UTF-8', 'binary': True, }))
             code = fix_encoding(code)
             p(code)
             print(parse(code))
@@ -67,20 +77,19 @@ class FunctionTest(ParserBaseTest):
     def test_params(self):
         parse('how to increase x by y: x+y;')
         g = functions['increase']
-        args = [Argument({'name': 'x', 'preposition': None, 'position': 1, }),
-                Argument({'preposition': 'by', 'name': 'y', 'position': 2, })]
+        args = [Argument({'preposition': None, 'name': 'x', 'position': 1, }), Argument({'name': 'y', 'preposition': 'by', 'position': 2, })]
         f = Function({'body': 'x+y;', 'name': 'increase', 'arguments': args, })
         assert_equal(f, g)
-        assert_equals(self.parser.call_function(f, {'x': 1, 'y': 2, }), 3)
+        assert_equals(self.parser.call_function(f, {'y': 2, 'x': 1, }), 3)
 
     def test_function_object(self):
         parse('how to increase a number x by y: x+y;')
         g = functions['increase']
-        arg1 = Argument({'type': 'number', 'position': 1, 'name': 'x', 'preposition': None, })
+        arg1 = Argument({'name': 'x', 'position': 1, 'type': 'number', 'preposition': None, })
         arg2 = Argument({'name': 'y', 'preposition': 'by', 'position': 2, })
-        f = Function({'arguments': arg2, 'name': 'increase', 'body': 'x+y;', 'object': arg1, })
+        f = Function({'arguments': arg2, 'body': 'x+y;', 'name': 'increase', 'object': arg1, })
         assert_equal(f, g)
-        assert_equals(self.parser.call_function(f, {'x': 1, 'y': 2, }), 3)
+        assert_equals(self.parser.call_function(f, {'y': 2, 'x': 1, }), 3)
 
     def test_blue_yay(self):
         assert_result_is("def test{puts 'yay'};test", 'yay')
@@ -89,7 +98,7 @@ class FunctionTest(ParserBaseTest):
     def test_class_method(self):
         parse('how to list all numbers smaller x: [1..x]')
         g = functions['list']
-        f = Function({'body': '[1..x]', 'name': 'list'})  # , 'arguments': arg2(), 'object': arg1(), })
+        f = Function({'arguments': arg2(), 'name': 'list', 'body': '[1..x]', 'object': arg1(), })
         assert_equal(f, g)
         assert_equals(self.parser.call_function(f, 4), [1, 2, 3])
 
@@ -122,7 +131,7 @@ class FunctionTest(ParserBaseTest):
         parse('Math.ancestors')
 
     def test_x_name(self):
-        variables['x'] = [Variable({'value': 7, 'name': 'x', }), ]
+        variables['x'] = [Variable({'name': 'x', 'value': 7, }), ]
         init('x')
         assert_equals(name(self.parser.nod(), ), 'x')
 
@@ -131,8 +140,8 @@ class FunctionTest(ParserBaseTest):
         assert_equals(variables['counter'], 3)
 
     def test_var_check(self):
-        variables['counter'] = [Variable({'name': 'counter', 'value': 3, }), ]
-        assert ('the counter is 3')
+        variables['counter'] = [Variable({'value': 3, 'name': 'counter', }), ]
+        assert('the counter is 3')
 
     def test_array_arg(self):
         assert_equals(parse('rest of [1,2,3]'), [2, 3])
@@ -162,10 +171,10 @@ class FunctionTest(ParserBaseTest):
 
     def _test_svg_dom(self):
         init('<svg><circle cx="$x" cy="50" r="$radius" stroke="black" fill="$color" id="circle"/></svg>')
-        # print(svg(self.parser.interpretation(), ))
+        print(svg(self.parser.interpretation(), ))
         parse('circle.color=green')
         assert_equals('circle.color', 'green')
 
     def test_incr(self):
-        assert ('increase 1 == 2')
-        assert ('increase 1 == 2')
+        assert('increase 1 == 2')
+        assert('increase 1 == 2')

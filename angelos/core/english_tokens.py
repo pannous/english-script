@@ -24,7 +24,8 @@ main_verbs=['be', 'have', 'do', 'get', 'make', 'want', 'try', 'buy', 'take', 'ap
 
 
 method_tokens=  ['how to', 'function', 'definition for', 'definition of', 'define', 'method for', 'method',
-                 'func', 'def', 'in order to', 'to','^to'] # <<< TO == DANGER!! to be or not to be
+                 'func','fn', 'def', 'in order to', 'to','^to'] # <<< TO == DANGER!! to be or not to be
+# ,'impl','implementation','algorithm','routine'
 
 numbers= "1 2 3 4 5 6 7 8 9 0\
       -1 -2 -3 -4 -5 -6 -7 -8 -9 -0\

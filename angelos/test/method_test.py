@@ -2,10 +2,8 @@ import _global
 from parser_test_helper import *
 
 
-
-
 class MethodTest(ParserBaseTest):
-
+    
 
     def test_result(self):
         parse('alias show puts;show 3')

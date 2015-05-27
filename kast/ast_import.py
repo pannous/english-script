@@ -201,6 +201,8 @@ def build(node,parent=None):
     elif(tag=="Variable" or tag=="variable"):
         return name(_name_)# todo: CALL if in block!
         # return Name(id=node.attrib['value'], ctx=Load()) #WTF
+    elif tag=="Body":
+        return map(build, children)
     elif(tag=='Arguments'): # not AST node
         args=map(build, children)
         return arguments(args=args,defaults=[],vararg=None,kwarg=None)

@@ -4,7 +4,7 @@ from parser_test_helper import *
 
 
 class ObserverTest(ParserBaseTest):
-
+    
 
     def _test_every_date1(self):
         parse('every 1 seconds { say "Ja!" }')

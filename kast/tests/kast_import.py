@@ -55,11 +55,12 @@ out_folder="/Users/me/dev/ai/english-script/angelos/test/"
 
 # kast_file="/Users/me/dev/ai/english-script/test/rast/number_test.rb.kast"
 # kast_file="/Users/me/dev/ai/english-script/test/rast/function_test.rb.kast"
-kast_file="/Users/me/dev/ai/english-script/test/rast/parser_test.rb.kast"
+# kast_file="/Users/me/dev/ai/english-script/test/rast/parser_test_helper.rb.kast"
+kast_file="/Users/me/dev/ai/english-script/test/rast/../parser_test_helper.rb.kast"
 # kast_file="/Users/me/dev/ai/english-script/test/rast/mac_test.rb.kast"
 # pyast_file='demo.pyast'
-# import_kast_to_python(kast_file)
-# quit()
+import_kast_to_python(kast_file)
+quit()
 # out_folder="/Users/me/dev/ai/english-script/test/python/"
 for f in os.listdir(folder): # ls folder files !
     if not f.endswith(".kast"): continue

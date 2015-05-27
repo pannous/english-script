@@ -5,7 +5,7 @@ from parser_test_helper import *
 
 
 class AlgebraTest(ParserBaseTest):
-
+    
     def test_algebra1(self):
         assert_result_is(u'two minus 1\xbd', None)
         assert_result_is('3 minus one', 2)

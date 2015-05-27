@@ -4,7 +4,7 @@ from parser_test_helper import *
 
 
 class LoopTest(ParserBaseTest):
-
+    
 
     def _test_forever(self):
         init('beep forever')

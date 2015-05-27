@@ -14,7 +14,7 @@ class EmitterTest(ParserBaseTest):
     def initialize(self):
         _global.use_tree = True
         _global.use_tree = True
-
+    
 
     def last_result(self, x):
         split[-1]

@@ -1,272 +1,183 @@
-from parser_test_helper import *
 import _global
-_global.use_tree = False
-from test_helper import *
+ENV['RAILS_ENV'] = ['test', ]
+_global.testing = True
+_global.emit = False
+from autorun import *
+from english-parser import *
 
 
-class EnglishParserTestParser(EnglishParser):
+class ParserBaseTest:
+    from Exceptions import *
+    attr_accessor('variableValues')
 
-    def initialize(self):
-        super()
-        super()
+    def initialize(self, args):
+        if ENV['TEST_SUITE']:
+            _global.verbose = False
+        if _global.raking:
+            _global.emit = False
+        self.parser = EnglishParser()
+        super(args)
+
+    def assert_has_no_error(self, [None]):
+        parse(x)
+        print(x+(' parses OK'))
+
+    def assert_has_error(self, [None], block):
+        try:
+            except:
+                parse(x)
+                original_assert(+(to_s(self.parser.to_source(block), ), +(' \t', +(x.to_s()))), False)
+        except:
+            parse(x)
+            original_assert(+(to_s(self.parser.to_source(block), ), +(' \t', +(x.to_s()))), False)
+        try:
+            except:
+                parse(x)
+                original_assert(+(to_s(self.parser.to_source(block), ), +(' \t', +(x.to_s()))), False)
+        except:
+            parse(x)
+            original_assert(+(to_s(self.parser.to_source(block), ), +(' \t', +(x.to_s()))), False)
+
+    def assert_result_is(self, x, r):
+        assert_equals(parse(x), parse(r))
+        assert_equals(parse(x), parse(r))
+
+    def assert_equals(self, a, b):
+        if ((a.equals(b) or equals(b.to_s(), a.to_s())) or equals(+('"', +(b.to_s())), a.to_s())):
+            print(((((('TEST PASSED! ' + self.parser.original_string()) + '    ') + a) + ' == ') + b))
+        else:
+            print(filter_stack(caller()))
+            assert(False, ((a + ' should equal ') + b))
+        if ((a.equals(b) or equals(b.to_s(), a.to_s())) or equals(+('"', +(b.to_s())), a.to_s())):
+            print(((((('TEST PASSED! ' + self.parser.original_string()) + '    ') + a) + ' == ') + b))
+        else:
+            print(filter_stack(caller()))
+            assert(False, ((a + ' should equal ') + b))
+    alias_method('original_assert', 'assert')
+
+    def assert(self, [None, None], block):
+        if x.equals(True):
+            return print(('\nTEST PASSED! ' + self.parser.original_string()))
+        if msg.is_a(Proc):
+            msg = msg.call()
+        if block:
+            msg = (msg or self.parser.to_source(block))
+        if x==False and block:
+            x = 
+        if x==False:
+            original_assert(False, ((x + ' NOT PASSING: ') + msg))
+        if x.is_a(str):
+            [
+            try:
+                except:
+                    print(('Testing ' + x))
+                    init(x)
+                    if _global.emit:
+                        self.parser.dont_interpret()
+                    ok = self.parser.condition()
+                    if _global.emit:
+                        ok = emit(None, ok)
+            except:
+                print(('Testing ' + x))
+                init(x)
+                if _global.emit:
+                    self.parser.dont_interpret()
+                ok = self.parser.condition()
+                if _global.emit:
+                    ok = emit(None, ok), 
+            if ok==False:
+                original_assert(False, ((x + ' NOT PASSING: ') + msg)), ]
+        print(+(to_s(self.parser.to_source(block), ), (('TEST PASSED!  ' + x) + ' \t')))
 
     def NOmethod_missing(self, sym, args, block):
         syms = sym.to_s()
-        if _global.parser and contains(sym, _global.parser.methods()):
+        if self.parser and contains(sym, self.parser.methods()):
             [
             if equals(0, args.len()):
                 x = maybe(), 
             if equals(1, args.len()):
                 x = maybe(), 
-            if >(0, args.len()):
+            if bigger_than(0, args.len()):
                 x = maybe(), 
             return x, ]
         super([sym], args, [sym], args)
 
-    def test_substitute_variables(self):
-        self.variableValues = {'x': 3, }
-        assert(equals(substitute_variables(' #{x} ')))
-        assert(equals(substitute_variables('"#{x}"')))
-        assert(equals(substitute_variables(' $x ')))
-        assert(equals(substitute_variables("'$x'")))
-        assert(equals(substitute_variables('#{x}')))
-        assert()
+    def init(self, string):
+        self.parser.allow_rollback((-1))
+        self.parser.init(string)
 
-    def test_default_setter_dont_overwrite(self):
-        s('set color to blue; set default color to green')
-        setter()
-        assert(equals('blue', self.variableValues['color']))
+    def variables(self):
+        self.parser.variables()
+        self.parser.variables()
 
-    def test_default_setter(self):
-        s('set the default color to green')
-        setter()
-        assert(self.variableValues.contains('color'))
+    def variableValues(self):
+        self.parser.variableValues()
+        self.parser.variableValues()
 
-    def test_root(self):
-        s('hello who does the world end')
-        token('hello')
-        question()
-        star()
-        _?('the world')
-        assert(verb())
-        print('Parsed successfully!')
+    def functions(self):
+        self.parser.methods()
+        self.parser.methods()
 
-    def aa(self):
-        print('aa')
-        print('aa')
+    def methods(self):
+        self.parser.methods()
+        self.parser.methods()
 
-    def bb(self):
-        raise(NotMatching(test()))
-        raise(NotMatching(test()))
+    def interpretation(self):
+        self.parser.interpretation()
+        self.parser.interpretation()
 
-    def cc(self):
-        print('cc')
-        return ''
+    def result(self):
+        self.parser.result()
+        self.parser.result()
 
-    def dd(self):
-        print('dd')
-        throw('dd')
+    def parse_file(self, file):
+        parse(IO.read(file))
+        parse(IO.read(file))
 
-    def test_any(self):
-        s('a b c d')
-        one('aa', 'bb', 'cc')
-        assert(any())
+    def parse_tree(self, x, [None]):
+        if (x.is_a(str), ):
+            return x
+        self.parser.dont_interpret()
+        interpretation = self.parser.parse(x)
+        self.parser.full_tree()
+        if emit:
+            return emit(interpretation, interpretation.root())
+        else:
+            return interpretation.evaluate()
 
-    def test_action(self):
-        s('eat a sandwich; done')
-        assert(action())
-        assert(!(match('sandwich', string()), ))
+    def emit(self, interpretation, root):
+        from c-emitter import *
+        emit(interpretation, {'run': True, }, NativeCEmitter())
 
-    def test_methods(self):
-        test_method2()
-        test_method4()
-
-    def test_method(self):
-        s('how to integrate a bug do test done')
-        assert(method_definition())
-
-    def test_method2(self):
-        s('how to print: eat a sandwich; done')
-        assert(method_definition())
-
-    def test_method3(self):
-        s('how to integrate a bug\ntest\nok')
-        assert(method_definition())
-
-    def test_method4(self):
-        s('how to integrate a bug\n      test\n    ok')
-        assert(method_definition())
-
-    def test_expression(self):
-        s('eat a sandwich;')
-        assert(action())
-        print(x())
-
-    def raise_test(self):
-        raise('test')
-        raise('test')
-
-    def test_block(self):
-        s('let the initial value of I be x;\nstep size is the length of the interval,\ndivided by the number of steps\nvar x = 8;')
-        block()
-
-    def test_quote(self):
-        s('msg = "heee"')
-        setter()
-
-    def test_while(self):
-        allow_rollback()
-        s('while i is smaller or less then y do\n evaluate the function at point I\n add the result to the sum\n increase I by the step size\ndone')
-        looper()
-
-    def test_setter3(self):
-        s('step size is the length of the interval, divided by the number of steps')
-        setter()
-
-    def test_setter2(self):
-        s('var x = 8;')
-        setter()
-
-    def test_setter(self):
-        s('let the initial value of I be x')
-        setter()
-
-    def test_looper(self):
-        s('while i is smaller or less then y do\nyawn\nend')
-        looper()
-
-    def test_method_call(self):
-        s('evaluate the function at point I')
-        method_call()
-
-    def test_verb(self):
-        s('help')
-        verb()
-
-    def test_comment(self):
-        s('#ok')
-        statement()
-        s('z3=13 //ok')
-        assert(statement())
-        s('z4=23 -- ok')
-        assert(statement())
-        s('z5=33 # ok')
-        assert(statement())
-        s('z6=/* dfsfds */3 ')
-
-    def test_js(self):
-        s("js alert('hi')")
-        assert(javascript())
-
-    def test_ruby_method_call(self):
-        test_ruby_def()
-        parse('NOW CALL via english')
-        s("call ruby_block_test 'yeah'")
-        assert(ruby_method_call())
-
-    def test_ruby_def(self):
-        s("def ruby_block_test x='yuhu'\n  puts x\n  return x+'yay'\nend")
-        assert(ruby_def())
-        ruby_block_test()
-
-    def test_ruby_all(self):
-        s("\ndef ruby_block_test x='yuhu'\n  puts x\n  return x+'yay'\nend\ncall ruby_block_test 'yeah'\n")
-        root()
-
-    def test_ruby_variables(self):
-        s('x=7;puts x;x+1;')
-        root()
-
-    def test_ruby(self):
-        s("def ruby_block_test\n  puts 'ooooo'\n  return 'yay'\nend")
-        execute_ruby_block()
-        ruby_block_test()
-
-    def test_algebra(self):
-        s('2* ( 3 + 10 ) ')
-        print((('Parse ' + self.string) + ' as algebra?'))
-        tree = algebra()
-        assert(tree)
-
-    def assert(self, [None], block):
-        if x.!() and block:
-            x = 
-        if x.!():
-            raise(ScriptError(to_source(block)))
-        print(x)
-        print('!!OK!!')
-
-    def test_args(self):
-        s('eat an mp3')
-        assert(endNode())
-
-    def test(self):
-        print('Starting tests!')
-        try:
-            except:
-                s('a bug')
-                test_method3()
-                test_method4()
-                assert(endNode())
-                test_ruby_variables()
-                test_args()
-                test_algebra()
-                test_ruby()
-                test_ruby_def()
-                test_ruby_method_call()
-                test_ruby_all()
-                test_js()
-                test_verb()
-                test_setter2()
-                test_setter3()
-                test_comment()
-                test_block()
-                test_quote()
-                test_while()
-                test_method_call()
-                show_tree()
-                print('++++++++++++++++++\nPARSED successfully!')
-        except:
-            s('a bug')
-            test_method3()
-            test_method4()
-            assert(endNode())
-            test_ruby_variables()
-            test_args()
-            test_algebra()
-            test_ruby()
-            test_ruby_def()
-            test_ruby_method_call()
-            test_ruby_all()
-            test_js()
-            test_verb()
-            test_setter2()
-            test_setter3()
-            test_comment()
-            test_block()
-            test_quote()
-            test_while()
-            test_method_call()
-            show_tree()
-            print('++++++++++++++++++\nPARSED successfully!')
+    def parse(self, x, [None]):
+        if interpret:
+            self.parser.do_interpret()
+        if (x.is_a(str), ):
+            return x
+        if _global.emit:
+            self.result = parse_tree(x)
+        else:
+            self.result = self.parser.parse(x)
+            self.result = result(self.parser.interpretation(), )
+        self.variables = variables(self.parser.interpretation(), )
+        self.variableValues = self.variables.map_values()
+        if self.result.equals('false'):
+            self.result = False
+        if self.result.equals('true'):
+            self.result = True
+        self.result
 
 
-class EnglishParserTest(ParserBaseTest):
-    _global.testParser = EnglishParserTestParser()
-
-    def initialize(self, args):
-        self.parser = EnglishParserTestParser()
-        super(args)
-
-
-    class <_ast.Name object at 0x110c702d0>:
+    class <_ast.Name object at 0x102c98210>:
         self
         _test
         print(+(x.to_s()))
 
-    def test_all(self):
-        each(self.parser.methods(), )
-        each(self.parser.methods(), )
-    _test('setter')
-    _test('substitute_variables')
-    _test('jeannie')
+    def variableTypes(self, v):
+        type(variables[v], )
+        type(variables[v], )
+
+    def verbose(self):
+        if _global.raking:
+            return None
+        self.parser.verbose = True

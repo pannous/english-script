@@ -1,4 +1,9 @@
+import unittest
 import english_parser
+import power_parser
+import test._global
+from test import _global
+import the
 
 global parser
 from nodes import *
@@ -13,6 +18,8 @@ variables = {}
 variableValues = {}
 variableTypes = {}
 
+def contains(a,b):
+    return a in b or b in a
 
 def bigger_than(a, b):
     return a > b
@@ -27,11 +34,12 @@ def kind(x):
 
 
 def body(param):
-    pass
+    english_parser.rooty()
 
 
 def root(param):
-    pass
+    english_parser.rooty()
+
 
 
 def interpretation():
@@ -55,7 +63,7 @@ def p(x):
 
 
 def last_result():
-    pass
+    return the.result
 
 
 def parse_tree():
@@ -68,14 +76,16 @@ def puts(x):
 
 def assert_result_emitted(a, b, bla=None):
     pass
+    # emit(
 
 
 def assert_result_is(a, b, bla=None):
-    pass
+    x=parse(a)
+    assert x==b
 
 
 def parse_file(x):
-    pass
+    english_parser.parse(x)
 
 
 def assert_equals(a, b, bla=None):
@@ -83,11 +93,11 @@ def assert_equals(a, b, bla=None):
 
 
 def assert_equal(a, b, bla=None):
-    pass
+    assert a==b
 
 
 def do_assert(a, bla=None):
-    pass
+    assert a
 
 
 def skip():
@@ -95,27 +105,31 @@ def skip():
 
 
 def assert_has_error(x):
-    pass
+    try:
+        x()
+    except:
+        p("OK, error")
 
 
 def assert_has_no_error(x):
-    pass
+    parse(x)
 
 
 def sleep(s):
     pass
 
 
-def parse():
-    raise "NOOO"
+def parse(s):
+    english_parser.parse(s)
 
 
-def init():
-    raise "NOOO"
+def init(str):
+    english_parser.init(str)
+    # parser.init(str)
 
 
 def result():
-    raise "NOOO"
+    raise the.result
 
 
 def equals(a, b):
@@ -126,8 +140,41 @@ def name(x):
     return x
 
 
-class ParserBaseTest(object):
+
+
+class ParserBaseTest(unittest.TestCase):
+
+    global p,_p,parser,_parser
+    parser=p= english_parser.EnglishParser()
+    _parser=_p= english_parser.EnglishParser
+    def get_parser(self):
+        return p
+    parser=property(get_parser,0)
+
+    def setUp(self):
+        print(the.verbose)
+        the.verbose=True # False
+        pass
+        # p=Parser() # CANT BE ASSIGNED without double global
+        # global p
+        # p=Parser() # CAN BE ASSIGNED!!!
+        # self._p=_p # generator
+        # self.p=p   # instance!
+        # self._p=Parser # generator
+        # self.p=Parser()#  fresh  instance!
+
+    @classmethod
+    def setUpClass(cls):
+        pass # reserved for expensive environment one time set up
+
+    def test_true(self):
+        assert True
+    # def test_globals(self):
+    #     self.assertIsInstance(p,Parser)
+
     def __getattr__(self, name):
+        if name=='parser':
+            return self.get_parser()
         # ruby method_missing !!!
         if name in dir(parser):
             method = getattr(parser, name)  # NOT __getattribute__(name)!!!!
@@ -136,12 +183,156 @@ class ParserBaseTest(object):
             else:
                 return parser.__getattribute__(name)
         else:
-            raise "NO SUCH ATTRIBUTE " + name
+            raise Exception( "NO SUCH ATTRIBUTE " + name)
 
     # return lambda value: self.all().filter(field, value)
 
     def parse(self, str):
         return parser.parse(str)
+
+
+    def initialize(self, args):
+        if ENV['TEST_SUITE']:
+            _global.verbose = False
+        if _global.raking:
+            _global.emit = False
+        self.parser = english_parser.EnglishParser()
+        super(args)
+
+    def assert_has_no_error(self, x):
+        parse(x)
+        print(x+(' parses OK'))
+
+    def assert_has_error(self, x, block):
+        try:
+                parse(x)
+                raise "SHOULD THROW"
+        except Exception as e:
+            puts("OK")
+
+
+    def assert_result_is(self, x, r):
+        assert_equals(parse(x), parse(r))
+        assert_equals(parse(x), parse(r))
+
+    def assert_equals(self, a, b):
+        if ((a.equals(b) or equals(b.to_s(), a.to_s())) or equals(+('"', +(b.to_s())), a.to_s())):
+            print((((('TEST PASSED! ' + self.parser.original_string()) + '    ') + a) + ' == ') + b)
+        else:
+            # print(filter_stack(caller()))
+            assert(a==b, ((a + ' should equal ') + b))
+        if ((a.equals(b) or equals(b.to_s(), a.to_s())) or equals(+('"', +(b.to_s())), a.to_s())):
+            print(((((('TEST PASSED! ' + self.parser.original_string()) + '    ') + a) + ' == ') + b))
+        else:
+            # print(filter_stack(caller()))
+            assert(a==b, ((a + ' should equal ') + b))
+    # alias_method('original_assert', 'assert')
+
+    def do_assert(self, x,msg, block):
+        if x.equals(True):
+            return p(('\nTEST PASSED! ' + self.parser.original_string()))
+        if callable(msg):
+            msg = msg.call()
+        if block:
+            msg = (msg or self.parser.to_source(block))
+        if x==False and block:
+            x = block()
+        if x==False:
+            assert(x!=False, ((x + ' NOT PASSING: ') + msg))
+        if x.is_a(str):
+            try:
+                print(('Testing ' + x))
+                init(x)
+                if _global.emit:
+                    self.parser.dont_interpret()
+                ok = self.parser.condition()
+                if _global.emit:
+                    ok = parser.emit(None, ok),
+            except Exception as e:
+                p("ERROR "+e)
+            if ok==False:
+                assert(ok!=False, ((x + ' NOT PASSING: ') + msg))
+        print self.parser.to_source(block)+ ' TEST PASSED!  ' + x + ' \t'
+
+    # def NOmethod_missing(self, sym, args, block):
+    #     syms = sym.to_s()
+    #     if self.parser and contains(sym, self.parser.methods()):
+    #         [
+    #         if equals(0, args.len()):
+    #             x = maybe(),
+    #         if equals(1, args.len()):
+    #             x = maybe(),
+    #         if bigger_than(0, args.len()):
+    #             x = maybe(),
+    #         return x, ]
+    #     super([sym], args, [sym], args)
+
+    def init(self, string):
+        self.parser.allow_rollback((-1))
+        self.parser.init(string)
+
+    def variables(self):
+        self.parser.variables()
+
+    def variableValues(self):
+        self.parser.variableValues()
+
+    def functions(self):
+        self.parser.methods()
+
+    def methods(self):
+        self.parser.methods()
+
+    def interpretation(self):
+        self.parser.interpretation()
+
+    def result(self):
+        self.parser.result()
+
+    def parse_file(self, file):
+        parse(IO.read(file))
+
+    def parse_tree(self, x):
+        if x.is_a(str):
+            return x
+        self.parser.dont_interpret()
+        interpretation = self.parser.parse(x)
+        self.parser.full_tree()
+        if _global.emit:
+            return parser.emit(interpretation, interpretation.root())
+        else:
+            return interpretation.evaluate()
+
+    # def emit(self, interpretation, root):
+    #     from c-emitter import *
+    #     emit(interpretation, {'run': True, }, NativeCEmitter())
+
+    def parse(self, x):
+        if interpret:
+            self.parser.do_interpret()
+        if (x.is_a(str), ):
+            return x
+        if _global.emit:
+            self.result = parse_tree(x)
+        else:
+            self.result = self.parser.parse(x)
+            self.result = result(self.parser.interpretation(), )
+        self.variables = variables(self.parser.interpretation(), )
+        self.variableValues = self.variables.map_values()
+        if self.result.equals('false'):
+            self.result = False
+        if self.result.equals('true'):
+            self.result = True
+        self.result
+
+    def variableTypes(self, v):
+        type(variables[v], )
+        type(variables[v], )
+
+    # def verbose(self):
+    #     if _global.raking:
+    #         return None
+    #     self.parser.verbose = True
 
 # class Function:
 #     pass

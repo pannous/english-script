@@ -5,7 +5,7 @@ from parser_test_helper import *
 
 
 class NumberTest(ParserBaseTest):
-
+    
 
     def test_type1(self):
         print(parse('class of 1'))
@@ -48,5 +48,5 @@ class NumberTest(ParserBaseTest):
         assert_equals(result(), 4)
 
     def current(self):
-        self.test_type1()
-        self.test_type1()
+        test_type1()
+        test_type1()

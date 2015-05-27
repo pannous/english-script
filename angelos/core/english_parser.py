@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
+
+global inside_list
+inside_list=False
+
 # import time
 # import traceback
 # import sys
@@ -408,7 +412,7 @@ def liste(check=True):
     if check: must_contain_before([be_words, operators ], ',') #- ['and']
     # +[' '] ???
     start_brace = ___('[', '{', '(')  # only one!
-    if not start_brace and (inside_list): raise NotMatching('not a deep list')
+    if not start_brace and inside_list: raise NotMatching('not a deep list')
 
     # all<<expression(start_brace)
     # angel.verbose=True #debug
@@ -1217,9 +1221,12 @@ def assure_same_type_overwrite(var, val):
 
 def do_get_class_constant(c):
     # if interpreting(): c = getattr(__module__, c)
-    for module in sys.modules:
-        if hasattr(module,c):
-            return getattr(module, c)
+    try:
+        for module in sys.modules:
+            if hasattr(module,c):
+                return getattr(module, c)
+    except Exception as e:
+        print(e)
 
 
 def class_constant():
@@ -1818,9 +1825,9 @@ def const_defined(c):
 
 def classConstDefined():
     try:
-        c = word().capitalize
-        if not _try(const_defined(c)): return False
-    except NameError as e:
+        c = word().capitalize()
+        if not const_defined(c): return False
+    except (AttributeError,NameError ) as e:
         raise NotMatching()
 
     if interpreting(): c = do_get_class_constant(c)
@@ -1950,6 +1957,8 @@ def self_modifying(method):
 def is_math(method):
     return method in ['+','-','/','*']
 def do_math(a,op,b):
+    a=float(a)
+    b=float(b)
     if op=='+': return a+b
     if op=='-': return a-b
     if op=='/': return a/b

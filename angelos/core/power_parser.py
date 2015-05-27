@@ -195,7 +195,8 @@ def string_pointer_s():
 
 
 def string_pointer():
-    print(string_pointer_s())
+    if(the.verbose):
+        print(string_pointer_s())
 
 
 def clean_backtrace(x):
@@ -291,21 +292,16 @@ def caller():
 
 
 def verbose(info):
-    # if angel.verbose:
+    if the.verbose:
         print(info)
 
 
 def error(info):
-    if angel.verbose:
+    if the.verbose:
         print(info)
 
-
-def caller_depth():
-    pass
-
-
 def to_source(block):
-    pass
+    return str(block)
 
 
 def filter_backtrace(e):
@@ -701,10 +697,10 @@ def maybe(block):
         return result
     except (NotMatching, EndOfLine) as e:
         # old=original_string # REALLY>??
-        verbose(e)
         current_value = None
         the.string = old
         interpreting(2) #?
+        if verbose: verbose(e)
         if verbose: verbose("Tried "+to_source(block))
         if verbose: string_pointer()
         invalidate_obsolete(old_nodes)
@@ -856,7 +852,7 @@ def token(t):
     if starts_with(t):
         current_value = t.strip()
         the.string = the.string[len(t): - 1]
-        if r'^\w '.match(the.string) and r'^\w '.match(t):
+        if re.match(r'^\w ',the.string) and re.match(r'^\w ',t):
             raise NotMatching(t + " (the.strings needs whitespace, special chars don't)")
         else:
             the.string = the.string.strip()
@@ -869,6 +865,10 @@ def token(t):
 
 
 def flatten(l):
+  if isinstance(l,tuple):
+      l=list(l)
+  if not isinstance(l,list):
+      l=l()
   from itertools import chain
   return list(chain.from_iterable(l))
 
