@@ -40,25 +40,27 @@ To check if person is online on Skype:
 End
 ```
 
-Todo (soon):
+In progress:
 `add one to every odd number in 1,2,3 == 2,2,4`
 
 
-The implicit list filter '**that**' applies the selection criterion to all elements. 
-`delete all files in my home folder that end with 'bak'` It translates to ruby:
+The implicit list filter '**that**' applies a selection criterion to all elements. 
+`delete all files in my home folder that end with 'bak'`, it translates to ruby:
 `folder(:home).files.select{|that|that.end_with?("bak")}.map{|file| file.delete}`
 
 
 Implicit lambda variable '**it**' 
-`for all mails by peter: mark it as read if its subject contains 'SPAM'` => ruby :
+`for all mails by peter: mark it as read if its subject contains 'SPAM'`, it translates to ruby:
 `mails(by: Peter).each{|it| it.mark(:read) if it.subject.match('SPAM')}`
 
 
 The last example also illustrates what we call **matching by type name**.
-```To delete mail:
+```
+To delete mail:
   call mail.remove()
-End```
-'mail' acts as argument name and argument type at once.
+End
+```
+Here 'mail' acts as argument name and argument type at once.
 (No more Mail mail=new Mail().getMail())
 
 
