@@ -40,7 +40,8 @@ To check if person is online on Skype:
 End
 ```
 
-In progress:
+In progress
+-----------
 `add one to every odd number in 1,2,3 == 2,2,4`
 
 
@@ -57,11 +58,11 @@ Implicit lambda variable '**it**'
 The last example also illustrates what we call **matching by type name**.
 ```
 To delete mail:
-  call mail.remove()
+  move that mail to trash folder
 End
 ```
 Here 'mail' acts as argument name and argument type at once.
-(No more Mail mail=new Mail().getMail())
+No more Mail mail=new Mail().getMail()
 
 
 Language Specification
