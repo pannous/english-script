@@ -47,6 +47,10 @@ Todo (soon):
 
 The implicit list filter '*that*' applies the selection criterion to all elements.
 
+It translates to ruby: `folder(:home).files.select{|that|that.end_with?("bak")}.map{|file| file.delete}`
+
+
+
 `with all mails by peter: mark it as read if its subject contains 'SPAM'`
 
 The implicit lambda variable '*it*' translates to ruby
