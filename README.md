@@ -46,12 +46,12 @@ In progress
 
 
 The implicit list filter '**that**' applies a selection criterion to all elements. 
-`delete all files in my home folder that end with 'bak'`, it translates to ruby:
+`delete all files in my home folder that end with 'bak'` translates to ruby:
 `folder(:home).files.select{|that|that.end_with?("bak")}.map{|file| file.delete}`
 
 
 Implicit lambda variable '**it**' 
-`for all mails by peter: mark it as read if its subject contains 'SPAM'`, it translates to ruby:
+`for all mails by peter: mark it as read if its subject contains 'SPAM'` translates to ruby:
 `mails(by: Peter).each{|it| it.mark(:read) if it.subject.match('SPAM')}`
 
 
