@@ -43,26 +43,21 @@ End
 Todo (soon):
 `add one to every odd number in 1,2,3 == 2,2,4`
 
-`delete all files in my home folder that end with 'bak'`
 
-The implicit *list filter* ''**that**'' applies the selection criterion to all elements. It translates to ruby:
-
+The implicit list filter '**that**' applies the selection criterion to all elements. 
+`delete all files in my home folder that end with 'bak'` It translates to ruby:
 `folder(:home).files.select{|that|that.end_with?("bak")}.map{|file| file.delete}`
 
 
-
-
-
-`for all mails by peter: mark it as read if its subject contains 'SPAM'`
-
-The implicit lambda variable '**it**' translates to ruby
-
+Implicit lambda variable '**it**' 
+`for all mails by peter: mark it as read if its subject contains 'SPAM'` => ruby :
 `mails(by: Peter).each{|it| it.mark(:read) if it.subject.match('SPAM')}`
 
+
 The last example also illustrates what we call **matching by type name**.
-`To delete mail:
+```To delete mail:
   call mail.remove()
-End`
+End```
 'mail' acts as argument name and argument type at once.
 (No more Mail mail=new Mail().getMail())
 
