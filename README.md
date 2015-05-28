@@ -45,9 +45,11 @@ Todo (soon):
 
 `delete all files in my home folder that end with 'bak'`
 
-The implicit list filter '*that*' applies the selection criterion to all elements.
+The implicit list filter '*that*' applies the selection criterion to all elements. It translates to ruby:
 
-It translates to ruby: `folder(:home).files.select{|that|that.end_with?("bak")}.map{|file| file.delete}`
+`folder(:home).files.select{|that|that.end_with?("bak")}.map{|file| file.delete}`
+
+
 
 
 
