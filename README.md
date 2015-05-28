@@ -53,11 +53,18 @@ The implicit list filter '*that*' applies the selection criterion to all element
 
 
 
-`with all mails by peter: mark it as read if its subject contains 'SPAM'`
+`for all mails by peter: mark it as read if its subject contains 'SPAM'`
 
 The implicit lambda variable '*it*' translates to ruby
 
 `mails(by: Peter).each{|it| it.mark(:read) if it.subject.match('SPAM')}`
+
+The last example also illustrates what we call **matching by type name**.
+`To delete mail:
+  call mail.remove()
+End`
+'mail' acts as argument name and argument type at once.
+(No more Mail mail=new Mail().getMail())
 
 
 Language Specification
