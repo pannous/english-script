@@ -1,1 +1,0 @@
-http://www.2ality.com/2012/01/bytecode-myth.html
