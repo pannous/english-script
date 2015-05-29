@@ -760,12 +760,6 @@ class float(float):
         return self * self
 
 
-class real(float):
-    pass
-
-
-class number(float):
-    pass
 
 
 #if self==false: return True

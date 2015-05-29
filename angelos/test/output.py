@@ -8,7 +8,7 @@ from english-parser import *
 
 class ParserBaseTest:
     from Exceptions import *
-    attr_accessor('variableValues')
+    property('variableValues')
 
     def initialize(self, args):
         if ENV['TEST_SUITE']:
@@ -168,7 +168,7 @@ class ParserBaseTest:
         self.result
 
 
-    class <_ast.Name object at 0x102c98210>:
+    class <_ast.Name object at 0x103ba3210>:
         self
         _test
         print(+(x.to_s()))

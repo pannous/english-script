@@ -1,6 +1,7 @@
 global string, last_node, current_value, nodes, depth,rollback_depths,OK
 global verbose,use_wordnet,in_pipe,result,in_args
 use_tree=False
+use_wordnet=False
 string=""
 OK="OK"
 interpret=False

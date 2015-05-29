@@ -42,6 +42,8 @@
 # python +: stricter: i.e. ruby z=map[x] (NIL) vs if x in map: map[x]
 # python -- LESS FORGIVING! ValueError: list.remove(x): x not in list , if string.index(x): ValueError: substring not found ETC ETC
 # python -- missing SO MANY FUNCTIONS! :
+
+# python -- not default: except Exception as e: raise e??
 # python - unsupported operand type(s) for -: 'list' and 'list', AttributeError: 'list' object has no attribute 'each' ETC **
 # python - annoying (self), : , () -> DANGEROUS!! (ok if generated?)
 # python - NO class extensions for builtins! (ok with 'macros' / subclass construction (?))

@@ -99,9 +99,11 @@ def assert_equal(a, b, bla=None):
 def do_assert(a, bla=None):
     assert a
 
-
-def skip():
+class SkippingTest(Exception):
     pass
+
+def skip(me=0):
+    raise SkippingTest()
 
 
 def assert_has_error(x):
@@ -120,7 +122,7 @@ def sleep(s):
 
 
 def parse(s):
-    english_parser.parse(s)
+    return english_parser.parse(s).result
 
 
 def init(str):
@@ -188,7 +190,7 @@ class ParserBaseTest(unittest.TestCase):
     # return lambda value: self.all().filter(field, value)
 
     def parse(self, str):
-        return parser.parse(str)
+        return parser.parse(str).result
 
 
     def initialize(self, args):

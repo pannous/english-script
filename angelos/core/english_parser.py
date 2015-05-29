@@ -63,7 +63,7 @@ def nill():
 
 
 def boolean():
-    b = ___('True', 'False','true', 'false')
+    b = __('True', 'False','true', 'false')
     the.result = (b == 'True' or b=='true') and TRUE or FALSE
     # the.result=b=='True'
     return the.result
@@ -119,7 +119,7 @@ def value():
             maybe(boolean) or \
             maybe(constant) or \
             maybe(it) or \
-            nod
+            nod()
     the.result = current_value = x
     # rest_of_line # TOOBIG HERE!
     if ___('as'):
@@ -247,7 +247,7 @@ def regex(x):
     match = re.search(x,the.string)
     match = match or re.search(r'(?im)^\s*%s'%x,the.string)
     if not match: raise NotMatching(x)
-    the.string = match.post_match.strip()
+    the.string = the.string[match.end():].strip()
     return match
 
 def package_version():
@@ -315,7 +315,8 @@ def operator():
 def algebra():
     # global result
     must_contain_before([be_words, ',', ';', ':'], operators)
-    the.result= maybe(value) or bracelet()  # any { maybe( value ) or maybe( bracelet ) )
+    stack={}
+    stack[0]=the.result= maybe(value) or bracelet()  # any { maybe( value ) or maybe( bracelet ) )
     def lamb():
         op = operator()  # operator KEYWORD!?! ==> the.string="" BUG     4 and 5 == TROUBLE!!!
         if not op == 'and': no_rollback()
@@ -324,9 +325,11 @@ def algebra():
             if op == "/":  # 3'4==0 ? NOT WITH US!!:
                 y=float(y)
             try:
-                the.result = do_send(the.result, op, y or the.result)
+                stack[0]=the.result = do_send(stack[0], op, y or the.result)
             except SyntaxError as e:
                 error(e)
+            except Exception as e:
+                raise e
         return the.result or True
     the.result=star(lamb)
 #         if angel.use_tree and not interpreting():
@@ -1024,7 +1027,7 @@ def arguments():
 
 def constructor():
     maybe_token('create')
-    maybe(the)
+    maybe(_the)
     _('new')
     # clazz=word #allow data
     clazz = class_constant
@@ -1255,7 +1258,7 @@ def property():
 def declaration():
     should_not_contain('=')
     # must_contain_before  be_words+['set'],';'
-    a = _try(the)
+    a = _try(_the)
     mod = _try(modifier)
     type = typeNameMapped
     ___('var', 'val', 'value of')
@@ -1273,7 +1276,7 @@ def declaration():
 def setter():
     must_contain_before['>', '<', '+', '-', '|', '/', '*'], be_words + ['set']
     if _try(let): _let = no_rollback()
-    a = _try(the)
+    a = _try(_the)
     mod = _try(modifier)
     type = _try(typeNameMapped)
     ___('var', 'val', 'value of')
@@ -1305,7 +1308,7 @@ def setter():
     # if angel.use_tree: return parent_node()
     # if not interpret: return old-the.string
     #  or 'to'
-    #'initial'?	_try(let) _try(the) ('initial' or 'var' or 'val' or 'value of')? variable (be or 'to') value
+    #'initial'?	_try(let) _try(_the) ('initial' or 'var' or 'val' or 'value of')? variable (be or 'to') value
 
 
 # a=7
@@ -1412,7 +1415,8 @@ def nod():  #options{generateAmbigWarnings=false)):
     return maybe(number) or \
            maybe(quote) or \
            maybe(true_variable) or \
-           maybe(the_noun_that)  # or
+        the_noun_that()
+           # maybe(the_noun_that)  # or
     #_try( variables_that ) # see selectable
 
 
@@ -1803,8 +1807,8 @@ def verbium():
 
 
 def the_noun_that():
-    _try(the)
-    n = noun
+    _try(_the)
+    n = noun()
     if not n: raise_not_matching("no noun")
     star(selector)
     return n
@@ -1849,7 +1853,7 @@ def gerund():
     #'stinking'
     match = re.search(r'^\s*(\w+)ing',the.string)
     if not match: return False
-    the.string = match.post_match
+    the.string = the.string[match.end():]
     pr = ___(prepositions)  # wrapped in
     if pr: _try(endNode)
     current_value = match[1]
@@ -1860,7 +1864,7 @@ def postjective():  # 4 squared , 'bla' inverted, buttons pushed in, mail read b
     ## global the.string
     match = re.search(r'^\s*(\w+)ed',the.string)
     if not match: return False
-    the.string = match.post_match
+    the.string = the.string[match.end():]
     if not checkEndOfLine(): pr = ___(prepositions)  # wrapped in
     if pr and not checkEndOfLine(): _try(endNode)  # silver
     current_value = match[1]
@@ -2395,7 +2399,7 @@ def adverb():
     no_keyword_except(adverbs)
     found_adverb = ___(adverbs)
     if not found_adverb: raise_not_matching("no adverb")
-    if not angel.use_wordnet(): return found_adverb
+    if not angel.use_wordnet: return found_adverb
     current_value = found_adverb or wordnet_is_adverb()  # call_is_verb
     return current_value
 
@@ -2404,13 +2408,13 @@ def verb():
     no_keyword_except(remove_from_list(system_verbs ,be_words))
     found_verb = ___(list(other_verbs + system_verbs) - be_words - ['do'])  #verbs,
     if not found_verb: raise_not_matching("no verb")
-    if not angel.use_wordnet(): return found_verb
+    if not angel.use_wordnet: return found_verb
     current_value = found_verb or wordnet_is_verb()  # call_is_verb
     return current_value
 
 
 def adjective():
-    if not angel.use_wordnet(): return tokens('funny', 'big', 'small', 'good', 'bad')
+    if not angel.use_wordnet: return tokens('funny', 'big', 'small', 'good', 'bad')
     # if not found_verb: raise_not_matching("no verb")
     return wordnet_is_adjective()
 
@@ -2517,9 +2521,9 @@ def true_variable():
 
 
 def noun(include=[]):
-    a = _try(the)
-    if not a: should_not_start_with(system_verbs())
-    if not angel.use_wordnet(): return word(include)
+    a = _try(_the)
+    if not a: should_not_start_with(system_verbs)
+    if not angel.use_wordnet: return word(include)
     #if true_variable(): return True
     no_keyword_except(include)
     current_value = wordnet_is_noun()  # expensive!!!
@@ -2578,25 +2582,26 @@ def integer():
 def real():
     ## global the.string
     raiseEnd()
-    match = re.search(r'^-?\d*\.\d+_try(f)_try(r)',the.string)
+    match = re.search(r'^\s*(-?\d*\.\d+)',the.string)
     if match:
-        current_value = match[0].to_f
+        current_value = float(match.groups()[0])
         the.string = the.string[match.end():].strip()
         return current_value
 
     #return false
-    raise NotMatching("no real")
+    raise NotMatching("no real (unreal)")
 
 
 def complex():
     ## global the.string
-    match = re.search(r'^\s*\d+i',the.string)  # 3i
-    if not match: match = re.search(r'^\s*\d*\.\d+i',the.string)  # 3.3i
-    if not match: match = re.search(r'^\s*\d+\s*\+\s*\d+i',the.string)  # 3+3i
-    if not match: match = re.search(r'^\s*\d*\.\d+\s*\+\s*\d*\.\d+i',the.string)  # 3+3i
+    s = the.string.strip().replace("i","j") # python!
+    match = re.search(r'^(\d+j)', s)  # 3i
+    if not match: match = re.search(r'^(\d*\.\d+j)', s)  # 3.3i
+    if not match: match = re.search(r'^(\d+\s*\+\s*\d+j)', s)  # 3+3i
+    if not match: match = re.search(r'^(\d*\.\d+\s*\+\s*\d*\.\d+j)', s)  # 3+3i
     if match:
-        current_value = match[0].strip()
-        the.string = match.post_match.strip()
+        current_value = complex(match[0].groups())
+        the.string = s[match.end():].strip()
         return current_value
     return False
 
@@ -2609,7 +2614,7 @@ def fileName():
         path = match[0]
         path = path.gsub(r'^/home', "'Users")
         path = extensions.File(path)
-        the.string = match.post_match.strip()
+        the.string = the.string[match.end():].strip()
         current_value = path
         return path
     return False
@@ -2622,7 +2627,7 @@ def linuxPath():
         path = match[0]
         path = path.gsub(r'^/home', "'Users")
         path = extensions.Dir(path)  # except path
-        the.string = match.post_match.strip()
+        the.string = the.string[match.end():].strip()
         current_value = path
         return path
     return False
@@ -2635,7 +2640,7 @@ def rubyThing():
     if not match:
         return False
     thing = match[0]
-    the.string = match.post_match.strip()
+    the.string = the.string[match.end():].strip()
     args = re.search(r'^\(.*?\)',the.string)
     if args: the.string = args.post_match.strip()
     args = args or " #{value22 or '')"

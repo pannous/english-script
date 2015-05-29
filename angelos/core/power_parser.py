@@ -159,6 +159,9 @@ def star(block):
         error(e)
         error("error in star " + to_source(block))
         # warn e
+    except Exception as e:
+        error(e)
+        raise e
 
     if len(good) == 1: return good[0]
     if not not good: return good
@@ -297,8 +300,10 @@ def verbose(info):
 
 
 def error(info):
-    if the.verbose:
-        print(info)
+    # import traceback
+    # traceback.print_stack() # backtrace
+    # if the.verbose:
+    print(info)
 
 def to_source(block):
     return str(block)
@@ -623,7 +628,7 @@ def adjust_rollback(depth=-10):
         if depth==-10: depth=caller_depth()
         if depth + 2 < no_rollback_depth:
             no_rollback_depth = rollback_depths.pop() or -1
-    except Error as e:
+    except (Exception,Error) as e:
         error(e)
 
 
@@ -677,14 +682,12 @@ def maybe(block):
     #if checkEnd: return
     # allow_rollback 1
     depth = depth + 1
-    if (caller_depth() > const.max_depth):
-        raise SystemStackError("if(len(nodes)>max_depth)")
-
+    if (caller_depth() > const.max_depth):raise SystemStackError("if(len(nodes)>max_depth)")
     old = the.string  # NOT overwritten, instead of:
     if not original_string: original_string = the.string or ""
     try:
         old_nodes = list(nodes)#.clone()
-        result = block() #yield
+        result = block() #yield <<<<<<<<<<<<<<<<<<<<<<<<<<<<
         if(callable(result)):
             raise Exception("CALLABLE "+str(result))
         if result:
@@ -721,16 +724,8 @@ def maybe(block):
             if angel.use_tree:
                 import TreeBuilder
                 TreeBuilder.show_tree()  #Not reached
-            attempt = str(e).gsub("[", "").gsub("]", "")
-            from0 = 0  #len(e.backtrace)-no_rollback_depth-2
-            bt = e.backtrace
-            bt = bt[from0:-1]  #if from>10:
             # bt = filter_stack()
-            m0 = bt[0].match(r'`.*')  #except "XX"
-            m1 = bt[1].match(r'`.*')  #except "YY"
-            ex = GivingUp(
-                "Expecting #{m0} in #{m1} ... maybe related: #{attempt}\n#{last_token  or  string_pointer}")
-            ex.set_backtrace(bt)
+            ex = GivingUp("Expecting #{m0} in #{m1} ... maybe related: #{attempt}\n#{last_token  or  string_pointer}")
             raise ex
             # error e #exit
             # raise SyntaxError(e)
@@ -751,8 +746,19 @@ def maybe(block):
         the.string = old
         error(e)
         verbose(e)
-    finally:
-        adjust_rollback()
+    except Error as e:
+        error(e)
+        raise e
+    except Exception as e:
+        error(block)
+        import traceback
+        traceback.print_stack() # backtrace
+        error(e)
+        error(block)
+        print("-------------------------")
+        quit()
+    # finally:
+    adjust_rollback()
     depth = depth - 1
     the.string = old  #if rollback:
     nodes = old_nodes  # restore
@@ -817,8 +823,8 @@ def parse(s):
         allow_rollback()
         init(s)
         import english_parser
-        english_parser.rooty()
-        last_result = result
+        the.result=english_parser.rooty()
+        last_result = the.result
     except IgnoreException as e:
         import traceback
         traceback.print_stack() # backtrace
@@ -892,7 +898,6 @@ def tokens(*tokenz):
                 continue  # next must be space or so!: next
         else:  # special char
             match = re.search(r'(?im)^\s*'+escape_token(t),the.string)
-
         if match:
             x = current_value = t
             the.string = the.string[match.end():].strip()
