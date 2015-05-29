@@ -3,7 +3,7 @@
 This is English as a programming language.
 The main purpose of this language is to make programming accessible to many more people, more fun and to facilitate programming computers via Voice.
 
-The guiding philosophy is to have forgiving interfaces yet strict implementations.
+The guiding philosophy is to have forgiving interfaces yet strict implementations, and to make special chars (braces,colons,etc) completely optional.
 
 Examples
 --------
@@ -40,18 +40,29 @@ To check if person is online on Skype:
 End
 ```
 
-Todo (soon):
+In progress
+-----------
 `add one to every odd number in 1,2,3 == 2,2,4`
 
-`delete all files in my home folder that end with 'bak'`
 
-The implicit list filter '*that*' applies the selection criterion to all elements.
+The implicit list filter '**that**' applies a selection criterion to all elements. 
+`delete all files in my home folder that end with 'bak'` translates to ruby:
+`folder(:home).files.select{|that|that.end_with?("bak")}.map{|file| file.delete}`
 
-`with all mails by peter: mark it as read if its subject contains 'SPAM'`
 
-The implicit lambda variable '*it*' translates to ruby
-
+Implicit lambda variable '**it**' 
+`for all mails by peter: mark it as read if its subject contains 'SPAM'` translates to ruby:
 `mails(by: Peter).each{|it| it.mark(:read) if it.subject.match('SPAM')}`
+
+
+The last example also illustrates what we call **matching by type name**.
+```
+To delete mail:
+  move that mail to trash folder
+End
+```
+Here 'mail' acts as argument name and argument type at once.
+No more Mail mail=new Mail().getMail()
 
 
 Language Specification
