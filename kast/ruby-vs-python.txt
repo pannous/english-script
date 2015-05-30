@@ -1,5 +1,6 @@
 
 # ruby +++ better blocks + lambdas !!!
+# ruby ++ nice 'and' concatenation:  >>> 3 and True  => 3 yay!
 # ruby ++ much more forgiving and convenient, i.e. z=map[x] vs if x in map: map[x]
 # ruby + jruby better, class extensions
 # ruby + mirah: native 'ruby' on jvm
@@ -7,6 +8,7 @@
 # ruby + clean function approach, e.g. def []=(index,values) ...
 # ruby - less modules, more beautiful language => less need for angle!
 # ruby - methods less 1st class than in python! ('ok' via method(:symbol), send)
+# ruby -: can't access variables in methods without '@' !!
 # ruby -- NO types/type hints!! (vs py3)
 # ruby -- no annotations!
 # ruby --- no nice dynamic programmatic properties:
@@ -24,7 +26,6 @@
 
 # java: https://stackoverflow.com/questions/6680674/can-a-java-class-add-a-method-to-itself-at-runtime =>
 # http://www.jboss.org/javassist https://github.com/jboss-javassist/javassist
-
 # python ++: more modules
 # python ++: dynamic properties
 # python ++: ironpython ok!
@@ -33,6 +34,7 @@
 # python ++: TO/FRO bytecode, NATIVE (sometimes)
 # python ++: Ast better integrated(!!) + compile,exec,pyc emitter!!
 # python ++: Constructors() interchangeable with methods, can be very handy someday, and nice
+# python ++: can access variables in methods without '@' !!
 # python +: list concatenation
 # python +: named parameters
 # python +: better reflection + docs (dir, help)
@@ -46,6 +48,7 @@
 # python (-) backtrace
 # python - annoying (self), : , () -> DANGEROUS!! (ok if generated?)
 # python - NO class extensions for builtins! (ok with 'macros' / subclass construction (?))
+# python -- missing 'and' concatenation : >>> 3 and True  => True  NOOOO!
 # python -- running angle ok, debugging SLOOOOOW! (same algorithm as ruby, maybe caller() is expensive?)
 # python ---- variable scope nightmare!! lambdas + block variable scope !!!!! 'nonlocal' keyword :(
 # python ---- explicit global/class(self) self.EVERYTHING!!!

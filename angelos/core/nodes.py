@@ -113,12 +113,14 @@ class Variable:
   def __init__(self,**args):
     self.name    =args['name']
     self.type    =args['type']
-    self.owner    =args['owner']
-    self.scope   =args['scope']
-    # self.class  =args[:module]
-    self.final   =args['final']
     self.value   =args['value']
-    self.modifier=args['modifier']
+    self.scope   =args['scope']
+
+    if 'owner' in args: self.owner    =args['object']
+    if 'object' in args: self.owner    =args['object']
+    # self.class  =args[:module]
+    if 'final' in args:self.final   =True
+    if 'modifier' in args:self.modifier=args['modifier']
     # scope.variables[name]=self
 
   def c(self): #unwrap, for optimization):

@@ -28,6 +28,8 @@ main_verbs=['be', 'have', 'do', 'get', 'make', 'want', 'try', 'buy', 'take', 'ap
 method_tokens=  ['how to', 'function', 'definition for', 'definition of', 'define', 'method for', 'method',
                  'func','fn', 'def', 'in order to', 'to','^to'] # <<< TO == DANGER!! to be or not to be
 # ,'impl','implementation','algorithm','routine'
+import_keywords=[ 'dependencies', 'dependency', 'depends on', 'depends', 'requirement', 'requirements', 'require', 'required', 'include', 'using', 'uses', 'needs', 'requires', 'import']
+require_types = "javascript script js gcc ruby gem header c cocoa native".split()  # todo c++ c# not tokenized!
 
 numbers= "1 2 3 4 5 6 7 8 9 0\
       -1 -2 -3 -4 -5 -6 -7 -8 -9 -0\
@@ -187,9 +189,14 @@ keywords=prepositions+modifiers+be_words+comparison_words+fillers+nill_words+don
 
 TRUE="True"
 FALSE="False"
-
+flow_keywords=['next', 'continue', 'break', 'stop']
+request_keywords=['what is', 'evaluate', 'how much', 'what are', 'calculate', 'eval']
+nonzero_keywords=['nonzero', 'not null', 'defined', 'existing', 'existant','existent', 'available']
 other_verbs=['increase','decrease','square','invert','test']
 special_verbs=['evaluate', 'eval']
 system_verbs=['contains', 'contain']+special_verbs+auxiliary_verbs
+invoke_keywords=['call', 'execute', 'run', 'start', 'evaluate', 'eval', 'invoke'] # not: go!
+context_keywords=['context','module','package']
+self_modifying_operators=['|=', '&=', '&&=', '||=', '+=', '-=', '/=', '^=', '%=', '#=', '*=', '**=', '<<', '>>']
 
 newline_tokens=["\.\n", "\. ", "\n", "\r\n", ';']

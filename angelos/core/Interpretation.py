@@ -25,3 +25,24 @@ def add_trigger(condition, action):
     import power_parser
     if power_parser.interpreting():
         return the.listeners.append(events.Observer(condition, action))
+
+
+def substitute_variables(args):
+    #args=" "+args+" "
+    for variable in the.variableValues.keys:
+        if isinstance(variable, list):
+            variable = variable.join(' ')  #HOW!?!?!:
+        value = the.variableValues[variable] or 'None'
+        #args=args.replace(r'\$#{variable)', "#{variable)") # $x => x !!
+        args = args.replace(r'.\{#{variable)\)', "#{value)")  #  ruby style #{x) ;)
+        args = args.replace(r'\$#{variable)$', "#{value)")  # php style $x
+        args = args.replace(r'\$#{variable)([^\w])', "#{value)\\\1")
+        args = args.replace(r'^#{variable)$', "#{value)")
+        args = args.replace(r'^#{variable)([^\w])', "#{value)\\1")
+        args = args.replace(r'([^\w])#{variable)$', "\\1#{value)")
+        args = args.replace(r'([^\w])#{variable)([^\w])', "\\1#{value)\\2")
+
+    #args.strip()
+    args
+
+    # todo : why _try(special) direct eval, rest_of_line

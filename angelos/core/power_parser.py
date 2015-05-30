@@ -2,7 +2,9 @@
 # encoding: utf-8
 # from TreeBuilder import show_tree
 # from english_parser import result, comment, condition, root
+import tokenize
 import const
+import english_parser
 import english_tokens
 import re
 import token as _token
@@ -16,6 +18,30 @@ import angel
 from english_tokens import NEWLINE
 from the import *
 import the
+
+
+#Beware of decorator classes. They don't work on methods unless you manually reinvent the logic of instancemethod descriptors.
+class Starttokens(object):
+    def __init__(self,starttokens):
+        if not isinstance(starttokens,list):
+            starttokens=[starttokens]
+        self.starttokens = starttokens
+    def __call__(self, original_func):
+        decorator_self = self
+        for t in self.starttokens:
+            if t in english_parser.token_map:
+                print("ALREADY mapped %s to %s, now %s"%(t, english_parser.token_map[t],original_func))
+            english_parser.token_map[t]=original_func
+        return  original_func
+        # def wrappee( *args, **kwargs):
+        # print 'in decorator with',decorator_self.flag
+        #     original_func(*args,**kwargs)
+        # return wrappee
+
+# def starttokens(keywords,fun):
+#     for t in keywords:
+#         token_map[t]=fun
+#     return fun
 
 
 #
@@ -135,8 +161,7 @@ def star(block):
     # oldstring = the.string
     # last_string = ""
     try:
-        while True:
-            if checkEndOfLine(): break
+        while not checkEndOfLine():
             # if the.string == "" or the.string == last_string: break
             # last_string = the.string
             match = block() # yield  # <------!!!!!!!!!!!!!!!!!!!
@@ -190,7 +215,7 @@ def star(block):
 
 
 def ignore_rest_of_line():
-    
+
     if not re.search("\n",the.string):
         the.string = ""
         return
@@ -198,9 +223,17 @@ def ignore_rest_of_line():
 
 
 def string_pointer_s():
+    if not the.current_token:
+        offset=len(the.current_line)
+        l=3
+    else:
+        offset=the.current_token[2][1]
+        l=the.current_token[3][1]-offset
+    return the.current_line + "\n" + " " * (offset) + "^"*l + "\n"
+
     offset = len(original_string) - len(the.string)
     if offset < 0: offset = 0
-    return original_string + "\n" + " " * (offset) + "^^^" + "\n"
+    return original_string + "\n" + " " * (offset) + "^"*l + "\n"
 
 
 def string_pointer():
@@ -317,11 +350,13 @@ def to_source(block):
 def filter_backtrace(e):
     return e
 
-
+# so much cheaper!!! -> copy to ruby
 def maybe_tokens(tokens0):
-    return maybe(lambda: tokens(tokens0))
-    # return tokens(x)
-
+    for t in flatten(tokens0):
+        if t==current_word:
+            next_token()
+            return t
+    return False
 
 def __(x):
     return tokens(x)
@@ -340,7 +375,8 @@ def __(x):
 
 # def __init__():
 
-def next_token():
+def next_token(check=True):
+    # if check: check_comment()
     the.token_number=the.token_number+1
     if (the.token_number>=len(the.tokenstream)):
         raise EndOfDocument()
@@ -361,11 +397,13 @@ def set_token(token):
 
 
 def parse_tokens(s):
-    from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
+    import tokenize
     from io import BytesIO
+    the.tokenstream=[]
     def tokeneater(token_type, tokenn, start_row_col, end_row_col, line):
-        the.tokenstream.append((token_type, tokenn, start_row_col, end_row_col, line,len(the.tokenstream)))
-    tokenize(BytesIO(s.encode('utf-8')).readline,tokeneater) # tokenize the string
+        if token_type!=tokenize.COMMENT:
+            the.tokenstream.append((token_type, tokenn, start_row_col, end_row_col, line,len(the.tokenstream)))
+    tokenize.tokenize(BytesIO(s.encode('utf-8')).readline,tokeneater) # tokenize the string
     _token.INDENT # not available here :(
     return the.tokenstream
 
@@ -461,7 +499,7 @@ def raiseEnd():
 
 
 def checkEndOfLine():
-    return current_type==_token.NEWLINE or current_type==_token.ENDMARKER
+    return current_type==_token.NEWLINE or current_type==_token.ENDMARKER or the.token_number>=len(the.tokenstream)
     #if the.string.blank? # no:try,try,try  see raiseEnd: raise EndOfDocument.new
     # return not the.string or len(the.string)==0
 
@@ -479,17 +517,17 @@ def remove_tokens(*tokenz):
 
 def must_contain(*args):
     if isinstance(args[-1], dict):
-        return must_contain_before(args[-1]['before'], args[0:-2])
-    line_number
-    # for x in flatten(args):
-    #     if re.search(r'^\s*\w+\s*$',x):
-    #         if re.search(r'[^\w]%s[^\w]'%x," %s "%the.string):
-    #             return True
-    #     else:  # token
-    #         if x in the.string:
-    #             return True
+        return must_contain_before(args[0:-2],args[-1]['before'])
+    old=current_token
+    while not (checkEndOfLine()):
+        for x in flatten(args):
+            if current_word==x:
+                set_token(old)
+        next_token()
+    set_token(old)
+    raise NotMatching("must_contain "+str(args))
 
-def must_contain_before(before, args):  #,before():None
+def must_contain_before(args,before):  #,before():None
     old=current_token
     good=None
     before=flatten(before)
@@ -522,7 +560,6 @@ def must_contain_before_old(before, *args):  #,before():None
             sub=the.string[0:good]
             if good and before and sub in before and before.index(sub):
                 good = None
-
         if good: break
 
     if not good: raise (NotMatching(x))
@@ -540,17 +577,8 @@ def look_ahead(x):
         raise (NotMatching(x))
 
 
-def _1(x):
-    return look_ahead(x)
-
-
 def _(x):
     return token(x)
-
-
-def _2(x):
-    return maybe(tokens, x)
-
 
 def last_try(stack):
     for s in stack:
@@ -713,7 +741,7 @@ def invalidate_obsolete(old_nodes):
                 n.destroy()
 
 
-
+# start_block optional !?!
 def block():  # type):
     global last_result,original_string
     from english_parser import start_block,statement,end_of_statement,end_block
@@ -721,13 +749,13 @@ def block():  # type):
     original_string = the.string  # _try(REALLY)?
     start = pointer()
     statements=[statement()]
-    content = pointer() - start
+    # content = pointer() - start
     end_of_block = maybe(end_block)  # ___ done_words
     if not end_of_block:
         end_of_statement()  # danger might act as block end!
         def lamb():
             statements.append(statement())
-            content = pointer() - start
+            # content = pointer() - start
             end_of_statement
 
         star(lamb)
@@ -736,7 +764,7 @@ def block():  # type):
 
     last_result = the.result
     if interpreting(): return statements[-1]
-    return content
+    return statements #content
     # if angel.use_tree:
     # p=parent_node()
     # if p: p.content=content
@@ -839,8 +867,10 @@ def maybe(block):
 
 def one_or_more(block):
     all = [block()]
-    current_value = []
-    return all + [star(block)].flatten()
+    more=star(block)
+    if more:
+        all.append(more)
+    return all
 
 
 def to_source(block):
@@ -956,13 +986,14 @@ def token_old(t):
 
 
 def flatten(l):
-  if callable(l):l=l()
-  if isinstance(l,tuple):
-      l=list(l)
-  if not isinstance(l,list):
-      l=l()
-  from itertools import chain
-  return list(chain.from_iterable(l))
+    if isinstance(l,str):return [l]
+    if callable(l):l=l()
+    if isinstance(l,tuple):
+        l=list(l)
+    if not isinstance(l,list):
+        l=l()
+    from itertools import chain
+    return list(chain.from_iterable(l))
 
 
 def tokens(tokenz):
@@ -1011,54 +1042,29 @@ def escape_token(t):
 
 
 def starts_with(tokenz):
-    
     if checkEndOfLine(): return False
-    the.string = the.string + ' '  # todo: as regex?
-    if isinstance(tokenz, str): tokenz = [tokenz]
     for t in tokenz:
-        # RUBY BUG?? the.string.start_with?(r'#{t}[^\w]')
-        if re.search(r'\w',t):
-            if re.search(r'(?im)^%s[^\w]'%t,the.string): return t
-        else:
-            if the.string.startswith(t): return t  # escape_token []
-
+        if t==the.current_word:
+            return t
     return False
-
-
-def stripNewline():
-    pass
-
-
-def newline22():
-    maybe(newline)
-
 
 def raiseNewline():
     if not the.string: raise EndOfLine()
 
 
 def checkNewline():
-    global  line_number,original_string
-    if the.string!="": comment()
-    if not the.string or not the.string.strip():
-        if line_number < len(lines): line_number = line_number + 1
-        if line_number >= len(lines):
-            original_string = ''
-            the.string = ''  #done!
-            return english_tokens.NEWLINE
-
-        #if line_number==len(lines): raise EndOfDocument.new
-        the.string = lines[line_number].strip()  #LOOSE INDENT HERE!!!
-        the.string = re.sub(r'\/\/.*', "",the.string)  # todo : Grab comment()
-        original_string = the.string or ''
-        checkNewline()
+    if(current_type==_token.NEWLINE):
         return english_tokens.NEWLINE
+    return False
 
 
 def newline():
-    if checkNewline() == NEWLINE: return NEWLINE
+    if checkNewline() == NEWLINE:
+        next_token()
+        return NEWLINE
     found = tokens(english_tokens.newline_tokens)
     if checkNewline() == NEWLINE:  # get new line: return NEWLINE
+        next_token()
         return found
     return False
 
@@ -1084,32 +1090,38 @@ def rest_of_statement():
 
 # todo merge ^> :
 def rest_of_line():
-    if not re.search(r'(.*?)[;\n]',the.string):
-        current_value = the.string
-        the.string = None
-        return current_value
-
-    match = re.search(r'(.*?)([;\n].*)',the.string)  # Need to preserve ;\n Characters for 'end of statement'
-    current_value = match.groups()[0]
-    the.string = match.groups()[1]
-    current_value = current_value.strip()
-    return current_value
+    rest=""
+    while not checkEndOfLine():
+        rest+=next_token(False)+" "
+    return rest
 
 
 def comment_block():
-    token('/*')
-    while not re.search(r'\*\/',the.string):
-        rest_of_line()
-        newline22()  #_try(weg)
-    the.string.gsub('.*?\*\/', '')
-    #token '*/'
-    # add_tree_node
+    token('/')
+    token('*')
+    while True:
+        if the.current_word=='*':
+            next_token()
+            if the.current_word=='/':
+                return True
+        next_token()
 
+@Starttokens(['//','#','\'','--','/','\''])
+def check_comment():
+    if the.current_word==None :return
+    l = len(the.current_word)
+    if l==0: return
+    if the.current_type== tokenize.COMMENT:
+        next_token()
+    # if the.current_word[0]=="#": ^^ OK!
+    #        return rest_of_line()
+    if(l >1):
+        # if current_word[0]=="#": rest_of_line()
+        if the.current_word[0:2]=="--": return rest_of_line()
+        if the.current_word[0:2]=="//": return rest_of_line()
+        # if current_word[0:2]=="' ": rest_of_line() and ...
+    # the.string = the.string.replace(r' -- .*', '')
+    # the.string = the.string.replace(r'\/\/.*', '')  # todo
+    # the.string = the.string.replace(r'#.*', '')
+    # if not the.string: checkNewline()
 
-def comment():
-    if the.string == None: raiseEnd()
-    # if current_type == _token.SLASH
-    the.string = the.string.replace(r' -- .*', '')
-    the.string = the.string.replace(r'\/\/.*', '')  # todo
-    the.string = the.string.replace(r'#.*', '')
-    if not the.string: checkNewline()

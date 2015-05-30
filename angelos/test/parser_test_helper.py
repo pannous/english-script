@@ -81,7 +81,10 @@ def assert_result_emitted(a, b, bla=None):
 
 def assert_result_is(a, b, bla=None):
     x=parse(a)
-    assert x==b, "%s %s==%s"%(bla,a,b)
+    if bla:
+        assert x==b, "%s %s SOULD EQUAL%s"%(bla,a,b)
+    else:
+        assert x==b, "%s SOULD EQUAL %s"%(a,b)
 
 
 def parse_file(x):

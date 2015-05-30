@@ -1,5 +1,6 @@
 import _global
 import english_parser
+import interpretation
 import test.parser_test_helper
 
 _global.use_tree = False
@@ -8,11 +9,21 @@ from test.parser_test_helper import *
 from english_parser import *
 
 
-class ScriptError(Exception):
-    pass
+class ParserTest(ParserBaseTest): #EnglishParser
+    # ,EnglishParser   --> TypeError: Error when calling the metaclass bases
+    # metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases
 
+    def test_block_comment(self):
+        assert_result_is('x=10 /*ok*/',10)
+        assert_result_is('x=/*ok*/9 ',9)
 
-class EnglishParserTestParser(EnglishParser):
+    def test_comment(self):
+        assert_result_is('x=11# ok',11)
+        assert_result_is('x=13 //ok',13)
+        # assert_result_is('x=12 -- ok',12)
+
+    def test_comment2(self):
+        parse('#ok')
 
     # def initialize(self):
         # super()
@@ -32,11 +43,11 @@ class EnglishParserTestParser(EnglishParser):
 
     def test_substitute_variables(self):
         self.variableValues = {'x': 3, }
-        assert(equals(substitute_variables(' #{x} ')))
-        assert(equals(substitute_variables('"#{x}"')))
-        assert(equals(substitute_variables(' $x ')))
-        assert(equals(substitute_variables("'$x'")))
-        assert(equals(substitute_variables('#{x}')))
+        assert(equals(interpretation.substitute_variables(' #{x} ')))
+        assert(equals(interpretation.substitute_variables('"#{x}"')))
+        assert(equals(interpretation.substitute_variables(' $x ')))
+        assert(equals(interpretation.substitute_variables("'$x'")))
+        assert(equals(interpretation.substitute_variables('#{x}')))
         assert()
 
     def test_default_setter_dont_overwrite(self):
@@ -54,7 +65,7 @@ class EnglishParserTestParser(EnglishParser):
         token('hello')
         question()
         star()
-        _?('the world')
+        _('the world')
         assert(verb())
         print('Parsed successfully!')
 
@@ -150,16 +161,19 @@ class EnglishParserTestParser(EnglishParser):
         s('help')
         verb()
 
-    def test_comment(self):
+    def test_comment2(self):
         s('#ok')
-        statement()
+        check_comment()
+        # comment()
+        # statement()
         s('z3=13 //ok')
         assert(statement())
-        s('z4=23 -- ok')
+        s('z6=/* dfsfds */3 ')
         assert(statement())
         s('z5=33 # ok')
         assert(statement())
-        s('z6=/* dfsfds */3 ')
+        s('z4=23 -- ok')
+        assert(statement())
 
     def test_js(self):
         s("js alert('hi')")
@@ -169,7 +183,7 @@ class EnglishParserTestParser(EnglishParser):
         test_ruby_def()
         parse('NOW CALL via english')
         s("call ruby_block_test 'yeah'")
-        assert(ruby_method_call())
+        assert(extern_method_call())
 
     def test_ruby_def(self):
         s("def ruby_block_test x='yuhu'\n  puts x\n  return x+'yay'\nend")
@@ -233,10 +247,3 @@ class EnglishParserTestParser(EnglishParser):
             print('++++++++++++++++++\nPARSED successfully!')
         except Exception as ex:
             s('a bug')
-
-class EnglishParserTest(ParserBaseTest):
-    _global.testParser = EnglishParserTestParser()
-
-    def initialize(self, args):
-        self.parser = EnglishParserTestParser()
-        super(args)
