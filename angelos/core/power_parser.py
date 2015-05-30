@@ -131,20 +131,24 @@ def star(block):
     # if(entry_node_offset>48)
     # entry_node=last_node
     #
-    oldstring = the.string
-    last_string = ""
+    old=current_token
+    # oldstring = the.string
+    # last_string = ""
     try:
         while True:
-            if the.string == "" or the.string == last_string: break
-            last_string = the.string
+            if checkEndOfLine(): break
+            # if the.string == "" or the.string == last_string: break
+            # last_string = the.string
             match = block() # yield  # <------!!!!!!!!!!!!!!!!!!!
             if not match: break
-            oldstring = the.string  # (partial)  success
+            old=current_token
+            # oldstring = the.string  # (partial)  success
             good.append(match)
             if current > max and throwing: raise " too many occurrences of " + to_source(block)
 
     except NotMatching as e:
-        the.string = oldstring  # partially reconstruct
+        set_token(old)
+        # the.string = oldstring  # partially reconstruct
         if very_verbose and not good:
             verbose
             "NotMatching star " + str(e)
@@ -168,7 +172,8 @@ def star(block):
     if not not good: return good
     # else: restore!
     throwing = was_throwing
-    the.string = oldstring
+    set_token(old)
+    # the.string = oldstring
     # invalidate_obsolete(old_nodes)
     nodes = old_nodes
     # cleanup_nodes_till entry_node
@@ -228,28 +233,28 @@ def warn(e):
     print(e.message)
 
 
-def one(*matches):
-    
-    oldString = the.string
-    for match in matches:
-        try:
-            the.string = oldString
-            # if match and not isinstance(match, Symbol): return match
-            # if isinstance(match, Symbol): result = send(match)
-            return angel.result  # if result:
-        except NotMatching as e:
-            verbose("NotMatching one " + str(match) + "(" + str(e) + ")")
-            # raise GivingUp.new
-            if not check_rollback_allowed: error
-            return e
-        # except Exception as e:
-        #     error(e)
-        #     return e
-
-    if check_rollback_allowed: the.string = oldString
-    if throwing: verbose
-    "Should have matched one of " + str(matches)
-    raise NotMatching()
+# def one(*matches):
+#
+#     oldString = the.string
+#     for match in matches:
+#         try:
+#             the.string = oldString
+#             # if match and not isinstance(match, Symbol): return match
+#             # if isinstance(match, Symbol): result = send(match)
+#             return angel.result  # if result:
+#         except NotMatching as e:
+#             verbose("NotMatching one " + str(match) + "(" + str(e) + ")")
+#             # raise GivingUp.new
+#             if not check_rollback_allowed: error
+#             return e
+#         # except Exception as e:
+#         #     error(e)
+#         #     return e
+#
+#     if check_rollback_allowed: the.string = oldString
+#     if throwing: verbose
+#     "Should have matched one of " + str(matches)
+#     raise NotMatching()
     # throw "Should have matched one of "+matches
 
     # hack for kleene star etc  _22 == maybe(tokens}
@@ -283,9 +288,6 @@ def one(*matches):
 # def __mul__(a):
 #     print(a)  # HUH??
 
-
-
-
 def caller():
     import inspect
     curframe = inspect.currentframe()
@@ -294,7 +296,6 @@ def caller():
     # print('caller name:', calframe_)
     return calframe
 
-
 def verbose(info):
     if the.verbose:
         print(info)
@@ -302,7 +303,6 @@ def verbose(info):
 def info(info):
     if the.verbose:
         print(info)
-
 
 def error(info):
     # import traceback
@@ -344,19 +344,27 @@ def next_token():
     the.token_number=the.token_number+1
     if (the.token_number>=len(the.tokenstream)):
         raise EndOfDocument()
-    token = the.tokenstream[token_number]
-    the.current_token= token
-    the.current_type= token[0]
-    the.current_word= token[1]
-    the.current_line= token[4]
+    token = the.tokenstream[the.token_number]
+    return set_token(token)
+
+def set_token(token):
+    global current_token,current_type,current_word,current_line,token_number
+    the.current_token= current_token=token
+    the.current_type= current_type=token[0]
+    the.current_word= current_word=token[1]
+    line_number,_   = token[2]
+    end_pointer     = token[3]
+    the.current_line= current_line=token[4]
+    the.token_number=token_number=token[5]
+    the.string=current_word # hack, kinda
     return token[1]
 
 
 def parse_tokens(s):
     from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
     from io import BytesIO
-    def tokeneater(ttype, tokenn, srow_scol, erow_ecol, line):
-        the.tokenstream.append((ttype, tokenn, srow_scol, erow_ecol, line))
+    def tokeneater(token_type, tokenn, start_row_col, end_row_col, line):
+        the.tokenstream.append((token_type, tokenn, start_row_col, end_row_col, line,len(the.tokenstream)))
     tokenize(BytesIO(s.encode('utf-8')).readline,tokeneater) # tokenize the string
     _token.INDENT # not available here :(
     return the.tokenstream
@@ -442,38 +450,59 @@ def error_position():
 #  return yield except True
 #
 def raiseEnd():
-    if not the.string or len(the.string)==0:
-        if line_number >= len(lines): raise EndOfDocument()
-        #the.string=lines[++line_number];
-        raise EndOfLine()
+    if current_type==_token.ENDMARKER:
+        raise EndOfDocument()
+    if (the.token_number>=len(the.tokenstream)):
+        raise EndOfDocument()
+    # if not the.string or len(the.string)==0:
+    #     if line_number >= len(lines): raise EndOfDocument()
+    #     #the.string=lines[++line_number];
+    #     raise EndOfLine()
 
 
 def checkEndOfLine():
+    return current_type==_token.NEWLINE or current_type==_token.ENDMARKER
     #if the.string.blank? # no:try,try,try  see raiseEnd: raise EndOfDocument.new
-    return not the.string or len(the.string)==0
+    # return not the.string or len(the.string)==0
 
 
 def checkEndOfFile():
-    return line_number >= len(lines) and not the.string
+    return current_type==_token.ENDMARKER or the.token_number>=len(the.tokenstream)
+    # return line_number >= len(lines) and not the.string
 
 
 def remove_tokens(*tokenz):
-    for t in flatten(tokenz):
-        the.string = the.string.replace(r' *%s *' % t, " ")
-
+    while(current_word in tokenz):
+        next_token()
+    # for t in flatten(tokenz):
+    #     the.string = the.string.replace(r' *%s *' % t, " ")
 
 def must_contain(*args):
     if isinstance(args[-1], dict):
         return must_contain_before(args[-1]['before'], args[0:-2])
-    for x in flatten(args):
-        if re.search(r'^\s*\w+\s*$',x):
-            if re.search(r'[^\w]%s[^\w]'%x," %s "%the.string):
-                return True
-        else:  # token
-            if x in the.string:
-                return True
+    line_number
+    # for x in flatten(args):
+    #     if re.search(r'^\s*\w+\s*$',x):
+    #         if re.search(r'[^\w]%s[^\w]'%x," %s "%the.string):
+    #             return True
+    #     else:  # token
+    #         if x in the.string:
+    #             return True
 
-def must_contain_before(before, *args):  #,before():None
+def must_contain_before(before, args):  #,before():None
+    old=current_token
+    good=None
+    before=flatten(before)
+    while not (checkEndOfLine() or current_word in before):
+        if current_word in args:
+            good=current_word
+            break
+        next_token()
+    set_token(old)
+    if not good: raise (NotMatching(args))
+    return good
+
+def must_contain_before_old(before, *args):  #,before():None
     raiseEnd()
     good = False
     if before and isinstance(before, str): before = [before]
@@ -580,12 +609,14 @@ def any(block):
     was_throwing = throwing
     throwing = False
     #throwing[level]=false
-    oldString = the.string
+    old=current_token
+    # oldString = the.string
     result = False
     try:
         result = block() # yield  # <--- !!!!!
         if not result:
-            the.string = oldString
+            set_token(old)
+            # the.string = oldString
             raise NoResult(to_source(block))
         return result
     except EndOfDocument:
@@ -604,7 +635,9 @@ def any(block):
     if result: verbose("Succeeded with any #{to_source(block)}")
     # if verbose and not result: string_pointer()
     last_token = string_pointer_s()  #if not last_token:
-    if check_rollback_allowed(): the.string = oldString
+    if check_rollback_allowed():
+        set_token(old)
+        # the.string = oldString
     throwing = was_throwing
     #throwing[level]=True
     #level=level-1
@@ -710,6 +743,8 @@ def block():  # type):
     #   p
     #
 
+
+
 def maybe(block):
     if not callable(block): # duck!
         return maybe_tokens(block)
@@ -718,8 +753,9 @@ def maybe(block):
     # allow_rollback 1
     depth = depth + 1
     if (caller_depth() > const.max_depth):raise SystemStackError("if(len(nodes)>max_depth)")
-    old = the.string  # NOT overwritten, instead of:
-    if not original_string: original_string = the.string or ""
+    # old = the.string  # NOT overwritten, instead of:
+    old = current_token
+    # if not original_string: original_string = the.string or ""
     try:
         old_nodes = list(nodes)#.clone()
         result = block() #yield <<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -729,14 +765,15 @@ def maybe(block):
             adjust_rollback()
         else:
             invalidate_obsolete(old_nodes)
-            the.string = old
-
+            set_token(old)
+            # the.string = old
         last_node = current_node
         return result
     except (NotMatching, EndOfLine) as e:
         # old=original_string # REALLY>??
         current_value = None
-        the.string = old
+        set_token(old)
+        # the.string = old
         interpreting(2) #?
         # if verbose: verbose(e)
         if verbose: verbose("Tried "+to_source(block))
@@ -766,7 +803,7 @@ def maybe(block):
             # raise SyntaxError(e)
     except EndOfDocument as e:
         invalidate_obsolete(old_nodes)
-        the.string = old
+        set_token(old)
         verbose("EndOfDocument")
         #raise e
         return False
@@ -778,7 +815,7 @@ def maybe(block):
         #if not check_rollback_allowed:
         #     if rollback[len(caller)-1]!="NO" #:
     except IgnoreException as e:  # NoMethodError etc
-        the.string = old
+        set_token(old)
         error(e)
         verbose(e)
     except Error as e:
@@ -795,7 +832,7 @@ def maybe(block):
     # finally:
     adjust_rollback()
     depth = depth - 1
-    the.string = old  #if rollback:
+    set_token(old) #if rollback:
     nodes = old_nodes  # restore
     return False
 
@@ -809,31 +846,32 @@ def one_or_more(block):
 def to_source(block):
     return str(block)
 
-def many(block):
-    global  old_tree,result
-    while True:
-        try:
-            maybe(comment)
-            old_tree = list(nodes)#.clone
-            result = block() # yield
-            # puts "------------------"
-            #puts nodes-old_tree
-            if(not the.string or len(the.string)==0 ):break  # TODO! loop criterion too week: break
-            if not result or result == []:
-                raise NotMatching(to_source(block) + "\n" + string_pointer_s())
-        except IgnoreException as e:
-            import traceback
-            traceback.print_stack() # backtrace
-            error(e)
+# def many(block): # see star
+#     global  old_tree,result
+#     while True:
+#         try:
+#             maybe(comment)
+#             old_tree = list(nodes)#.clone
+#             result = block() # yield
+#             # puts "------------------"
+#             #puts nodes-old_tree
+#             if(not the.string or len(the.string)==0 ):break  # TODO! loop criterion too week: break
+#             if not result or result == []:
+#                 raise NotMatching(to_source(block) + "\n" + string_pointer_s())
+#         except IgnoreException as e:
+#             import traceback
+#             traceback.print_stack() # backtrace
+#             error(e)
 
 # GETS FUCKED UP BY the.string.strip()! !!! ???
 def pointer():
-    global  parser
-    if not lines or line_number >= len(lines): return Pointer(line_number, 0, parser)
-    # line_number copy by ref?????????
-    line = lines[line_number] + "$$$"
-    offset = line.find(the.string + "$$$")  # len(original_string)-(the.string or "").length
-    return Pointer(line_number, offset or 0,parser)
+    return current_token[2]
+    # global parser
+    # if not lines or line_number >= len(lines): return Pointer(line_number, 0, parser)
+    # # line_number copy by ref?????????
+    # line = lines[line_number] + "$$$"
+    # offset = line.find(the.string + "$$$")  # len(original_string)-(the.string or "").length
+    # return Pointer(line_number, offset or 0,parser)
 
 
 def isnumeric(start):
@@ -881,7 +919,7 @@ def parse(s):
     #
     #   parse lines[0]
 
-def token_new(t):
+def token(t): #_new
     if isinstance(t, list):
         return tokens(t)
     raiseEnd()
@@ -894,7 +932,7 @@ def token_new(t):
         raise NotMatching(t)
 
 
-def token(t):
+def token_old(t):
     global throwing
     if isinstance(t, list): return tokens(t)
     # if checkEnd: return None
@@ -926,9 +964,21 @@ def flatten(l):
   from itertools import chain
   return list(chain.from_iterable(l))
 
-def tokens(*tokenz):
-    global  throwing
 
+def tokens(tokenz):
+    current_value=None
+    raiseEnd()
+    for t in flatten(tokenz):
+        if t==current_word:
+            current_value=t
+            next_token()
+    if not current_value:
+        raise NotMatching(result)
+    else:
+        return current_value # or all
+
+def tokens_old(*tokenz):
+    global  throwing
     # encoding: utf-8
     if isinstance(tokenz,classmethod):
         tokenz=tokenz()

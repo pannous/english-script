@@ -2119,7 +2119,7 @@ def endNode():
     x = any(lambda:  # NODE )
             #_try( plural) or
             maybe(liste) or
-            maybe(rubyThing) or
+            # maybe(rubyThing) or
             maybe(fileName) or
             maybe(linuxPath) or
             maybe(quote) or  #redundant with value !
@@ -2566,7 +2566,8 @@ def the_():
 
 
 def number_word():
-    return str(__(numbers)).parse_integer  #except NotMatching.new "no number"
+    n=__(numbers)
+    return str(n).parse_integer()  #except NotMatching.new "no number"
 
 
 def fraction():
@@ -2586,89 +2587,62 @@ def number():
 # _try(complex)  or
 
 def integer():
-    ## global the.string
-    raiseEnd()
     match = re.search(r'^\s*(-?\d+)',the.string)
     if match:
         current_value = int(match.groups()[0])
-        the.string = the.string[match.end():].strip()
+        next_token()
         return current_value
-
-    #return false
     raise NotMatching("no integer")
     #plus{tokens('1','2','3','4','5','6','7','8','9','0'))
 
 
 def real():
     ## global the.string
-    raiseEnd()
     match = re.search(r'^\s*(-?\d*\.\d+)',the.string)
     if match:
         current_value = float(match.groups()[0])
-        the.string = the.string[match.end():].strip()
+        next_token()
         return current_value
-
     #return false
     raise NotMatching("no real (unreal)")
 
 
 def complex():
-    ## global the.string
     s = the.string.strip().replace("i","j") # python!
     match = re.search(r'^(\d+j)', s)  # 3i
     if not match: match = re.search(r'^(\d*\.\d+j)', s)  # 3.3i
     if not match: match = re.search(r'^(\d+\s*\+\s*\d+j)', s)  # 3+3i
     if not match: match = re.search(r'^(\d*\.\d+\s*\+\s*\d*\.\d+j)', s)  # 3+3i
     if match:
-        current_value = complex(match[0].groups())
-        the.string = s[match.end():].strip()
+        the.current_value = complex(match[0].groups())
+        next_token()
         return current_value
     return False
 
 
 def fileName():
-    ## global the.string
     raiseEnd()
     match = is_file(the.string, False)
     if match:
         path = match[0]
         path = path.gsub(r'^/home', "'Users")
         path = extensions.File(path)
-        the.string = the.string[match.end():].strip()
-        current_value = path
+        next_token()
+        the.current_value = path
         return path
     return False
 
 def linuxPath():
-    ## global the.string
     raiseEnd()
     match = match_path(the.string)
     if match:
         path = match[0]
         path = path.gsub(r'^/home', "'Users")
         path = extensions.Dir(path)  # except path
-        the.string = the.string[match.end():].strip()
-        current_value = path
+        next_token()
+        the.current_value = path
         return path
     return False
-
-
-def rubyThing():
-    ## global the.string
-    raiseEnd()
-    match = re.search(r'^[A-Z]\w+\.\w+',the.string)
-    if not match:
-        return False
-    thing = match[0]
-    the.string = the.string[match.end():].strip()
-    args = re.search(r'^\(.*?\)',the.string)
-    if args: the.string = args.post_match.strip()
-    args = args or " #{value22 or '')"
-    thing = thing + "#{args)"
-    verbose("rubyThing: " + thing)
-    # todo: better than eval!
-    if interpret(): current_value = eval(thing)
-    return current_value
 
 def loops():
     # any {#loops }
