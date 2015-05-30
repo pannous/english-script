@@ -1,5 +1,5 @@
 import _global
-_global.use_tree = _global.emit
+# _global.use_tree = _global.emit
 _global.use_tree = False
 from parser_test_helper import *
 
@@ -21,6 +21,8 @@ class ConditionTest(ParserBaseTest):
 
     def test_return(self):
         assert_result_is('if 1<2 then 5 else 4', 5)
+
+    def test_return2(self):
         assert_result_is('if(1<2) then 3 else 4', 3)
         assert_result_is('if(3<2) then 3 else 4', 4)
         assert_result_is('if 3<2 then 5 else 4', 4)

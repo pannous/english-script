@@ -81,7 +81,7 @@ def assert_result_emitted(a, b, bla=None):
 
 def assert_result_is(a, b, bla=None):
     x=parse(a)
-    assert x==b
+    assert x==b, "%s %s==%s"%(bla,a,b)
 
 
 def parse_file(x):
@@ -250,7 +250,7 @@ class ParserBaseTest(unittest.TestCase):
                 ok = self.parser.condition()
                 if _global.emit:
                     ok = parser.emit(None, ok),
-            except Exception as e:
+            except power_parser.IgnoreException as e:#  Exception as e:
                 p("ERROR "+e)
             if ok==False:
                 assert(ok!=False, ((x + ' NOT PASSING: ') + msg))

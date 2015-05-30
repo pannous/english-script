@@ -5,7 +5,7 @@
 import const
 import english_tokens
 import re
-
+import token as _token
 import exceptions
 from exceptions import *
 from nodes import Pointer
@@ -111,6 +111,7 @@ def isnumeric(start):
         #
 
 
+# _try=maybe
 
 def star(block):
     global  throwing,nodes
@@ -159,9 +160,9 @@ def star(block):
         error(e)
         error("error in star " + to_source(block))
         # warn e
-    except Exception as e:
-        error(e)
-        raise e
+    # except Exception as e:
+    #     error(e)
+    #     raise e
 
     if len(good) == 1: return good[0]
     if not not good: return good
@@ -241,9 +242,9 @@ def one(*matches):
             # raise GivingUp.new
             if not check_rollback_allowed: error
             return e
-        except Exception as e:
-            error(e)
-            return e
+        # except Exception as e:
+        #     error(e)
+        #     return e
 
     if check_rollback_allowed: the.string = oldString
     if throwing: verbose
@@ -298,6 +299,10 @@ def verbose(info):
     if the.verbose:
         print(info)
 
+def info(info):
+    if the.verbose:
+        print(info)
+
 
 def error(info):
     # import traceback
@@ -313,8 +318,9 @@ def filter_backtrace(e):
     return e
 
 
-def maybe_tokens(x):
-    return tokens(x)
+def maybe_tokens(tokens0):
+    return maybe(lambda: tokens(tokens0))
+    # return tokens(x)
 
 
 def __(x):
@@ -322,10 +328,10 @@ def __(x):
 
 
 # shortcut: method missing (and maybe(}?)
-def maybe_tokens(*x):
-    # DANGER!! Obviously very different semantics from maybe(tokens}!!
-    # remove_tokens x # shortcut
-    return maybe(tokens, x)
+# def maybe_tokens(*x):
+#     # DANGER!! Obviously very different semantics from maybe(tokens}!!
+#     # remove_tokens x # shortcut
+#     return maybe(tokens, x)
 
 
 # class Parser(object):  # <MethodInterception:
@@ -334,13 +340,41 @@ def maybe_tokens(*x):
 
 # def __init__():
 
+def next_token():
+    the.token_number=the.token_number+1
+    if (the.token_number>=len(the.tokenstream)):
+        raise EndOfDocument()
+    token = the.tokenstream[token_number]
+    the.current_token= token
+    the.current_type= token[0]
+    the.current_word= token[1]
+    the.current_line= token[4]
+    return token[1]
+
+
+def parse_tokens(s):
+    from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
+    from io import BytesIO
+    def tokeneater(ttype, tokenn, srow_scol, erow_ecol, line):
+        the.tokenstream.append((ttype, tokenn, srow_scol, erow_ecol, line))
+    tokenize(BytesIO(s.encode('utf-8')).readline,tokeneater) # tokenize the string
+    _token.INDENT # not available here :(
+    return the.tokenstream
+
 def init(strings):
+    # global is ok within one file but do not use it across different files
     global  no_rollback_depth,rollback_depths,line_number,original_string,root,lines,nodes,depth,lhs,rhs,comp
     no_rollback_depth = -1
     rollback_depths=[]
     line_number = 0
-    if isinstance(strings, list): lines = strings
-    if isinstance(strings, str): lines = strings.split("\n")
+    if isinstance(strings, list):
+        lines = strings
+        parse_tokens("\n".join(strings))
+    if isinstance(strings, str):
+        lines = strings.split("\n")
+        parse_tokens(strings)
+    the.token_number=-1
+    next_token()
     the.string= lines[0].strip()  # Postpone angel.problem
     original_string = the.string
     root = None
@@ -373,8 +407,8 @@ def doassert(x=None, block=None):
             ok = english_parser.condition()
         except SyntaxError as e:
             raise e  # ScriptError.new "NOT PASSING: SyntaxError : "+x+" \t("+e.class.to_s+") "+e.to_s
-        except Exception as e:
-            raise NotPassing("NOT PASSING: " + str(x) + " \t(" + str(type(e)) + ") " + str(e))
+        # except Exception as e:
+        #     raise NotPassing("NOT PASSING: " + str(x) + " \t(" + str(type(e)) + ") " + str(e))
 
         if not ok:
             raise NotPassing("NOT PASSING: " + str(x))
@@ -547,6 +581,7 @@ def any(block):
     throwing = False
     #throwing[level]=false
     oldString = the.string
+    result = False
     try:
         result = block() # yield  # <--- !!!!!
         if not result:
@@ -567,7 +602,7 @@ def any(block):
         error(e)
 
     if result: verbose("Succeeded with any #{to_source(block)}")
-    if verbose and not result: string_pointer()
+    # if verbose and not result: string_pointer()
     last_token = string_pointer_s()  #if not last_token:
     if check_rollback_allowed(): the.string = oldString
     throwing = was_throwing
@@ -614,12 +649,12 @@ def no_rollback11(n=0):
 
 def allow_rollback(n=0):
     global  depth,no_rollback_depth,rollback_depths,original_string
-    if n < 0: rollback_depths = []
-    if len(rollback_depths)>1 :
-        no_rollback_depth = rollback_depths.pop()
+    if n < 0: the.rollback_depths = []
+    if len(the.rollback_depths)>1 :
+        the.no_rollback_depth = the.rollback_depths.pop()
     else:
-         no_rollback_depth = -1
-    original_string = the.string  #if following(no_rollback11):
+         the.no_rollback_depth = -1
+    the.original_string = the.string  #if following(no_rollback11):
 
 
 def adjust_rollback(depth=-10):
@@ -676,9 +711,9 @@ def block():  # type):
     #
 
 def maybe(block):
+    if not callable(block): # duck!
+        return maybe_tokens(block)
     global original_string, last_node, current_value, depth,nodes,current_node,last_token
-    if not callable(block):
-        block=lambda: tokens(block)
     #if checkEnd: return
     # allow_rollback 1
     depth = depth + 1
@@ -689,7 +724,7 @@ def maybe(block):
         old_nodes = list(nodes)#.clone()
         result = block() #yield <<<<<<<<<<<<<<<<<<<<<<<<<<<<
         if(callable(result)):
-            raise Exception("CALLABLE "+str(result))
+            raise Exception("returned CALLABLE "+str(result))
         if result:
             adjust_rollback()
         else:
@@ -703,9 +738,9 @@ def maybe(block):
         current_value = None
         the.string = old
         interpreting(2) #?
-        if verbose: verbose(e)
+        # if verbose: verbose(e)
         if verbose: verbose("Tried "+to_source(block))
-        if verbose: string_pointer()
+        # if verbose: string_pointer()
         invalidate_obsolete(old_nodes)
         # (nodes - old_nodes).each(lambda n: n.destroy())  #n.valid=false;
         #caller.index(last_try caller)]
@@ -749,14 +784,14 @@ def maybe(block):
     except Error as e:
         error(e)
         raise e
-    except Exception as e:
-        error(block)
-        import traceback
-        traceback.print_stack() # backtrace
-        error(e)
-        error(block)
-        print("-------------------------")
-        quit()
+    # except Exception as e:
+    #     error(block)
+    #     import traceback
+    #     traceback.print_stack() # backtrace
+    #     error(e)
+    #     error(block)
+    #     print("-------------------------")
+    #     quit()
     # finally:
     adjust_rollback()
     depth = depth - 1
@@ -846,6 +881,18 @@ def parse(s):
     #
     #   parse lines[0]
 
+def token_new(t):
+    if isinstance(t, list):
+        return tokens(t)
+    raiseEnd()
+    if current_word==t:
+        next_token()
+        return current_word
+    else:
+        if throwing: verbose('expected ' + str(result))  #
+        string_pointer()
+        raise NotMatching(t)
+
 
 def token(t):
     global throwing
@@ -863,14 +910,15 @@ def token(t):
         else:
             the.string = the.string.strip()
             return current_value
-
     else:
         if throwing: verbose('expected ' + str(result))  #
+        string_pointer()
         raise NotMatching(t)
         #todo: proper token stream, pre-lex'ed
 
 
 def flatten(l):
+  if callable(l):l=l()
   if isinstance(l,tuple):
       l=list(l)
   if not isinstance(l,list):
@@ -1003,15 +1051,14 @@ def comment_block():
     while not re.search(r'\*\/',the.string):
         rest_of_line()
         newline22()  #_try(weg)
-
     the.string.gsub('.*?\*\/', '')
     #token '*/'
     # add_tree_node
 
 
 def comment():
-    
     if the.string == None: raiseEnd()
+    # if current_type == _token.SLASH
     the.string = the.string.replace(r' -- .*', '')
     the.string = the.string.replace(r'\/\/.*', '')  # todo
     the.string = the.string.replace(r'#.*', '')

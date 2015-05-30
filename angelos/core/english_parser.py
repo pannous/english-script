@@ -17,7 +17,7 @@ import HelperMethods
 
 import interpretation
 # import HelperMethods
-from nodes import Function, Argument, Variable, Property
+from nodes import Function, Argument, Variable, Property, Condition
 from nodes import FunctionCall
 import power_parser
 from power_parser import *
@@ -30,6 +30,10 @@ from treenode import TreeNode
 def parent_node():
     pass
 # ## global the.string
+
+
+def _try(block):
+    return maybe(block)
 
 def _(x):
     return power_parser._(x)
@@ -69,15 +73,12 @@ def boolean():
     return the.result
     # OK
 
-# _try=maybe
-def _try(block):
-    return maybe(block)
 
 
 def should_not_start_with(words):
     bad = _try(lambda: starts_with(words))
     if not bad: return OK
-    if bad: verbose("should_not_match DID match #{bad)")
+    if bad: info("should_not_match DID match #{bad)")
     if bad: raise ShouldNotMatchKeyword(bad)
 
 
@@ -159,7 +160,7 @@ def __(*token):
 
 
 def ___(*tokens0):
-    return _try(lambda: tokens(tokens0))
+    return maybe(lambda: tokens(tokens0))
 
 
     # !!!
@@ -201,6 +202,8 @@ def interpretation():
 def end_expression():
     return checkEndOfLine() or ___((newline_tokens) or newline)
 
+def raiseSyntaxError():
+    raise SyntaxError("incomprehensible input")
 
 def rooty():
     r=maybe(expressions) or\
@@ -211,7 +214,7 @@ def rooty():
       maybe(statement and end_expression) or \
       maybe(expressions and end_expression) or \
       maybe(lambda: condition() or the.comp) or \
-      context()
+      maybe(context) or raiseSyntaxError()# raise_not_matching("")
     return r
     # # maybe( ruby_def )or\ # SHOULD BE just as method_definition !!:
 
@@ -269,7 +272,12 @@ def package_version():
 
 
 def no_rollback(depth=0):
-    pass
+    depth =caller_depth()-1
+    while len(the.rollback_depths)>0 and the.rollback_depths[-1]>depth:
+      the.rollback_depths.pop()
+
+    the.rollback_depths.append(the.no_rollback_depth)
+    the.no_rollback_depth =depth
 
 
 def requirements():
@@ -328,8 +336,8 @@ def algebra():
                 stack[0]=the.result = do_send(stack[0], op, y or the.result)
             except SyntaxError as e:
                 error(e)
-            except Exception as e:
-                raise e
+            # except Exception as e:
+            #     raise e
         return the.result or True
     the.result=star(lamb)
 #         if angel.use_tree and not interpreting():
@@ -599,9 +607,9 @@ def expressions(fallback=None):
 
 
 def piped_actions():
-    if angel.in_pipe(): return False
+    if the.in_pipe: return False
     must_contain("|")
-    in_pipe = True
+    the.in_pipe = True
     a = statement()
     token('|')
     no_rollback()
@@ -623,8 +631,9 @@ def statement():
     if checkNewline(): return NEWLINE
 
         # maybe( if_then ) or
-    x=  maybe(loops) or \
-        maybe(if_then_else) or \
+    # x=  maybe(loops) or \
+    x=    maybe(if_then_else) or \
+        maybe(action_if) or \
         maybe(once) or \
         maybe(piped_actions) or \
         maybe(declaration) or \
@@ -709,8 +718,7 @@ def bash_action():
 
 
 def if_then_else():
-    maybe(if_then)  # todo :if 1 then False else: 2 => 2 :(: ok      =
-    ok = action_if
+    ok=maybe(if_then)  # todo :if 1 then False else: 2 => 2 :(: ok      =
     if ok == False:
         ok = FALSE
     o = _try(otherwise) or FALSE
@@ -736,23 +744,22 @@ def action_if():
 def if_then():
     __(if_words)
     no_rollback()  # 100
-    c = condition_tree
+    c = condition_tree()
     if c == None: raise InternalError("no condition_tree")
     # c=condition
     maybe_token('then')
     dont_interpret()  # if not c  else: dont do_execute_block twice!:
-    b = expression_or_block  # action_or_block()
+    b = expression_or_block()  # action_or_block()
     # o=_try(otherwise)
     # if use_block: b=block
     # if not use_block: b=statement
     # if not use_block: b=action()
-    allow_rollback
+    allow_rollback()
     if interpreting():
         if check_condition(c):
             return do_execute_block(b)
         else:
             return OK  # o or  false but block ok!
-
     return b
 
 
@@ -855,11 +862,11 @@ def ruby_method_call():
             return the.result
         except SyntaxError as e:
             print("\n!!!!!!!!!!!!\n ERROR calling #{the_call)\n!!!!!!!!!!!! #{e)\n ")
-        except Exception as e:
-            print("\n!!!!!!!!!!!!\n ERROR calling #{the_call)\n!!!!!!!!!!!! #{e)\n ")
-            import traceback
-            error(traceback.extract_stack())
-            print('!!!! ERROR calling ' + the_call)
+        # except Exception as e:
+        #     print("\n!!!!!!!!!!!!\n ERROR calling #{the_call)\n!!!!!!!!!!!! #{e)\n ")
+        #     import traceback
+        #     error(traceback.extract_stack())
+        #     print('!!!! ERROR calling ' + the_call)
 
     checkNewline()
     #raiseEnd
@@ -1088,7 +1095,7 @@ def expression_or_block():  # action_or_block):
     # dont_interpret  # _try(always)
     a = maybe(action) or maybe(expressions)
     if a: return a
-    b = block
+    b = block()
     return b
 
 
@@ -1114,7 +1121,10 @@ def close_tag(type):
 
 
 def call_function(f, args=None):
-    do_send(f.object, f.name, args or f.arguments)
+    if(callable(f)):
+        if(args):return f(args)
+        else:return f()
+    return do_send(f.object, f.name, args or f.arguments)
 
 
 def raiseNewline():
@@ -1274,7 +1284,7 @@ def declaration():
 #  CAREFUL WITH WATCHES!!! THEY manipulate the current system, especially variable
 #r'*	 let nod be nods *'
 def setter():
-    must_contain_before['>', '<', '+', '-', '|', '/', '*'], be_words + ['set']
+    must_contain_before(['>', '<', '+', '-', '|', '/', '*'], be_words + ['set'])
     if _try(let): _let = no_rollback()
     a = _try(_the)
     mod = _try(modifier)
@@ -1382,7 +1392,7 @@ def word(include=[]):
 
 
 def should_not_contain(words):
-    for w in [words].flatten():
+    for w in flatten([words]):
         if re.search(r'^\w',w):
             bad = re.search(r'(?im)^\w%s^\w'%w,the.string)
         else:
@@ -1661,13 +1671,18 @@ def check_list_condition(quantifier,lhs,comp,rhs):
 
 
 def check_condition(cond=None, negate=False):
+    if cond == None: raise InternalError("NO Condition given!")
     if cond == True or cond == 'True': return True
     if cond == False or cond == 'False': return False
-    if cond != None and not isinstance(cond, TreeNode) and not isinstance(cond, str): return cond
+    if not isinstance(cond, (TreeNode, str, Condition)):  return cond
     # cond==None  or
     # if cond==false: return false
     try:
         # else: use state variables todo better!
+        if isinstance(cond, Condition):
+            lhs=cond.lhs
+            rhs=cond.rhs
+            comp=cond.comp
         if isinstance(cond, TreeNode):
             lhs = cond['expressions']
             rhs = cond.all('expressions').reject(lambda x: x == False)[-1]
@@ -1734,12 +1749,13 @@ def condition():
     if brace: _(')')
     negate = (negated or _not) and not (negated and _not)
     subnode({'negate':negate})
-    if not comp: lhs
+    if not comp: return lhs
 
     # 1,2,3 are smaller 4  VS 1,2,3.contains(4)
     if isinstance(lhs, list) and not _try(lambda: lhs.respond_to(comp)) and not isinstance(rhs,list):
         quantifier = quantifier or "all"
     # if not comp: return  negate ?  not a : a
+    cond=Condition(lhs=lhs,comp=comp,rhs=rhs)
     if interpreting():
         if quantifier:
             if negate:
@@ -1747,13 +1763,14 @@ def condition():
             else:
                 return check_list_condition(quantifier)
         if negate:
-            return ( not check_condition())
+            return ( not check_condition(cond))
         else:
-            return check_condition()  # None
-
+            return check_condition(cond)  # None
+    else:
+        return cond
     # return Condition.new lhs:a,cmp:comp,rhs:b
-    if not angel.use_tree: return start - pointer()
-    if angel.use_tree: return parent_node()
+    # if not angel.use_tree: return start - pointer()
+    # if angel.use_tree: return parent_node()
 
 
 def condition_tree(recurse=True):
@@ -1761,7 +1778,7 @@ def condition_tree(recurse=True):
     maybe_token('either')  # todo don't match 'either of'!!!
     # negate=maybe_token('neither')
     if brace and recurse: c = condition_tree(False)
-    if not brace: c = condition
+    if not brace: c = condition()
     cs=[c] # lamda hack
     def lamb():
         op = __('and', 'or', 'nor', 'xor', 'nand', 'but')
@@ -2216,11 +2233,11 @@ def evaluate_property():
     except SyntaxError as e:
         verbose("ERROR do_evaluate_property")
         #if not the.result: the.result=jeannie all
-    except Exception as e:
-        verbose("ERROR do_evaluate_property")
-        verbose(e)
-        error(e)
-        error(traceback.extract_stack())
+    # except Exception as e:
+    #     verbose("ERROR do_evaluate_property")
+    #     verbose(e)
+    #     error(e)
+    #     error(traceback.extract_stack())
         #if not the.result: the.result=jeannie all
 
     return the.result
@@ -2313,12 +2330,15 @@ def start_shell():
             if not interpretation: next
             if angel.use_tree: print(interpretation.tree)
             print(interpretation.result)
+        except IgnoreException as e:
+            pass
+
         # except NotMatching as e:
         #   print('Syntax Error')
         # except GivingUp as e:
         #   print('Syntax Error')
-        except Exception as e:
-            print(e)
+        # except Exception as e:
+        #     print(e)
         input0 = input()
     print("")
     exit()

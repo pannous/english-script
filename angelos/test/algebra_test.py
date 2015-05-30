@@ -18,9 +18,10 @@ class AlgebraTest(ParserBaseTest):
 
     def test_algebra_NOW(self):
         skip('test_algebra_NOW, DONT SKIP!')
-        assert_result_is('1+(3/4)', u'1\xbe')
-        assert_result_is('1+3/4.0', u'1\xbe')
-        assert_result_is('1.0+3/4.0', u'1\xbe')
+        assert_result_is('1.0+(3/4.0)', 7/4)
+        assert_result_is('1.0+3/4.0', 7/4)
+        assert_result_is('1+3/4.0', 7/4)
+        assert_result_is('1+(3/4)', 7/4)
 
     def test_algebra(self):
         ok = parse('2*(3+10)')

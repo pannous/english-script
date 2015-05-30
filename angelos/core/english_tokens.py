@@ -1,4 +1,6 @@
 # encoding: utf-8
+from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
+from io import BytesIO
 import os
 # import TreeBuilder
 import angel

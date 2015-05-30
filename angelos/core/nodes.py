@@ -3,6 +3,12 @@
 # import the
 from the import *
 
+class Condition(object):
+  def __init__(self, **kwargs): #ruby : initialize
+    self.lhs = kwargs['lhs']
+    self.comp= kwargs['comp']
+    self.rhs = kwargs['rhs']
+
 class Quote(str):
   def is_a(className):
     # if isinstance(className,type): isinstance(return,className)
