@@ -1,0 +1,1126 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<GlobalAsgn name='$verbose'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='ListTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='test_type0'>
+				<Argument name='test_type0'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='1 , 2 , 3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='list'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='1,2,3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='list'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='[1,2,3]'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='list'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='{1,2,3}'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='list'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='1,2 and 3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='list'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='[1,2 and 3]'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='list'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='{1,2 and 3}'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='list'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_list_methods'>
+				<Argument name='test_list_methods'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='invert [1,2,3]'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Array>
+								<Fixnum value='3'/>
+								<Fixnum value='2'/>
+								<Fixnum value='1'/>
+							</Array>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_error'>
+				<Argument name='test_error'/>
+				<Args/>
+				<FCall name='assert_has_error'>
+					<Array>
+						<Str>first item in 'hi,'you' is 'hi'
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_last'>
+				<Argument name='test_last'/>
+				<Args/>
+				<FCall name='assert'>
+					<Array>
+						<Str>last item in 'hi','you' is equal to 'you'
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_select2'>
+				<Argument name='test_select2'/>
+				<Args/>
+				<Block>
+					<FCall name='assert'>
+						<Array>
+							<Str>first item in 'hi','you' is 'hi'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>second item in 'hi','you' is 'you'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>last item in 'hi','you' is 'you'
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_select3'>
+				<Argument name='test_select3'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str>1st word of 'hi','you'
+								</Array>
+							</FCall>
+							<Str value='hi'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>1st word of 'hi','you' is 'hi'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>2nd word of 'hi','you' is 'you'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>3rd word of 'hi','my','friend' is 'friend'
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_select4'>
+				<Argument name='test_select4'/>
+				<Args/>
+				<Block>
+					<FCall name='assert'>
+						<Array>
+							<Str>first word of 'hi','you' is 'hi'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>second word of 'hi','you' is 'you'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>last word of 'hi','you' is 'you'
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_select5'>
+				<Argument name='test_select5'/>
+				<Args/>
+				<Block>
+					<VCall name='skip'/>
+					<FCall name='assert'>
+						<Array>
+							<Str value='numbers are 1,2,3. second number is 2'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='my friends are a,b and c. my second friend is b'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_select6'>
+				<Argument name='test_select6'/>
+				<Args/>
+				<Block>
+					<FCall name='assert'>
+						<Array>
+							<Str>last character of 'howdy' is 'y'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>first character of 'howdy' is 'h'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>second character of 'howdy' is 'o'
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_list_syntax'>
+				<Argument name='test_list_syntax'/>
+				<Args/>
+				<Block>
+					<FCall name='assert'>
+						<Array>
+							<Str value='1,2 is [1,2]'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='1,2 is {1,2}'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='1,2 == [1,2]'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='[1,2] is {1,2}'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='1,2 = [1,2]'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_list_syntax2'>
+				<Argument name='test_list_syntax2'/>
+				<Args/>
+				<Block>
+					<FCall name='assert'>
+						<Array>
+							<Str value='1,2,3 is the same as [1,2,3]'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='1,2 and 3 is the same as [1,2,3]'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='1,2 and 3 are the same as [1,2,3]'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='1,2 and 3 is [1,2,3]'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation'>
+				<Argument name='test_concatenation'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x is 1,2,3;y=4,5,6'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='value'>
+									<Call name='[]'>
+										<VCall name='variables'/>
+										<Args>
+											<Str value='x'/>
+										</Args>
+									</Call>
+									<List/>
+								</Call>
+								<Args>
+									<Array>
+										<Fixnum value='1'/>
+										<Fixnum value='2'/>
+										<Fixnum value='3'/>
+									</Array>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='count'>
+									<Call name='value'>
+										<Call name='[]'>
+											<VCall name='variables'/>
+											<Args>
+												<Str value='y'/>
+											</Args>
+										</Call>
+										<List/>
+									</Call>
+									<List/>
+								</Call>
+								<Args>
+									<Fixnum value='3'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='x + y'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='z'>
+						<Call name='algebra'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='length'>
+								<LocalVar name='z'/>
+								<List/>
+							</Call>
+							<Fixnum value='6'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='z'>
+						<FCall name='parse'>
+							<Array>
+								<Str value='x + y'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='length'>
+								<LocalVar name='z'/>
+								<List/>
+							</Call>
+							<Fixnum value='6'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='length'>
+								<VCall name='result'/>
+								<List/>
+							</Call>
+							<Fixnum value='6'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='z'>
+						<FCall name='parse'>
+							<Array>
+								<Str value='x plus y'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='length'>
+								<LocalVar name='z'/>
+								<List/>
+							</Call>
+							<Fixnum value='6'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation_plus'>
+				<Argument name='test_concatenation_plus'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x is 1,2;y=3,4'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='z'>
+						<FCall name='parse'>
+							<Array>
+								<Str value='x plus y'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='z'/>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+								<Fixnum value='4'/>
+							</Array>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation2'>
+				<Argument name='test_concatenation2'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x is 1,2,3;y=4,5,6'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x + y'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='length'>
+									<VCall name='result'/>
+									<List/>
+								</Call>
+								<Args>
+									<Fixnum value='6'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='z is x + y'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='z'/>
+								</Args>
+							</Call>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+								<Fixnum value='4'/>
+								<Fixnum value='5'/>
+								<Fixnum value='6'/>
+							</Array>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation2c'>
+				<Argument name='test_concatenation2c'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x is 1,2
+       y is 3,4
+       z is x + y'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='z'/>
+								</Args>
+							</Call>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+								<Fixnum value='4'/>
+							</Array>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation3'>
+				<Argument name='test_concatenation3'/>
+				<Args/>
+				<Block>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='x'/>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+							</Array>
+						</Array>
+					</AttrAssign>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='y'/>
+							<Array>
+								<Fixnum value='3'/>
+								<Fixnum value='4'/>
+							</Array>
+						</Array>
+					</AttrAssign>
+					<FCall name='init'>
+						<Array>
+							<Str value='x + y == 1,2,3,4'/>
+						</Array>
+					</FCall>
+					<Call name='condition'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='assert'>
+						<Array>
+							<Str value='x + y == 1,2,3,4'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='x plus y'/>
+								</Array>
+							</FCall>
+							<Call name='plus'>
+								<Args>
+									<Fixnum value='1'/>
+									<Fixnum value='2'/>
+								</Args>
+								<Args>
+									<Array>
+										<Fixnum value='3'/>
+										<Fixnum value='4'/>
+									</Array>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='x plus y == [1,2,3,4]'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation4'>
+				<Argument name='test_concatenation4'/>
+				<Args/>
+				<FCall name='assert'>
+					<Array>
+						<Str value='1,2 and 3 == 1,2,3'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_type1'>
+				<Argument name='test_type1'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='class of 1,2,3'/>
+						</Array>
+					</FCall>
+					<Call name='evaluate_property'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Const name='Array'/>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='class of [1,2,3]'/>
+						</Array>
+					</FCall>
+					<Call name='expressions'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Const name='Array'/>
+						</Array>
+					</FCall>
+					<VCall name='skip'/>
+					<FCall name='parse'>
+						<Array>
+							<Str value='class of 1,2,3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Const name='Array'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_type2'>
+				<Argument name='test_type2'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x=1,2,3;class of x'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Const name='Array'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_type'>
+				<Argument name='test_type'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x=1,2,3;'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='type of x is Array'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_type3'>
+				<Argument name='test_type3'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x be 1,2,3;y= class of x'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='[]'>
+									<VCall name='variables'/>
+									<Args>
+										<Str value='y'/>
+									</Args>
+								</Call>
+								<Args>
+									<Const name='Array'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='type'>
+								<Call name='[]'>
+									<VCall name='variables'/>
+									<Args>
+										<Str value='x'/>
+									</Args>
+								</Call>
+								<List/>
+							</Call>
+							<Const name='Array'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='class'>
+								<Call name='value'>
+									<Call name='[]'>
+										<VCall name='variables'/>
+										<Args>
+											<Str value='x'/>
+										</Args>
+									</Call>
+									<List/>
+								</Call>
+								<List/>
+							</Call>
+							<Const name='Array'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='kind'>
+								<Call name='value'>
+									<Call name='[]'>
+										<VCall name='variables'/>
+										<Args>
+											<Str value='x'/>
+										</Args>
+									</Call>
+									<List/>
+								</Call>
+								<List/>
+							</Call>
+							<Const name='Array'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='y'/>
+								</Args>
+							</Call>
+							<Const name='Array'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='y is a Array'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='y is an Array'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='y is Array'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='Array == class of x'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='class of x is Array'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='kind of x is Array'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='type of x is Array'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_type4'>
+				<Argument name='test_type4'/>
+				<Args/>
+				<Block>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='x'/>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str value='x'/>
+											<Symbol name='value'/>
+											<Array>
+												<Fixnum value='1'/>
+												<Fixnum value='2'/>
+												<Fixnum value='3'/>
+											</Array>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</AttrAssign>
+					<FCall name='assert'>
+						<Array>
+							<Str value='class of x is Array'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='kind of x is Array'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='type of x is Array'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_length'>
+				<Argument name='test_length'/>
+				<Args/>
+				<Block>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='xs'/>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str value='xs'/>
+											<Symbol name='value'/>
+											<Array>
+												<Fixnum value='1'/>
+												<Fixnum value='2'/>
+												<Fixnum value='3'/>
+											</Array>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</AttrAssign>
+					<FCall name='assert'>
+						<Array>
+							<Str value='length of xs is 3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='size of xs is 3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='count of xs is 3'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_map'>
+				<Argument name='test_map'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='square [1,2,3]'/>
+								</Array>
+							</FCall>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='4'/>
+								<Fixnum value='9'/>
+							</Array>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='square [1,2 and 3]'/>
+								</Array>
+							</FCall>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='4'/>
+								<Fixnum value='9'/>
+							</Array>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_map2'>
+				<Argument name='test_map2'/>
+				<Args/>
+				<Block>
+					<FCall name='assert'>
+						<Array>
+							<Str value='square of 1,2 and 3 == 1,4,9'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='square 1,2,3'/>
+								</Array>
+							</FCall>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='4'/>
+								<Fixnum value='9'/>
+							</Array>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='square 1,2 and 3'/>
+								</Array>
+							</FCall>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='4'/>
+								<Fixnum value='9'/>
+							</Array>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_map22'>
+				<Argument name='test_map22'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='square 1,2 and 3'/>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='4'/>
+								<Fixnum value='9'/>
+							</Array>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='square of [1,2 and 3] equals 1,4,9'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='assert square of [1,2 and 3] equals 1,4,9'/>
+						</Array>
+					</FCall>
+					<VCall name='skip'/>
+					<FCall name='assert'>
+						<Array>
+							<Str value='square 1,2 and 3 == 1,4,9'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_map3'>
+				<Argument name='test_map3'/>
+				<Args/>
+				<Block>
+					<VCall name='skip'/>
+					<FCall name='assert'>
+						<Array>
+							<Str value='square every number in 1,2,3 ==1,4,9'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='add one to every number in 1,2,3 ==2,3,4'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>square every number in 1,'a',3 ==1,9
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_hasht'>
+				<Argument name='test_hasht'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='{1,2,3}'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='list'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='{a:1,b:2,c:3}'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='json_hash'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Fixnum value='1'/>
+									<Symbol name='b'/>
+									<Fixnum value='2'/>
+									<Symbol name='c'/>
+									<Fixnum value='3'/>
+								</Array>
+							</Hash>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

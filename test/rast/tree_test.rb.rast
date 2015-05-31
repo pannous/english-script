@@ -1,0 +1,353 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='TreeTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='test_algebra1'>
+				<Argument name='test_algebra1'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='3 minus one'/>
+							<Fixnum value='2'/>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='4½'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='fraction'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Float value='4.5'/>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='4½+3½'/>
+						</Array>
+					</FCall>
+					<Call name='do_interpret!'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='algebra'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Fixnum value='8'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='4½+3½'/>
+							<Str value='8'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_method4'>
+				<Argument name='test_method4'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='how to integrate a bug
+      test
+    ok'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='method_definition'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='_test_block'>
+				<Argument name='_test_block'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='let the initial value of I be x;
+
+      step size is the length of the interval,
+      divided by the number of steps
+
+      var x = 8;'/>
+						</Array>
+					</FCall>
+					<Call name='block'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+				</Block>
+			</Defn>
+			<Defn name='_test_while'>
+				<Argument name='_test_while'/>
+				<Args/>
+				<Block>
+					<AttrAssign name='[]='>
+						<InstVar name='@variableValues'/>
+						<Array>
+							<Symbol name='i'/>
+							<Fixnum value='0'/>
+						</Array>
+					</AttrAssign>
+					<AttrAssign name='[]='>
+						<InstVar name='@variableValues'/>
+						<Array>
+							<Symbol name='y'/>
+							<Fixnum value='5'/>
+						</Array>
+					</AttrAssign>
+					<FCall name='parse'>
+						<Array>
+							<Str value='while i is smaller or less then y do
+        increase i by 4;
+      done'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<InstVar name='@variableValues'/>
+								<Args>
+									<Symbol name='i'/>
+								</Args>
+							</Call>
+							<Fixnum value='8'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='_test_while2'>
+				<Argument name='_test_while2'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='while i is smaller or less then y do
+ evaluate the function at point I
+ add the result to the sum
+ increase I by the step size
+done'/>
+						</Array>
+					</FCall>
+					<Call name='looper'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+				</Block>
+			</Defn>
+			<Defn name='_test_setter3'>
+				<Argument name='_test_setter3'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='step size is the length of the interval, divided by the number of steps'/>
+						</Array>
+					</FCall>
+					<Call name='setter'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+				</Block>
+			</Defn>
+			<Defn name='test_looper'>
+				<Argument name='test_looper'/>
+				<Args/>
+				<Block>
+					<VCall name='skip'/>
+					<FCall name='parse'>
+						<Array>
+							<Str value='i=1;y=2;'/>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='while i is smaller or equal y do
+i++
+end'/>
+						</Array>
+					</FCall>
+					<Call name='loops'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='init'>
+						<Array>
+							<Str value='while i is smaller or equal than y do
+i++
+end'/>
+						</Array>
+					</FCall>
+					<Call name='loops'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+				</Block>
+			</Defn>
+			<Defn name='test_then_typo'>
+				<Argument name='test_then_typo'/>
+				<Args/>
+				<Block>
+					<VCall name='skip'/>
+					<FCall name='parse'>
+						<Array>
+							<Str value='while i is smaller or equal y then do
+yawn
+end'/>
+						</Array>
+					</FCall>
+					<VCall name='skip'/>
+					<FCall name='parse'>
+						<Array>
+							<Str value='while i is smaller or equal then y do
+yawn
+end'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_method_call'>
+				<Argument name='test_method_call'/>
+				<Args/>
+				<Block>
+					<VCall name='skip'/>
+					<FCall name='init'>
+						<Array>
+							<Str value='evaluate the function at point I'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_algebra_NOW'>
+				<Argument name='test_algebra_NOW'/>
+				<Args/>
+				<Block>
+					<FCall name='skip'>
+						<Array>
+							<Str value='test_algebra_NOW, DONT SKIP!'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='1+3/4.0'/>
+							<Str value='1¾'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='1.0+3/4.0'/>
+							<Str value='1¾'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_algebra'>
+				<Argument name='test_algebra'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='2*(3+10)'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='ok'>
+						<Call name='algebra'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='puts'>
+						<Array>
+							<DStr>
+								<Str value='Parsed input as '/>
+								<EvStr>
+									<LocalVar name='ok'/>
+								</EvStr>
+								<Str value='!'/>
+							</DStr>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='ok'/>
+							<Fixnum value='26'/>
+						</Array>
+					</FCall>
+					<If>
+						<Call name='!'>
+							<GlobalVar name='$use_tree'/>
+							<List/>
+						</Call>
+						<VCall name='skip'/>
+					</If>
+					<LocalAsgn name='current_node'>
+						<Call name='root'>
+							<VCall name='interpretation'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<LocalAsgn name='full_value'>
+						<Call name='full_value'>
+							<LocalVar name='current_node'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<LocalAsgn name='val'>
+						<FCall name='eval'>
+							<Array>
+								<LocalVar name='full_value'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='val'/>
+							<Fixnum value='26'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='val'>
+						<Call name='eval_node'>
+							<LocalVar name='current_node'/>
+							<Args/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='val'/>
+							<Fixnum value='26'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

@@ -1,0 +1,86 @@
+<Block>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='PackageTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_using'>
+				<Args/>
+				<Block>
+					<Call name='dont_interpret!'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Assign name='simple'>
+						<Call name='parse'>
+							<Args>
+								<Str>depends on stdio</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Hash>
+								<Array>
+									<Symbol name='dependency'/>
+									<Hash>
+										<Array>
+											<Symbol name='type'/>
+											<False/>
+											<Symbol name='package'/>
+											<Str>stdio</Str>
+											<Symbol name='version'/>
+											<False/>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+							<Variable name='simple'/>
+						</Args>
+					</Call>
+					<Assign name='dependency'>
+						<Call name='parse'>
+							<Args>
+								<Str>using c package stdio version &gt;= 1.2.3</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='puts'>
+						<Args>
+							<Variable name='dependency'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Hash>
+								<Array>
+									<Symbol name='dependency'/>
+									<Hash>
+										<Array>
+											<Symbol name='type'/>
+											<Str>c</Str>
+											<Symbol name='package'/>
+											<Str>stdio</Str>
+											<Symbol name='version'/>
+											<Str>&gt;= 1.2.3</Str>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+							<Variable name='dependency'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

@@ -31,7 +31,7 @@
 # python ++: type hints (py3)
 # python ++: annotations
 # python ++: TO/FRO bytecode, NATIVE (sometimes)
-# python ++: Ast better integrated(!!) + compile,exec,pyc emitter!!
+# python ++: Ast better integrated(!!) + cleaner!! + compile,exec,pyc emitter!!
 # python ++: Constructors() interchangeable with methods, can be very handy someday, and nice
 # python ++: can access variables in methods without '@' !!
 # python +: list concatenation
@@ -39,7 +39,7 @@
 # python +: better reflection + docs (dir, help)
 # python +-: functions proper(!) 1st class citizens [problem: () not default!]
 # python +-: properties ok'ish:  p=property(getter,setter)
-# python +: in operator
+# python +: 'in; operator
 # python +: stricter: i.e. ruby z=map[x] (NIL) vs if x in map: map[x]
 # python -- LESS FORGIVING! ValueError: list.remove(x): x not in list , if string.index(x): ValueError: substring not found ETC ETC
 # python -- missing SO MANY FUNCTIONS! :

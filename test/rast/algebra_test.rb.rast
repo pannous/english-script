@@ -1,0 +1,183 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<True/>
+	</GlobalAsgn>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='AlgebraTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='test_algebra1'>
+				<Argument name='test_algebra1'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='two minus 1½'/>
+							<Float value='0.5'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='3 minus one'/>
+							<Fixnum value='2'/>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='4½'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='fraction'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Float value='4.5'/>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='4½+3½'/>
+						</Array>
+					</FCall>
+					<Call name='do_interpret!'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='algebra'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Fixnum value='8'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='4½+3½'/>
+							<Str value='8'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_algebra_NOW'>
+				<Argument name='test_algebra_NOW'/>
+				<Args/>
+				<Block>
+					<FCall name='skip'>
+						<Array>
+							<Str value='test_algebra_NOW, DONT SKIP!'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='1+(3/4)'/>
+							<Str value='1¾'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='1+3/4.0'/>
+							<Str value='1¾'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='1.0+3/4.0'/>
+							<Str value='1¾'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_algebra'>
+				<Argument name='test_algebra'/>
+				<Args/>
+				<Block>
+					<LocalAsgn name='ok'>
+						<FCall name='parse'>
+							<Array>
+								<Str value='2*(3+10)'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='puts'>
+						<Array>
+							<DStr>
+								<Str value='Parsed input as '/>
+								<EvStr>
+									<LocalVar name='ok'/>
+								</EvStr>
+								<Str value='!'/>
+							</DStr>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='ok'/>
+							<Fixnum value='26'/>
+						</Array>
+					</FCall>
+					<VCall name='skip'/>
+					<FCall name='assert'>
+						<Array>
+							<Call name='!='>
+								<InstVar name='@current_node'/>
+								<Args>
+									<Nil name='nil'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<LocalAsgn name='full_value'>
+						<Call name='full_value'>
+							<InstVar name='@current_node'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<LocalAsgn name='val'>
+						<FCall name='eval'>
+							<Array>
+								<LocalVar name='full_value'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='val'/>
+							<Fixnum value='26'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='val'>
+						<Call name='eval_node'>
+							<InstVar name='@current_node'/>
+							<Args>
+								<InstVar name='@variableValues'/>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='val'/>
+							<Fixnum value='26'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

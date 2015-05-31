@@ -1,0 +1,264 @@
+<Block>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='LoopTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='_test_forever'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>beep forever</Str>
+						</Args>
+					</Call>
+					<Call name='loops'/>
+					<Call name='parse'>
+						<Args>
+							<Str>beep forever</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_while_return'>
+				<Args/>
+				<Call name='assert_equals'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>c=0;while c&lt;1:c++;beep;done</Str>
+							</Args>
+						</Call>
+						<Str>beeped</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_while_loop'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>c=0;while c&lt;3:c++;beep;done</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='[]'>
+									<Call name='variables'/>
+									<Args>
+										<Str>c</Str>
+									</Args>
+								</Call>
+								<Args>
+									<Num value='3'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_expressions'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>counter=1</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='[]'>
+									<Variable name='@variableValues'/>
+									<Args>
+										<Str>counter</Str>
+									</Args>
+								</Call>
+								<Args>
+									<Num value='1'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>counter++</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='[]'>
+									<Variable name='@variableValues'/>
+									<Args>
+										<Str>counter</Str>
+									</Args>
+								</Call>
+								<Args>
+									<Num value='2'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>counter+=1</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='[]'>
+									<Variable name='@variableValues'/>
+									<Args>
+										<Str>counter</Str>
+									</Args>
+								</Call>
+								<Args>
+									<Num value='3'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>counter=counter+counter</Str>
+						</Args>
+					</Call>
+					<Assign name='counter'>
+						<Call name='[]'>
+							<Variable name='@variableValues'/>
+							<Args>
+								<Str>counter</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Variable name='counter'/>
+								<Args>
+									<Num value='6'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_repeat'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>counter =0; repeat three times: increase the counter; okay</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>counter=3</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Variable name='@variableValues'/>
+								<Args>
+									<Str>counter</Str>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_repeat3'>
+				<Args/>
+				<Block>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>counter =0; repeat three times: counter=counter+1; okay</Str>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>counter =0; repeat while counter &lt; 3: counter=counter+1; okay</Str>
+							<Num value='3'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_repeat1'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>counter =0; repeat three times: counter+=1; okay</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>counter =3</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>counter =0; repeat three times: counter++; okay</Str>
+						</Args>
+					</Call>
+					<Assign name='counter'>
+						<Call name='[]'>
+							<Variable name='@variableValues'/>
+							<Args>
+								<Str>counter</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert'>
+						<Args>
+							<Str>counter =3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Variable name='counter'/>
+								<Args>
+									<Num value='3'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='_test_forever'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Variable name='@parser'/>
+						<Args>
+							<Str>beep forever</Str>
+						</Args>
+					</Call>
+					<Call name='loops'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

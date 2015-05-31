@@ -1,0 +1,1247 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='EnglishParserTestParser'/>
+		<Block>
+			<Defn name='initialize'>
+				<Argument name='initialize'/>
+				<Args/>
+				<ZSuper/>
+			</Defn>
+			<Defn name='NOmethod_missing'>
+				<Argument name='NOmethod_missing'/>
+				<Args>
+					<Argument name='sym'/>
+					<RestArg name='args'/>
+					<BlockArg name='block'/>
+				</Args>
+				<Block>
+					<LocalAsgn name='syms'>
+						<Call name='to_s'>
+							<LocalVar name='sym'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<If>
+						<And>
+							<ClassVar name='@@parser'/>
+							<Call name='contains'>
+								<Call name='methods'>
+									<ClassVar name='@@parser'/>
+									<List/>
+								</Call>
+								<Args>
+									<LocalVar name='sym'/>
+								</Args>
+							</Call>
+						</And>
+						<Block>
+							<If>
+								<Call name='=='>
+									<Call name='count'>
+										<LocalVar name='args'/>
+										<List/>
+									</Call>
+									<Args>
+										<Fixnum value='0'/>
+									</Args>
+								</Call>
+								<LocalAsgn name='x'>
+									<FCall name='maybe'>
+										<List/>
+										<Iter>
+											<Args/>
+											<Call name='send'>
+												<ClassVar name='@@parser'/>
+												<Args>
+													<LocalVar name='sym'/>
+												</Args>
+											</Call>
+										</Iter>
+									</FCall>
+								</LocalAsgn>
+							</If>
+							<If>
+								<Call name='=='>
+									<Call name='count'>
+										<LocalVar name='args'/>
+										<List/>
+									</Call>
+									<Args>
+										<Fixnum value='1'/>
+									</Args>
+								</Call>
+								<LocalAsgn name='x'>
+									<FCall name='maybe'>
+										<List/>
+										<Iter>
+											<Args/>
+											<Call name='send'>
+												<ClassVar name='@@parser'/>
+												<Args>
+													<LocalVar name='sym'/>
+													<Call name='[]'>
+														<LocalVar name='args'/>
+														<Args>
+															<Fixnum value='0'/>
+														</Args>
+													</Call>
+												</Args>
+											</Call>
+										</Iter>
+									</FCall>
+								</LocalAsgn>
+							</If>
+							<If>
+								<Call name='>'>
+									<Call name='count'>
+										<LocalVar name='args'/>
+										<List/>
+									</Call>
+									<Args>
+										<Fixnum value='0'/>
+									</Args>
+								</Call>
+								<LocalAsgn name='x'>
+									<FCall name='maybe'>
+										<List/>
+										<Iter>
+											<Args/>
+											<Call name='send'>
+												<ClassVar name='@@parser'/>
+												<Args>
+													<LocalVar name='sym'/>
+													<LocalVar name='args'/>
+												</Args>
+											</Call>
+										</Iter>
+									</FCall>
+								</LocalAsgn>
+							</If>
+							<Return>
+								<LocalVar name='x'/>
+							</Return>
+						</Block>
+					</If>
+					<Super>
+						<ArgsCat>
+							<Array>
+								<LocalVar name='sym'/>
+							</Array>
+							<LocalVar name='args'/>
+						</ArgsCat>
+						<BlockPass>
+							<ArgsCat>
+								<Array>
+									<LocalVar name='sym'/>
+								</Array>
+								<LocalVar name='args'/>
+							</ArgsCat>
+							<LocalVar name='block'/>
+						</BlockPass>
+					</Super>
+				</Block>
+			</Defn>
+			<Defn name='test_substitute_variables'>
+				<Argument name='test_substitute_variables'/>
+				<Args/>
+				<Block>
+					<InstAsgn name='@variableValues'>
+						<Hash>
+							<Array>
+								<Str value='x'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Hash>
+					</InstAsgn>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Str value=' 3 '/>
+								<Args>
+									<FCall name='substitute_variables'>
+										<Array>
+											<Str value=' #{x} '/>
+										</Array>
+									</FCall>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Str value='"3"'/>
+								<Args>
+									<FCall name='substitute_variables'>
+										<Array>
+											<Str value='"#{x}"'/>
+										</Array>
+									</FCall>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Str value=' 3 '/>
+								<Args>
+									<FCall name='substitute_variables'>
+										<Array>
+											<Str value=' $x '/>
+										</Array>
+									</FCall>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Str>'3'
+								<Args>
+									<FCall name='substitute_variables'>
+										<Array>
+											<Str>'$x'
+										</Array>
+									</FCall>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Str value='3'/>
+								<Args>
+									<FCall name='substitute_variables'>
+										<Array>
+											<Str value='#{x}'/>
+										</Array>
+									</FCall>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<List/>
+						<Iter>
+							<Args/>
+							<Call name='=='>
+								<Str value='3'/>
+								<Args>
+									<FCall name='substitute_variables'>
+										<Array>
+											<Str value='$x'/>
+										</Array>
+									</FCall>
+								</Args>
+							</Call>
+						</Iter>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_default_setter_dont_overwrite'>
+				<Argument name='test_default_setter_dont_overwrite'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='set color to blue; set default color to green'/>
+						</Array>
+					</FCall>
+					<VCall name='setter'/>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='[]'>
+									<InstVar name='@variableValues'/>
+									<Args>
+										<Str value='color'/>
+									</Args>
+								</Call>
+								<Args>
+									<Str value='blue'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_default_setter'>
+				<Argument name='test_default_setter'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='set the default color to green'/>
+						</Array>
+					</FCall>
+					<VCall name='setter'/>
+					<FCall name='assert'>
+						<Array>
+							<Call name='contains'>
+								<InstVar name='@variableValues'/>
+								<Args>
+									<Str value='color'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_root'>
+				<Argument name='test_root'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='hello who does the world end'/>
+						</Array>
+					</FCall>
+					<FCall name='token'>
+						<Array>
+							<Str value='hello'/>
+						</Array>
+					</FCall>
+					<VCall name='question'/>
+					<FCall name='star'>
+						<List/>
+						<Iter>
+							<Args/>
+							<Or>
+								<FCall name='maybe'>
+									<List/>
+									<Iter>
+										<Args/>
+										<FCall name='token'>
+											<Array>
+												<Str value='does'/>
+											</Array>
+										</FCall>
+									</Iter>
+								</FCall>
+								<FCall name='maybe'>
+									<List/>
+									<Iter>
+										<Args/>
+										<VCall name='question'/>
+									</Iter>
+								</FCall>
+							</Or>
+						</Iter>
+					</FCall>
+					<FCall name='_?'>
+						<Array>
+							<Str value='the world'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='verb'/>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<Str value='Parsed successfully!'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='aa'>
+				<Argument name='aa'/>
+				<Args/>
+				<FCall name='puts'>
+					<Array>
+						<Str value='aa'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='bb'>
+				<Argument name='bb'/>
+				<Args/>
+				<FCall name='raise'>
+					<Array>
+						<Call name='new'>
+							<Const name='NotMatching'/>
+							<Args>
+								<VCall name='test'/>
+							</Args>
+						</Call>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='cc'>
+				<Argument name='cc'/>
+				<Args/>
+				<Block>
+					<FCall name='puts'>
+						<Array>
+							<Str value='cc'/>
+						</Array>
+					</FCall>
+					<Return>
+						<Str value='cc'/>
+					</Return>
+				</Block>
+			</Defn>
+			<Defn name='dd'>
+				<Argument name='dd'/>
+				<Args/>
+				<Block>
+					<FCall name='puts'>
+						<Array>
+							<Str value='dd'/>
+						</Array>
+					</FCall>
+					<FCall name='throw'>
+						<Array>
+							<Str value='dd'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_any'>
+				<Argument name='test_any'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='a b c d'/>
+						</Array>
+					</FCall>
+					<FCall name='one'>
+						<Array>
+							<Symbol name='aa'/>
+							<Symbol name='bb'/>
+							<Symbol name='cc'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<FCall name='any'>
+								<List/>
+								<Iter>
+									<Args/>
+									<Block>
+										<FCall name='maybe'>
+											<List/>
+											<Iter>
+												<Args/>
+												<FCall name='puts'>
+													<Array>
+														<Str value='a'/>
+													</Array>
+												</FCall>
+											</Iter>
+										</FCall>
+										<FCall name='maybe'>
+											<List/>
+											<Iter>
+												<Args/>
+												<FCall name='puts'>
+													<Array>
+														<Str value='b'/>
+													</Array>
+												</FCall>
+											</Iter>
+										</FCall>
+										<FCall name='maybe'>
+											<List/>
+											<Iter>
+												<Args/>
+												<FCall name='raise'>
+													<Array>
+														<Call name='new'>
+															<Const name='NotMatching'/>
+															<List/>
+														</Call>
+													</Array>
+												</FCall>
+											</Iter>
+										</FCall>
+										<FCall name='maybe'>
+											<List/>
+											<Iter>
+												<Args/>
+												<FCall name='puts'>
+													<Array>
+														<Str value='c'/>
+													</Array>
+												</FCall>
+											</Iter>
+										</FCall>
+										<FCall name='maybe'>
+											<List/>
+											<Iter>
+												<Args/>
+												<FCall name='throw'>
+													<Array>
+														<Str value='b'/>
+													</Array>
+												</FCall>
+											</Iter>
+										</FCall>
+										<FCall name='maybe'>
+											<List/>
+											<Iter>
+												<Args/>
+												<FCall name='puts'>
+													<Array>
+														<Str value='b'/>
+													</Array>
+												</FCall>
+											</Iter>
+										</FCall>
+									</Block>
+								</Iter>
+							</FCall>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_action'>
+				<Argument name='test_action'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='eat a sandwich; done'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='action'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='!'>
+								<Call name='match'>
+									<VCall name='string'/>
+									<Args>
+										<Str value='sandwich'/>
+									</Args>
+								</Call>
+								<List/>
+							</Call>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_methods'>
+				<Argument name='test_methods'/>
+				<Args/>
+				<Block>
+					<VCall name='test_method2'/>
+					<VCall name='test_method4'/>
+				</Block>
+			</Defn>
+			<Defn name='test_method'>
+				<Argument name='test_method'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='how to integrate a bug do test done'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='method_definition'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_method2'>
+				<Argument name='test_method2'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='how to print: eat a sandwich; done'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='method_definition'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_method3'>
+				<Argument name='test_method3'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='how to integrate a bug
+test
+ok'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='method_definition'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_method4'>
+				<Argument name='test_method4'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='how to integrate a bug
+      test
+    ok'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='method_definition'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_expression'>
+				<Argument name='test_expression'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='eat a sandwich;'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='action'/>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<VCall name='x'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='raise_test'>
+				<Argument name='raise_test'/>
+				<Args/>
+				<FCall name='raise'>
+					<Array>
+						<Str value='test'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_block'>
+				<Argument name='test_block'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='let the initial value of I be x;
+step size is the length of the interval,
+divided by the number of steps
+var x = 8;'/>
+						</Array>
+					</FCall>
+					<VCall name='block'/>
+				</Block>
+			</Defn>
+			<Defn name='test_quote'>
+				<Argument name='test_quote'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='msg = "heee"'/>
+						</Array>
+					</FCall>
+					<VCall name='setter'/>
+				</Block>
+			</Defn>
+			<Defn name='test_while'>
+				<Argument name='test_while'/>
+				<Args/>
+				<Block>
+					<VCall name='allow_rollback'/>
+					<FCall name='s'>
+						<Array>
+							<Str value='while i is smaller or less then y do
+ evaluate the function at point I
+ add the result to the sum
+ increase I by the step size
+done'/>
+						</Array>
+					</FCall>
+					<VCall name='looper'/>
+				</Block>
+			</Defn>
+			<Defn name='test_setter3'>
+				<Argument name='test_setter3'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='step size is the length of the interval, divided by the number of steps'/>
+						</Array>
+					</FCall>
+					<VCall name='setter'/>
+				</Block>
+			</Defn>
+			<Defn name='test_setter2'>
+				<Argument name='test_setter2'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='var x = 8;'/>
+						</Array>
+					</FCall>
+					<VCall name='setter'/>
+				</Block>
+			</Defn>
+			<Defn name='test_setter'>
+				<Argument name='test_setter'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='let the initial value of I be x'/>
+						</Array>
+					</FCall>
+					<VCall name='setter'/>
+				</Block>
+			</Defn>
+			<Defn name='test_looper'>
+				<Argument name='test_looper'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='while i is smaller or less then y do
+yawn
+end'/>
+						</Array>
+					</FCall>
+					<VCall name='looper'/>
+				</Block>
+			</Defn>
+			<Defn name='test_method_call'>
+				<Argument name='test_method_call'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='evaluate the function at point I'/>
+						</Array>
+					</FCall>
+					<VCall name='method_call'/>
+				</Block>
+			</Defn>
+			<Defn name='test_verb'>
+				<Argument name='test_verb'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='help'/>
+						</Array>
+					</FCall>
+					<VCall name='verb'/>
+				</Block>
+			</Defn>
+			<Defn name='test_comment'>
+				<Argument name='test_comment'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='#ok'/>
+						</Array>
+					</FCall>
+					<VCall name='statement'/>
+					<FCall name='s'>
+						<Array>
+							<Str value='z3=13 //ok'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='statement'/>
+						</Array>
+					</FCall>
+					<FCall name='s'>
+						<Array>
+							<Str value='z4=23 -- ok'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='statement'/>
+						</Array>
+					</FCall>
+					<FCall name='s'>
+						<Array>
+							<Str value='z5=33 # ok'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='statement'/>
+						</Array>
+					</FCall>
+					<FCall name='s'>
+						<Array>
+							<Str value='z6=/* dfsfds */3 '/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_js'>
+				<Argument name='test_js'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str>js alert('hi')
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='javascript'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_ruby_method_call'>
+				<Argument name='test_ruby_method_call'/>
+				<Args/>
+				<Block>
+					<VCall name='test_ruby_def'/>
+					<FCall name='parse'>
+						<Array>
+							<Str value='NOW CALL via english'/>
+						</Array>
+					</FCall>
+					<FCall name='s'>
+						<Array>
+							<Str>call ruby_block_test 'yeah'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='ruby_method_call'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_ruby_def'>
+				<Argument name='test_ruby_def'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str>def ruby_block_test x='yuhu'
+  puts x
+  return x+'yay'
+end
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='ruby_def'/>
+						</Array>
+					</FCall>
+					<VCall name='ruby_block_test'/>
+				</Block>
+			</Defn>
+			<Defn name='test_ruby_all'>
+				<Argument name='test_ruby_all'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str>
+def ruby_block_test x='yuhu'
+  puts x
+  return x+'yay'
+end
+call ruby_block_test 'yeah'
+						</Array>
+					</FCall>
+					<VCall name='root'/>
+				</Block>
+			</Defn>
+			<Defn name='test_ruby_variables'>
+				<Argument name='test_ruby_variables'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='x=7;puts x;x+1;'/>
+						</Array>
+					</FCall>
+					<VCall name='root'/>
+				</Block>
+			</Defn>
+			<Defn name='test_ruby'>
+				<Argument name='test_ruby'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str>def ruby_block_test
+  puts 'ooooo'
+  return 'yay'
+end
+						</Array>
+					</FCall>
+					<VCall name='execute_ruby_block'/>
+					<VCall name='ruby_block_test'/>
+				</Block>
+			</Defn>
+			<Defn name='test_algebra'>
+				<Argument name='test_algebra'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='2* ( 3 + 10 ) '/>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<DStr>
+								<Str value='Parse '/>
+								<EvStr>
+									<InstVar name='@string'/>
+								</EvStr>
+								<Str value=' as algebra?'/>
+							</DStr>
+						</Array>
+					</FCall>
+					<LocalAsgn name='tree'>
+						<VCall name='algebra'/>
+					</LocalAsgn>
+					<FCall name='assert'>
+						<Array>
+							<LocalVar name='tree'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='assert'>
+				<Argument name='assert'/>
+				<Args>
+					<Block>
+						<OptArg value='#<Rjb::Rjb_JavaProxy:0x007f89e20ed530>'/>
+					</Block>
+					<BlockArg name='block'/>
+				</Args>
+				<Block>
+					<If>
+						<And>
+							<Call name='!'>
+								<LocalVar name='x'/>
+								<List/>
+							</Call>
+							<LocalVar name='block'/>
+						</And>
+						<LocalAsgn name='x'>
+							<ZYield/>
+						</LocalAsgn>
+					</If>
+					<If>
+						<Call name='!'>
+							<LocalVar name='x'/>
+							<List/>
+						</Call>
+						<FCall name='raise'>
+							<Array>
+								<Call name='new'>
+									<Const name='ScriptError'/>
+									<Args>
+										<FCall name='to_source'>
+											<Array>
+												<LocalVar name='block'/>
+											</Array>
+										</FCall>
+									</Args>
+								</Call>
+							</Array>
+						</FCall>
+					</If>
+					<FCall name='puts'>
+						<Array>
+							<LocalVar name='x'/>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<Str value='!!OK!!'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_args'>
+				<Argument name='test_args'/>
+				<Args/>
+				<Block>
+					<FCall name='s'>
+						<Array>
+							<Str value='eat an mp3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<VCall name='endNode'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test'>
+				<Argument name='test'/>
+				<Args/>
+				<Block>
+					<FCall name='puts'>
+						<Array>
+							<Str value='Starting tests!'/>
+						</Array>
+					</FCall>
+					<Begin>
+						<Rescue>
+							<RescueBody>
+								<Block>
+									<LocalAsgn name='e'>
+										<GlobalVar name='$!'/>
+									</LocalAsgn>
+									<FCall name='error'>
+										<Array>
+											<LocalVar name='e'/>
+										</Array>
+									</FCall>
+								</Block>
+							</RescueBody>
+							<Block>
+								<FCall name='s'>
+									<Array>
+										<Str value='a bug'/>
+									</Array>
+								</FCall>
+								<VCall name='test_method3'/>
+								<VCall name='test_method4'/>
+								<FCall name='assert'>
+									<Array>
+										<VCall name='endNode'/>
+									</Array>
+								</FCall>
+								<VCall name='test_ruby_variables'/>
+								<VCall name='test_args'/>
+								<VCall name='test_algebra'/>
+								<VCall name='test_ruby'/>
+								<VCall name='test_ruby_def'/>
+								<VCall name='test_ruby_method_call'/>
+								<VCall name='test_ruby_all'/>
+								<VCall name='test_js'/>
+								<VCall name='test_verb'/>
+								<VCall name='test_setter2'/>
+								<VCall name='test_setter3'/>
+								<VCall name='test_comment'/>
+								<VCall name='test_block'/>
+								<VCall name='test_quote'/>
+								<VCall name='test_while'/>
+								<VCall name='test_method_call'/>
+								<VCall name='show_tree'/>
+								<FCall name='puts'>
+									<Array>
+										<Str value='++++++++++++++++++
+PARSED successfully!'/>
+									</Array>
+								</FCall>
+							</Block>
+						</Rescue>
+					</Begin>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='EnglishParser'/>
+	</Class>
+	<Class>
+		<Colon2Implicit name='EnglishParserTest'/>
+		<Block>
+			<ClassVarAsgn name='@@testParser'>
+				<Call name='new'>
+					<Const name='EnglishParserTestParser'/>
+					<List/>
+				</Call>
+			</ClassVarAsgn>
+			<Defn name='initialize'>
+				<Argument name='initialize'/>
+				<Args>
+					<Argument name='args'/>
+				</Args>
+				<Block>
+					<InstAsgn name='@parser'>
+						<Call name='new'>
+							<Const name='EnglishParserTestParser'/>
+							<List/>
+						</Call>
+					</InstAsgn>
+					<Super>
+						<Array>
+							<LocalVar name='args'/>
+						</Array>
+					</Super>
+				</Block>
+			</Defn>
+			<Defs name='_test'>
+				<Self/>
+				<Argument name='_test'/>
+				<Args>
+					<Argument name='x'/>
+				</Args>
+				<FCall name='puts'>
+					<Array>
+						<Call name='+'>
+							<Str value='NOT testing '/>
+							<Args>
+								<Call name='to_s'>
+									<LocalVar name='x'/>
+									<List/>
+								</Call>
+							</Args>
+						</Call>
+					</Array>
+				</FCall>
+			</Defs>
+			<Defn name='test_all'>
+				<Argument name='test_all'/>
+				<Args/>
+				<Call name='each'>
+					<Call name='methods'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<List/>
+					<Iter>
+						<Args>
+							<Argument name='m'/>
+						</Args>
+						<If>
+							<Call name='start_with?'>
+								<Call name='to_s'>
+									<DVar name='m'/>
+									<List/>
+								</Call>
+								<Args>
+									<Str value='test'/>
+								</Args>
+							</Call>
+							<Call name='send'>
+								<InstVar name='@parser'/>
+								<Args>
+									<DVar name='m'/>
+								</Args>
+							</Call>
+						</If>
+					</Iter>
+				</Call>
+			</Defn>
+			<FCall name='_test'>
+				<Array>
+					<Str value='setter'/>
+				</Array>
+				<Iter>
+					<Args/>
+					<Block>
+						<Call name='test_default_setter'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+						<Call name='test_default_setter_dont_overwrite'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</Block>
+				</Iter>
+			</FCall>
+			<FCall name='_test'>
+				<Array>
+					<Str value='substitute_variables'/>
+				</Array>
+				<Iter>
+					<Args/>
+					<Block>
+						<Call name='test_substitute_variables'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+						<FCall name='assert'>
+							<Array>
+								<Str value='yay'/>
+							</Array>
+						</FCall>
+					</Block>
+				</Iter>
+			</FCall>
+			<FCall name='_test'>
+				<Array>
+					<Str value='jeannie'/>
+				</Array>
+				<Iter>
+					<Args/>
+					<Block>
+						<DAsgn name='r'>
+							<Call name='jeannie'>
+								<InstVar name='@parser'/>
+								<Args>
+									<Str value='3 plus 3'/>
+								</Args>
+							</Call>
+						</DAsgn>
+						<FCall name='puts'>
+							<Array>
+								<Call name='+'>
+									<Str value='jeannie : 3 plus 3 = '/>
+									<Args>
+										<Call name='to_s'>
+											<DVar name='r'/>
+											<List/>
+										</Call>
+									</Args>
+								</Call>
+							</Array>
+						</FCall>
+						<FCall name='assert'>
+							<Array>
+								<Call name='=='>
+									<DVar name='r'/>
+									<Args>
+										<Str value='6'/>
+									</Args>
+								</Call>
+							</Array>
+						</FCall>
+						<FCall name='puts'>
+							<Array>
+								<Str value='OK!!!!!!'/>
+							</Array>
+						</FCall>
+					</Block>
+				</Iter>
+			</FCall>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

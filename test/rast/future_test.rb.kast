@@ -1,0 +1,301 @@
+<Block>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='FutureTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='dont_yet_test_false_returns'>
+				<Args/>
+				<Block>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if 1&lt;2 then false else 4</Str>
+							<Symbol name='false'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if 1&lt;2 then false else 4</Str>
+							<False/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_if_statement'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>if x is smaller than three then everything is fine;</Str>
+						</Args>
+					</Call>
+					<Call name='if_then'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>everything</Str>
+								</Args>
+							</Call>
+							<Str>fine</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x=2;if x is smaller than three then everything is good;</Str>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>everything</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>everything</Str>
+								</Args>
+							</Call>
+							<Str>good</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_repeat_until'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>repeat until x&gt;4: x++</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Num value='5'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_try_until'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>try until x&gt;4: x++</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Num value='5'/>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>try while x&lt;4: x++</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Num value='4'/>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>try x++ until x&gt;4</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Num value='5'/>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>try x++ while x&lt;4</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Num value='4'/>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>increase x until x&gt;4</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Num value='5'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_property_setter'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>new circle;circle.color=green</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Str>circle.color</Str>
+							<Str>green</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_local_variables_changed_by_subblocks'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x=2;def test
+x=1
+end
+test</Str>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>x=2 or x=1</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='condition_tree'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>x=2</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x=1;x=2;</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>x=2</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x=1;while x&lt;2 do x=2;</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>x=2</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_loops'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>beep three times</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>repeat three times: beep; okay</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>repeat three times: beep</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_action_n_times'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>2 times say 'hello'</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>say 'hello' 2 times</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>puts 'hello' 2 times</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+	</Class>
+</Block>

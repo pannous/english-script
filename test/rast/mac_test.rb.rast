@@ -1,0 +1,356 @@
+<Block>
+	
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='x'/>
+							<Str value='/Users/me'/>
+						</Array>
+					</AttrAssign>
+	
+	
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='MacTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='test_mail'>
+				<Argument name='test_mail'/>
+				<Args/>
+			</Defn>
+			<Defn name='test_applescript'>
+				<Argument name='test_applescript'/>
+				<Args/>
+				<Block>
+					<If>
+						<Call name='!'>
+							<Call name='[]'>
+								<Const name='ENV'/>
+								<Args>
+									<Str value='APPLE'/>
+								</Args>
+							</Call>
+							<List/>
+						</Call>
+						<VCall name='skip'/>
+					</If>
+					<FCall name='parse'>
+						<Array>
+							<Str value='Tell application "Finder" to open home'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_files'>
+				<Argument name='test_files'/>
+				<Args/>
+				<Block>
+					<If>
+						<Call name='!'>
+							<Call name='[]'>
+								<Const name='ENV'/>
+								<Args>
+									<Str value='APPLE'/>
+								</Args>
+							</Call>
+							<List/>
+						</Call>
+						<VCall name='skip'/>
+					</If>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='x'/>
+							<Str value='/Users/me'/>
+						</Array>
+					</AttrAssign>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='my home folder'/>
+							<Str value='/Users/me'/>
+						</Array>
+					</AttrAssign>
+					<FCall name='assert'>
+						<Array>
+							<Str value='/Users/me == x'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='my home folder == /Users/me'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='my home folder == x'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_files3'>
+				<Argument name='test_files3'/>
+				<Args/>
+				<Block>
+					<If>
+						<Call name='!'>
+							<Call name='[]'>
+								<Const name='ENV'/>
+								<Args>
+									<Str value='APPLE'/>
+								</Args>
+							</Call>
+							<List/>
+						</Call>
+						<VCall name='skip'/>
+					</If>
+					<VCall name='skip'/>
+					<FCall name='init'>
+						<Array>
+							<Str value='my home folder = Dir.home'/>
+						</Array>
+					</FCall>
+					<Call name='setter'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='init'>
+						<Array>
+							<Str value='my home folder == /Users/me'/>
+						</Array>
+					</FCall>
+					<Call name='condition'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='init'>
+						<Array>
+							<Str value='/Users/me/.bashrc ok'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='p'>
+						<Call name='linuxPath'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='init'>
+						<Array>
+							<Str value='Dir.home'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='r'>
+						<Call name='rubyThing'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x := /Users/me '/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='my home folder == /Users/me'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='/Users/me == x'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='my home folder == x'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_variable_transitivity'>
+				<Argument name='test_variable_transitivity'/>
+				<Args/>
+				<Block>
+					<If>
+						<Call name='!'>
+							<Call name='[]'>
+								<Const name='ENV'/>
+								<Args>
+									<Str value='APPLE'/>
+								</Args>
+							</Call>
+							<List/>
+						</Call>
+						<VCall name='skip'/>
+					</If>
+					<FCall name='parse'>
+						<Array>
+							<Str value='my home folder = Dir.home '/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs= my home folder '/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='xs = /Users/me'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_contains_file'>
+				<Argument name='test_contains_file'/>
+				<Args/>
+				<Block>
+					<If>
+						<Call name='!'>
+							<Call name='[]'>
+								<Const name='ENV'/>
+								<Args>
+									<Str value='APPLE'/>
+								</Args>
+							</Call>
+							<List/>
+						</Call>
+						<VCall name='skip'/>
+					</If>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs= all files in Dir.home'/>
+						</Array>
+					</FCall>
+					<FCall name='p'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='xs'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='xs contains .bashrc'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs= Dir.home'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='xs contains .bashrc'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs=/Users/me'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='xs contains .bashrc'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='my home folder = Dir.home'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='my home folder is Dir.home'/>
+						</Array>
+					</FCall>
+					<FCall name='p'>
+						<Array>
+							<VCall name='variables'/>
+						</Array>
+					</FCall>
+					<FCall name='p'>
+						<Array>
+							<VCall name='variableValues'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<List/>
+						<Iter>
+							<Args/>
+							<Call name='[]'>
+								<VCall name='variableValues'/>
+								<Args>
+									<Str value='my home folder'/>
+								</Args>
+							</Call>
+						</Iter>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_contains_file2'>
+				<Argument name='test_contains_file2'/>
+				<Args/>
+				<Block>
+					<If>
+						<Call name='!'>
+							<Call name='[]'>
+								<Const name='ENV'/>
+								<Args>
+									<Str value='APPLE'/>
+								</Args>
+							</Call>
+							<List/>
+						</Call>
+						<VCall name='skip'/>
+					</If>
+					<FCall name='parse'>
+						<Array>
+							<Str value='my home folder = Dir.home'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs = my home folder '/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs = files in my home folder '/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='xs contains .bashrc'/>
+						</Array>
+					</FCall>
+					<VCall name='skip'/>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs = all files in my home folder '/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs shall be all files in my home folder '/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

@@ -1,0 +1,1098 @@
+<Block>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Assign name='$verbose'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='ListTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_type0'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>1 , 2 , 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='list'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>1,2,3</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='list'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>[1,2,3]</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='list'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>{1,2,3}</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='list'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>1,2 and 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='list'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>[1,2 and 3]</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='list'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>{1,2 and 3}</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='list'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_list_methods'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>invert [1,2,3]</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Array>
+								<Num value='3'/>
+								<Num value='2'/>
+								<Num value='1'/>
+							</Array>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_error'>
+				<Args/>
+				<Call name='assert_has_error'>
+					<Args>
+						<Str>first item in 'hi,'you' is 'hi'</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_last'>
+				<Args/>
+				<Call name='assert'>
+					<Args>
+						<Str>last item in 'hi','you' is equal to 'you'</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_select2'>
+				<Args/>
+				<Block>
+					<Call name='assert'>
+						<Args>
+							<Str>first item in 'hi','you' is 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>second item in 'hi','you' is 'you'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>last item in 'hi','you' is 'you'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_select3'>
+				<Args/>
+				<Block>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>1st word of 'hi','you'</Str>
+								</Args>
+							</Call>
+							<Str>hi</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>1st word of 'hi','you' is 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>2nd word of 'hi','you' is 'you'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>3rd word of 'hi','my','friend' is 'friend'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_select4'>
+				<Args/>
+				<Block>
+					<Call name='assert'>
+						<Args>
+							<Str>first word of 'hi','you' is 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>second word of 'hi','you' is 'you'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>last word of 'hi','you' is 'you'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_select5'>
+				<Args/>
+				<Block>
+					<Call name='skip'/>
+					<Call name='assert'>
+						<Args>
+							<Str>numbers are 1,2,3. second number is 2</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>my friends are a,b and c. my second friend is b</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_select6'>
+				<Args/>
+				<Block>
+					<Call name='assert'>
+						<Args>
+							<Str>last character of 'howdy' is 'y'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>first character of 'howdy' is 'h'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>second character of 'howdy' is 'o'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_list_syntax'>
+				<Args/>
+				<Block>
+					<Call name='assert'>
+						<Args>
+							<Str>1,2 is [1,2]</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>1,2 is {1,2}</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>1,2 == [1,2]</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>[1,2] is {1,2}</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>1,2 = [1,2]</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_list_syntax2'>
+				<Args/>
+				<Block>
+					<Call name='assert'>
+						<Args>
+							<Str>1,2,3 is the same as [1,2,3]</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>1,2 and 3 is the same as [1,2,3]</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>1,2 and 3 are the same as [1,2,3]</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>1,2 and 3 is [1,2,3]</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 1,2,3;y=4,5,6</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='value'>
+									<Call name='[]'>
+										<Call name='variables'/>
+										<Args>
+											<Str>x</Str>
+										</Args>
+									</Call>
+									<Arguments/>
+								</Call>
+								<Args>
+									<Array>
+										<Num value='1'/>
+										<Num value='2'/>
+										<Num value='3'/>
+									</Array>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='count'>
+									<Call name='value'>
+										<Call name='[]'>
+											<Call name='variables'/>
+											<Args>
+												<Str>y</Str>
+											</Args>
+										</Call>
+										<Arguments/>
+									</Call>
+									<Arguments/>
+								</Call>
+								<Args>
+									<Num value='3'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>x + y</Str>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='algebra'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='length'>
+								<Variable name='z'/>
+								<Arguments/>
+							</Call>
+							<Num value='6'/>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='parse'>
+							<Args>
+								<Str>x + y</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='length'>
+								<Variable name='z'/>
+								<Arguments/>
+							</Call>
+							<Num value='6'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='length'>
+								<Call name='result'/>
+								<Arguments/>
+							</Call>
+							<Num value='6'/>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='parse'>
+							<Args>
+								<Str>x plus y</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='length'>
+								<Variable name='z'/>
+								<Arguments/>
+							</Call>
+							<Num value='6'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation_plus'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 1,2;y=3,4</Str>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='parse'>
+							<Args>
+								<Str>x plus y</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='z'/>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+								<Num value='4'/>
+							</Array>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation2'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 1,2,3;y=4,5,6</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x + y</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='length'>
+									<Call name='result'/>
+									<Arguments/>
+								</Call>
+								<Args>
+									<Num value='6'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>z is x + y</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>z</Str>
+								</Args>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+								<Num value='4'/>
+								<Num value='5'/>
+								<Num value='6'/>
+							</Array>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation2c'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 1,2
+       y is 3,4
+       z is x + y</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>z</Str>
+								</Args>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+								<Num value='4'/>
+							</Array>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation3'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>x</Str>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+							</Array>
+						</Array>
+					</Assign>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>y</Str>
+							<Array>
+								<Num value='3'/>
+								<Num value='4'/>
+							</Array>
+						</Array>
+					</Assign>
+					<Call name='init'>
+						<Args>
+							<Str>x + y == 1,2,3,4</Str>
+						</Args>
+					</Call>
+					<Call name='condition'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>x + y == 1,2,3,4</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>x plus y</Str>
+								</Args>
+							</Call>
+							<Call name='plus'>
+								<Args>
+									<Num value='1'/>
+									<Num value='2'/>
+								</Args>
+								<Args>
+									<Array>
+										<Num value='3'/>
+										<Num value='4'/>
+									</Array>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>x plus y == [1,2,3,4]</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation4'>
+				<Args/>
+				<Call name='assert'>
+					<Args>
+						<Str>1,2 and 3 == 1,2,3</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_type1'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>class of 1,2,3</Str>
+						</Args>
+					</Call>
+					<Call name='evaluate_property'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Const name='Array'/>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>class of [1,2,3]</Str>
+						</Args>
+					</Call>
+					<Call name='expressions'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Const name='Array'/>
+						</Args>
+					</Call>
+					<Call name='skip'/>
+					<Call name='parse'>
+						<Args>
+							<Str>class of 1,2,3</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Const name='Array'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_type2'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x=1,2,3;class of x</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Const name='Array'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_type'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x=1,2,3;</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>type of x is Array</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_type3'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x be 1,2,3;y= class of x</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='[]'>
+									<Call name='variables'/>
+									<Args>
+										<Str>y</Str>
+									</Args>
+								</Call>
+								<Args>
+									<Const name='Array'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='type'>
+								<Call name='[]'>
+									<Call name='variables'/>
+									<Args>
+										<Str>x</Str>
+									</Args>
+								</Call>
+								<Arguments/>
+							</Call>
+							<Const name='Array'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='class'>
+								<Call name='value'>
+									<Call name='[]'>
+										<Call name='variables'/>
+										<Args>
+											<Str>x</Str>
+										</Args>
+									</Call>
+									<Arguments/>
+								</Call>
+								<Arguments/>
+							</Call>
+							<Const name='Array'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='kind'>
+								<Call name='value'>
+									<Call name='[]'>
+										<Call name='variables'/>
+										<Args>
+											<Str>x</Str>
+										</Args>
+									</Call>
+									<Arguments/>
+								</Call>
+								<Arguments/>
+							</Call>
+							<Const name='Array'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>y</Str>
+								</Args>
+							</Call>
+							<Const name='Array'/>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>y is a Array</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>y is an Array</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>y is Array</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>Array == class of x</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>class of x is Array</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>kind of x is Array</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>type of x is Array</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_type4'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>x</Str>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str>x</Str>
+											<Symbol name='value'/>
+											<Array>
+												<Num value='1'/>
+												<Num value='2'/>
+												<Num value='3'/>
+											</Array>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</Assign>
+					<Call name='assert'>
+						<Args>
+							<Str>class of x is Array</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>kind of x is Array</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>type of x is Array</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_length'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>xs</Str>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str>xs</Str>
+											<Symbol name='value'/>
+											<Array>
+												<Num value='1'/>
+												<Num value='2'/>
+												<Num value='3'/>
+											</Array>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</Assign>
+					<Call name='assert'>
+						<Args>
+							<Str>length of xs is 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>size of xs is 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>count of xs is 3</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_map'>
+				<Args/>
+				<Block>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>square [1,2,3]</Str>
+								</Args>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='4'/>
+								<Num value='9'/>
+							</Array>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>square [1,2 and 3]</Str>
+								</Args>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='4'/>
+								<Num value='9'/>
+							</Array>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_map2'>
+				<Args/>
+				<Block>
+					<Call name='assert'>
+						<Args>
+							<Str>square of 1,2 and 3 == 1,4,9</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>square 1,2,3</Str>
+								</Args>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='4'/>
+								<Num value='9'/>
+							</Array>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>square 1,2 and 3</Str>
+								</Args>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='4'/>
+								<Num value='9'/>
+							</Array>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_map22'>
+				<Args/>
+				<Block>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>square 1,2 and 3</Str>
+							<Array>
+								<Num value='1'/>
+								<Num value='4'/>
+								<Num value='9'/>
+							</Array>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>square of [1,2 and 3] equals 1,4,9</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>assert square of [1,2 and 3] equals 1,4,9</Str>
+						</Args>
+					</Call>
+					<Call name='skip'/>
+					<Call name='assert'>
+						<Args>
+							<Str>square 1,2 and 3 == 1,4,9</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_map3'>
+				<Args/>
+				<Block>
+					<Call name='skip'/>
+					<Call name='assert'>
+						<Args>
+							<Str>square every number in 1,2,3 ==1,4,9</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>add one to every number in 1,2,3 ==2,3,4</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>square every number in 1,'a',3 ==1,9</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_hasht'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>{1,2,3}</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='list'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>{a:1,b:2,c:3}</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='json_hash'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Num value='1'/>
+									<Symbol name='b'/>
+									<Num value='2'/>
+									<Symbol name='c'/>
+									<Num value='3'/>
+								</Array>
+							</Hash>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

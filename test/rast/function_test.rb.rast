@@ -1,0 +1,1131 @@
+<Block>
+	<AttrAssign name='default_external='>
+		<Const name='Encoding'/>
+		<Array>
+			<Str value='UTF-8'/>
+		</Array>
+	</AttrAssign>
+	<AttrAssign name='default_internal='>
+		<Const name='Encoding'/>
+		<Array>
+			<Str value='UTF-8'/>
+		</Array>
+	</AttrAssign>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../../src/core/extensions.rb'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='FunctionTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='fix_encoding'>
+				<Argument name='fix_encoding'/>
+				<Args>
+					<Argument name='text'/>
+				</Args>
+				<Block>
+					<If>
+						<Call name='method_defined?'>
+							<Const name='String'/>
+							<Args>
+								<Symbol name='encode'/>
+							</Args>
+						</Call>
+						<FCall name='require'>
+							<Array>
+								<Str value='iconv'/>
+							</Array>
+						</FCall>
+					</If>
+					<If>
+						<Call name='method_defined?'>
+							<Const name='String'/>
+							<Args>
+								<Symbol name='encode'/>
+							</Args>
+						</Call>
+						<Return>
+							<Call name='encode!'>
+								<LocalVar name='text'/>
+								<Args>
+									<Str value='UTF-8'/>
+									<Str value='UTF-8'/>
+									<Hash>
+										<Array>
+											<Symbol name='invalid'/>
+											<Symbol name='replace'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Return>
+						<Block>
+							<LocalAsgn name='ic'>
+								<Call name='new'>
+									<Const name='Iconv'/>
+									<Args>
+										<Str value='UTF-8'/>
+										<Str value='UTF-8//IGNORE'/>
+									</Args>
+								</Call>
+							</LocalAsgn>
+							<Return>
+								<Call name='iconv'>
+									<LocalVar name='ic'/>
+									<Args>
+										<VCall name='t'/>
+									</Args>
+								</Call>
+							</Return>
+						</Block>
+					</If>
+				</Block>
+			</Defn>
+			<Defn name='test_fibonacci'>
+				<Argument name='test_fibonacci'/>
+				<Args/>
+				<Block>
+					<LocalAsgn name='dir'>
+						<Str value='programs/'/>
+					</LocalAsgn>
+					<LocalAsgn name='code'>
+						<Call name='read'>
+							<Const name='File'/>
+							<Args>
+								<Call name='+'>
+									<LocalVar name='dir'/>
+									<Args>
+										<Str value='fibonacci.e'/>
+									</Args>
+								</Call>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<LocalAsgn name='code'>
+						<FCall name='fix_encoding'>
+							<Array>
+								<LocalVar name='code'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='p'>
+						<Array>
+							<LocalVar name='code'/>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<LocalVar name='code'/>
+								</Array>
+							</FCall>
+						</Array>
+					</FCall>
+					<LocalAsgn name='fib'>
+						<Call name='[]'>
+							<VCall name='functions'/>
+							<Args>
+								<Str value='fibonacci'/>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<FCall name='puts'>
+						<Array>
+							<LocalVar name='fib'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='name'>
+									<Call name='[]'>
+										<Call name='args'>
+											<LocalVar name='fib'/>
+											<List/>
+										</Call>
+										<Args>
+											<Fixnum value='0'/>
+										</Args>
+									</Call>
+									<List/>
+								</Call>
+								<Args>
+									<Str value='number'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<LocalAsgn name='f10'>
+						<Call name='call'>
+							<LocalVar name='fib'/>
+							<Args>
+								<Fixnum value='10'/>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<FCall name='puts'>
+						<Array>
+							<LocalVar name='f10'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='f10'/>
+							<Fixnum value='55'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='fibonacci of 10'/>
+								</Array>
+							</FCall>
+							<Fixnum value='55'/>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='assert fibonacci of 10 is 55'/>
+								</Array>
+							</FCall>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_identity'>
+				<Argument name='test_identity'/>
+				<Args/>
+				<Block>
+					<LocalAsgn name='dir'>
+						<Str value='programs/'/>
+					</LocalAsgn>
+					<LocalAsgn name='code'>
+						<Call name='read'>
+							<Const name='File'/>
+							<Args>
+								<Call name='+'>
+									<LocalVar name='dir'/>
+									<Args>
+										<Str value='identity.e'/>
+									</Args>
+								</Call>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<LocalAsgn name='code'>
+						<FCall name='fix_encoding'>
+							<Array>
+								<LocalVar name='code'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='p'>
+						<Array>
+							<LocalVar name='code'/>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<LocalVar name='code'/>
+								</Array>
+							</FCall>
+						</Array>
+					</FCall>
+					<LocalAsgn name='identity'>
+						<Call name='[]'>
+							<VCall name='functions'/>
+							<Args>
+								<Str value='identity'/>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='name'>
+									<Call name='[]'>
+										<Call name='args'>
+											<LocalVar name='identity'/>
+											<List/>
+										</Call>
+										<Args>
+											<Fixnum value='0'/>
+										</Args>
+									</Call>
+									<List/>
+								</Call>
+								<Args>
+									<Str value='x'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<LocalVar name='identity'/>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<Call name='call'>
+								<LocalVar name='identity'/>
+								<Args>
+									<Fixnum value='5'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='call'>
+									<LocalVar name='identity'/>
+									<Args>
+										<Fixnum value='5'/>
+									</Args>
+								</Call>
+								<Args>
+									<Fixnum value='5'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='identity(5)'/>
+								</Array>
+							</FCall>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='identity(5) is 5'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_programs'>
+				<Argument name='test_programs'/>
+				<Args/>
+				<Block>
+					<LocalAsgn name='dir'>
+						<Str value='programs/'/>
+					</LocalAsgn>
+					<For>
+						<LocalAsgn name='file'>
+							<NilImplicit name='nil'/>
+						</LocalAsgn>
+						<Block>
+							<LocalAsgn name='code'>
+								<Call name='read'>
+									<Call name='open'>
+										<Const name='File'/>
+										<Args>
+											<Call name='+'>
+												<LocalVar name='dir'/>
+												<Args>
+													<LocalVar name='file'/>
+												</Args>
+											</Call>
+											<Str value='rb'/>
+											<Hash>
+												<Array>
+													<Symbol name='binary'/>
+													<True/>
+													<Symbol name='encoding'/>
+													<Str value='UTF-8'/>
+												</Array>
+											</Hash>
+										</Args>
+									</Call>
+									<Args/>
+								</Call>
+							</LocalAsgn>
+							<LocalAsgn name='code'>
+								<FCall name='fix_encoding'>
+									<Array>
+										<LocalVar name='code'/>
+									</Array>
+								</FCall>
+							</LocalAsgn>
+							<FCall name='p'>
+								<Array>
+									<LocalVar name='code'/>
+								</Array>
+							</FCall>
+							<FCall name='puts'>
+								<Array>
+									<FCall name='parse'>
+										<Array>
+											<LocalVar name='code'/>
+										</Array>
+									</FCall>
+								</Array>
+							</FCall>
+							<LocalAsgn name='fib'>
+								<Call name='[]'>
+									<VCall name='functions'/>
+									<Args>
+										<Str value='fibonacci'/>
+									</Args>
+								</Call>
+							</LocalAsgn>
+							<FCall name='puts'>
+								<Array>
+									<LocalVar name='fib'/>
+								</Array>
+							</FCall>
+							<FCall name='puts'>
+								<Array>
+									<Call name='call'>
+										<LocalVar name='fib'/>
+										<Args>
+											<Fixnum value='5'/>
+										</Args>
+									</Call>
+								</Array>
+							</FCall>
+							<FCall name='parse'>
+								<Array>
+									<Str value='fibonacci(5)'/>
+								</Array>
+							</FCall>
+						</Block>
+						<Call name='ls'>
+							<Const name='File'/>
+							<Args>
+								<LocalVar name='dir'/>
+							</Args>
+						</Call>
+					</For>
+				</Block>
+			</Defn>
+			<Defn name='test_basic_syntax'>
+				<Argument name='test_basic_syntax'/>
+				<Args/>
+				<FCall name='assert_result_is'>
+					<Array>
+						<Str>print 'hi'
+						<Str value='nill'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_complex_syntax'>
+				<Argument name='test_complex_syntax'/>
+				<Args/>
+				<FCall name='init'>
+					<Array>
+						<Str value='here is how to define a method: done'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_block'>
+				<Argument name='test_block'/>
+				<Args/>
+				<Block>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='x'/>
+							<Fixnum value='1'/>
+						</Array>
+					</AttrAssign>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='y'/>
+							<Fixnum value='2'/>
+						</Array>
+					</AttrAssign>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='count'>
+								<Call name='variables'>
+									<InstVar name='@parser'/>
+									<List/>
+								</Call>
+								<List/>
+							</Call>
+							<Fixnum value='2'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='z'>
+						<FCall name='parse'>
+							<Array>
+								<Str value='x+y;'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='z'/>
+							<Fixnum value='3'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_params'>
+				<Argument name='test_params'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='how to increase x by y: x+y;'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='g'>
+						<Call name='[]'>
+							<VCall name='functions'/>
+							<Args>
+								<Str value='increase'/>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<LocalAsgn name='args'>
+						<Array>
+							<Call name='new'>
+								<Const name='Argument'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str value='x'/>
+											<Symbol name='preposition'/>
+											<Str value=''/>
+											<Symbol name='position'/>
+											<Fixnum value='1'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+							<Call name='new'>
+								<Const name='Argument'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str value='y'/>
+											<Symbol name='preposition'/>
+											<Str value='by'/>
+											<Symbol name='position'/>
+											<Fixnum value='2'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</LocalAsgn>
+					<LocalAsgn name='f'>
+						<Call name='new'>
+							<Const name='Function'/>
+							<Args>
+								<Hash>
+									<Array>
+										<Symbol name='name'/>
+										<Str value='increase'/>
+										<Symbol name='body'/>
+										<Str value='x+y;'/>
+										<Symbol name='arguments'/>
+										<LocalVar name='args'/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equal'>
+						<Array>
+							<LocalVar name='f'/>
+							<LocalVar name='g'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='call_function'>
+								<InstVar name='@parser'/>
+								<Args>
+									<LocalVar name='f'/>
+									<Hash>
+										<Array>
+											<Symbol name='x'/>
+											<Fixnum value='1'/>
+											<Symbol name='y'/>
+											<Fixnum value='2'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+							<Fixnum value='3'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_function_object'>
+				<Argument name='test_function_object'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='how to increase a number x by y: x+y;'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='g'>
+						<Call name='[]'>
+							<VCall name='functions'/>
+							<Args>
+								<Str value='increase'/>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<LocalAsgn name='arg1'>
+						<Call name='new'>
+							<Const name='Argument'/>
+							<Args>
+								<Hash>
+									<Array>
+										<Symbol name='name'/>
+										<Str value='x'/>
+										<Symbol name='type'/>
+										<Str value='number'/>
+										<Symbol name='preposition'/>
+										<Str value=''/>
+										<Symbol name='position'/>
+										<Fixnum value='1'/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<LocalAsgn name='arg2'>
+						<Call name='new'>
+							<Const name='Argument'/>
+							<Args>
+								<Hash>
+									<Array>
+										<Symbol name='name'/>
+										<Str value='y'/>
+										<Symbol name='preposition'/>
+										<Str value='by'/>
+										<Symbol name='position'/>
+										<Fixnum value='2'/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<LocalAsgn name='f'>
+						<Call name='new'>
+							<Const name='Function'/>
+							<Args>
+								<Hash>
+									<Array>
+										<Symbol name='name'/>
+										<Str value='increase'/>
+										<Symbol name='body'/>
+										<Str value='x+y;'/>
+										<Symbol name='object'/>
+										<LocalVar name='arg1'/>
+										<Symbol name='arguments'/>
+										<LocalVar name='arg2'/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equal'>
+						<Array>
+							<LocalVar name='f'/>
+							<LocalVar name='g'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='call_function'>
+								<InstVar name='@parser'/>
+								<Args>
+									<LocalVar name='f'/>
+									<Hash>
+										<Array>
+											<Symbol name='x'/>
+											<Fixnum value='1'/>
+											<Symbol name='y'/>
+											<Fixnum value='2'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+							<Fixnum value='3'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_blue_yay'>
+				<Argument name='test_blue_yay'/>
+				<Args/>
+				<FCall name='assert_result_is'>
+					<Array>
+						<Str>def test{puts 'yay'};test
+						<Str value='yay'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_class_method'>
+				<Argument name='test_class_method'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='how to list all numbers smaller x: [1..x]'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='g'>
+						<Call name='[]'>
+							<VCall name='functions'/>
+							<Args>
+								<Str value='list'/>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<LocalAsgn name='f'>
+						<Call name='new'>
+							<Const name='Function'/>
+							<Args>
+								<Hash>
+									<Array>
+										<Symbol name='name'/>
+										<Str value='list'/>
+										<Symbol name='body'/>
+										<Str value='[1..x]'/>
+										<Symbol name='object'/>
+										<VCall name='arg1'/>
+										<Symbol name='arguments'/>
+										<VCall name='arg2'/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equal'>
+						<Array>
+							<LocalVar name='f'/>
+							<LocalVar name='g'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='call_function'>
+								<InstVar name='@parser'/>
+								<Args>
+									<LocalVar name='f'/>
+									<Fixnum value='4'/>
+								</Args>
+							</Call>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_simple_parameters'>
+				<Argument name='test_simple_parameters'/>
+				<Args/>
+				<FCall name='parse'>
+					<Array>
+						<Str>puts 'hi'
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_to_do_something'>
+				<Argument name='test_to_do_something'/>
+				<Args/>
+			</Defn>
+			<Defn name='test_svg'>
+				<Argument name='test_svg'/>
+				<Args/>
+				<Block>
+					<VCall name='skip'/>
+					<FCall name='parse'>
+						<Array>
+							<Str value='svg <circle cx="$x" cy="50" r="$radius" stroke="black" fill="$color" id="circle"/>'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='what is that'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_java_style'>
+				<Argument name='test_java_style'/>
+				<Args/>
+				<FCall name='parse'>
+					<Array>
+						<Str value='1.add(0)'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_dot'>
+				<Argument name='test_dot'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>x='hi'
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='reverse of x'/>
+							<Str value='ih'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='x.reverse'/>
+							<Str value='ih'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='reverse x'/>
+							<Str value='ih'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_rubyThing'>
+				<Argument name='test_rubyThing'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='Math.hypot (3,3)'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='Math.sqrt 8'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='Math.sqrt( 8 )'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='Math.ancestors'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_x_name'>
+				<Argument name='test_x_name'/>
+				<Args/>
+				<Block>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='x'/>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str value='x'/>
+											<Symbol name='value'/>
+											<Fixnum value='7'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</AttrAssign>
+					<FCall name='init'>
+						<Array>
+							<Str value='x'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='name'>
+								<Call name='nod'>
+									<InstVar name='@parser'/>
+									<List/>
+								</Call>
+								<List/>
+							</Call>
+							<Str value='x'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_add_to_zero'>
+				<Argument name='test_add_to_zero'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='counter is zero; repeat three times: increase counter by 1; done repeating;'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='counter'/>
+								</Args>
+							</Call>
+							<Fixnum value='3'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_var_check'>
+				<Argument name='test_var_check'/>
+				<Args/>
+				<Block>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='counter'/>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str value='counter'/>
+											<Symbol name='value'/>
+											<Fixnum value='3'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</AttrAssign>
+					<FCall name='assert'>
+						<Array>
+							<Str value='the counter is 3'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_array_arg'>
+				<Argument name='test_array_arg'/>
+				<Args/>
+				<FCall name='assert_equals'>
+					<Array>
+						<FCall name='parse'>
+							<Array>
+								<Str value='rest of [1,2,3]'/>
+							</Array>
+						</FCall>
+						<Array>
+							<Fixnum value='2'/>
+							<Fixnum value='3'/>
+						</Array>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_array_index'>
+				<Argument name='test_array_index'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='x=[1,2,3];x[2]'/>
+								</Array>
+							</FCall>
+							<Fixnum value='3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='x=[1,2,3];x[2]=0;x'/>
+								</Array>
+							</FCall>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='0'/>
+							</Array>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_natural_array_index'>
+				<Argument name='test_natural_array_index'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x=[1,2,3]'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='second element in [1,2,3]'/>
+								</Array>
+							</FCall>
+							<Fixnum value='2'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='third element in x'/>
+								</Array>
+							</FCall>
+							<Fixnum value='3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='set third element in x to 8'/>
+								</Array>
+							</FCall>
+							<Fixnum value='8'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='x'/>
+								</Array>
+							</FCall>
+							<Array>
+								<Fixnum value='1'/>
+								<Fixnum value='2'/>
+								<Fixnum value='8'/>
+							</Array>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_array_arg'>
+				<Argument name='test_array_arg'/>
+				<Args/>
+				<FCall name='assert_equals'>
+					<Array>
+						<FCall name='parse'>
+							<Array>
+								<Str value='rest of [1,2,3]'/>
+							</Array>
+						</FCall>
+						<Array>
+							<Fixnum value='2'/>
+							<Fixnum value='3'/>
+						</Array>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_add_time'>
+				<Argument name='test_add_time'/>
+				<Args/>
+			</Defn>
+			<Defn name='test_add'>
+				<Argument name='test_add'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='counter is one; repeat three times: increase counter; done repeating;'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='counter'/>
+								</Args>
+							</Call>
+							<Fixnum value='4'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='_test_svg_dom'>
+				<Argument name='_test_svg_dom'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='<svg><circle cx="$x" cy="50" r="$radius" stroke="black" fill="$color" id="circle"/></svg>'/>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<Call name='svg'>
+								<Call name='interpretation'>
+									<InstVar name='@parser'/>
+									<List/>
+								</Call>
+								<List/>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='circle.color=green'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Str value='circle.color'/>
+							<Str value='green'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_incr'>
+				<Argument name='test_incr'/>
+				<Args/>
+				<FCall name='assert'>
+					<Array>
+						<Str value='increase 1 == 2'/>
+					</Array>
+				</FCall>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

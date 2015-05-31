@@ -1,0 +1,258 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<GlobalAsgn name='$verbose'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='HashTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='test_hash_symbol_invariance_extension'>
+				<Argument name='test_hash_symbol_invariance_extension'/>
+				<Args/>
+				<Block>
+					<LocalAsgn name='a'>
+						<Hash>
+							<Array>
+								<Symbol name='a'/>
+								<Fixnum value='1'/>
+							</Array>
+						</Hash>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<LocalVar name='a'/>
+								<Args>
+									<Symbol name='lhs'/>
+								</Args>
+							</Call>
+							<Call name='[]'>
+								<LocalVar name='a'/>
+								<Args>
+									<Str value='lhs'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<LocalAsgn name='h'>
+						<FCall name='parse'>
+							<Array>
+								<Str value='{"SuperSecret" : "kSecValueRef"}'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<LocalVar name='h'/>
+								<Args>
+									<Str value='SuperSecret'/>
+								</Args>
+							</Call>
+							<Str value='kSecValueRef'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_json_data'>
+				<Argument name='test_json_data'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='{a{b:"b";c:"c"}}'/>
+						</Array>
+					</FCall>
+					<Call name='json_hash'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+				</Block>
+			</Defn>
+			<Defn name='test_invariances'>
+				<Argument name='test_invariances'/>
+				<Args/>
+				<FCall name='assert_result_is'>
+					<Array>
+						<Str value='{a:"b"}'/>
+						<Hash>
+							<Array>
+								<Symbol name='a'/>
+								<Str value='b'/>
+							</Array>
+						</Hash>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_invariances2'>
+				<Argument name='test_invariances2'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='{a{b:"b",c:"c"}}'/>
+								</Array>
+							</FCall>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Hash>
+										<Array>
+											<Symbol name='b'/>
+											<Str value='b'/>
+											<Symbol name='c'/>
+											<Str value='c'/>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='{a{b:"b";c:"c"}}'/>
+								</Array>
+							</FCall>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Hash>
+										<Array>
+											<Symbol name='b'/>
+											<Str value='b'/>
+											<Symbol name='c'/>
+											<Str value='c'/>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='{a:"b"}'/>
+								</Array>
+							</FCall>
+							<FCall name='parse'>
+								<Array>
+									<Str value='{"a":"b"}'/>
+								</Array>
+							</FCall>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='{:a => "b"}'/>
+								</Array>
+							</FCall>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Str value='b'/>
+								</Array>
+							</Hash>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='{a:{b:"b";c:"c"}}'/>
+								</Array>
+							</FCall>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Hash>
+										<Array>
+											<Symbol name='b'/>
+											<Str value='b'/>
+											<Symbol name='c'/>
+											<Str value='c'/>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_immediate_hash'>
+				<Argument name='test_immediate_hash'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='a{b:"b",c:"c"}'/>
+								</Array>
+							</FCall>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Hash>
+										<Array>
+											<Symbol name='b'/>
+											<Str value='b'/>
+											<Symbol name='c'/>
+											<Str value='c'/>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+						</Array>
+					</FCall>
+					<FCall name='skip'>
+						<Array>
+							<Str value='test_immediate_hash NO, because of blocks!'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='a:{b:"b",c:"c"}'/>
+								</Array>
+							</FCall>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Hash>
+										<Array>
+											<Symbol name='b'/>
+											<Str value='b'/>
+											<Symbol name='c'/>
+											<Str value='c'/>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

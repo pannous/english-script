@@ -1,0 +1,237 @@
+<Block>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='VariableTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='test_a_setter_article_vs_variable'>
+				<Argument name='test_a_setter_article_vs_variable'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='a=green'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='a'/>
+								</Args>
+							</Call>
+							<Str value='green'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='a dog=green'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='dog'/>
+								</Args>
+							</Call>
+							<Str value='green'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_variableTypes'>
+				<Argument name='test_variableTypes'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='an integer i'/>
+						</Array>
+					</FCall>
+					<Call name='variable'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+				</Block>
+			</Defn>
+			<Defn name='test_variable_type_safety'>
+				<Argument name='test_variable_type_safety'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='int i=3'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='an integer i;i=3'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='int i;i=3'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>char i='c'
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>char i;i='c'
+						</Array>
+					</FCall>
+					<FCall name='assert_has_error'>
+						<Array>
+							<Str value='string i=3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_has_error'>
+						<Array>
+							<Str>int i='hi'
+						</Array>
+					</FCall>
+					<FCall name='assert_has_error'>
+						<Array>
+							<Str>integer i='hi'
+						</Array>
+					</FCall>
+					<FCall name='assert_has_error'>
+						<Array>
+							<Str>an integer i;i='hi'
+						</Array>
+					</FCall>
+					<FCall name='assert_has_error'>
+						<Array>
+							<Str value='const i=1;i=2'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_has_error'>
+						<Array>
+							<Str>const i=1;i='hi'
+						</Array>
+					</FCall>
+					<FCall name='assert_has_error'>
+						<Array>
+							<Str>const i='hi';i='ho'
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_var_condition_unmodified'>
+				<Argument name='test_var_condition_unmodified'/>
+				<Args/>
+				<Block>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='counter'/>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str value='counter'/>
+											<Symbol name='value'/>
+											<Fixnum value='3'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</AttrAssign>
+					<FCall name='init'>
+						<Array>
+							<Str value='counter=2'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<False/>
+								<Args>
+									<Call name='condition'>
+										<InstVar name='@parser'/>
+										<List/>
+									</Call>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='counter=3'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_vars'>
+				<Argument name='test_vars'/>
+				<Args/>
+				<Block>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='counter'/>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str value='counter'/>
+											<Symbol name='value'/>
+											<Fixnum value='3'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</AttrAssign>
+					<FCall name='parse'>
+						<Array>
+							<Str value='counter =2'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='counter'/>
+								</Args>
+							</Call>
+							<Fixnum value='2'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Symbol name='counter'/>
+								</Args>
+							</Call>
+							<Fixnum value='2'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

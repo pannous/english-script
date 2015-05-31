@@ -1,0 +1,77 @@
+<Block>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='MethodTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_result'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>alias show puts;show 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Str>3</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>how to test:show 3;ok</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='>'>
+								<Call name='count'>
+									<Call name='methods'/>
+									<Arguments/>
+								</Call>
+								<Args>
+									<Num value='0'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='body'>
+								<Call name='[]'>
+									<Call name='methods'/>
+									<Args>
+										<Str>test</Str>
+									</Args>
+								</Call>
+								<Arguments/>
+							</Call>
+							<Str>show 3;</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>test</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Str>3</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

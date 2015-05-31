@@ -1,0 +1,312 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<True/>
+	</GlobalAsgn>
+	<GlobalAsgn name='$verbose'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../../src/core/emitters/c-emitter'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='EmitterTest'/>
+		<Block>
+			<Defn name='init'>
+				<Argument name='init'/>
+				<Args/>
+				<GlobalAsgn name='$use_tree'>
+					<True/>
+				</GlobalAsgn>
+			</Defn>
+			<Defn name='initialize'>
+				<Argument name='initialize'/>
+				<Args/>
+				<GlobalAsgn name='$use_tree'>
+					<True/>
+				</GlobalAsgn>
+			</Defn>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='last_result'>
+				<Argument name='last_result'/>
+				<Args>
+					<Argument name='x'/>
+				</Args>
+				<Call name='[]'>
+					<Call name='split'>
+						<LocalVar name='x'/>
+						<Args>
+							<Str value='
+'/>
+						</Args>
+					</Call>
+					<Args>
+						<Fixnum value='-1'/>
+					</Args>
+				</Call>
+			</Defn>
+			<Defn name='assert_result_emitted'>
+				<Argument name='assert_result_emitted'/>
+				<Args>
+					<Argument name='x'/>
+					<Argument name='r'/>
+				</Args>
+				<FCall name='assert_equals'>
+					<Array>
+						<FCall name='last_result'>
+							<Array>
+								<FCall name='parse_tree'>
+									<Array>
+										<LocalVar name='x'/>
+										<True/>
+									</Array>
+								</FCall>
+							</Array>
+						</FCall>
+						<LocalVar name='r'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_js_emitter'>
+				<Argument name='test_js_emitter'/>
+				<Args/>
+				<Block>
+					<If>
+						<Call name='!'>
+							<GlobalVar name='$use_tree'/>
+							<List/>
+						</Call>
+						<VCall name='skip'/>
+					</If>
+					<FCall name='assert_result_emitted'>
+						<Array>
+							<Str value='x=5;increase x'/>
+							<Fixnum value='6'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_int_setter'>
+				<Argument name='test_int_setter'/>
+				<Args/>
+				<Block>
+					<If>
+						<Call name='!'>
+							<GlobalVar name='$use_tree'/>
+							<List/>
+						</Call>
+						<VCall name='skip'/>
+					</If>
+					<FCall name='assert_result_emitted'>
+						<Array>
+							<Str value='x=5;puts x'/>
+							<Fixnum value='5'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_type_cast'>
+				<Argument name='test_type_cast'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='2.3'/>
+							<Float value='2.3'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='int z=2.3 as int'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Fixnum value='2'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_printf'>
+				<Argument name='test_printf'/>
+				<Args/>
+				<Block>
+					<GlobalAsgn name='$use_tree'>
+						<True/>
+					</GlobalAsgn>
+					<Call name='dont_interpret!'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='parse'>
+						<Array>
+							<Str>printf 'hello world'
+							<False/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='interpretation'>
+						<Or>
+							<Call name='interpretation'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Call name='new'>
+								<Const name='Interpretation'/>
+								<List/>
+							</Call>
+						</Or>
+					</LocalAsgn>
+					<Call name='full_tree'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<LocalAsgn name='result'>
+						<Call name='emit'>
+							<Call name='new'>
+								<Const name='NativeCEmitter'/>
+								<List/>
+							</Call>
+							<Args>
+								<LocalVar name='interpretation'/>
+								<Hash>
+									<Array>
+										<Symbol name='run'/>
+										<True/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='result'/>
+							<Str value='hello world'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_printf_1'>
+				<Argument name='test_printf_1'/>
+				<Args/>
+				<FCall name='assert_result_emitted'>
+					<Array>
+						<Str>printf 'hello world'
+						<Str value='hello world'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_function_call'>
+				<Argument name='test_function_call'/>
+				<Args/>
+				<FCall name='assert_result_emitted'>
+					<Array>
+						<Str value='i=7;i minus one'/>
+						<Fixnum value='6'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_function'>
+				<Argument name='test_function'/>
+				<Args/>
+				<FCall name='assert_result_emitted'>
+					<Array>
+						<Str>def test{puts 'yay'};test
+						<Str value='yay'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_function2'>
+				<Argument name='test_function2'/>
+				<Args/>
+				<Block>
+					<FCall name='parse_file'>
+						<Array>
+							<Str value='examples/factorial.e'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_emitted'>
+						<Array>
+							<Str value='factorial 6'/>
+							<Fixnum value='5040'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_array'>
+				<Argument name='test_array'/>
+				<Args/>
+				<FCall name='assert_result_emitted'>
+					<Array>
+						<Str value='xs=[1,4,7];invert xs'/>
+						<Array>
+							<Fixnum value='7'/>
+							<Fixnum value='4'/>
+							<Fixnum value='1'/>
+						</Array>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_setter'>
+				<Argument name='test_setter'/>
+				<Args/>
+				<Block>
+					<GlobalAsgn name='$use_tree'>
+						<True/>
+					</GlobalAsgn>
+					<Call name='dont_interpret!'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='parse'>
+						<Array>
+							<Str>x='ho';puts x
+						</Array>
+					</FCall>
+					<LocalAsgn name='interpretation'>
+						<Or>
+							<Call name='interpretation'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+							<Call name='new'>
+								<Const name='Interpretation'/>
+								<List/>
+							</Call>
+						</Or>
+					</LocalAsgn>
+					<Call name='show_tree'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<Call name='emit'>
+						<Call name='new'>
+							<Const name='NativeCEmitter'/>
+							<List/>
+						</Call>
+						<Args>
+							<LocalVar name='interpretation'/>
+							<Hash>
+								<Array>
+									<Symbol name='run'/>
+									<True/>
+								</Array>
+							</Hash>
+						</Args>
+					</Call>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

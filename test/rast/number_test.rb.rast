@@ -1,0 +1,222 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<GlobalAsgn name='$verbose'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='NumberTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='test_type1'>
+				<Argument name='test_type1'/>
+				<Args/>
+				<Block>
+					<FCall name='puts'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='class of 1'/>
+								</Array>
+							</FCall>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<InstVar name='@result'/>
+							<Const name='Fixnum'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='class of 3.3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<InstVar name='@result'/>
+								<Args>
+									<Const name='Float'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_type2'>
+				<Argument name='test_type2'/>
+				<Args/>
+				<Block>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3.2 is a Numeric'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3.2 is a Float'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3.2 is a float'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3.2 is a real'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3.2 is a float number'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3.2 is a real number'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_type3'>
+				<Argument name='test_type3'/>
+				<Args/>
+				<Block>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3 is a Number'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3 is a Fixnum'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3 is a Numeric'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3 is a Integer'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_english_number_types'>
+				<Argument name='test_english_number_types'/>
+				<Args/>
+				<Block>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3.2 is a number'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3.2 is a real number'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3.2 is a real'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3.2 is a float'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3.2 is a float number'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3 is a number'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3 is a integer'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='3 is an integer'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='_test_int_methods'>
+				<Argument name='_test_int_methods'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='invert 3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<InstVar name='@result'/>
+								<Args>
+									<Str value='1/3'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_parse_float'>
+				<Argument name='test_parse_float'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='5.0'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='x'>
+						<Call name='real'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='parse'>
+						<Array>
+							<Str value='20/5.0'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Fixnum value='4'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='current'>
+				<Argument name='current'/>
+				<Args/>
+				<VCall name='test_type1'/>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

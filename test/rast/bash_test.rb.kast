@@ -1,0 +1,32 @@
+<Block>
+	<Assign name='$use_tree'>
+		<Variable name='$emit'/>
+	</Assign>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='BashTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_pipe'>
+				<Args/>
+				<Call name='parse'>
+					<Args>
+						<Str>bash 'ls -al' | column 1</Str>
+					</Args>
+				</Call>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

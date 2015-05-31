@@ -1,0 +1,825 @@
+<Block>
+	<Assign name='$use_tree'>
+		<Variable name='$emit'/>
+	</Assign>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='ConditionTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_eq'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>counter</Str>
+							<Num value='3'/>
+						</Array>
+					</Assign>
+					<Call name='assert'>
+						<Args>
+							<Str>counter == 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>counter = 3</Str>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>counter = 3</Str>
+						</Args>
+					</Call>
+					<Call name='condition'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>counter = 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>counter =3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>counter is 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>counter equals 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>counter is the same as 3</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_return'>
+				<Args/>
+				<Block>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if 1&lt;2 then 5 else 4</Str>
+							<Num value='5'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if(1&lt;2) then 3 else 4</Str>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if(3&lt;2) then 3 else 4</Str>
+							<Num value='4'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if 3&lt;2 then 5 else 4</Str>
+							<Num value='4'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if 1&lt;2 then false else 4</Str>
+							<Str>false</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_else_'>
+				<Args/>
+				<Block>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if(1&lt;2) then 3 else 4</Str>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if 1&lt;2 then 5 else 4</Str>
+							<Num value='5'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if(3&lt;2) then 3 else 4</Str>
+							<Num value='4'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if 3&lt;2 then 5 else 4</Str>
+							<Num value='4'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>if 1&lt;2 then false else 4</Str>
+							<Str>false</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='dont_test_everything_is_fine'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>everything is fine;</Str>
+						</Args>
+					</Call>
+					<Assign name='ok'>
+						<Call name='block'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='init'>
+						<Args>
+							<Str>everything is fine</Str>
+						</Args>
+					</Call>
+					<Call name='condition'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>everything is fine</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_list_quantifiers'>
+				<Args/>
+				<Block>
+					<Assign name='check'>
+						<Call name='parse'>
+							<Args>
+								<Str>x is 5; if all 0,1,2 are smaller 3 then increase x</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='check'/>
+							<Num value='6'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_list_quantifiers2'>
+				<Args/>
+				<Block>
+					<Assign name='check'>
+						<Call name='parse'>
+							<Args>
+								<Str>x=2;if all 0,1,2 are smaller 2 then x++</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='check'/>
+							<False/>
+						</Args>
+					</Call>
+					<Assign name='check'>
+						<Call name='parse'>
+							<Args>
+								<Str>x=2;if one of 0,1,2 is smaller 3 then x++</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='check'/>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Assign name='check'>
+						<Call name='parse'>
+							<Args>
+								<Str>x=2;if many of 0,1,2 are smaller 3 then x++</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='check'/>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Assign name='check'>
+						<Call name='parse'>
+							<Args>
+								<Str>x=2;if many of 0,1,2 are smaller 1 then x++</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='check'/>
+							<False/>
+						</Args>
+					</Call>
+					<Assign name='check'>
+						<Call name='parse'>
+							<Args>
+								<Str>x=2;if none of 0,1,2 is smaller 3 then x++</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='check'/>
+							<False/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_assert'>
+				<Args/>
+				<Call name='assert'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>assert 3rd word in 'hi my friend' is 'friend'</Str>
+							</Args>
+						</Call>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_and'>
+				<Args/>
+				<Call name='assert'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>x=2;if x is smaller 3 and x is bigger 1 then true</Str>
+							</Args>
+						</Call>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_and1'>
+				<Args/>
+				<Call name='assert'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>x=2;if x is smaller 3 but not x is smaller 1 then true</Str>
+							</Args>
+						</Call>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_and2'>
+				<Args/>
+				<Call name='assert'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>x=2;if x is smaller 3 and x is bigger 3 then "DONT REACH" else true</Str>
+							</Args>
+						</Call>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_and22'>
+				<Args/>
+				<Call name='assert_result_is'>
+					<Args>
+						<Str>x=2;if x is smaller 3 and x is bigger 1 then 4 else 5</Str>
+						<Num value='4'/>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_and3'>
+				<Args/>
+				<Call name='assert_result_is'>
+					<Args>
+						<Str>x=2;if x is smaller 3 and x is bigger 3 then 4 else 5</Str>
+						<Num value='5'/>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_no_rollback'>
+				<Args/>
+				<Call name='assert_has_error'>
+					<Args>
+						<Str>x=2;if x is smaller 3 and x is bigger 1 then for end</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_it_result'>
+				<Args/>
+				<Block>
+					<Call name='assert'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>x=1+1;if it is 2 then true</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>x=3;it*2</Str>
+							<Num value='6'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>3;it*2</Str>
+							<Num value='6'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>2*it</Str>
+							<Num value='12'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>it*2</Str>
+							<Num value='24'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>6;that*2</Str>
+							<Num value='12'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>6;2*result</Str>
+							<Num value='12'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_or'>
+				<Args/>
+				<Call name='assert'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>x=2;if x is smaller 1 or x is bigger 1 then true</Str>
+							</Args>
+						</Call>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_either_or'>
+				<Args/>
+				<Call name='assert'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>x=2;if either x is smaller 1 or x is bigger 1 then true</Str>
+							</Args>
+						</Call>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_else'>
+				<Args/>
+				<Call name='assert_equals'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>if 1 then false else 2</Str>
+							</Args>
+						</Call>
+						<False/>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_if_smaller'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x=2;if x is smaller 3 then x++</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x=2;if x is smaller three then x++</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x=2;if x is smaller three then x++</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x=2;if x is smaller than three then x++</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x=2;if x is smaller than three x++</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_if_return'>
+				<Args/>
+				<Block>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>if 1&gt;0 then beep</Str>
+								</Args>
+							</Call>
+							<Str>beeped</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>if 1&gt;0 then beep else 0</Str>
+								</Args>
+							</Call>
+							<Str>beeped</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_if_return2'>
+				<Args/>
+				<Call name='assert_equals'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>return 1 if 1</Str>
+							</Args>
+						</Call>
+						<Num value='1'/>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='assert_c_ok'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>c</Str>
+							<Num value='0'/>
+						</Array>
+					</Assign>
+					<Assign name='z'>
+						<Call name='parse'>
+							<Args>
+								<Str>if c&gt;-1 then beep;</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='z'/>
+							<Str>beeped</Str>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='parse'>
+							<Args>
+								<Str>c++;if c&gt;1 then beep;</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='z'/>
+							<False/>
+						</Args>
+					</Call>
+					<Call name='do_interpret!'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Assign name='z'>
+						<Call name='parse'>
+							<Args>
+								<Str>c++;if c&gt;1 then beep;</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='z'/>
+							<Str>beeped</Str>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>c++</Str>
+						</Args>
+					</Call>
+					<Call name='do_interpret!'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Assign name='c2'>
+						<Call name='block'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='c2'/>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>c</Str>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_if_in_loop'>
+				<Args/>
+				<Call name='assert_equals'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>c=0;while c&lt;3:c++;if c&gt;1 then beep;done</Str>
+							</Args>
+						</Call>
+						<Str>beep</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_comparisons'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>two is bigger than zero</Str>
+						</Args>
+					</Call>
+					<Assign name='ok'>
+						<Call name='condition'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='ok'/>
+							<True/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_if_then'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>if 1&gt;0 then: beep;</Str>
+						</Args>
+					</Call>
+					<Call name='if_then'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>if 1&gt;0 then: beep;</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='@result'/>
+							<Str>beeped</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>if 1&gt;0 then beep</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='@result'/>
+							<Str>beeped</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>if 1&gt;0 then: beep</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='@result'/>
+							<Str>beeped</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>if 1&gt;0 then: beep;end</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='@result'/>
+							<Str>beeped</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_if_then2'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>if 1&gt;0
+ beep
+end</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='@result'/>
+							<Str>beeped</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>if 1&gt;0 beep</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='@result'/>
+							<Str>beeped</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>if two is bigger than zero then beep</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='@result'/>
+							<Str>beeped</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_root'>
+				<Args/>
+				<Call name='parse'>
+					<Args>
+						<Str>1==1</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_complicated'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 2; if all 0,2,4 are smaller 5 then increase x; assert x equals 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Variable name='@result'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_complicated2'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 2; if 0,2,4 are all smaller 5 then increase x; assert x equals 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Variable name='@result'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_complicated3'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 2; if 0,2,4 are smaller 5 then increase x; assert x equals 3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Variable name='@result'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

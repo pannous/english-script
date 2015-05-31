@@ -1,0 +1,1215 @@
+<Block>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='EnglishParserTestParser'/>
+		<Block>
+			<Method name='initialize'>
+				<Args/>
+				<Super/>
+			</Method>
+			<Method name='NOmethod_missing'>
+				<Args>
+					<Arguments>
+						<Argument name='sym'/>
+					</Arguments>
+					<Argument name='args'/>
+					<Argument name='block'/>
+				</Args>
+				<Block>
+					<Assign name='syms'>
+						<Call name='to_s'>
+							<Variable name='sym'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<If>
+						<And>
+							<Variable name='@@parser'/>
+							<Call name='contains'>
+								<Call name='methods'>
+									<Variable name='@@parser'/>
+									<Arguments/>
+								</Call>
+								<Args>
+									<Variable name='sym'/>
+								</Args>
+							</Call>
+						</And>
+						<Block>
+							<If>
+								<Call name='=='>
+									<Call name='count'>
+										<Variable name='args'/>
+										<Arguments/>
+									</Call>
+									<Args>
+										<Num value='0'/>
+									</Args>
+								</Call>
+								<Assign name='x'>
+									<Call name='maybe'>
+										<Arguments/>
+										<Iter>
+											<Args/>
+											<Call name='send'>
+												<Variable name='@@parser'/>
+												<Args>
+													<Variable name='sym'/>
+												</Args>
+											</Call>
+										</Iter>
+									</Call>
+								</Assign>
+							</If>
+							<If>
+								<Call name='=='>
+									<Call name='count'>
+										<Variable name='args'/>
+										<Arguments/>
+									</Call>
+									<Args>
+										<Num value='1'/>
+									</Args>
+								</Call>
+								<Assign name='x'>
+									<Call name='maybe'>
+										<Arguments/>
+										<Iter>
+											<Args/>
+											<Call name='send'>
+												<Variable name='@@parser'/>
+												<Args>
+													<Variable name='sym'/>
+													<Call name='[]'>
+														<Variable name='args'/>
+														<Args>
+															<Num value='0'/>
+														</Args>
+													</Call>
+												</Args>
+											</Call>
+										</Iter>
+									</Call>
+								</Assign>
+							</If>
+							<If>
+								<Call name='>'>
+									<Call name='count'>
+										<Variable name='args'/>
+										<Arguments/>
+									</Call>
+									<Args>
+										<Num value='0'/>
+									</Args>
+								</Call>
+								<Assign name='x'>
+									<Call name='maybe'>
+										<Arguments/>
+										<Iter>
+											<Args/>
+											<Call name='send'>
+												<Variable name='@@parser'/>
+												<Args>
+													<Variable name='sym'/>
+													<Variable name='args'/>
+												</Args>
+											</Call>
+										</Iter>
+									</Call>
+								</Assign>
+							</If>
+							<Return>
+								<Variable name='x'/>
+							</Return>
+						</Block>
+					</If>
+					<Super>
+						<Args>
+							<Array>
+								<Variable name='sym'/>
+							</Array>
+							<Variable name='args'/>
+						</Args>
+						<Argument>
+							<Args>
+								<Array>
+									<Variable name='sym'/>
+								</Array>
+								<Variable name='args'/>
+							</Args>
+							<Variable name='block'/>
+						</Argument>
+					</Super>
+				</Block>
+			</Method>
+			<Method name='test_substitute_variables'>
+				<Args/>
+				<Block>
+					<Assign name='@variableValues'>
+						<Hash>
+							<Array>
+								<Str>x</Str>
+								<Num value='3'/>
+							</Array>
+						</Hash>
+					</Assign>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Str> 3 </Str>
+								<Args>
+									<Call name='substitute_variables'>
+										<Args>
+											<Str> #{x} </Str>
+										</Args>
+									</Call>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Str>"3"</Str>
+								<Args>
+									<Call name='substitute_variables'>
+										<Args>
+											<Str>"#{x}"</Str>
+										</Args>
+									</Call>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Str> 3 </Str>
+								<Args>
+									<Call name='substitute_variables'>
+										<Args>
+											<Str> $x </Str>
+										</Args>
+									</Call>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Str>'3'</Str>
+								<Args>
+									<Call name='substitute_variables'>
+										<Args>
+											<Str>'$x'</Str>
+										</Args>
+									</Call>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Str>3</Str>
+								<Args>
+									<Call name='substitute_variables'>
+										<Args>
+											<Str>#{x}</Str>
+										</Args>
+									</Call>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Arguments/>
+						<Iter>
+							<Args/>
+							<Call name='=='>
+								<Str>3</Str>
+								<Args>
+									<Call name='substitute_variables'>
+										<Args>
+											<Str>$x</Str>
+										</Args>
+									</Call>
+								</Args>
+							</Call>
+						</Iter>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_default_setter_dont_overwrite'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>set color to blue; set default color to green</Str>
+						</Args>
+					</Call>
+					<Call name='setter'/>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='[]'>
+									<Variable name='@variableValues'/>
+									<Args>
+										<Str>color</Str>
+									</Args>
+								</Call>
+								<Args>
+									<Str>blue</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_default_setter'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>set the default color to green</Str>
+						</Args>
+					</Call>
+					<Call name='setter'/>
+					<Call name='assert'>
+						<Args>
+							<Call name='contains'>
+								<Variable name='@variableValues'/>
+								<Args>
+									<Str>color</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_root'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>hello who does the world end</Str>
+						</Args>
+					</Call>
+					<Call name='token'>
+						<Args>
+							<Str>hello</Str>
+						</Args>
+					</Call>
+					<Call name='question'/>
+					<Call name='star'>
+						<Arguments/>
+						<Iter>
+							<Args/>
+							<Or>
+								<Call name='maybe'>
+									<Arguments/>
+									<Iter>
+										<Args/>
+										<Call name='token'>
+											<Args>
+												<Str>does</Str>
+											</Args>
+										</Call>
+									</Iter>
+								</Call>
+								<Call name='maybe'>
+									<Arguments/>
+									<Iter>
+										<Args/>
+										<Call name='question'/>
+									</Iter>
+								</Call>
+							</Or>
+						</Iter>
+					</Call>
+					<Call name='_?'>
+						<Args>
+							<Str>the world</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='verb'/>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<Str>Parsed successfully!</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='aa'>
+				<Args/>
+				<Call name='puts'>
+					<Args>
+						<Str>aa</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='bb'>
+				<Args/>
+				<Call name='raise'>
+					<Args>
+						<Call name='new'>
+							<Const name='NotMatching'/>
+							<Args>
+								<Call name='test'/>
+							</Args>
+						</Call>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='cc'>
+				<Args/>
+				<Block>
+					<Call name='puts'>
+						<Args>
+							<Str>cc</Str>
+						</Args>
+					</Call>
+					<Return>
+						<Str>cc</Str>
+					</Return>
+				</Block>
+			</Method>
+			<Method name='dd'>
+				<Args/>
+				<Block>
+					<Call name='puts'>
+						<Args>
+							<Str>dd</Str>
+						</Args>
+					</Call>
+					<Call name='throw'>
+						<Args>
+							<Str>dd</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_any'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>a b c d</Str>
+						</Args>
+					</Call>
+					<Call name='one'>
+						<Args>
+							<Symbol name='aa'/>
+							<Symbol name='bb'/>
+							<Symbol name='cc'/>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='any'>
+								<Arguments/>
+								<Iter>
+									<Args/>
+									<Block>
+										<Call name='maybe'>
+											<Arguments/>
+											<Iter>
+												<Args/>
+												<Call name='puts'>
+													<Args>
+														<Str>a</Str>
+													</Args>
+												</Call>
+											</Iter>
+										</Call>
+										<Call name='maybe'>
+											<Arguments/>
+											<Iter>
+												<Args/>
+												<Call name='puts'>
+													<Args>
+														<Str>b</Str>
+													</Args>
+												</Call>
+											</Iter>
+										</Call>
+										<Call name='maybe'>
+											<Arguments/>
+											<Iter>
+												<Args/>
+												<Call name='raise'>
+													<Args>
+														<Call name='new'>
+															<Const name='NotMatching'/>
+															<Arguments/>
+														</Call>
+													</Args>
+												</Call>
+											</Iter>
+										</Call>
+										<Call name='maybe'>
+											<Arguments/>
+											<Iter>
+												<Args/>
+												<Call name='puts'>
+													<Args>
+														<Str>c</Str>
+													</Args>
+												</Call>
+											</Iter>
+										</Call>
+										<Call name='maybe'>
+											<Arguments/>
+											<Iter>
+												<Args/>
+												<Call name='throw'>
+													<Args>
+														<Str>b</Str>
+													</Args>
+												</Call>
+											</Iter>
+										</Call>
+										<Call name='maybe'>
+											<Arguments/>
+											<Iter>
+												<Args/>
+												<Call name='puts'>
+													<Args>
+														<Str>b</Str>
+													</Args>
+												</Call>
+											</Iter>
+										</Call>
+									</Block>
+								</Iter>
+							</Call>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_action'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>eat a sandwich; done</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='action'/>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='!'>
+								<Call name='match'>
+									<Call name='string'/>
+									<Args>
+										<Str>sandwich</Str>
+									</Args>
+								</Call>
+								<Arguments/>
+							</Call>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_methods'>
+				<Args/>
+				<Block>
+					<Call name='test_method2'/>
+					<Call name='test_method4'/>
+				</Block>
+			</Method>
+			<Method name='test_method'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>how to integrate a bug do test done</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='method_definition'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_method2'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>how to print: eat a sandwich; done</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='method_definition'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_method3'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>how to integrate a bug
+test
+ok</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='method_definition'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_method4'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>how to integrate a bug
+      test
+    ok</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='method_definition'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_expression'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>eat a sandwich;</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='action'/>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<Call name='x'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='raise_test'>
+				<Args/>
+				<Call name='raise'>
+					<Args>
+						<Str>test</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_block'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>let the initial value of I be x;
+step size is the length of the interval,
+divided by the number of steps
+var x = 8;</Str>
+						</Args>
+					</Call>
+					<Call name='block'/>
+				</Block>
+			</Method>
+			<Method name='test_quote'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>msg = "heee"</Str>
+						</Args>
+					</Call>
+					<Call name='setter'/>
+				</Block>
+			</Method>
+			<Method name='test_while'>
+				<Args/>
+				<Block>
+					<Call name='allow_rollback'/>
+					<Call name='s'>
+						<Args>
+							<Str>while i is smaller or less then y do
+ evaluate the function at point I
+ add the result to the sum
+ increase I by the step size
+done</Str>
+						</Args>
+					</Call>
+					<Call name='looper'/>
+				</Block>
+			</Method>
+			<Method name='test_setter3'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>step size is the length of the interval, divided by the number of steps</Str>
+						</Args>
+					</Call>
+					<Call name='setter'/>
+				</Block>
+			</Method>
+			<Method name='test_setter2'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>var x = 8;</Str>
+						</Args>
+					</Call>
+					<Call name='setter'/>
+				</Block>
+			</Method>
+			<Method name='test_setter'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>let the initial value of I be x</Str>
+						</Args>
+					</Call>
+					<Call name='setter'/>
+				</Block>
+			</Method>
+			<Method name='test_looper'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>while i is smaller or less then y do
+yawn
+end</Str>
+						</Args>
+					</Call>
+					<Call name='looper'/>
+				</Block>
+			</Method>
+			<Method name='test_method_call'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>evaluate the function at point I</Str>
+						</Args>
+					</Call>
+					<Call name='method_call'/>
+				</Block>
+			</Method>
+			<Method name='test_verb'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>help</Str>
+						</Args>
+					</Call>
+					<Call name='verb'/>
+				</Block>
+			</Method>
+			<Method name='test_comment'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>#ok</Str>
+						</Args>
+					</Call>
+					<Call name='statement'/>
+					<Call name='s'>
+						<Args>
+							<Str>z3=13 //ok</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='statement'/>
+						</Args>
+					</Call>
+					<Call name='s'>
+						<Args>
+							<Str>z4=23 -- ok</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='statement'/>
+						</Args>
+					</Call>
+					<Call name='s'>
+						<Args>
+							<Str>z5=33 # ok</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='statement'/>
+						</Args>
+					</Call>
+					<Call name='s'>
+						<Args>
+							<Str>z6=/* dfsfds */3 </Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_js'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>js alert('hi')</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='javascript'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_ruby_method_call'>
+				<Args/>
+				<Block>
+					<Call name='test_ruby_def'/>
+					<Call name='parse'>
+						<Args>
+							<Str>NOW CALL via english</Str>
+						</Args>
+					</Call>
+					<Call name='s'>
+						<Args>
+							<Str>call ruby_block_test 'yeah'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='ruby_method_call'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_ruby_def'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>def ruby_block_test x='yuhu'
+  puts x
+  return x+'yay'
+end</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='ruby_def'/>
+						</Args>
+					</Call>
+					<Call name='ruby_block_test'/>
+				</Block>
+			</Method>
+			<Method name='test_ruby_all'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>
+def ruby_block_test x='yuhu'
+  puts x
+  return x+'yay'
+end
+call ruby_block_test 'yeah'
+</Str>
+						</Args>
+					</Call>
+					<Call name='root'/>
+				</Block>
+			</Method>
+			<Method name='test_ruby_variables'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>x=7;puts x;x+1;</Str>
+						</Args>
+					</Call>
+					<Call name='root'/>
+				</Block>
+			</Method>
+			<Method name='test_ruby'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>def ruby_block_test
+  puts 'ooooo'
+  return 'yay'
+end</Str>
+						</Args>
+					</Call>
+					<Call name='execute_ruby_block'/>
+					<Call name='ruby_block_test'/>
+				</Block>
+			</Method>
+			<Method name='test_algebra'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>2* ( 3 + 10 ) </Str>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<String>
+								<Str>Parse </Str>
+								<String>
+									<Variable name='@string'/>
+								</String>
+								<Str> as algebra?</Str>
+							</String>
+						</Args>
+					</Call>
+					<Assign name='tree'>
+						<Call name='algebra'/>
+					</Assign>
+					<Call name='assert'>
+						<Args>
+							<Variable name='tree'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='assert'>
+				<Args>
+					<Block>
+						<Default value='#<Rjb::Rjb_JavaProxy:0x007fc9c98ec138>'/>
+					</Block>
+					<Argument name='block'/>
+				</Args>
+				<Block>
+					<If>
+						<And>
+							<Call name='!'>
+								<Variable name='x'/>
+								<Arguments/>
+							</Call>
+							<Variable name='block'/>
+						</And>
+						<Assign name='x'>
+							<Yield/>
+						</Assign>
+					</If>
+					<If>
+						<Call name='!'>
+							<Variable name='x'/>
+							<Arguments/>
+						</Call>
+						<Call name='raise'>
+							<Args>
+								<Call name='new'>
+									<Const name='ScriptError'/>
+									<Args>
+										<Call name='to_source'>
+											<Args>
+												<Variable name='block'/>
+											</Args>
+										</Call>
+									</Args>
+								</Call>
+							</Args>
+						</Call>
+					</If>
+					<Call name='puts'>
+						<Args>
+							<Variable name='x'/>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<Str>!!OK!!</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_args'>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<Args>
+							<Str>eat an mp3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='endNode'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test'>
+				<Args/>
+				<Block>
+					<Call name='puts'>
+						<Args>
+							<Str>Starting tests!</Str>
+						</Args>
+					</Call>
+					<Begin>
+						<Rescue>
+							<Body>
+								<Block>
+									<Assign name='e'>
+										<Variable name='$!'/>
+									</Assign>
+									<Call name='error'>
+										<Args>
+											<Variable name='e'/>
+										</Args>
+									</Call>
+								</Block>
+							</Body>
+							<Block>
+								<Call name='s'>
+									<Args>
+										<Str>a bug</Str>
+									</Args>
+								</Call>
+								<Call name='test_method3'/>
+								<Call name='test_method4'/>
+								<Call name='assert'>
+									<Args>
+										<Call name='endNode'/>
+									</Args>
+								</Call>
+								<Call name='test_ruby_variables'/>
+								<Call name='test_args'/>
+								<Call name='test_algebra'/>
+								<Call name='test_ruby'/>
+								<Call name='test_ruby_def'/>
+								<Call name='test_ruby_method_call'/>
+								<Call name='test_ruby_all'/>
+								<Call name='test_js'/>
+								<Call name='test_verb'/>
+								<Call name='test_setter2'/>
+								<Call name='test_setter3'/>
+								<Call name='test_comment'/>
+								<Call name='test_block'/>
+								<Call name='test_quote'/>
+								<Call name='test_while'/>
+								<Call name='test_method_call'/>
+								<Call name='show_tree'/>
+								<Call name='puts'>
+									<Args>
+										<Str>++++++++++++++++++
+PARSED successfully!</Str>
+									</Args>
+								</Call>
+							</Block>
+						</Rescue>
+					</Begin>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='EnglishParser'/>
+	</Class>
+	<Class>
+		<Name name='EnglishParserTest'/>
+		<Block>
+			<Assign name='@@testParser'>
+				<Call name='new'>
+					<Const name='EnglishParserTestParser'/>
+					<Arguments/>
+				</Call>
+			</Assign>
+			<Method name='initialize'>
+				<Args>
+					<Arguments>
+						<Argument name='args'/>
+					</Arguments>
+				</Args>
+				<Block>
+					<Assign name='@parser'>
+						<Call name='new'>
+							<Const name='EnglishParserTestParser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Super>
+						<Array>
+							<Variable name='args'/>
+						</Array>
+					</Super>
+				</Block>
+			</Method>
+			<ClassDef name='_test'>
+				<Self/>
+				<Argument name='_test'/>
+				<Args>
+					<Arguments>
+						<Argument name='x'/>
+					</Arguments>
+				</Args>
+				<Call name='puts'>
+					<Args>
+						<Call name='+'>
+							<Str>NOT testing </Str>
+							<Args>
+								<Call name='to_s'>
+									<Variable name='x'/>
+									<Arguments/>
+								</Call>
+							</Args>
+						</Call>
+					</Args>
+				</Call>
+			</ClassDef>
+			<Method name='test_all'>
+				<Args/>
+				<Call name='each'>
+					<Call name='methods'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Arguments/>
+					<Iter>
+						<Args>
+							<Arguments>
+								<Argument name='m'/>
+							</Arguments>
+						</Args>
+						<If>
+							<Call name='start_with?'>
+								<Call name='to_s'>
+									<Variable name='m'/>
+									<Arguments/>
+								</Call>
+								<Args>
+									<Str>test</Str>
+								</Args>
+							</Call>
+							<Call name='send'>
+								<Variable name='@parser'/>
+								<Args>
+									<Variable name='m'/>
+								</Args>
+							</Call>
+						</If>
+					</Iter>
+				</Call>
+			</Method>
+			<Call name='_test'>
+				<Args>
+					<Str>setter</Str>
+				</Args>
+				<Iter>
+					<Args/>
+					<Block>
+						<Call name='test_default_setter'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+						<Call name='test_default_setter_dont_overwrite'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Block>
+				</Iter>
+			</Call>
+			<Call name='_test'>
+				<Args>
+					<Str>substitute_variables</Str>
+				</Args>
+				<Iter>
+					<Args/>
+					<Block>
+						<Call name='test_substitute_variables'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+						<Call name='assert'>
+							<Args>
+								<Str>yay</Str>
+							</Args>
+						</Call>
+					</Block>
+				</Iter>
+			</Call>
+			<Call name='_test'>
+				<Args>
+					<Str>jeannie</Str>
+				</Args>
+				<Iter>
+					<Args/>
+					<Block>
+						<Assign name='r'>
+							<Call name='jeannie'>
+								<Variable name='@parser'/>
+								<Args>
+									<Str>3 plus 3</Str>
+								</Args>
+							</Call>
+						</Assign>
+						<Call name='puts'>
+							<Args>
+								<Call name='+'>
+									<Str>jeannie : 3 plus 3 = </Str>
+									<Args>
+										<Call name='to_s'>
+											<Variable name='r'/>
+											<Arguments/>
+										</Call>
+									</Args>
+								</Call>
+							</Args>
+						</Call>
+						<Call name='assert'>
+							<Args>
+								<Call name='=='>
+									<Variable name='r'/>
+									<Args>
+										<Str>6</Str>
+									</Args>
+								</Call>
+							</Args>
+						</Call>
+						<Call name='puts'>
+							<Args>
+								<Str>OK!!!!!!</Str>
+							</Args>
+						</Call>
+					</Block>
+				</Iter>
+			</Call>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

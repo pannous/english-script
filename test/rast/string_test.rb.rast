@@ -1,0 +1,824 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<GlobalAsgn name='$verbose'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='StringTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='test_string_methods'>
+				<Argument name='test_string_methods'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>invert 'hi'
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<InstVar name='@result'/>
+							<Str value='ih'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_nth_word'>
+				<Argument name='test_nth_word'/>
+				<Args/>
+				<FCall name='assert'>
+					<Array>
+						<Str>3rd word in 'hi my friend !!!' is 'friend'
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='_test_advanced_string_methods'>
+				<Argument name='_test_advanced_string_methods'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>x='hi' inverted
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<InstVar name='@result'/>
+								<Args>
+									<Str value='ih'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='[]'>
+									<InstVar name='@variableValues'/>
+									<Args>
+										<Str value='x'/>
+									</Args>
+								</Call>
+								<Args>
+									<Str value='ih'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='_test_select_character'>
+				<Argument name='_test_select_character'/>
+				<Args/>
+				<Block>
+					<FCall name='assert'>
+						<Array>
+							<Str>first character of 'hi' is 'h'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>second character of 'hi' is 'i'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>last character of 'hi' is 'i'
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='_test_select_word'>
+				<Argument name='_test_select_word'/>
+				<Args/>
+				<Block>
+					<FCall name='assert'>
+						<Array>
+							<Str>first word of 'hi you' is 'hi'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>second word of 'hi you' is 'you'
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>last word of 'hi you' is 'you'
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_gerunds'>
+				<Argument name='test_gerunds'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='gerunding'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='x'>
+						<Call name='gerund'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='init'>
+						<Array>
+							<Str value='gerunded'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='x'>
+						<Call name='postjective'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<LocalVar name='x'/>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation'>
+				<Argument name='test_concatenation'/>
+				<Args/>
+				<Block>
+					<Call name='do_interpret!'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='parse'>
+						<Array>
+							<Str>x is 'Hi'; y is 'World';z is x plus y
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='z'/>
+								</Args>
+							</Call>
+							<Str value='HiWorld'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation_b'>
+				<Argument name='test_concatenation_b'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str>x is 'hi'
+						</Array>
+					</FCall>
+					<Call name='setter'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='[]'>
+									<VCall name='variables'/>
+									<Args>
+										<Str value='x'/>
+									</Args>
+								</Call>
+								<Args>
+									<Str value='hi'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str>x + ' world'
+						</Array>
+					</FCall>
+					<LocalAsgn name='r'>
+						<Call name='algebra'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='r'/>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>x + ' world'
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>y is ' world'
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='z is x + y'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='z'/>
+								</Args>
+							</Call>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>y is ' you'
+       z is x + y
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='z'/>
+								</Args>
+							</Call>
+							<Str value='hi you'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation_b'>
+				<Argument name='test_concatenation_b'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str>x is 'hi'
+						</Array>
+					</FCall>
+					<Call name='setter'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='[]'>
+									<VCall name='variables'/>
+									<Args>
+										<Str value='x'/>
+									</Args>
+								</Call>
+								<Args>
+									<Str value='hi'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str>x + ' world'
+						</Array>
+					</FCall>
+					<LocalAsgn name='r'>
+						<Call name='algebra'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='r'/>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>x + ' world'
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>y is ' world'
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='z is x + y'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='z'/>
+								</Args>
+							</Call>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation_c'>
+				<Argument name='test_concatenation_c'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>x is 'hi'
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>y is ' you'
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='z is x + y'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='z'/>
+								</Args>
+							</Call>
+							<Str value='hi you'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_newline_statements'>
+				<Argument name='test_newline_statements'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>x is 'hi';
+           z='ho'
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='z'/>
+								</Args>
+							</Call>
+							<Str value='ho'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation_c3'>
+				<Argument name='test_concatenation_c3'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>x is 'hi'
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>y is ' you';z is x + y
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='z'/>
+								</Args>
+							</Call>
+							<Str value='hi you'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='DONT_test_concatenation_by_and'>
+				<Argument name='DONT_test_concatenation_by_and'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='z = x and y'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='[]'>
+									<VCall name='variables'/>
+									<Args>
+										<Str value='z'/>
+									</Args>
+								</Call>
+								<Args>
+									<Str value='hi world'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>x and y == 'hi world'
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>z is x and ' ' and y
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='type of z is string or list'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='dont_test_list_concatenation'>
+				<Argument name='dont_test_list_concatenation'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str>'hi' ' ' 'world'
+						</Array>
+					</FCall>
+					<LocalAsgn name='z'>
+						<Call name='expressions'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='z'/>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='x'/>
+							<Str value='hi'/>
+						</Array>
+					</AttrAssign>
+					<AttrAssign name='[]='>
+						<VCall name='variables'/>
+						<Array>
+							<Str value='y'/>
+							<Str value='world'/>
+						</Array>
+					</AttrAssign>
+					<FCall name='init'>
+						<Array>
+							<Str>z=x ' ' y
+						</Array>
+					</FCall>
+					<LocalAsgn name='z'>
+						<Call name='setter'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='z'/>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>x is 'hi'; y is 'world';z is x ' ' y
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='type of z is string or type of z is list'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='type of z is string or list'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='z'/>
+								</Args>
+							</Call>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>z is 'hi world' OR z is 'hi',' ','world'
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation2'>
+				<Argument name='test_concatenation2'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>x is 'hi'; y = ' world'
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str value='x + y'/>
+								</Array>
+							</FCall>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>x plus y == 'hi world'
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_concatenation2b'>
+				<Argument name='test_concatenation2b'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_equals'>
+						<Array>
+							<FCall name='parse'>
+								<Array>
+									<Str>'hi'+ ' '+'world'
+								</Array>
+							</FCall>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str>'hi'+ ' '+'world'
+							<Str>'hi world'
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>x is 'hi'; y is 'world';z is x plus ' ' plus y
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='z'/>
+								</Args>
+							</Call>
+							<Str value='hi world'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>z is 'hi world'
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_type'>
+				<Argument name='test_type'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>x='hi'
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='type of x'/>
+							<Const name='String'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='type of x is string'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_type3'>
+				<Argument name='test_type3'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>x be 'hello world';
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='x is a string'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='type of x is string'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='class of x is string'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='kind of x is string'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='y= class of x'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='[]'>
+									<VCall name='variables'/>
+									<Args>
+										<Str value='y'/>
+									</Args>
+								</Call>
+								<Args>
+									<Const name='Quote'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='y is string'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='y is type of x'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='y is string'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_type1'>
+				<Argument name='test_type1'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str>class of 'hi'
+						</Array>
+					</FCall>
+					<Call name='evaluate_property'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Const name='Quote'/>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str>class of 'hi'
+						</Array>
+					</FCall>
+					<Call name='expressions'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Const name='Quote'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>class of 'hi'
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Const name='Quote'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_type2'>
+				<Argument name='test_type2'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>x='hi';
+      class of x
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>x='hi';class of x
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<VCall name='result'/>
+							<Const name='Quote'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_result'>
+				<Argument name='test_result'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>x be 'hello world';show x;x; class of x
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='type of x is string'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='class of x is string'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='y is type of x'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='y is string'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

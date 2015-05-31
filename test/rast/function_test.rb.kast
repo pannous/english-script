@@ -1,0 +1,1105 @@
+<Block>
+	<Assign name='default_external='>
+		<Const name='Encoding'/>
+		<Array>
+			<Str>UTF-8</Str>
+		</Array>
+	</Assign>
+	<Assign name='default_internal='>
+		<Const name='Encoding'/>
+		<Array>
+			<Str>UTF-8</Str>
+		</Array>
+	</Assign>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../../src/core/extensions.rb</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='FunctionTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='fix_encoding'>
+				<Args>
+					<Arguments>
+						<Argument name='text'/>
+					</Arguments>
+				</Args>
+				<Block>
+					<If>
+						<Call name='method_defined?'>
+							<Const name='String'/>
+							<Args>
+								<Symbol name='encode'/>
+							</Args>
+						</Call>
+						<Call name='require'>
+							<Args>
+								<Str>iconv</Str>
+							</Args>
+						</Call>
+					</If>
+					<If>
+						<Call name='method_defined?'>
+							<Const name='String'/>
+							<Args>
+								<Symbol name='encode'/>
+							</Args>
+						</Call>
+						<Return>
+							<Call name='encode!'>
+								<Variable name='text'/>
+								<Args>
+									<Str>UTF-8</Str>
+									<Str>UTF-8</Str>
+									<Hash>
+										<Array>
+											<Symbol name='invalid'/>
+											<Symbol name='replace'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Return>
+						<Block>
+							<Assign name='ic'>
+								<Call name='new'>
+									<Const name='Iconv'/>
+									<Args>
+										<Str>UTF-8</Str>
+										<Str>UTF-8//IGNORE</Str>
+									</Args>
+								</Call>
+							</Assign>
+							<Return>
+								<Call name='iconv'>
+									<Variable name='ic'/>
+									<Args>
+										<Call name='t'/>
+									</Args>
+								</Call>
+							</Return>
+						</Block>
+					</If>
+				</Block>
+			</Method>
+			<Method name='test_fibonacci'>
+				<Args/>
+				<Block>
+					<Assign name='dir'>
+						<Str>programs/</Str>
+					</Assign>
+					<Assign name='code'>
+						<Call name='read'>
+							<Const name='File'/>
+							<Args>
+								<Call name='+'>
+									<Variable name='dir'/>
+									<Args>
+										<Str>fibonacci.e</Str>
+									</Args>
+								</Call>
+							</Args>
+						</Call>
+					</Assign>
+					<Assign name='code'>
+						<Call name='fix_encoding'>
+							<Args>
+								<Variable name='code'/>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='p'>
+						<Args>
+							<Variable name='code'/>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Variable name='code'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Assign name='fib'>
+						<Call name='[]'>
+							<Call name='functions'/>
+							<Args>
+								<Str>fibonacci</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='puts'>
+						<Args>
+							<Variable name='fib'/>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='name'>
+									<Call name='[]'>
+										<Call name='args'>
+											<Variable name='fib'/>
+											<Arguments/>
+										</Call>
+										<Args>
+											<Num value='0'/>
+										</Args>
+									</Call>
+									<Arguments/>
+								</Call>
+								<Args>
+									<Str>number</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Assign name='f10'>
+						<Call name='call'>
+							<Variable name='fib'/>
+							<Args>
+								<Num value='10'/>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='puts'>
+						<Args>
+							<Variable name='f10'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='f10'/>
+							<Num value='55'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>fibonacci of 10</Str>
+								</Args>
+							</Call>
+							<Num value='55'/>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>assert fibonacci of 10 is 55</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_identity'>
+				<Args/>
+				<Block>
+					<Assign name='dir'>
+						<Str>programs/</Str>
+					</Assign>
+					<Assign name='code'>
+						<Call name='read'>
+							<Const name='File'/>
+							<Args>
+								<Call name='+'>
+									<Variable name='dir'/>
+									<Args>
+										<Str>identity.e</Str>
+									</Args>
+								</Call>
+							</Args>
+						</Call>
+					</Assign>
+					<Assign name='code'>
+						<Call name='fix_encoding'>
+							<Args>
+								<Variable name='code'/>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='p'>
+						<Args>
+							<Variable name='code'/>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Variable name='code'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Assign name='identity'>
+						<Call name='[]'>
+							<Call name='functions'/>
+							<Args>
+								<Str>identity</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='name'>
+									<Call name='[]'>
+										<Call name='args'>
+											<Variable name='identity'/>
+											<Arguments/>
+										</Call>
+										<Args>
+											<Num value='0'/>
+										</Args>
+									</Call>
+									<Arguments/>
+								</Call>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<Variable name='identity'/>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<Call name='call'>
+								<Variable name='identity'/>
+								<Args>
+									<Num value='5'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='call'>
+									<Variable name='identity'/>
+									<Args>
+										<Num value='5'/>
+									</Args>
+								</Call>
+								<Args>
+									<Num value='5'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>identity(5)</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>identity(5) is 5</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_programs'>
+				<Args/>
+				<Block>
+					<Assign name='dir'>
+						<Str>programs/</Str>
+					</Assign>
+					<For>
+						<Assign name='file'>
+							<Nil name='nil'/>
+						</Assign>
+						<Block>
+							<Assign name='code'>
+								<Call name='read'>
+									<Call name='open'>
+										<Const name='File'/>
+										<Args>
+											<Call name='+'>
+												<Variable name='dir'/>
+												<Args>
+													<Variable name='file'/>
+												</Args>
+											</Call>
+											<Str>rb</Str>
+											<Hash>
+												<Array>
+													<Symbol name='binary'/>
+													<True/>
+													<Symbol name='encoding'/>
+													<Str>UTF-8</Str>
+												</Array>
+											</Hash>
+										</Args>
+									</Call>
+									<Args/>
+								</Call>
+							</Assign>
+							<Assign name='code'>
+								<Call name='fix_encoding'>
+									<Args>
+										<Variable name='code'/>
+									</Args>
+								</Call>
+							</Assign>
+							<Call name='p'>
+								<Args>
+									<Variable name='code'/>
+								</Args>
+							</Call>
+							<Call name='puts'>
+								<Args>
+									<Call name='parse'>
+										<Args>
+											<Variable name='code'/>
+										</Args>
+									</Call>
+								</Args>
+							</Call>
+							<Assign name='fib'>
+								<Call name='[]'>
+									<Call name='functions'/>
+									<Args>
+										<Str>fibonacci</Str>
+									</Args>
+								</Call>
+							</Assign>
+							<Call name='puts'>
+								<Args>
+									<Variable name='fib'/>
+								</Args>
+							</Call>
+							<Call name='puts'>
+								<Args>
+									<Call name='call'>
+										<Variable name='fib'/>
+										<Args>
+											<Num value='5'/>
+										</Args>
+									</Call>
+								</Args>
+							</Call>
+							<Call name='parse'>
+								<Args>
+									<Str>fibonacci(5)</Str>
+								</Args>
+							</Call>
+						</Block>
+						<Call name='ls'>
+							<Const name='File'/>
+							<Args>
+								<Variable name='dir'/>
+							</Args>
+						</Call>
+					</For>
+				</Block>
+			</Method>
+			<Method name='test_basic_syntax'>
+				<Args/>
+				<Call name='assert_result_is'>
+					<Args>
+						<Str>print 'hi'</Str>
+						<Str>nill</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_complex_syntax'>
+				<Args/>
+				<Call name='init'>
+					<Args>
+						<Str>here is how to define a method: done</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_block'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>x</Str>
+							<Num value='1'/>
+						</Array>
+					</Assign>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>y</Str>
+							<Num value='2'/>
+						</Array>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='count'>
+								<Call name='variables'>
+									<Variable name='@parser'/>
+									<Arguments/>
+								</Call>
+								<Arguments/>
+							</Call>
+							<Num value='2'/>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='parse'>
+							<Args>
+								<Str>x+y;</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='z'/>
+							<Num value='3'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_params'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>how to increase x by y: x+y;</Str>
+						</Args>
+					</Call>
+					<Assign name='g'>
+						<Call name='[]'>
+							<Call name='functions'/>
+							<Args>
+								<Str>increase</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Assign name='args'>
+						<Array>
+							<Call name='new'>
+								<Const name='Argument'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str>x</Str>
+											<Symbol name='preposition'/>
+											<Str></Str>
+											<Symbol name='position'/>
+											<Num value='1'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+							<Call name='new'>
+								<Const name='Argument'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str>y</Str>
+											<Symbol name='preposition'/>
+											<Str>by</Str>
+											<Symbol name='position'/>
+											<Num value='2'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</Assign>
+					<Assign name='f'>
+						<Call name='new'>
+							<Const name='Function'/>
+							<Args>
+								<Hash>
+									<Array>
+										<Symbol name='name'/>
+										<Str>increase</Str>
+										<Symbol name='body'/>
+										<Str>x+y;</Str>
+										<Symbol name='arguments'/>
+										<Variable name='args'/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equal'>
+						<Args>
+							<Variable name='f'/>
+							<Variable name='g'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='call_function'>
+								<Variable name='@parser'/>
+								<Args>
+									<Variable name='f'/>
+									<Hash>
+										<Array>
+											<Symbol name='x'/>
+											<Num value='1'/>
+											<Symbol name='y'/>
+											<Num value='2'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_function_object'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>how to increase a number x by y: x+y;</Str>
+						</Args>
+					</Call>
+					<Assign name='g'>
+						<Call name='[]'>
+							<Call name='functions'/>
+							<Args>
+								<Str>increase</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Assign name='arg1'>
+						<Call name='new'>
+							<Const name='Argument'/>
+							<Args>
+								<Hash>
+									<Array>
+										<Symbol name='name'/>
+										<Str>x</Str>
+										<Symbol name='type'/>
+										<Str>number</Str>
+										<Symbol name='preposition'/>
+										<Str></Str>
+										<Symbol name='position'/>
+										<Num value='1'/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</Assign>
+					<Assign name='arg2'>
+						<Call name='new'>
+							<Const name='Argument'/>
+							<Args>
+								<Hash>
+									<Array>
+										<Symbol name='name'/>
+										<Str>y</Str>
+										<Symbol name='preposition'/>
+										<Str>by</Str>
+										<Symbol name='position'/>
+										<Num value='2'/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</Assign>
+					<Assign name='f'>
+						<Call name='new'>
+							<Const name='Function'/>
+							<Args>
+								<Hash>
+									<Array>
+										<Symbol name='name'/>
+										<Str>increase</Str>
+										<Symbol name='body'/>
+										<Str>x+y;</Str>
+										<Symbol name='object'/>
+										<Variable name='arg1'/>
+										<Symbol name='arguments'/>
+										<Variable name='arg2'/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equal'>
+						<Args>
+							<Variable name='f'/>
+							<Variable name='g'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='call_function'>
+								<Variable name='@parser'/>
+								<Args>
+									<Variable name='f'/>
+									<Hash>
+										<Array>
+											<Symbol name='x'/>
+											<Num value='1'/>
+											<Symbol name='y'/>
+											<Num value='2'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_blue_yay'>
+				<Args/>
+				<Call name='assert_result_is'>
+					<Args>
+						<Str>def test{puts 'yay'};test</Str>
+						<Str>yay</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_class_method'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>how to list all numbers smaller x: [1..x]</Str>
+						</Args>
+					</Call>
+					<Assign name='g'>
+						<Call name='[]'>
+							<Call name='functions'/>
+							<Args>
+								<Str>list</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Assign name='f'>
+						<Call name='new'>
+							<Const name='Function'/>
+							<Args>
+								<Hash>
+									<Array>
+										<Symbol name='name'/>
+										<Str>list</Str>
+										<Symbol name='body'/>
+										<Str>[1..x]</Str>
+										<Symbol name='object'/>
+										<Call name='arg1'/>
+										<Symbol name='arguments'/>
+										<Call name='arg2'/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equal'>
+						<Args>
+							<Variable name='f'/>
+							<Variable name='g'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='call_function'>
+								<Variable name='@parser'/>
+								<Args>
+									<Variable name='f'/>
+									<Num value='4'/>
+								</Args>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_simple_parameters'>
+				<Args/>
+				<Call name='parse'>
+					<Args>
+						<Str>puts 'hi'</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_to_do_something'>
+				<Args/>
+			</Method>
+			<Method name='test_svg'>
+				<Args/>
+				<Block>
+					<Call name='skip'/>
+					<Call name='parse'>
+						<Args>
+							<Str>svg &lt;circle cx="$x" cy="50" r="$radius" stroke="black" fill="$color" id="circle"/&gt;</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>what is that</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_java_style'>
+				<Args/>
+				<Call name='parse'>
+					<Args>
+						<Str>1.add(0)</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_dot'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x='hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>reverse of x</Str>
+							<Str>ih</Str>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>x.reverse</Str>
+							<Str>ih</Str>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>reverse x</Str>
+							<Str>ih</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_rubyThing'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>Math.hypot (3,3)</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>Math.sqrt 8</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>Math.sqrt( 8 )</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>Math.ancestors</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_x_name'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>x</Str>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str>x</Str>
+											<Symbol name='value'/>
+											<Num value='7'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</Assign>
+					<Call name='init'>
+						<Args>
+							<Str>x</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='name'>
+								<Call name='nod'>
+									<Variable name='@parser'/>
+									<Arguments/>
+								</Call>
+								<Arguments/>
+							</Call>
+							<Str>x</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_add_to_zero'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>counter is zero; repeat three times: increase counter by 1; done repeating;</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>counter</Str>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_var_check'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>counter</Str>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str>counter</Str>
+											<Symbol name='value'/>
+											<Num value='3'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</Assign>
+					<Call name='assert'>
+						<Args>
+							<Str>the counter is 3</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_array_arg'>
+				<Args/>
+				<Call name='assert_equals'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>rest of [1,2,3]</Str>
+							</Args>
+						</Call>
+						<Array>
+							<Num value='2'/>
+							<Num value='3'/>
+						</Array>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_array_index'>
+				<Args/>
+				<Block>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>x=[1,2,3];x[2]</Str>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>x=[1,2,3];x[2]=0;x</Str>
+								</Args>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='0'/>
+							</Array>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_natural_array_index'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x=[1,2,3]</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>second element in [1,2,3]</Str>
+								</Args>
+							</Call>
+							<Num value='2'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>third element in x</Str>
+								</Args>
+							</Call>
+							<Num value='3'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>set third element in x to 8</Str>
+								</Args>
+							</Call>
+							<Num value='8'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>x</Str>
+								</Args>
+							</Call>
+							<Array>
+								<Num value='1'/>
+								<Num value='2'/>
+								<Num value='8'/>
+							</Array>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_array_arg'>
+				<Args/>
+				<Call name='assert_equals'>
+					<Args>
+						<Call name='parse'>
+							<Args>
+								<Str>rest of [1,2,3]</Str>
+							</Args>
+						</Call>
+						<Array>
+							<Num value='2'/>
+							<Num value='3'/>
+						</Array>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_add_time'>
+				<Args/>
+			</Method>
+			<Method name='test_add'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>counter is one; repeat three times: increase counter; done repeating;</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>counter</Str>
+								</Args>
+							</Call>
+							<Num value='4'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='_test_svg_dom'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>&lt;svg&gt;&lt;circle cx="$x" cy="50" r="$radius" stroke="black" fill="$color" id="circle"/&gt;&lt;/svg&gt;</Str>
+						</Args>
+					</Call>
+					<Call name='puts'>
+						<Args>
+							<Call name='svg'>
+								<Call name='interpretation'>
+									<Variable name='@parser'/>
+									<Arguments/>
+								</Call>
+								<Arguments/>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>circle.color=green</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Str>circle.color</Str>
+							<Str>green</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_incr'>
+				<Args/>
+				<Call name='assert'>
+					<Args>
+						<Str>increase 1 == 2</Str>
+					</Args>
+				</Call>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

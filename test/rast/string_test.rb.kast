@@ -1,0 +1,803 @@
+<Block>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Assign name='$verbose'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='StringTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_string_methods'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>invert 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='@result'/>
+							<Str>ih</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_nth_word'>
+				<Args/>
+				<Call name='assert'>
+					<Args>
+						<Str>3rd word in 'hi my friend !!!' is 'friend'</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='_test_advanced_string_methods'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x='hi' inverted</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Variable name='@result'/>
+								<Args>
+									<Str>ih</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='[]'>
+									<Variable name='@variableValues'/>
+									<Args>
+										<Str>x</Str>
+									</Args>
+								</Call>
+								<Args>
+									<Str>ih</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='_test_select_character'>
+				<Args/>
+				<Block>
+					<Call name='assert'>
+						<Args>
+							<Str>first character of 'hi' is 'h'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>second character of 'hi' is 'i'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>last character of 'hi' is 'i'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='_test_select_word'>
+				<Args/>
+				<Block>
+					<Call name='assert'>
+						<Args>
+							<Str>first word of 'hi you' is 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>second word of 'hi you' is 'you'</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>last word of 'hi you' is 'you'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_gerunds'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>gerunding</Str>
+						</Args>
+					</Call>
+					<Assign name='x'>
+						<Call name='gerund'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='init'>
+						<Args>
+							<Str>gerunded</Str>
+						</Args>
+					</Call>
+					<Assign name='x'>
+						<Call name='postjective'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Variable name='x'/>
+				</Block>
+			</Method>
+			<Method name='test_concatenation'>
+				<Args/>
+				<Block>
+					<Call name='do_interpret!'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 'Hi'; y is 'World';z is x plus y</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>z</Str>
+								</Args>
+							</Call>
+							<Str>HiWorld</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation_b'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>x is 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='setter'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='[]'>
+									<Call name='variables'/>
+									<Args>
+										<Str>x</Str>
+									</Args>
+								</Call>
+								<Args>
+									<Str>hi</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>x + ' world'</Str>
+						</Args>
+					</Call>
+					<Assign name='r'>
+						<Call name='algebra'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='r'/>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x + ' world'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>y is ' world'</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>z is x + y</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>z</Str>
+								</Args>
+							</Call>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>y is ' you'
+       z is x + y</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>z</Str>
+								</Args>
+							</Call>
+							<Str>hi you</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation_b'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>x is 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='setter'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='[]'>
+									<Call name='variables'/>
+									<Args>
+										<Str>x</Str>
+									</Args>
+								</Call>
+								<Args>
+									<Str>hi</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>x + ' world'</Str>
+						</Args>
+					</Call>
+					<Assign name='r'>
+						<Call name='algebra'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='r'/>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x + ' world'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>y is ' world'</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>z is x + y</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>z</Str>
+								</Args>
+							</Call>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation_c'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>y is ' you'</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>z is x + y</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>z</Str>
+								</Args>
+							</Call>
+							<Str>hi you</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_newline_statements'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 'hi';
+           z='ho'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>z</Str>
+								</Args>
+							</Call>
+							<Str>ho</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation_c3'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>y is ' you';z is x + y</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>z</Str>
+								</Args>
+							</Call>
+							<Str>hi you</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='DONT_test_concatenation_by_and'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>z = x and y</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='[]'>
+									<Call name='variables'/>
+									<Args>
+										<Str>z</Str>
+									</Args>
+								</Call>
+								<Args>
+									<Str>hi world</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>x and y == 'hi world'</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>z is x and ' ' and y</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>type of z is string or list</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='dont_test_list_concatenation'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>'hi' ' ' 'world'</Str>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='expressions'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='z'/>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>x</Str>
+							<Str>hi</Str>
+						</Array>
+					</Assign>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>y</Str>
+							<Str>world</Str>
+						</Array>
+					</Assign>
+					<Call name='init'>
+						<Args>
+							<Str>z=x ' ' y</Str>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='setter'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='z'/>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 'hi'; y is 'world';z is x ' ' y</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>type of z is string or type of z is list</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>type of z is string or list</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>z</Str>
+								</Args>
+							</Call>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>z is 'hi world' OR z is 'hi',' ','world'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation2'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 'hi'; y = ' world'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>x + y</Str>
+								</Args>
+							</Call>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>x plus y == 'hi world'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_concatenation2b'>
+				<Args/>
+				<Block>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>'hi'+ ' '+'world'</Str>
+								</Args>
+							</Call>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>'hi'+ ' '+'world'</Str>
+							<Str>'hi world'</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 'hi'; y is 'world';z is x plus ' ' plus y</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>z</Str>
+								</Args>
+							</Call>
+							<Str>hi world</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>z is 'hi world'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_type'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x='hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>type of x</Str>
+							<Const name='String'/>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>type of x is string</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_type3'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x be 'hello world';</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>x is a string</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>type of x is string</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>class of x is string</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>kind of x is string</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>y= class of x</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Call name='[]'>
+									<Call name='variables'/>
+									<Args>
+										<Str>y</Str>
+									</Args>
+								</Call>
+								<Args>
+									<Const name='Quote'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>y is string</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>y is type of x</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>y is string</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_type1'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>class of 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='evaluate_property'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Const name='Quote'/>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>class of 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='expressions'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Const name='Quote'/>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>class of 'hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Const name='Quote'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_type2'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x='hi';
+      class of x</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x='hi';class of x</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Const name='Quote'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_result'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>x be 'hello world';show x;x; class of x</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>type of x is string</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>class of x is string</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>y is type of x</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>y is string</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

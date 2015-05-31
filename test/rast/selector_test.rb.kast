@@ -1,0 +1,191 @@
+<Block>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='SelectorTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_every'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>xs= [1,2,3]; increase all xs</Str>
+						</Args>
+					</Call>
+					<Call name='skip'/>
+					<Call name='parse'>
+						<Args>
+							<Str>xs= [1,2,3]; show all xs</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>xs= [1,2,3]; show every xs</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>friendly numbers= [1,2,3]; show all friendly numbers</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>friendly numbers= [1,2,3]; show every friendly number</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_selector0'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>xs= 2,3,8,9</Str>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>xs that are smaller than 7</Str>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='selectable'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='z'/>
+							<Array>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='parse'>
+							<Args>
+								<Str>let z be all xs that are smaller than 7 </Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='z'/>
+							<Array>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='parse'>
+							<Args>
+								<Str>let z be xs that are smaller than 7 </Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='z'/>
+							<Array>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_selector1'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>xs= 1,2,3</Str>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str> xs that are bigger than one</Str>
+						</Args>
+					</Call>
+					<Assign name='z'>
+						<Call name='selectable'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='z'/>
+							<Array>
+								<Num value='2'/>
+								<Num value='3'/>
+							</Array>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>xs that are bigger than one == [2,3]</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_every_selector'>
+				<Args/>
+				<Block>
+					<Call name='skip'/>
+					<Call name='parse'>
+						<Args>
+							<Str>friendly numbers= [1,2,3]; show every friendly number that is bigger than one</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>friendly numbers= [1,2,3]; all friendly numbers which are smaller than three == [1,2]</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_selector3'>
+				<Args/>
+				<Block>
+					<Call name='skip'/>
+					<Call name='assert'>
+						<Args>
+							<Str>every number in 1,'a',3 ==1,3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>all numbers in 1,'a',3 ==1,3</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>all negative numbers in 1,-2,3,-4 ==-2,-4</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>all numbers in 1,-2,3,-4 that are negative == -2,-4</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

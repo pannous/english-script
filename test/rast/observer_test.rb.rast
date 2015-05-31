@@ -1,0 +1,135 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='ObserverTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='_test_every_date1'>
+				<Argument name='_test_every_date1'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='every 1 seconds { say "Ja!" }'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='every 2 seconds do say "OK"'/>
+						</Array>
+					</FCall>
+					<FCall name='sleep'>
+						<Array>
+							<Fixnum value='10000'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='_test_every_date'>
+				<Argument name='_test_every_date'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='every 1 seconds do say "OK"'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='beep every three seconds'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='every two seconds puts "YAY"'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='every minute puts "HURRAY"'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='every five seconds do say "OK"'/>
+						</Array>
+					</FCall>
+					<FCall name='sleep'>
+						<Array>
+							<Fixnum value='10000'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_whenever'>
+				<Argument name='test_whenever'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='beep whenever x is 5'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='beep once x is 5'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='once x is 5 do beep'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='once x is 5 beep '/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x is 5'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_whenever_2'>
+				<Argument name='test_whenever_2'/>
+				<Args/>
+				<Block>
+					<FCall name='skip'>
+						<Array>
+							<Str value='test this later'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='whenever the clock shows five seconds do beep'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<InstVar name='@result'/>
+								<Args>
+									<Str value='1/3'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

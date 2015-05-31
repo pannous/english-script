@@ -1,0 +1,87 @@
+<Block>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='PackageTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='test_using'>
+				<Argument name='test_using'/>
+				<Args/>
+				<Block>
+					<Call name='dont_interpret!'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<LocalAsgn name='simple'>
+						<FCall name='parse'>
+							<Array>
+								<Str value='depends on stdio'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<Hash>
+								<Array>
+									<Symbol name='dependency'/>
+									<Hash>
+										<Array>
+											<Symbol name='type'/>
+											<False/>
+											<Symbol name='package'/>
+											<Str value='stdio'/>
+											<Symbol name='version'/>
+											<False/>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+							<LocalVar name='simple'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='dependency'>
+						<FCall name='parse'>
+							<Array>
+								<Str value='using c package stdio version >= 1.2.3'/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='puts'>
+						<Array>
+							<LocalVar name='dependency'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Hash>
+								<Array>
+									<Symbol name='dependency'/>
+									<Hash>
+										<Array>
+											<Symbol name='type'/>
+											<Str value='c'/>
+											<Symbol name='package'/>
+											<Str value='stdio'/>
+											<Symbol name='version'/>
+											<Str value='>= 1.2.3'/>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+							<LocalVar name='dependency'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

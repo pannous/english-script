@@ -1,0 +1,231 @@
+<Block>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Assign name='$verbose'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='ErrorTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_type'>
+				<Args/>
+				<Call name='assert_has_error'>
+					<Args>
+						<Str>x=1,2,y;</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_variable_type_safety_errors2'>
+				<Args/>
+				<Block>
+					<Call name='assert_has_no_error'>
+						<Args>
+							<Str>char i='c'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_no_error'>
+						<Args>
+							<Str>char i;i='c'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_variable_type_safety_errors'>
+				<Args/>
+				<Block>
+					<Call name='assert_has_no_error'>
+						<Args>
+							<Str>an integer i;i=3</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_no_error'>
+						<Args>
+							<Str>int i=3</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_no_error'>
+						<Args>
+							<Str>int i;i=3</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>const i=1;i=2</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>string i=3</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>int i='hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>integer i='hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>an integer i;i='hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>const i=1;i='hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>const i='hi';i='ho'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_assert_has_error'>
+				<Args/>
+				<Begin>
+					<Rescue>
+						<Body>
+							<Block>
+								<Call name='assert_has_error'>
+									<Args>
+										<Str>dfsafdsa ewdfsa}{P}{P;@#%</Str>
+									</Args>
+								</Call>
+								<Call name='puts'>
+									<Args>
+										<Str>OK, HAS ERROR</Str>
+									</Args>
+								</Call>
+							</Block>
+						</Body>
+						<Call name='assert_has_no_error'>
+							<Args>
+								<Str>dfsafdsa ewdfsa}{P}{P;@#%</Str>
+							</Args>
+						</Call>
+					</Rescue>
+				</Begin>
+			</Method>
+			<Method name='test_type3'>
+				<Args/>
+				<Call name='assert_has_error'>
+					<Args>
+						<Str>x be 1,2,3y= class of x</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_map'>
+				<Args/>
+				<Call name='assert_has_error'>
+					<Args>
+						<Str>square 1,2 andy 3</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_x'>
+				<Args/>
+				<Call name='parse'>
+					<Args>
+						<Str>x</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_endNode_as'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>as</Str>
+						</Args>
+					</Call>
+					<Rescue>
+						<Body>
+							<Call name='assert_has_error'>
+								<Args>
+									<Str>as</Str>
+								</Args>
+							</Call>
+						</Body>
+						<Call name='arg'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Rescue>
+				</Block>
+			</Method>
+			<Method name='test_rollback'>
+				<Args/>
+				<Call name='assert_has_error'>
+					<Args>
+						<Str>if 1&gt;0 then else</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_endNode'>
+				<Args/>
+				<Call name='assert_has_error'>
+					<Args>
+						<Str>of</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_list_concatenation_unknownVariable'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>x</Str>
+							<Str>hi</Str>
+						</Array>
+					</Assign>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>y</Str>
+							<Str>world</Str>
+						</Array>
+					</Assign>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>z=x ' ' w</Str>
+						</Args>
+					</Call>
+					<Call name='skip'/>
+					<Call name='assert'>
+						<Args>
+							<Str>z=x ' ' y</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>z=x ' ' y</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_no_error'>
+						<Args>
+							<Str>z=x ' ' y</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

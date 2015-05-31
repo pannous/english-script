@@ -1,0 +1,342 @@
+<Block>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='TreeTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_algebra1'>
+				<Args/>
+				<Block>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>3 minus one</Str>
+							<Num value='2'/>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>4½</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='fraction'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Float value='4.5'/>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>4½+3½</Str>
+						</Args>
+					</Call>
+					<Call name='do_interpret!'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='algebra'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Num value='8'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>4½+3½</Str>
+							<Str>8</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_method4'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>how to integrate a bug
+      test
+    ok</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='method_definition'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='_test_block'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>let the initial value of I be x;
+
+      step size is the length of the interval,
+      divided by the number of steps
+
+      var x = 8;</Str>
+						</Args>
+					</Call>
+					<Call name='block'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='_test_while'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Variable name='@variableValues'/>
+						<Array>
+							<Symbol name='i'/>
+							<Num value='0'/>
+						</Array>
+					</Assign>
+					<Assign name='[]='>
+						<Variable name='@variableValues'/>
+						<Array>
+							<Symbol name='y'/>
+							<Num value='5'/>
+						</Array>
+					</Assign>
+					<Call name='parse'>
+						<Args>
+							<Str>while i is smaller or less then y do
+        increase i by 4;
+      done</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Variable name='@variableValues'/>
+								<Args>
+									<Symbol name='i'/>
+								</Args>
+							</Call>
+							<Num value='8'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='_test_while2'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>while i is smaller or less then y do
+ evaluate the function at point I
+ add the result to the sum
+ increase I by the step size
+done</Str>
+						</Args>
+					</Call>
+					<Call name='looper'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='_test_setter3'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>step size is the length of the interval, divided by the number of steps</Str>
+						</Args>
+					</Call>
+					<Call name='setter'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_looper'>
+				<Args/>
+				<Block>
+					<Call name='skip'/>
+					<Call name='parse'>
+						<Args>
+							<Str>i=1;y=2;</Str>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>while i is smaller or equal y do
+i++
+end</Str>
+						</Args>
+					</Call>
+					<Call name='loops'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>while i is smaller or equal than y do
+i++
+end</Str>
+						</Args>
+					</Call>
+					<Call name='loops'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_then_typo'>
+				<Args/>
+				<Block>
+					<Call name='skip'/>
+					<Call name='parse'>
+						<Args>
+							<Str>while i is smaller or equal y then do
+yawn
+end</Str>
+						</Args>
+					</Call>
+					<Call name='skip'/>
+					<Call name='parse'>
+						<Args>
+							<Str>while i is smaller or equal then y do
+yawn
+end</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_method_call'>
+				<Args/>
+				<Block>
+					<Call name='skip'/>
+					<Call name='init'>
+						<Args>
+							<Str>evaluate the function at point I</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_algebra_NOW'>
+				<Args/>
+				<Block>
+					<Call name='skip'>
+						<Args>
+							<Str>test_algebra_NOW, DONT SKIP!</Str>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>1+3/4.0</Str>
+							<Str>1¾</Str>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>1.0+3/4.0</Str>
+							<Str>1¾</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_algebra'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>2*(3+10)</Str>
+						</Args>
+					</Call>
+					<Assign name='ok'>
+						<Call name='algebra'>
+							<Variable name='@parser'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Call name='puts'>
+						<Args>
+							<String>
+								<Str>Parsed input as </Str>
+								<String>
+									<Variable name='ok'/>
+								</String>
+								<Str>!</Str>
+							</String>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='ok'/>
+							<Num value='26'/>
+						</Args>
+					</Call>
+					<If>
+						<Call name='!'>
+							<Variable name='$use_tree'/>
+							<Arguments/>
+						</Call>
+						<Call name='skip'/>
+					</If>
+					<Assign name='current_node'>
+						<Call name='root'>
+							<Call name='interpretation'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Assign name='full_value'>
+						<Call name='full_value'>
+							<Variable name='current_node'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Assign name='val'>
+						<Call name='eval'>
+							<Args>
+								<Variable name='full_value'/>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='val'/>
+							<Num value='26'/>
+						</Args>
+					</Call>
+					<Assign name='val'>
+						<Call name='eval_node'>
+							<Variable name='current_node'/>
+							<Args/>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='val'/>
+							<Num value='26'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

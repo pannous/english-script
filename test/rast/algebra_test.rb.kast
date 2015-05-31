@@ -1,0 +1,180 @@
+<Block>
+	<Assign name='$use_tree'>
+		<True/>
+	</Assign>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='AlgebraTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_algebra1'>
+				<Args/>
+				<Block>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>two minus 1½</Str>
+							<Float value='0.5'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>3 minus one</Str>
+							<Num value='2'/>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>4½</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='fraction'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Float value='4.5'/>
+						</Args>
+					</Call>
+					<Call name='init'>
+						<Args>
+							<Str>4½+3½</Str>
+						</Args>
+					</Call>
+					<Call name='do_interpret!'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='algebra'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Num value='8'/>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>4½+3½</Str>
+							<Str>8</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_algebra_NOW'>
+				<Args/>
+				<Block>
+					<Call name='skip'>
+						<Args>
+							<Str>test_algebra_NOW, DONT SKIP!</Str>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>1+(3/4)</Str>
+							<Str>1¾</Str>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>1+3/4.0</Str>
+							<Str>1¾</Str>
+						</Args>
+					</Call>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>1.0+3/4.0</Str>
+							<Str>1¾</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_algebra'>
+				<Args/>
+				<Block>
+					<Assign name='ok'>
+						<Call name='parse'>
+							<Args>
+								<Str>2*(3+10)</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='puts'>
+						<Args>
+							<String>
+								<Str>Parsed input as </Str>
+								<String>
+									<Variable name='ok'/>
+								</String>
+								<Str>!</Str>
+							</String>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='ok'/>
+							<Num value='26'/>
+						</Args>
+					</Call>
+					<Call name='skip'/>
+					<Call name='assert'>
+						<Args>
+							<Call name='!='>
+								<Variable name='@current_node'/>
+								<Args>
+									<Nil name='nil'/>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Assign name='full_value'>
+						<Call name='full_value'>
+							<Variable name='@current_node'/>
+							<Arguments/>
+						</Call>
+					</Assign>
+					<Assign name='val'>
+						<Call name='eval'>
+							<Args>
+								<Variable name='full_value'/>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='val'/>
+							<Num value='26'/>
+						</Args>
+					</Call>
+					<Assign name='val'>
+						<Call name='eval_node'>
+							<Variable name='@current_node'/>
+							<Args>
+								<Variable name='@variableValues'/>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='val'/>
+							<Num value='26'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

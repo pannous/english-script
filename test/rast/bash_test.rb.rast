@@ -1,0 +1,33 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<GlobalVar name='$emit'/>
+	</GlobalAsgn>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='BashTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='test_pipe'>
+				<Argument name='test_pipe'/>
+				<Args/>
+				<FCall name='parse'>
+					<Array>
+						<Str>bash 'ls -al' | column 1
+					</Array>
+				</FCall>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

@@ -1,0 +1,232 @@
+<Block>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='VariableTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_a_setter_article_vs_variable'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>a=green</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>a</Str>
+								</Args>
+							</Call>
+							<Str>green</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>a dog=green</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>dog</Str>
+								</Args>
+							</Call>
+							<Str>green</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_variableTypes'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>an integer i</Str>
+						</Args>
+					</Call>
+					<Call name='variable'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_variable_type_safety'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>int i=3</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>an integer i;i=3</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>int i;i=3</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>char i='c'</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>char i;i='c'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>string i=3</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>int i='hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>integer i='hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>an integer i;i='hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>const i=1;i=2</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>const i=1;i='hi'</Str>
+						</Args>
+					</Call>
+					<Call name='assert_has_error'>
+						<Args>
+							<Str>const i='hi';i='ho'</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_var_condition_unmodified'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>counter</Str>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str>counter</Str>
+											<Symbol name='value'/>
+											<Num value='3'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</Assign>
+					<Call name='init'>
+						<Args>
+							<Str>counter=2</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<False/>
+								<Args>
+									<Call name='condition'>
+										<Variable name='@parser'/>
+										<Arguments/>
+									</Call>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Str>counter=3</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_vars'>
+				<Args/>
+				<Block>
+					<Assign name='[]='>
+						<Call name='variables'/>
+						<Array>
+							<Str>counter</Str>
+							<Call name='new'>
+								<Const name='Variable'/>
+								<Args>
+									<Hash>
+										<Array>
+											<Symbol name='name'/>
+											<Str>counter</Str>
+											<Symbol name='value'/>
+											<Num value='3'/>
+										</Array>
+									</Hash>
+								</Args>
+							</Call>
+						</Array>
+					</Assign>
+					<Call name='parse'>
+						<Args>
+							<Str>counter =2</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Str>counter</Str>
+								</Args>
+							</Call>
+							<Num value='2'/>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Call name='variables'/>
+								<Args>
+									<Symbol name='counter'/>
+								</Args>
+							</Call>
+							<Num value='2'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

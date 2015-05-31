@@ -1,0 +1,253 @@
+<Block>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Assign name='$verbose'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='HashTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='test_hash_symbol_invariance_extension'>
+				<Args/>
+				<Block>
+					<Assign name='a'>
+						<Hash>
+							<Array>
+								<Symbol name='a'/>
+								<Num value='1'/>
+							</Array>
+						</Hash>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Variable name='a'/>
+								<Args>
+									<Symbol name='lhs'/>
+								</Args>
+							</Call>
+							<Call name='[]'>
+								<Variable name='a'/>
+								<Args>
+									<Str>lhs</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Assign name='h'>
+						<Call name='parse'>
+							<Args>
+								<Str>{"SuperSecret" : "kSecValueRef"}</Str>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='[]'>
+								<Variable name='h'/>
+								<Args>
+									<Str>SuperSecret</Str>
+								</Args>
+							</Call>
+							<Str>kSecValueRef</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_json_data'>
+				<Args/>
+				<Block>
+					<Call name='init'>
+						<Args>
+							<Str>{a{b:"b";c:"c"}}</Str>
+						</Args>
+					</Call>
+					<Call name='json_hash'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_invariances'>
+				<Args/>
+				<Call name='assert_result_is'>
+					<Args>
+						<Str>{a:"b"}</Str>
+						<Hash>
+							<Array>
+								<Symbol name='a'/>
+								<Str>b</Str>
+							</Array>
+						</Hash>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_invariances2'>
+				<Args/>
+				<Block>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>{a{b:"b",c:"c"}}</Str>
+								</Args>
+							</Call>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Hash>
+										<Array>
+											<Symbol name='b'/>
+											<Str>b</Str>
+											<Symbol name='c'/>
+											<Str>c</Str>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>{a{b:"b";c:"c"}}</Str>
+								</Args>
+							</Call>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Hash>
+										<Array>
+											<Symbol name='b'/>
+											<Str>b</Str>
+											<Symbol name='c'/>
+											<Str>c</Str>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>{a:"b"}</Str>
+								</Args>
+							</Call>
+							<Call name='parse'>
+								<Args>
+									<Str>{"a":"b"}</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>{:a =&gt; "b"}</Str>
+								</Args>
+							</Call>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Str>b</Str>
+								</Array>
+							</Hash>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>{a:{b:"b";c:"c"}}</Str>
+								</Args>
+							</Call>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Hash>
+										<Array>
+											<Symbol name='b'/>
+											<Str>b</Str>
+											<Symbol name='c'/>
+											<Str>c</Str>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_immediate_hash'>
+				<Args/>
+				<Block>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>a{b:"b",c:"c"}</Str>
+								</Args>
+							</Call>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Hash>
+										<Array>
+											<Symbol name='b'/>
+											<Str>b</Str>
+											<Symbol name='c'/>
+											<Str>c</Str>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+						</Args>
+					</Call>
+					<Call name='skip'>
+						<Args>
+							<Str>test_immediate_hash NO, because of blocks!</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='parse'>
+								<Args>
+									<Str>a:{b:"b",c:"c"}</Str>
+								</Args>
+							</Call>
+							<Hash>
+								<Array>
+									<Symbol name='a'/>
+									<Hash>
+										<Array>
+											<Symbol name='b'/>
+											<Str>b</Str>
+											<Symbol name='c'/>
+											<Str>c</Str>
+										</Array>
+									</Hash>
+								</Array>
+							</Hash>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

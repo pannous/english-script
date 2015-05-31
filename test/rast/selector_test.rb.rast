@@ -1,0 +1,196 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='SelectorTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='test_every'>
+				<Argument name='test_every'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs= [1,2,3]; increase all xs'/>
+						</Array>
+					</FCall>
+					<VCall name='skip'/>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs= [1,2,3]; show all xs'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs= [1,2,3]; show every xs'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='friendly numbers= [1,2,3]; show all friendly numbers'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='friendly numbers= [1,2,3]; show every friendly number'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_selector0'>
+				<Argument name='test_selector0'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs= 2,3,8,9'/>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='xs that are smaller than 7'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='z'>
+						<Call name='selectable'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='z'/>
+							<Array>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+					<LocalAsgn name='z'>
+						<FCall name='parse'>
+							<Array>
+								<Str value='let z be all xs that are smaller than 7 '/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='z'/>
+							<Array>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+					<LocalAsgn name='z'>
+						<FCall name='parse'>
+							<Array>
+								<Str value='let z be xs that are smaller than 7 '/>
+							</Array>
+						</FCall>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='z'/>
+							<Array>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_selector1'>
+				<Argument name='test_selector1'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='xs= 1,2,3'/>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value=' xs that are bigger than one'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='z'>
+						<Call name='selectable'>
+							<InstVar name='@parser'/>
+							<List/>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert_equals'>
+						<Array>
+							<LocalVar name='z'/>
+							<Array>
+								<Fixnum value='2'/>
+								<Fixnum value='3'/>
+							</Array>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='xs that are bigger than one == [2,3]'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_every_selector'>
+				<Argument name='test_every_selector'/>
+				<Args/>
+				<Block>
+					<VCall name='skip'/>
+					<FCall name='parse'>
+						<Array>
+							<Str value='friendly numbers= [1,2,3]; show every friendly number that is bigger than one'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='friendly numbers= [1,2,3]; all friendly numbers which are smaller than three == [1,2]'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_selector3'>
+				<Argument name='test_selector3'/>
+				<Args/>
+				<Block>
+					<VCall name='skip'/>
+					<FCall name='assert'>
+						<Array>
+							<Str>every number in 1,'a',3 ==1,3
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str>all numbers in 1,'a',3 ==1,3
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='all negative numbers in 1,-2,3,-4 ==-2,-4'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='all numbers in 1,-2,3,-4 that are negative == -2,-4'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

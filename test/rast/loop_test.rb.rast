@@ -1,0 +1,272 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='LoopTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='_test_forever'>
+				<Argument name='_test_forever'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='beep forever'/>
+						</Array>
+					</FCall>
+					<VCall name='loops'/>
+					<FCall name='parse'>
+						<Array>
+							<Str value='beep forever'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_while_return'>
+				<Argument name='test_while_return'/>
+				<Args/>
+				<FCall name='assert_equals'>
+					<Array>
+						<FCall name='parse'>
+							<Array>
+								<Str value='c=0;while c<1:c++;beep;done'/>
+							</Array>
+						</FCall>
+						<Str value='beeped'/>
+					</Array>
+				</FCall>
+			</Defn>
+			<Defn name='test_while_loop'>
+				<Argument name='test_while_loop'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='c=0;while c<3:c++;beep;done'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='[]'>
+									<VCall name='variables'/>
+									<Args>
+										<Str value='c'/>
+									</Args>
+								</Call>
+								<Args>
+									<Fixnum value='3'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_expressions'>
+				<Argument name='test_expressions'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='counter=1'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='[]'>
+									<InstVar name='@variableValues'/>
+									<Args>
+										<Str value='counter'/>
+									</Args>
+								</Call>
+								<Args>
+									<Fixnum value='1'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='counter++'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='[]'>
+									<InstVar name='@variableValues'/>
+									<Args>
+										<Str value='counter'/>
+									</Args>
+								</Call>
+								<Args>
+									<Fixnum value='2'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='counter+=1'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<Call name='[]'>
+									<InstVar name='@variableValues'/>
+									<Args>
+										<Str value='counter'/>
+									</Args>
+								</Call>
+								<Args>
+									<Fixnum value='3'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='counter=counter+counter'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='counter'>
+						<Call name='[]'>
+							<InstVar name='@variableValues'/>
+							<Args>
+								<Str value='counter'/>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<LocalVar name='counter'/>
+								<Args>
+									<Fixnum value='6'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_repeat'>
+				<Argument name='test_repeat'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='counter =0; repeat three times: increase the counter; okay'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='counter=3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<InstVar name='@variableValues'/>
+								<Args>
+									<Str value='counter'/>
+								</Args>
+							</Call>
+							<Fixnum value='3'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_repeat3'>
+				<Argument name='test_repeat3'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='counter =0; repeat three times: counter=counter+1; okay'/>
+							<Fixnum value='3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='counter =0; repeat while counter < 3: counter=counter+1; okay'/>
+							<Fixnum value='3'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_repeat1'>
+				<Argument name='test_repeat1'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='counter =0; repeat three times: counter+=1; okay'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='counter =3'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='counter =0; repeat three times: counter++; okay'/>
+						</Array>
+					</FCall>
+					<LocalAsgn name='counter'>
+						<Call name='[]'>
+							<InstVar name='@variableValues'/>
+							<Args>
+								<Str value='counter'/>
+							</Args>
+						</Call>
+					</LocalAsgn>
+					<FCall name='assert'>
+						<Array>
+							<Str value='counter =3'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='=='>
+								<LocalVar name='counter'/>
+								<Args>
+									<Fixnum value='3'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='_test_forever'>
+				<Argument name='_test_forever'/>
+				<Args/>
+				<Block>
+					<Call name='s'>
+						<InstVar name='@parser'/>
+						<Args>
+							<Str value='beep forever'/>
+						</Args>
+					</Call>
+					<Call name='loops'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+				</Block>
+			</Defn>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

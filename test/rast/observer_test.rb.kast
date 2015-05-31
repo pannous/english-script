@@ -1,0 +1,131 @@
+<Block>
+	<Assign name='$use_tree'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='ObserverTest'/>
+		<Block>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='_test_every_date1'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>every 1 seconds { say "Ja!" }</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>every 2 seconds do say "OK"</Str>
+						</Args>
+					</Call>
+					<Call name='sleep'>
+						<Args>
+							<Num value='10000'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='_test_every_date'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>every 1 seconds do say "OK"</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>beep every three seconds</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>every two seconds puts "YAY"</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>every minute puts "HURRAY"</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>every five seconds do say "OK"</Str>
+						</Args>
+					</Call>
+					<Call name='sleep'>
+						<Args>
+							<Num value='10000'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_whenever'>
+				<Args/>
+				<Block>
+					<Call name='parse'>
+						<Args>
+							<Str>beep whenever x is 5</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>beep once x is 5</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>once x is 5 do beep</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>once x is 5 beep </Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x is 5</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_whenever_2'>
+				<Args/>
+				<Block>
+					<Call name='skip'>
+						<Args>
+							<Str>test this later</Str>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>whenever the clock shows five seconds do beep</Str>
+						</Args>
+					</Call>
+					<Call name='assert'>
+						<Args>
+							<Call name='=='>
+								<Variable name='@result'/>
+								<Args>
+									<Str>1/3</Str>
+								</Args>
+							</Call>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

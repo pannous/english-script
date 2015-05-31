@@ -1,0 +1,302 @@
+<Block>
+	<Assign name='$use_tree'>
+		<True/>
+	</Assign>
+	<Assign name='$verbose'>
+		<False/>
+	</Assign>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../parser_test_helper</Str>
+		</Args>
+	</Call>
+	<Call name='require_relative'>
+		<Args>
+			<Str>../../src/core/emitters/c-emitter</Str>
+		</Args>
+	</Call>
+	<Class>
+		<Name name='EmitterTest'/>
+		<Block>
+			<Method name='init'>
+				<Args/>
+				<Assign name='$use_tree'>
+					<True/>
+				</Assign>
+			</Method>
+			<Method name='initialize'>
+				<Args/>
+				<Assign name='$use_tree'>
+					<True/>
+				</Assign>
+			</Method>
+			<Call name='include'>
+				<Args>
+					<Const name='ParserTestHelper'/>
+				</Args>
+			</Call>
+			<Method name='last_result'>
+				<Args>
+					<Arguments>
+						<Argument name='x'/>
+					</Arguments>
+				</Args>
+				<Call name='[]'>
+					<Call name='split'>
+						<Variable name='x'/>
+						<Args>
+							<Str>
+</Str>
+						</Args>
+					</Call>
+					<Args>
+						<Num value='-1'/>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='assert_result_emitted'>
+				<Args>
+					<Arguments>
+						<Argument name='x'/>
+						<Argument name='r'/>
+					</Arguments>
+				</Args>
+				<Call name='assert_equals'>
+					<Args>
+						<Call name='last_result'>
+							<Args>
+								<Call name='parse_tree'>
+									<Args>
+										<Variable name='x'/>
+										<True/>
+									</Args>
+								</Call>
+							</Args>
+						</Call>
+						<Variable name='r'/>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_js_emitter'>
+				<Args/>
+				<Block>
+					<If>
+						<Call name='!'>
+							<Variable name='$use_tree'/>
+							<Arguments/>
+						</Call>
+						<Call name='skip'/>
+					</If>
+					<Call name='assert_result_emitted'>
+						<Args>
+							<Str>x=5;increase x</Str>
+							<Num value='6'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_int_setter'>
+				<Args/>
+				<Block>
+					<If>
+						<Call name='!'>
+							<Variable name='$use_tree'/>
+							<Arguments/>
+						</Call>
+						<Call name='skip'/>
+					</If>
+					<Call name='assert_result_emitted'>
+						<Args>
+							<Str>x=5;puts x</Str>
+							<Num value='5'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_type_cast'>
+				<Args/>
+				<Block>
+					<Call name='assert_result_is'>
+						<Args>
+							<Str>2.3</Str>
+							<Float value='2.3'/>
+						</Args>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>int z=2.3 as int</Str>
+						</Args>
+					</Call>
+					<Call name='assert_equals'>
+						<Args>
+							<Call name='result'/>
+							<Num value='2'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_printf'>
+				<Args/>
+				<Block>
+					<Assign name='$use_tree'>
+						<True/>
+					</Assign>
+					<Call name='dont_interpret!'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>printf 'hello world'</Str>
+							<False/>
+						</Args>
+					</Call>
+					<Assign name='interpretation'>
+						<Or>
+							<Call name='interpretation'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Call name='new'>
+								<Const name='Interpretation'/>
+								<Arguments/>
+							</Call>
+						</Or>
+					</Assign>
+					<Call name='full_tree'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Assign name='result'>
+						<Call name='emit'>
+							<Call name='new'>
+								<Const name='NativeCEmitter'/>
+								<Arguments/>
+							</Call>
+							<Args>
+								<Variable name='interpretation'/>
+								<Hash>
+									<Array>
+										<Symbol name='run'/>
+										<True/>
+									</Array>
+								</Hash>
+							</Args>
+						</Call>
+					</Assign>
+					<Call name='assert_equals'>
+						<Args>
+							<Variable name='result'/>
+							<Str>hello world</Str>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_printf_1'>
+				<Args/>
+				<Call name='assert_result_emitted'>
+					<Args>
+						<Str>printf 'hello world'</Str>
+						<Str>hello world</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_function_call'>
+				<Args/>
+				<Call name='assert_result_emitted'>
+					<Args>
+						<Str>i=7;i minus one</Str>
+						<Num value='6'/>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_function'>
+				<Args/>
+				<Call name='assert_result_emitted'>
+					<Args>
+						<Str>def test{puts 'yay'};test</Str>
+						<Str>yay</Str>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_function2'>
+				<Args/>
+				<Block>
+					<Call name='parse_file'>
+						<Args>
+							<Str>examples/factorial.e</Str>
+						</Args>
+					</Call>
+					<Call name='assert_result_emitted'>
+						<Args>
+							<Str>factorial 6</Str>
+							<Num value='5040'/>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+			<Method name='test_array'>
+				<Args/>
+				<Call name='assert_result_emitted'>
+					<Args>
+						<Str>xs=[1,4,7];invert xs</Str>
+						<Array>
+							<Num value='7'/>
+							<Num value='4'/>
+							<Num value='1'/>
+						</Array>
+					</Args>
+				</Call>
+			</Method>
+			<Method name='test_setter'>
+				<Args/>
+				<Block>
+					<Assign name='$use_tree'>
+						<True/>
+					</Assign>
+					<Call name='dont_interpret!'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='parse'>
+						<Args>
+							<Str>x='ho';puts x</Str>
+						</Args>
+					</Call>
+					<Assign name='interpretation'>
+						<Or>
+							<Call name='interpretation'>
+								<Variable name='@parser'/>
+								<Arguments/>
+							</Call>
+							<Call name='new'>
+								<Const name='Interpretation'/>
+								<Arguments/>
+							</Call>
+						</Or>
+					</Assign>
+					<Call name='show_tree'>
+						<Variable name='@parser'/>
+						<Arguments/>
+					</Call>
+					<Call name='emit'>
+						<Call name='new'>
+							<Const name='NativeCEmitter'/>
+							<Arguments/>
+						</Call>
+						<Args>
+							<Variable name='interpretation'/>
+							<Hash>
+								<Array>
+									<Symbol name='run'/>
+									<True/>
+								</Array>
+							</Hash>
+						</Args>
+					</Call>
+				</Block>
+			</Method>
+		</Block>
+		<Const name='ParserBaseTest'/>
+	</Class>
+</Block>

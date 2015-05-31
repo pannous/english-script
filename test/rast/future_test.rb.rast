@@ -1,0 +1,309 @@
+<Block>
+	<GlobalAsgn name='$use_tree'>
+		<False/>
+	</GlobalAsgn>
+	<FCall name='require_relative'>
+		<Array>
+			<Str value='../parser_test_helper'/>
+		</Array>
+	</FCall>
+	<Class>
+		<Colon2Implicit name='FutureTest'/>
+		<Block>
+			<FCall name='include'>
+				<Array>
+					<Const name='ParserTestHelper'/>
+				</Array>
+			</FCall>
+			<Defn name='dont_yet_test_false_returns'>
+				<Argument name='dont_yet_test_false_returns'/>
+				<Args/>
+				<Block>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='if 1<2 then false else 4'/>
+							<Symbol name='false'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_result_is'>
+						<Array>
+							<Str value='if 1<2 then false else 4'/>
+							<False/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_if_statement'>
+				<Argument name='test_if_statement'/>
+				<Args/>
+				<Block>
+					<FCall name='init'>
+						<Array>
+							<Str value='if x is smaller than three then everything is fine;'/>
+						</Array>
+					</FCall>
+					<Call name='if_then'>
+						<InstVar name='@parser'/>
+						<List/>
+					</Call>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='everything'/>
+								</Args>
+							</Call>
+							<Str value='fine'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x=2;if x is smaller than three then everything is good;'/>
+						</Array>
+					</FCall>
+					<FCall name='puts'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='everything'/>
+								</Args>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='everything'/>
+								</Args>
+							</Call>
+							<Str value='good'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_repeat_until'>
+				<Argument name='test_repeat_until'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='repeat until x>4: x++'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='x'/>
+								</Args>
+							</Call>
+							<Fixnum value='5'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_try_until'>
+				<Argument name='test_try_until'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='try until x>4: x++'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='x'/>
+								</Args>
+							</Call>
+							<Fixnum value='5'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='try while x<4: x++'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='x'/>
+								</Args>
+							</Call>
+							<Fixnum value='4'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='try x++ until x>4'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='x'/>
+								</Args>
+							</Call>
+							<Fixnum value='5'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='try x++ while x<4'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='x'/>
+								</Args>
+							</Call>
+							<Fixnum value='4'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='increase x until x>4'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Call name='[]'>
+								<VCall name='variables'/>
+								<Args>
+									<Str value='x'/>
+								</Args>
+							</Call>
+							<Fixnum value='5'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_property_setter'>
+				<Argument name='test_property_setter'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='new circle;circle.color=green'/>
+						</Array>
+					</FCall>
+					<FCall name='assert_equals'>
+						<Array>
+							<Str value='circle.color'/>
+							<Str value='green'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_local_variables_changed_by_subblocks'>
+				<Argument name='test_local_variables_changed_by_subblocks'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x=2;def test
+x=1
+end
+test'/>
+						</Array>
+					</FCall>
+					<FCall name='init'>
+						<Array>
+							<Str value='x=2 or x=1'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Call name='condition_tree'>
+								<InstVar name='@parser'/>
+								<List/>
+							</Call>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='x=2'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x=1;x=2;'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='x=2'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='x=1;while x<2 do x=2;'/>
+						</Array>
+					</FCall>
+					<FCall name='assert'>
+						<Array>
+							<Str value='x=2'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_loops'>
+				<Argument name='test_loops'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str value='beep three times'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='repeat three times: beep; okay'/>
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str value='repeat three times: beep'/>
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+			<Defn name='test_action_n_times'>
+				<Argument name='test_action_n_times'/>
+				<Args/>
+				<Block>
+					<FCall name='parse'>
+						<Array>
+							<Str>2 times say 'hello'
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>say 'hello' 2 times
+						</Array>
+					</FCall>
+					<FCall name='parse'>
+						<Array>
+							<Str>puts 'hello' 2 times
+						</Array>
+					</FCall>
+				</Block>
+			</Defn>
+		</Block>
+	</Class>
+</Block>
