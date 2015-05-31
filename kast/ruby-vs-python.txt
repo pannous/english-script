@@ -1,6 +1,5 @@
 
 # ruby +++ better blocks + lambdas !!!
-# ruby ++ nice 'and' concatenation:  >>> 3 and True  => 3 yay!
 # ruby ++ much more forgiving and convenient, i.e. z=map[x] vs if x in map: map[x]
 # ruby + jruby better, class extensions
 # ruby + mirah: native 'ruby' on jvm
@@ -48,7 +47,6 @@
 # python (-) backtrace
 # python - annoying (self), : , () -> DANGEROUS!! (ok if generated?)
 # python - NO class extensions for builtins! (ok with 'macros' / subclass construction (?))
-# python -- missing 'and' concatenation : >>> 3 and True  => True  NOOOO!
 # python -- running angle ok, debugging SLOOOOOW! (same algorithm as ruby, maybe caller() is expensive?)
 # python ---- variable scope nightmare!! lambdas + block variable scope !!!!! 'nonlocal' keyword :(
 # python ---- explicit global/class(self) self.EVERYTHING!!!
