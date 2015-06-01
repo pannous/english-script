@@ -1,8 +1,9 @@
 import extensions
 
 global string, last_node, current_value, nodes, depth,rollback_depths,OK
-global verbose,use_wordnet,in_pipe,result,last_result
-global tokenstream,current_token,current_type,current_word,current_line,in_args
+global verbose,use_wordnet,result,last_result
+global tokenstream,current_token,current_type,current_word,current_line
+global in_condition,in_pipe,in_args
 
 _verbose =  True # False angel.verbose() and not angel.raking()  # false
 very_verbose = _verbose
@@ -10,9 +11,10 @@ very_verbose = _verbose
 use_tree=False
 use_wordnet=False
 in_pipe=False
+in_condition=False
+in_args = False
 interpret=False
 did_interpret = False
-in_args = False
 javascript = ''
 context = ''
 variables = {}

@@ -190,8 +190,8 @@ def raiseSyntaxError():
 
 def rooty():
     r=maybe(block) or \
-      maybe(expressions) or\
       maybe(statement) or \
+      maybe(expressions) or\
       raiseSyntaxError()# raise_not_matching("")
       # maybe(condition) or \
       # maybe(context) or \
@@ -369,21 +369,26 @@ def special_blocks():
 def nth_item():  # Also redundant with property evaluation (But okay as a shortcut)):
     set = maybe_token('set')
     n = __(numbers + ['first', 'last', 'middle'])
+    n=xstr(n).parse_integer()
+    if(n>0):n=n-1  # -1 AppleScript style !!! BUT list[0] !!!
     raiseEnd()
-    maybe_token('.')
+    maybe_tokens(['.','rd','st','nd'])
     type = ___(['item', 'element', 'object', 'word', 'char', 'character']+ type_names)  # noun
     ___('in', 'of')
-    l = resolve(true_variable()) or _try(list) or quote
+    l = resolve(_try(true_variable)) or _try(liste) or quote() # or (expression) with parenthesis!!
     if re.search(r'^char',type):
-        the.result = l.join('')[n.parse_integer - 1]
+        the.result = "".join(l).__getitem__(n)
         return the.result
-    if type in type_names: l = l.select(lambda x: x == False)
-    the.result = l.item(n)  # -1 AppleScript style !!! BUT list[0] !!!
-    if set:
-        _('to')
+    if type in type_names:
+        l = l.select(lambda x: isinstance(x,type)) # or x.is_a(type)!
+    elif isinstance(l,str):
+        l = l.split(" ")
+    the.result = l[n] #.__getitem__(n)
+    if angel.in_condition:
+        return the.result
+    if set and _('to'): # or maybe_tokens(be_words): #LATER
         val = endNode()
-        l[n.parse_integer - 1] = do_evaluate(val)
-
+        l[n] = do_evaluate(val)
     return the.result
 
 
@@ -728,7 +733,7 @@ def action_if():
     must_contain('if')
     a = action_or_expressions
     _('if')
-    c = condition_tree
+    c = condition_tree()
     if interpreting():
         if check_condition(c):
             return do_execute_block(a)
@@ -742,7 +747,7 @@ def if_then():
     no_rollback()  # 100
     c = condition_tree()
     if c == None: raise InternalError("no condition_tree")
-    # c=condition
+    # c=condition()
     maybe_token('then')
     maybe_token(':')
     dont_interpret()  # if not c  else: dont do_execute_block twice!:
@@ -764,7 +769,7 @@ def if_then():
 def once_trigger():
     __(once_words)
     dont_interpret()
-    c = condition
+    c = condition()
     no_rollback()
     maybe_token('then')
     use_block = _try(start_block)
@@ -786,7 +791,7 @@ def action_once():
     # if not _do: b=action()
     # if _do: b=block and _try(done)
     __(once_words)
-    c = condition
+    c = condition()
     end_expression
     interpretation.add_trigger(c, b)
 
@@ -797,7 +802,7 @@ def once():
     maybe(once_trigger) or action_once
 
 
-# or  action 'as soon as' condition
+# or  action 'as soon as' condition()
 
 #/*n_times
 #	 verb number 'times' preposition nod -> "<verb> <preposition> <nod> for <number> times" 	*/
@@ -994,7 +999,8 @@ def applescript():
 def assert_that():
     _('assert')
     maybe_token('that')
-    s=statement()
+    # s=statement()
+    s=condition()
     if interpreting():
         assert check_condition(s)
     return s
@@ -1179,7 +1185,7 @@ def for_i_in_collection():
         the.result=do_execute_block(b)
     return the.result
 
-#  until_condition ,:while_condition ,:as_long_condition
+#  until_condition ,:while_condition ,:as_long_condition()
 
 def assure_same_type(var, type):
     if var.name in variableTypes:
@@ -1236,15 +1242,15 @@ def property():
     properti = word
     return Property(name=properti, owner=owner)
 
-
+# difference to setter? just public int var const test
 def declaration():
     should_not_contain('=')
     # must_contain_before  be_words+['set'],';'
-    a = _try(_the)
-    mod = _try(modifier)
-    type = typeNameMapped
+    a = the_()
+    mod = maybe_tokens(modifiers)
+    type = typeNameMapped()
     ___('var', 'val', 'value of')
-    mod = mod or _try(modifier)  # public static :.
+    mod = mod or maybe_tokens(modifiers)  # public static :.
     var = _try(property) or variable_name(a)
     assure_same_type(var, type)
     # var.type = var.type or type
@@ -1326,6 +1332,7 @@ def variable_name(a=None):
     p = ___(possessive_pronouns)
     # all=p ? [p] : []
     # try:
+    no_keyword()
     all = one_or_more(word)
     # except:
     # if a == 'a':
@@ -1530,7 +1537,7 @@ def that():
 
 def where():
     tokens('where')  # NOT: ,'who','whose','which'
-    return condition
+    return condition()
 
 
 # _try(ambivalent)  delete james from china
@@ -1717,6 +1724,7 @@ def condition():
     # a=endNode:(
     quantifier = ___(quantifiers)  # vs selector()!
     if quantifier: _try(element_in)
+    # angel.in_condition=True
     lhs = action_or_expressions(quantifier)
     _not = False
     comp = use_verb = maybe(verb_comparison)  # run like , contains
@@ -1726,8 +1734,8 @@ def condition():
     if brace: _(')')
     negate = (negated or _not) and not (negated and _not)
     subnode({'negate':negate})
+    # angel.in_condition=False # WHAT IF raised !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!??????!
     if not comp: return lhs
-
     # 1,2,3 are smaller 4  VS 1,2,4 in 3
     if isinstance(lhs, list) and not _try(lambda: lhs.respond_to(comp)) and not isinstance(rhs,list):
         quantifier = quantifier or "all"
@@ -1841,11 +1849,12 @@ def const_defined(c):
 def classConstDefined():
     try:
         c = word().capitalize()
-        if not const_defined(c): return False
-    except (AttributeError,NameError ) as e:
+        if not const_defined(c): raise NotMatching("Not a class Const")# return False
+    except IgnoreException:#  (AttributeError,NameError ) as e:
         raise NotMatching()
 
     if interpreting(): c = do_get_class_constant(c)
+    if not c:        raise NotMatching()
     return c
 
 
@@ -1932,7 +1941,8 @@ def do_evaluate(x, type=None):
     try:
         if isinstance(x, list) and len(x) == 1: return do_evaluate(x[0])
         if isinstance(x, list) and len(x) != 1: return x
-        if isinstance(x, Variable): return x.value or the.variableValues[x.name]
+        if isinstance(x, Variable):
+            return x.value or the.variableValues[x.name]
         if x==ZERO: return 0
         if x==TRUE: return True
         if x==FALSE: return FALSE
@@ -1959,6 +1969,7 @@ def do_evaluate(x, type=None):
 
 
 def resolve(x):
+    if not x: return x
     if is_dir(x): return extensions.Directory(x)
     if is_file(x): return extensions.File(x)
     if isinstance(x, Variable): return x.value
@@ -2500,6 +2511,10 @@ def call_is_noun():
 
 def quote():
     raiseEnd()
+    if the.current_type==_token.STRING:
+        the.result = the.current_word[1:-1]
+        next_token()
+        return the.result
     # global the.result, the.string
     #if checkEnd: return
     # todo :match ".*?"
@@ -2691,7 +2706,7 @@ def repeat_action_while():
     if re.search(r'\s*while'): raise_not_matching("repeat_action_while != repeat_while_action",the.string)
     b=action_or_block()
     _( 'while')
-    c=condition
+    c=condition()
     while check_condition(c):
       the.result=do_execute_block(b)
     if interpret: end()
@@ -2723,7 +2738,7 @@ def until_loop():
     __('until','as long as')
     dont_interpret()
     no_rollback() #no_rollback 13 # arbitrary value ! :{
-    c=condition
+    c=condition()
     ___('repeat')
     b=action_or_block #Danger when interpreting it might contain conditions and breaks
     r=False
@@ -2740,7 +2755,7 @@ def looped_action():
     ___('repeat')
     a=action # or semi-block
     __('as long as', 'while')
-    c=condition
+    c=condition()
     r=False
     if not interpreting(): return a
     if interpreting():
@@ -2756,7 +2771,7 @@ def looped_action_until():
     ___('repeat')
     a=action # or semi-block
     _('until')
-    c=condition
+    c=condition()
     r=False
     if not interpreting(): return a
     if interpreting():
@@ -2830,9 +2845,9 @@ def forever():
 
 def as_long_condition_block():
     _('as long as')
-    c=condition
+    c=condition()
     start_block
-    a=block #  danger, block might contain condition
+    a=block #  danger, block might contain condition()
     end_block()
     if interpreting():
         while (check_condition (c)):

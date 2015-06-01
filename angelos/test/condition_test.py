@@ -78,10 +78,14 @@ class ConditionTest(ParserBaseTest):
     def test_assert(self):
         self.do_assert(parse("assert 3rd word in 'hi my friend' is 'friend'"))
         self.do_assert(parse("assert 3rd word in 'hi my friend' is 'friend'"))
+        assert_result_is("assert 3rd word in 'hi my friend' is 'friend'", True)
+
 
     def test_and(self):
         self.do_assert(parse('x=2;if x is smaller 3 and x is bigger 1 then true'))
-        self.do_assert(parse('x=2;if x is smaller 3 and x is bigger 1 then true'))
+        self.do_assert(parse('x=2;if x is smaller 3 and x is bigger 1 then true else false'))
+        assert_result_is('x=2;if x is smaller 3 and x is bigger 1 then true else false', True)
+
 
     def test_and1(self):
         self.do_assert(parse('x=2;if x is smaller 3 but not x is smaller 1 then true'))

@@ -163,7 +163,7 @@ otherKeywords= ['and', 'as', 'back', 'beginning', 'but', 'by', 'contain', 'conta
 
 const=['constant', 'const','final','immutable','unchangeable'] #not: static
 
-modifiers=['protected', 'private','public', 'static', 'void', 'default', 'initial', 'mutable','variable'] +const
+modifiers= const + ['protected', 'private','public', 'static', 'void', 'default', 'initial', 'mutable','variable']
 
 adverbs=['often', 'never', 'joyfully', 'often', 'never', 'joyfully', 'quite', 'nearly', 'almost', 'definitely', 'by any means', 'without a doubt']
 

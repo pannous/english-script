@@ -247,12 +247,13 @@ class ParserBaseTest(unittest.TestCase):
 
     def do_assert(self, x,msg=None, block=None):
         copy_variables()
+        if not msg: msg=x
         ok=False
         if x == True:
-            return p(('\nTEST PASSED! ' + self.parser.original_string()))
+            print('TEST PASSED! ' + str(msg))
+            return True
         if callable(msg):
             msg = msg.call()
-        if not msg: msg=x
         if block:
             msg = (msg or self.parser.to_source(block))
         if x==False and block:

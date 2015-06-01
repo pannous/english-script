@@ -364,13 +364,16 @@ def maybe_tokens(tokens0):
             next_token()
             return t
         if " " in t:
+            old=the.current_token
             for to in t.split(" "):
                 if to!=current_word:
                     t=None
                     break
                 else:
                     next_token()
-            if not t: continue
+            if not t:
+                set_token(old)
+                continue
             return t
     return False
 
@@ -793,13 +796,10 @@ def maybe(block):
     if not callable(block): # duck!
         return maybe_tokens(block)
     global original_string, last_node, current_value, depth,nodes,current_node,last_token
-    #if checkEnd: return
     # allow_rollback 1
     depth = depth + 1
     if (caller_depth() > const.max_depth):raise SystemStackError("if(len(nodes)>max_depth)")
-    # old = the.string  # NOT overwritten, instead of:
     old = current_token
-    # if not original_string: original_string = the.string or ""
     try:
         old_nodes = list(nodes)#.clone()
         result = block() #yield <<<<<<<<<<<<<<<<<<<<<<<<<<<<
