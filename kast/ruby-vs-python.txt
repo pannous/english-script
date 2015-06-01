@@ -6,6 +6,7 @@
 # ruby + mirah: native 'ruby' on jvm
 # ruby + def 'properties'   def y; @y; end    def y=(z); @y=z; end , see (ugly) attr_reader ...
 # ruby + clean function approach, e.g. def []=(index,values) ...
+# ruby + nicer 'and'+'or' concatenations  a?b:c or d and raise Ex
 # ruby - less modules, more beautiful language => less need for angle!
 # ruby - methods less 1st class than in python! ('ok' via method(:symbol), send)
 # ruby -: can't access variables in methods without '@' !!

@@ -554,7 +554,8 @@ class xstr(str):
 
     def parse_integer(self):
         self = self.replace_numerals
-        i = eval(self).to_i  # except 666
+        i = int(self)  # except 666
+        # i = int(eval(str(self)))  # except 666
         return i
 
     def parse_number(self):

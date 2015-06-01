@@ -53,10 +53,7 @@ def nill():
 def boolean():
     b = __('True', 'False','true', 'false')
     the.result = (b == 'True' or b=='true') and TRUE or FALSE
-    # the.result=b=='True'
     return the.result
-    # OK
-
 
 
 def should_not_start_with(words):
@@ -717,10 +714,10 @@ def bash_action():
 @Starttokens(if_words)
 def if_then_else():
     ok=if_then()  # todo :if 1 then False else: 2 => 2 :(: ok      =
-    if ok == False:
-        ok = FALSE
+    # if ok == False:
+    #     ok = FALSE
     o = _try(otherwise) or FALSE
-    if ok != "OK":
+    if ok != "OK" and ok !=False: #and ok !=FALSE:
         return ok
     else:
         return o
@@ -753,6 +750,7 @@ def if_then():
     # if not use_block: b=statement
     # if not use_block: b=action()
     allow_rollback()
+    if c==False: return c
     if interpreting():
         if check_condition(c):
             return do_execute_block(b)
@@ -1120,13 +1118,13 @@ def do_execute_block(b, args={}):
     if callable(b): return call_function(b, args)
     if isinstance(b, TreeNode): b = b.content
     if not isinstance(b, str): return b  # OR :. !!!
-    block_parser = EnglishParser()
+    block_parser = the# EnglishParser()
     block_parser.variables = variables
     block_parser.variableValues = variableValues
     if not isinstance(args, dict): args = {'arg': args}
-    for arg, val in args:
-        v = block_parser.variables[arg]
-        if v:
+    for arg, val in args.iteritems():
+        if arg in block_parser.variables:
+            v = block_parser.variables[arg]
             v = v.clone
             v.value = val
             block_parser.variables[str(arg)] = v  # to_sym todo NORM in hash!!!
@@ -1780,11 +1778,11 @@ def condition_tree(recurse=True):
 
 def otherwise():
     _try(newline)
-    must_contain('else:', 'otherwise')
-    ___('else:', 'otherwise')
+    must_contain('else', 'otherwise')
+    ___('else', 'otherwise')
     # if :. ! _try(OK): else:
     e = expressions()
-    ___('else:', 'otherwise')and newline()
+    ___('else', 'otherwise')and newline()
     return e
 
 
@@ -2562,7 +2560,7 @@ def the_():
 
 def number_word():
     n=__(numbers)
-    return str(n).parse_integer()  #except NotMatching.new "no number"
+    return xstr(n).parse_integer()  #except NotMatching.new "no number"
 
 
 def fraction():

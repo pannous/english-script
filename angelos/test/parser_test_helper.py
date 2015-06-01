@@ -83,9 +83,9 @@ def assert_result_emitted(a, b, bla=None):
 def assert_result_is(a, b, bla=None):
     x=parse(a)
     if bla:
-        assert x==b, "%s %s SOULD EQUAL%s"%(bla,a,b)
+        assert x==b, "%s %s SOULD EQUAL %s BUT WAS %s"%(bla,a,b,x)
     else:
-        assert x==b, "%s SOULD EQUAL %s"%(a,b)
+        assert x==b, "%s SOULD EQUAL %s BUT WAS %s"%(a,b,x)
 
 
 def parse_file(x):
@@ -244,7 +244,7 @@ class ParserBaseTest(unittest.TestCase):
 
     def do_assert(self, x,msg=None, block=None):
         copy_variables()
-
+        ok=False
         if x == True:
             return p(('\nTEST PASSED! ' + self.parser.original_string()))
         if callable(msg):
@@ -255,7 +255,7 @@ class ParserBaseTest(unittest.TestCase):
         if x==False and block:
             x = block()
         if x==False:
-            assert(x!=False, ((x + ' NOT PASSING: ') + msg))
+            assert False, ((x + ' NOT PASSING: ') +str(  msg))
         if isinstance(x,str):
             print(('Testing ' + x))
             init(x)
@@ -265,8 +265,8 @@ class ParserBaseTest(unittest.TestCase):
             if emit:
                 ok = parser.emit(None, ok),
             if ok==False:
-                assert False, 'NOT PASSING: ' + msg
-        print 'TEST PASSED!  ' + msg + ' \t VALUE '+str(ok)
+                assert False, 'NOT PASSING: ' + str( msg)
+        print 'TEST PASSED!  ' + str( msg) + ' \t VALUE '+str(ok)
 
     # def NOmethod_missing(self, sym, args, block):
     #     syms = sym.to_s()

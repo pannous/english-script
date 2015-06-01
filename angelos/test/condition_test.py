@@ -35,12 +35,17 @@ class ConditionTest(ParserBaseTest):
         assert_result_is('if 3<2 then 5 else 4', 4)
         assert_result_is('if 1<2 then false else 4', 'false')
 
-    def test_else_(self):
+    def test_if_(self):
         assert_result_is('if(1<2) then 3 else 4', 3)
         assert_result_is('if 1<2 then 5 else 4', 5)
+
+    def test_else_(self):
         assert_result_is('if(3<2) then 3 else 4', 4)
         assert_result_is('if 3<2 then 5 else 4', 4)
-        assert_result_is('if 1<2 then false else 4', 'false')
+
+    def test_if_x_false(self):
+        assert_result_is('if 1<2 then false else 4', False)
+        # assert_result_is('if 1<2 then false else 4', 'false')
 
     def dont_test_everything_is_fine(self):
         init('everything is fine;')
@@ -184,12 +189,12 @@ class ConditionTest(ParserBaseTest):
 
     def test_complicated(self):
         parse('x is 2; if all 0,2,4 are smaller 5 then increase x; assert x equals 3')
-        self.do_assert(self.result)
+        assert(self.result==True)
 
     def test_complicated2(self):
         parse('x is 2; if 0,2,4 are all smaller 5 then increase x; assert x equals 3')
-        self.do_assert(self.result)
+        assert(self.result==True)
 
     def test_complicated3(self):
         parse('x is 2; if 0,2,4 are smaller 5 then increase x; assert x equals 3')
-        self.do_assert(self.result)
+        assert(self.result==True)

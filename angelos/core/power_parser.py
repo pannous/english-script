@@ -539,6 +539,7 @@ def must_contain(*args):
         for x in flatten(args):
             if current_word==x:
                 set_token(old)
+                return x
         next_token()
     set_token(old)
     raise NotMatching("must_contain "+str(args))
@@ -945,6 +946,8 @@ def parse(s):
         init(s)
         import english_parser
         the.result=english_parser.rooty()
+        if the.result in ['True','true']: the.result=True
+        if the.result in ['False', 'false']: the.result=False
         last_result = the.result
     except IgnoreException as e:
         import traceback
@@ -1004,14 +1007,11 @@ def token_old(t):
 
 
 def flatten(l):
+    if isinstance(l,tuple):l=list(l)
     if isinstance(l,str):return [l]
     if isinstance(l,list) and len(l)>0 and not isinstance(l[0],list):
         return l
     if callable(l):l=l()
-    if isinstance(l,tuple):
-        l=list(l)
-    if not isinstance(l,list):
-        l=l()
     from itertools import chain
     return list(chain.from_iterable(l))
 
