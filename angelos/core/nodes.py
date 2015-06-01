@@ -112,10 +112,13 @@ class Variable:
 
   def __init__(self,**args):
     self.name    =args['name']
-    self.type    =args['type']
-    self.value   =args['value']
-    self.scope   =args['scope']
+    if 'value' in args: self.value   =args['value']
+    if 'type' in args:
+        self.type    =args['type']
+    else:
+        self.type=type(self.value)
 
+    if 'scope' in args: self.scope   =args['scope']
     if 'owner' in args: self.owner    =args['object']
     if 'object' in args: self.owner    =args['object']
     # self.class  =args[:module]
@@ -131,8 +134,11 @@ class Variable:
   def wrap(self):
     return self.name
 
-  # str(def)(self):
-  #    "Variable #{type} #{name}=#{value}"
+  def __str__(self):
+     return "<Variable %s %s=%s>"%(self.type,self.name,self.value) #"Variable #{type} #{name}=#{value}"
+
+  def __repr__(self):
+     return "<Variable %s %s=%s>"%(self.type,self.name,self.value) #"Variable #{type} #{name}=#{value}"
 
   def increase(self):
     self.value = self.value+1

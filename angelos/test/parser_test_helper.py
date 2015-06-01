@@ -9,14 +9,15 @@ global parser
 from nodes import *
 from extensions import *
 
-parser = english_parser.EnglishParser()
+parser = english_parser#.EnglishParser()
 
 ENV = {'APPLE': True}
 methods = {}
 functions = {}
-variables = {}
+# variables = {}
 variableValues = {}
 variableTypes = {}
+emit=False
 
 def contains(a,b):
     return a in b or b in a
@@ -98,9 +99,9 @@ def assert_equals(a, b, bla=None):
 def assert_equal(a, b, bla=None):
     assert a==b
 
-
-def do_assert(a, bla=None):
-    assert a
+#
+# def do_assert(a, bla=None):
+#     assert a
 
 class SkippingTest(Exception):
     pass
@@ -145,20 +146,27 @@ def name(x):
     return x
 
 
+def copy_variables():
+        variable_keys = variables.keys()
+        for name in variable_keys:
+            v_ = variables[name]
+            the.variableValues.update(variables)
+            the.variables[name]=Variable(name=name,value=v_)#,type=type(variables[v]))
+            variableValues.update(variables)
+            variables[name]=Variable(name=name,value=v_)#,type=type(variables[v]))
 
 
 class ParserBaseTest(unittest.TestCase):
 
     global p,_p,parser,_parser
-    parser=p= english_parser.EnglishParser()
-    _parser=_p= english_parser.EnglishParser
+    parser=p= english_parser#.EnglishParser()
+    _parser=_p= english_parser#.EnglishParser
     def get_parser(self):
         return p
     parser=property(get_parser,0)
 
     def setUp(self):
-        print(the.verbose)
-        the.verbose=True # False
+        the._verbose=True # False
         pass
         # p=Parser() # CANT BE ASSIGNED without double global
         # global p
@@ -233,31 +241,31 @@ class ParserBaseTest(unittest.TestCase):
             assert(a==b, ((a + ' should equal ') + b))
     # alias_method('original_assert', 'assert')
 
-    def do_assert(self, x,msg, block):
-        if x.equals(True):
+    def do_assert(self, x,msg=None, block=None):
+        copy_variables()
+
+        if x == True:
             return p(('\nTEST PASSED! ' + self.parser.original_string()))
         if callable(msg):
             msg = msg.call()
+        if not msg: msg=x
         if block:
             msg = (msg or self.parser.to_source(block))
         if x==False and block:
             x = block()
         if x==False:
             assert(x!=False, ((x + ' NOT PASSING: ') + msg))
-        if x.is_a(str):
-            try:
-                print(('Testing ' + x))
-                init(x)
-                if _global.emit:
-                    self.parser.dont_interpret()
-                ok = self.parser.condition()
-                if _global.emit:
-                    ok = parser.emit(None, ok),
-            except power_parser.IgnoreException as e:#  Exception as e:
-                p("ERROR "+e)
+        if isinstance(x,str):
+            print(('Testing ' + x))
+            init(x)
+            if emit:
+                self.parser.dont_interpret()
+            ok = self.parser.condition()
+            if emit:
+                ok = parser.emit(None, ok),
             if ok==False:
-                assert(ok!=False, ((x + ' NOT PASSING: ') + msg))
-        print self.parser.to_source(block)+ ' TEST PASSED!  ' + x + ' \t'
+                assert False, 'NOT PASSING: ' + msg
+        print 'TEST PASSED!  ' + msg + ' \t VALUE '+str(ok)
 
     # def NOmethod_missing(self, sym, args, block):
     #     syms = sym.to_s()
@@ -298,7 +306,7 @@ class ParserBaseTest(unittest.TestCase):
         parse(IO.read(file))
 
     def parse_tree(self, x):
-        if x.is_a(str):
+        if isinstance(x,str):
             return x
         self.parser.dont_interpret()
         interpretation = self.parser.parse(x)
@@ -315,7 +323,7 @@ class ParserBaseTest(unittest.TestCase):
     def parse(self, x):
         if interpret:
             self.parser.do_interpret()
-        if (x.is_a(str), ):
+        if (isinstance(x,str), ):
             return x
         if _global.emit:
             self.result = parse_tree(x)

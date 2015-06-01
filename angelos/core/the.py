@@ -2,8 +2,8 @@ global string, last_node, current_value, nodes, depth,rollback_depths,OK
 global verbose,use_wordnet,in_pipe,result,in_args
 global tokenstream,current_token,current_type,current_word,current_line
 
-verbose =  True # False angel.verbose() and not angel.raking()  # false
-very_verbose = verbose
+_verbose =  True # False angel.verbose() and not angel.raking()  # false
+very_verbose = _verbose
 
 use_tree=False
 use_wordnet=False

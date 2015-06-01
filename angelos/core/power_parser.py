@@ -237,7 +237,7 @@ def string_pointer_s():
 
 
 def string_pointer():
-    if(the.verbose):
+    if(the._verbose):
         print(string_pointer_s())
 
 
@@ -330,11 +330,11 @@ def caller():
     return calframe
 
 def verbose(info):
-    if the.verbose:
+    if the._verbose:
         print(info)
 
 def info(info):
-    if the.verbose:
+    if the._verbose:
         print(info)
 
 def error(info):
@@ -791,7 +791,9 @@ def maybe(block):
             raise Exception("returned CALLABLE "+str(result))
         if result:
             adjust_rollback()
+            verbose("GOT result from "+str(block)+" : "+str(result))
         else:
+            verbose("No result from "+str(block))
             invalidate_obsolete(old_nodes)
             set_token(old)
             # the.string = old

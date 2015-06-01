@@ -16,6 +16,7 @@ import traceback
 # from t_vars import x #needs no global !
 import unittest
 
+
 class Tokenizer(unittest.TestCase):
 
     def test_tokenize(self):
@@ -52,6 +53,8 @@ class Tokenizer(unittest.TestCase):
 # 1,15-1,16:          COLON          ':'
 
 
+class IgnoreException(Exception):
+    pass
 
 class PythonTest(unittest.TestCase):
 
@@ -65,7 +68,7 @@ class PythonTest(unittest.TestCase):
 
         try:
             self.do_raise()
-        except Exception  as e:
+        except IgnoreException  as e:
             raise e
 
     def test_exception_fallthrough(self):

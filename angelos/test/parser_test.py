@@ -209,13 +209,13 @@ class ParserTest(ParserBaseTest): #EnglishParser
         tree = algebra()
         assert(tree)
 
-    def do_assert(self,x, block):
-        if not x and block and callable(block):
-            x= block()
-        if not x :
-            raise ScriptError(to_source(block))
-        print(x)
-        print('!!OK!!')
+    # def do_assert(self,x, block):
+    #     if not x and block and callable(block):
+    #         x= block()
+    #     if not x :
+    #         raise ScriptError(to_source(block))
+    #     print(x)
+    #     print('!!OK!!')
 
     def test_args(self):
         s('eat an mp3')

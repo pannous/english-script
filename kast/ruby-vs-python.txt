@@ -1,6 +1,7 @@
 
 # ruby +++ better blocks + lambdas !!!
 # ruby ++ much more forgiving and convenient, i.e. z=map[x] vs if x in map: map[x]
+# ruby ++ nicer string templates "Variable #{type} #{name}=#{value}"
 # ruby + jruby better, class extensions
 # ruby + mirah: native 'ruby' on jvm
 # ruby + def 'properties'   def y; @y; end    def y=(z); @y=z; end , see (ugly) attr_reader ...

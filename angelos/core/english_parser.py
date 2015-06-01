@@ -25,6 +25,7 @@ from power_parser import *
 from english_tokens import *
 from angel import *
 from extensions import *
+import token as _token
 import the
 # from the import the.string
 from treenode import TreeNode
@@ -38,9 +39,6 @@ def _try(block):
 
 def _(x):
     return power_parser.token(x)
-
-def EnglishParser():
-    return
 
 class Nil(object):
     pass
@@ -97,6 +95,10 @@ def it():
 
 def value():
     global current_value
+    if the.current_type==_token.STRING:
+        return quote()
+    if the.current_type==_token.NUMBER:
+        return number()
     current_value = None
     no_keyword_except(constants + numbers + result_words + nill_words + ['+', '-'])
     x = maybe(quote) or \
@@ -304,6 +306,7 @@ def bracelet():
 
 @Starttokens(operators)
 def operator():
+    # if current_type==_token.OP ok
     return tokens(operators)
 
 
@@ -374,6 +377,7 @@ def special_blocks():
 def nth_item():  # Also redundant with property evaluation (But okay as a shortcut)):
     set = maybe_token('set')
     n = __(numbers + ['first', 'last', 'middle'])
+    raiseEnd()
     maybe_token('.')
     type = ___(['item', 'element', 'object', 'word', 'char', 'character']+ type_names)  # noun
     ___('in', 'of')
@@ -1548,11 +1552,8 @@ def selector():
         maybe(token('of') and endNode) or \
         preposition and nod  # friends in africa
     if angel.use_tree:
-        parent_node()
-    else:
-        current_value()
+        return parent_node()
     return x
-
 
 # preposition nod  # _try(ambivalent)  delete james, from china delete (james from china)
 
@@ -1596,7 +1597,7 @@ def comparation():
     # if Jens.smaller then ok:
     maybe_token('than')  #, 'then' #_22'then' ;) danger:
     subnode({'comparation':comp})
-    return comp
+    return comp or eq
 
 
 def either_or():
@@ -1689,11 +1690,11 @@ def check_condition(cond=None, negate=False):
         if negate: the.result = not the.result
         if not the.result:
             verbose("condition not met #{cond) #{lhs) #{comp) #{rhs)")
-
         return the.result
-    except Exception as e:
+    except IgnoreException as e:
         #debug x #soft message
         error(e)  #exit!
+
     return False
 
 
@@ -1808,7 +1809,9 @@ def the_noun_that():
     _try(_the)
     n = noun()
     if not n: raise_not_matching("no noun")
-    star(selector)
+    if the.current_word=="that":
+        star(selector) # todo: apply ;)
+        # raise_not_matching("only 'that' filter for now!")
     return n
 
 
@@ -1903,7 +1906,7 @@ def do_evaluate_property(x, y):
 def eval_string(x):
     if not x: return None
     if isinstance(x, extensions.File): return x.to_path
-    if isinstance(x, str): return x
+    # if isinstance(x, str): return x
     # and x.index(r'')   :. notodo :.  re.search(r'^\'.*[^\/]$',x): return x
     # if _try(x.is_a) Array: x=x.join(" ")
     if isinstance(x, list) and len(x) == 1: return x[0]
@@ -1921,7 +1924,7 @@ def do_evaluate(x, type=None):
         if isinstance(x, list) and len(x) != 1: return x
         if isinstance(x, Variable): return x.value or variableValues[x.name]
         if isinstance(x, str) and type and isinstance(type, extensions.Numeric): return float(x)
-        if x in variableValues: return variableValues[x]
+        if x in the.variableValues: return the.variableValues[x]
         if x == True or x == False: return x
         if isinstance(x, str) and type and isinstance(type, Fixnum): return float(x)
         if isinstance(x, TreeNode): return x.eval_node(variableValues)
@@ -2038,8 +2041,10 @@ def do_send(obj0, method, args0):
 def do_compare(a, comp, b):
     a = eval_string(a)  # NOT: "a=3; 'a' is 3" !!!!!!!!!!!!!!!!!!!!   Todo ooooooo!!
     b = eval_string(b)
-    if re.search(r'^\+?\-?\.?\d') and isinstance(b, extensions.Numeric): a = float(a,a)
-    if re.search(r'^\+?\-?\.?\d') and isinstance(a, extensions.Numeric): b = float(b,b)
+    if isinstance(b, float) and re.search(r'^\+?\-?\.?\d',str(a)) : a = float(a)
+    if isinstance(a, float) and re.search(r'^\+?\-?\.?\d',str(b))  : b = float(b)
+    if isinstance(b, int)   and re.search(r'^\+?\-?\.?\d',str(a))  : a = int(a)
+    if isinstance(a, int)   and re.search(r'^\+?\-?\.?\d',str(b))  : b = int(b)
     if isinstance(comp, str): comp = comp.strip()
     if comp == 'smaller' or comp == 'tinier' or comp == 'comes before' or comp == '<':
         return a < b
@@ -2047,6 +2052,10 @@ def do_compare(a, comp, b):
         return a > b
     elif comp == 'smaller or equal' or comp == '<=':
         return a <= b
+    elif comp == 'bigger or equal' or comp == '>=':
+        return a >= b
+    elif comp in be_words:
+        return a == b
     elif class_words.index(comp):
         return isinstance(a, b)
         # if b.isa(Class): return a.isa(b)

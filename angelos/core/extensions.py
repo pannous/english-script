@@ -304,7 +304,7 @@ class FalseClass:
         return self
 
 
-class str(str):
+class xstr(str):
 
     def to_i(self):
         return int(self)
@@ -564,7 +564,7 @@ class str(str):
 
 #class Fixnum Float
 # class Numeric:
-class int(int):
+class xint(int):
     def c(self):  #unwrap, for optimization):
         return str(self)  #"NUM2INT(#{self.to_s})"
 
@@ -666,7 +666,7 @@ class Integer(int):
     pass
 
 
-class float(float):
+class xfloat(float):
     def c(self):  #unwrap, for optimization):
         return str(self)  #"NUM2INT(#{self.to_s})"
 
@@ -826,7 +826,7 @@ def match_path(p):
 def is_file(p, must_exist=True):
     if(not isinstance(p,str)):return False
     if re.search(r'^\d*\.\d+',p): return False
-    if str(p).match(r'^\d*\.\d+'): return False
+    if re.match(r'^\d*\.\d+',str(p)): return False
     m = re.search(r'^(\/[\w\'\.]+)',p)
     m = m or re.search(r'^([\w\/\.]*\.\w+)',p)
     if not m: return False
