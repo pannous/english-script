@@ -351,11 +351,26 @@ def to_source(block):
 def filter_backtrace(e):
     return e
 
+def tokens(tokenz):
+    raiseEnd()
+    ok=maybe_tokens(tokenz)
+    if(ok): return ok
+    raise NotMatching(result)
+
 # so much cheaper!!! -> copy to ruby
 def maybe_tokens(tokens0):
     for t in flatten(tokens0):
-        if t==current_word:
+        if t==the.current_word:
             next_token()
+            return t
+        if " " in t:
+            for to in t.split(" "):
+                if to!=current_word:
+                    t=None
+                    break
+                else:
+                    next_token()
+            if not t: continue
             return t
     return False
 
@@ -990,6 +1005,8 @@ def token_old(t):
 
 def flatten(l):
     if isinstance(l,str):return [l]
+    if isinstance(l,list) and len(l)>0 and not isinstance(l[0],list):
+        return l
     if callable(l):l=l()
     if isinstance(l,tuple):
         l=list(l)
@@ -1000,16 +1017,10 @@ def flatten(l):
 
 
 def tokens(tokenz):
-    current_value=None
     raiseEnd()
-    for t in flatten(tokenz):
-        if t==current_word:
-            current_value=t
-            next_token()
-    if not current_value:
-        raise NotMatching(result)
-    else:
-        return current_value # or all
+    ok=maybe_tokens(tokenz)
+    if(ok): return ok
+    raise NotMatching(result)
 
 def tokens_old(*tokenz):
     global  throwing

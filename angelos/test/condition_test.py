@@ -8,10 +8,10 @@ class ConditionTest(ParserBaseTest):
 
     def test_eq(self):
         variables['counter'] = 3
-        self.do_assert('xcounter == 3')
+        self.do_assert('counter == 3')
 
     def test_eq1(self):
-        variables['counter'] = [3, ]
+        variables['counter'] = 3
         self.do_assert('counter == 3')
         self.do_assert('counter = 3')
         init('counter = 3')
@@ -20,6 +20,10 @@ class ConditionTest(ParserBaseTest):
         self.do_assert('counter =3')
         self.do_assert('counter is 3')
         self.do_assert('counter equals 3')
+
+
+    def test_eq2(self):
+        variables['counter'] = 3
         self.do_assert('counter is the same as 3')
 
     def test_return(self):

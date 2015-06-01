@@ -2534,14 +2534,17 @@ def true_variable():
 
 
 def noun(include=[]):
-    a = _try(_the)
-    if not a: should_not_start_with(system_verbs)
-    if not angel.use_wordnet: return word(include)
+    a = the_()
+    if not a: should_not_start_with(keywords)
+    if not angel.use_wordnet:
+        return word(include)
+    from nltk.corpus import wordnet as wn
     #if true_variable(): return True
     no_keyword_except(include)
     current_value = wordnet_is_noun()  # expensive!!!
+    return current_value
     #current_value=call_is_noun # expensive!!!
-    tokens(question_words)
+    # return tokens(question_words) ??????????????
 
     # is defined as
     #
