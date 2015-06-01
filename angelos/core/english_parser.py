@@ -167,9 +167,9 @@ def interpretation():
     # super  # set tree, nodes
     i.javascript = javascript
     i.context = context
-    i.methods = methods
+    i.methods = the.methods
     i.ruby_methods = builtin_methods
-    i.variables = variables
+    i.variables = the.variables
     i.svg = svg
     return i
 
@@ -442,11 +442,17 @@ def minusMinus():
     return the.result
 
 
+def must_contain_substring(param):
+    if not the.current_line.index(param):
+        raise_not_matching("must_contain_substring(%s)"%param)
+
+
 def plusPlus():
-    must_contain('++')
+    must_contain_substring('++')
+    pre=maybe_token('+') and token('+')
     v = variable_name()
-    _('++')
-    if not interpret: return angel.parent_node()
+    pre or _('+') and token('+')
+    # if not interpret: return angel.parent_node()
     the.result = do_evaluate(v, v.type) + 1
     variableValues[v.name] = v.value = the.result
     return the.result
@@ -472,9 +478,11 @@ def plusEqual():
     if mod == '-=': the.result = val - arg
     if mod == '*=': the.result = val * arg
     if mod == '**=': the.result = val ** arg
-    if mod == '/': the.result = val / arg
-    if mod == '/=': the.result = val % arg
-    if mod == '<<': the.result = val.append(arg)
+    if mod == '/=': the.result = val / arg
+    if mod == '%=': the.result = val % arg
+    if mod == '^=': the.result = val ^ arg
+    # if mod == '<<': the.result = val.append(arg)
+    if mod == '<<': the.result = val << (arg)
     if mod == '>>': the.result = val >> arg
     variableValues[v.name] = the.result
     v.value = the.result
@@ -564,8 +572,8 @@ def immediate_json_hash():  # a:{b) OR a{b():c)):
 def expressions(fallback=None):
     # raiseNewline ?
     start = pointer()
-    if current_word in token_map:
-        the.result = ex = token_map[current_word]()
+    if the.current_word in token_map:
+        the.result = ex = token_map[the.current_word]()
     else:
         the.result = ex = maybe(algebra) or \
                       maybe(json_hash) or \
@@ -596,6 +604,7 @@ def expressions(fallback=None):
     # if more.isa(Quote) except "": more+=_try(expression0)
     # if more: ex+=more
     # subnode (expression: ex)
+    if ex==ZERO: ex=0 # HERE ?
     the.result = ex
     return the.result
 
@@ -1069,9 +1078,9 @@ def action_or_block():  # expression_or_block ??):
     # the.string
     if not starts_with([':', 'do', '{']):
         a = maybe(action)
-    if a: return a
+        if a: return a
     # type=start_block && newline22
-    b = block
+    b = block()
     # end_block()
     return b
 
@@ -1116,6 +1125,7 @@ def call_function(f, args=None):
 def do_execute_block(b, args={}):
     global variableValues
     if not b: return False
+    if b==True: return True
     if isinstance(b, FunctionCall): return call_function(b)
     if callable(b): return call_function(b, args)
     if isinstance(b, TreeNode): b = b.content
@@ -1282,7 +1292,7 @@ def setter():
     # var.type=var.type or type or type(val) #eval'ed! also x is an integer
     assure_same_type(var, _type or type(val))
     if not var.name in variableValues or mod != 'default' and interpret:
-        variableValues[var.name] = val
+        the.variableValues[var.name] = val
 
     var.value = val
     var.final = mod in const
@@ -1348,10 +1358,10 @@ def variable_name(a=None):
         oldVal = the.variableValues[name]
     else:oldVal=None
     # {variable:{name:name,type:typ,scope:current_node,module:current_context))
-    if name in variables: return variables[name]
+    if name in the.variables: return the.variables[name]
     # the.result = Variable({name: name, type: typ, _scope: current_node(), module: current_context(), value: oldVal})
     the.result = Variable(name= name, type= typ, scope= current_node(), module= current_context(),value= oldVal)
-    variables[name] = the.result
+    the.variables[name] = the.result
     # if p: variables[p+' '+name]=the.result
     return the.result
 
@@ -2057,8 +2067,8 @@ def do_send(obj0, method, args0):
     # => selfModify todo
     if (obj0 or args) and self_modifying(method):
         name = str(obj0 or args)#.to_sym()  #
-        variables[name].value = the.result  #
-        variableValues[name] = the.result
+        the.variables[name].value = the.result  #
+        the.variableValues[name] = the.result
 
     # todo : None OK, error not!
     if the.result == NoMethodError: msg = "ERROR CALLING #{obj).#{method)(): #{args))"
@@ -2540,19 +2550,19 @@ def quote():
 
 
 def true_variable():
-    vars = variables.keys()
+    vars = the.variables.keys()
     if(len(vars)==0):raise NotMatching()
     v = tokens(vars)
-    v = variables[v]  #why _try(later)
+    v = the.variables[v]  #why _try(later)
     #if interpret #LATER!: variableValues[v]
     return v
-    #for v in variables.keys:
+    #for v in the.variables.keys:
     #  if the.string._try(start_with) v:
     #    var=token(v)
     #    return var
     #
     #
-    #tokens(variables_list # todo: remove (in endNodes, selectors,:.))
+    #tokens(the.variables_list # todo: remove (in endNodes, selectors,:.))
 
 
 def noun(include=[]):
@@ -2584,14 +2594,16 @@ def the_():
 
 def number_word():
     n=__(numbers)
-    return xstr(n).parse_integer()  #except NotMatching.new "no number"
+    return xstr(n).parse_number()  #except NotMatching.new "no number"
 
 
 def fraction():
     f = maybe(integer) or 0
     m = starts_with(["¼", "½", "¾", "⅓", "⅔", "⅕", "⅖", "⅗", "⅘", "⅙", "⅚", "⅛", "⅜", "⅝", "⅞"])
     if not m:
-        if f!=0:return f
+        # if f==ZERO: return 0 NOT YET!
+        if f!=0:
+            return f
         raise NotMatching()
     else:
         next_token()
@@ -2601,7 +2613,7 @@ def fraction():
 
 
 def number():
-   return _try(real) or _try(fraction) or _try(integer) or _try(number_word)
+    return _try(real) or _try(fraction) or _try(integer) or _try(number_word) or raise_not_matching("number")
 
 # _try(complex)  or
 
@@ -2610,7 +2622,8 @@ def integer():
     if match:
         current_value = int(match.groups()[0])
         next_token()
-        if current_value == 0 : current_value = ZERO
+        if current_value == 0 :
+            current_value = ZERO
         return current_value
     raise NotMatching("no integer")
     #plus{tokens('1','2','3','4','5','6','7','8','9','0'))
@@ -2722,7 +2735,7 @@ def while_loop():
     no_rollback()
     ___('repeat') # keep gerunding
     ___('then')
-    b=action_or_block #Danger when interpreting it might contain conditions and breaks
+    b=action_or_block() #Danger when interpreting it might contain conditions and breaks
     r=False
     try:
         if interpreting():
@@ -2740,7 +2753,7 @@ def until_loop():
     no_rollback() #no_rollback 13 # arbitrary value ! :{
     c=condition()
     ___('repeat')
-    b=action_or_block #Danger when interpreting it might contain conditions and breaks
+    b=action_or_block() #Danger when interpreting it might contain conditions and breaks
     r=False
     if interpreting():
         while(not check_condition(c)):

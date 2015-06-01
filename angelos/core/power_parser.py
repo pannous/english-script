@@ -446,6 +446,9 @@ def init(strings):
     nodes = []
     depth = 0
     lhs = rhs = comp = None
+    for nr in english_tokens.numbers:
+        english_parser.token_map[nr]= english_parser.number
+
     # result           =None NOO, keep old!
 
 
@@ -766,7 +769,6 @@ def block():  # type):
     global last_result,original_string
     from english_parser import start_block,statement,end_of_statement,end_block
     start_block()  # NEWLINE ALONE == START!!!?!?!
-    original_string = the.string  # _try(REALLY)?
     start = pointer()
     statements=[statement()]
     # content = pointer() - start

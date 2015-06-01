@@ -100,6 +100,9 @@ class ConditionTest(ParserBaseTest):
         assert_result_is('x=2;if x is smaller 3 and x is bigger 1 then 4 else 5', 4)
 
     def test_and3(self):
+        assert_result_is('if 1 is smaller 3 and 1 is bigger 3 then 4 else 5', 5)
+
+    def test_and4(self):
         assert_result_is('x=2;if x is smaller 3 and x is bigger 3 then 4 else 5', 5)
         assert_result_is('x=2;if x is smaller 3 and x is bigger 3 then 4 else 5', 5)
 

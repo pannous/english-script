@@ -168,4 +168,7 @@ class FunctionTest(ParserBaseTest):
 
     def test_incr(self):
         assert ('increase 1 == 2')
-        assert ('increase 1 == 2')
+        assert ('increase 1 by 1 == 2')
+        assert ('x=1; x+1 == 2')
+        assert ('x=1; ++x == 2')
+        # assert ('1++ == 2')
