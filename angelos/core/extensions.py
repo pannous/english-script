@@ -29,8 +29,9 @@ def say(x):
 
 def beep():
     print("\aBEEP ")
-    exec ("say 'beep'")
-    'beeped'
+    import os
+    os.system("say 'beep'")
+    return 'beeped'
 
 
 class Class:
@@ -176,9 +177,11 @@ class Class:
 
 
 # WOW YAY WORKS!!!!!
-class list(list):
+# NO, ONLY VIA EXPLICIT CONSTRUCTOR!
+# NO!! isinstance(my_xlist,list) FALSE !!
+class xlist(list):
     def __sub__(self, other):
-        clone=list(self)
+        clone=xlist(self)
         for o in other:
             if o in clone:
                 clone.remove(o)

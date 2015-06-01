@@ -162,7 +162,7 @@ def copy_variables():
 class ParserBaseTest(unittest.TestCase):
 
     global p,_p,parser,_parser
-    parser=p= english_parser#.EnglishParser()
+    parser=p= english_parser#.EnglishParser() # Module, lol hack
     _parser=_p= english_parser#.EnglishParser
     def get_parser(self):
         return p
@@ -170,6 +170,7 @@ class ParserBaseTest(unittest.TestCase):
 
     def setUp(self):
         the._verbose=True # False
+        self.parser.do_interpret()
         pass
         # p=Parser() # CANT BE ASSIGNED without double global
         # global p

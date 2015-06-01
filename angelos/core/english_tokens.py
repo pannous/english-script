@@ -131,10 +131,9 @@ be_words=['is an', 'is a', 'is', 'be', 'was', 'are', 'will be', 'were', 'have be
   # nicer, sweeter, ....
   #  '=>' '<=', DANGER
   # OR class_words
-comparison_words=['be', 'is', 'are', 'were',  '>=', '==', '<=',  '=<','=', '>', '<','gt', 'lt', 'eq',\
+comparison_words=['be', 'is','element of','subset of','in', 'are', 'were',  '>=', '==', '<=',  '=<','=', '>', '<','gt', 'lt', 'eq',\
     'identical to', 'smaller or equal','greater or equal', 'equal to', 'bigger', 'greater', 'equals','smaller', 'less','more',  'the same as',\
-    'same as',\
-    'similar', 'comes after',\
+    'same as', 'similar', 'comes after',\
     'comes before', 'exact', 'exactly', '~>', 'at least', 'at most']
 
 once_words=['on the occasion that', 'whenever', 'wherever', "as soon as", "once"]
@@ -188,6 +187,11 @@ keywords=prepositions+modifiers+be_words+comparison_words+fillers+nill_words+don
 
 TRUE="True"
 FALSE="False"
+NILL="None"
+# Nil="None"
+# Nill="None"
+ZERO='0'
+
 flow_keywords=['next', 'continue', 'break', 'stop']
 request_keywords=['what is', 'evaluate', 'how much', 'what are', 'calculate', 'eval']
 nonzero_keywords=['nonzero', 'not null', 'defined', 'existing', 'existant','existent', 'available']

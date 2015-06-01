@@ -1,3 +1,5 @@
+import extensions
+
 global string, last_node, current_value, nodes, depth,rollback_depths,OK
 global verbose,use_wordnet,in_pipe,result,last_result
 global tokenstream,current_token,current_type,current_word,current_line,in_args
@@ -8,17 +10,21 @@ very_verbose = _verbose
 use_tree=False
 use_wordnet=False
 in_pipe=False
-OK="OK"
 interpret=False
-
-interpret = True
-did_interpret = True
+did_interpret = False
+in_args = False
 javascript = ''
 context = ''
 variables = {}
 variableTypes = {}
 variableValues = {}  # ={nill: None)
-svg = []
+
+methods = {'beep': extensions.beep}  # name->method-node
+c_methods = ['printf']
+builtin_methods = ['puts', 'print']  # "puts"=>x_puts !!!
+core_methods = ['show', 'now', 'yesterday', 'help']  # _try(difference)
+# bash_methods=["say"]
+
 
 string=""
 tokenstream=[] # tuple:
@@ -34,11 +40,7 @@ string = ""
 line_number = 0
 last_pattern = None
 
-# bash_methods=["say"]
-c_methods = ['printf']
-builtin_methods = ['puts', 'print']  # "puts"=>x_puts !!!
-core_methods = ['show', 'now', 'yesterday', 'help']  # _try(difference)
-methods = {}  # name->method-node
+
 OK = 'OK'
 # result = ''
 result=None
@@ -62,4 +64,6 @@ context=None
 throwing=False
 def is_number(s):            #isint isnum
   return isinstance(s,int) or isinstance(s,float) or isinstance(s,str) and s.isdigit() # is number isnumeric
+debug=False # True
 
+svg = []

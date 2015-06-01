@@ -4,7 +4,6 @@
 global inside_list
 inside_list=False
 token_map={} # directly map tokens to their functions
-
 # import time
 # import traceback
 # import sys
@@ -40,11 +39,11 @@ def _try(block):
 def _(x):
     return power_parser.token(x)
 
-class Nil(object):
-    pass
-
-class Nill(Nil):
-    pass
+# class Nil(object):
+#     pass
+#
+# class Nill(Nil):
+#     pass
 
 def nill():
     return __(nill_words)
@@ -576,7 +575,8 @@ def expressions(fallback=None):
     check_comment()
     # or ['one'].has(fallback) ? 1 : false # WTF todo better quantifier one beer vs one==1
     # expression)
-    if not interpreting() and not angel.use_tree: return pointer() - start
+    if not interpreting() and not angel.use_tree:
+        return ( start , pointer())
     if ex and interpreting():
         the.last_result = the.result = do_evaluate(ex)
         # TODO PYTHON except SyntaxError:
@@ -744,6 +744,7 @@ def if_then():
     if c == None: raise InternalError("no condition_tree")
     # c=condition
     maybe_token('then')
+    maybe_token(':')
     dont_interpret()  # if not c  else: dont do_execute_block twice!:
     b = expression_or_block()  # action_or_block()
     # o=_try(otherwise)
@@ -865,20 +866,15 @@ def has_object(m):
 
 
 def has_args(method, clazz=object, assume=False):
-    #todo MATCH!   [[:req, :x]] -> required: x
-    if callable(method): return method.arity > 0
-    if not isinstance(clazz, type):  #lol:
-        clazz = type(clazz)
-    object_method=None
-    if method in dir(clazz): object_method = getattr(clazz, method)
-    # if not object_method: object_method = clazz.public_instance_method(method)
-    if object_method:  #that might be another method Tree.beep!
-        # puts "has_args method.parameters : #{object_method) #{object_method.parameters)"
-        return object_method.arity > 0
-
     if method in ['invert', '++', '--']:  # increase by 8:
         return False
-    return assume  #false # True
+    if not callable(method):
+        if not isinstance(clazz, type):  #lol:
+            clazz = type(clazz)
+        if method in dir(clazz):
+            method = getattr(clazz, method)
+    args, varargs, varkw, defaults=inspect.getargspec(method)
+    return len(args)+len(defaults)+len(varkw)> 0 or assume
 
 
 def c_method():
@@ -899,7 +895,7 @@ def true_method():
     no_keyword()
     should_not_start_with(auxiliary_verbs)
     # _try(lambda:tokens(methods.keys+"ed")) sorted files -> sort files ?
-    v = _try(c_method) or _try(verb) or _try(methods.keys) or _try(builtin_methods) or _try(core_methods) or _try(builtin_method)
+    v = _try(c_method) or _try(verb) or maybe_tokens(methods.keys) or maybe_tokens(builtin_methods) or maybe_tokens(core_methods) or _try(builtin_method)
     if not v: raise NotMatching('no method found')
     return v  #.to_s
 
@@ -929,7 +925,6 @@ def method_call(obj=None):
 
 
 def generic_method_call(obj=None):
-    global in_args
     #verb_node
     method =true_method()
     start_brace = ___('(', '{')  # '[', list and closure danger: index)
@@ -939,15 +934,15 @@ def generic_method_call(obj=None):
         obj = obj or object
     else:
         maybe_token('of')
-        if angel.in_args(): obj = maybe(_try(nod))
-        if not angel.in_args(): obj = _try(nod) or _try(liste)
+        if angel.in_args: obj = maybe(_try(nod))
+        if not angel.in_args: obj = _try(nod) or _try(liste)
         # print(sorted files)
         # if not in_args: obj=maybe( _try(nod)  or  _try(list)  or  expression )
 
     assume_args = True  # not starts_with("of")  # True    #<< Redundant with property eventilation!
     if has_args(method, obj, assume_args):
         current_value = None
-        in_args = True
+        angel.in_args = True
         args = star(arg)
         if not args: args = obj
         # ___( ',','and')
@@ -955,7 +950,7 @@ def generic_method_call(obj=None):
         more = maybe_token(',')
         if more: obj = [obj] + liste(False)
 
-    in_args = False
+    angel.in_args = False
     if start_brace == '(': _(')')
     if start_brace == '[': _(']')
     if start_brace == '{': _(')')
@@ -1819,9 +1814,13 @@ def the_noun_that():
             n=filter(n,criterium)
         else: n=resolve_netbase(n)
     else:
-        if n in the.variables.keys():
+        if n in the.variables:
             return the.variables[n]
-        raise Exception("Unknown constant "+n)
+        if n in the.methods:
+            return the.methods[n]
+        if n in the.classes:
+            return the.classes[n]
+        raise Exception("Undefined: "+n)
         raise_not_matching("only 'that' filtered nouns for now!")
     return n
 
@@ -1934,6 +1933,10 @@ def do_evaluate(x, type=None):
         if isinstance(x, list) and len(x) == 1: return do_evaluate(x[0])
         if isinstance(x, list) and len(x) != 1: return x
         if isinstance(x, Variable): return x.value or the.variableValues[x.name]
+        if x==ZERO: return 0
+        if x==TRUE: return True
+        if x==FALSE: return FALSE
+        if x==NILL: return None
         if isinstance(x, str) and type and isinstance(type, extensions.Numeric): return float(x)
         if x in the.variableValues: return the.variableValues[x]
         if x == True or x == False: return x
@@ -1993,45 +1996,49 @@ def do_send(obj0, method, args0):
     if not method: return False
 
     # try direct first!
-    # if _try(y.is_a) Array and len(y)==1: y=y[0]
+    if isinstance(method,list) and len(method)==1: method=method[0]
     if method in methods:
+        # if callable(method):method(args)
+        method=methods[method]
+
+
+    if isinstance(method,Function):
         the.result = do_execute_block(methods[method].body, args0)
         return the.result
+    # if callable(method): obj = method.owner no such concept in Python !! only as self parameter
 
-    if callable(method): obj = method.owner
-    obj = resolve(obj0)
-    # obj.map{|x| x.value)
     args = args0
+
+
+    # obj.map{|x| x.value)
     if isinstance(args, Argument): args = args.name_or_value
     # if isinstance(args, list) and isinstance(args[0], Argument): args = args.map(name_or_value)
     args = eval_string(args)  # except NoMethodError
-    if args and isinstance(args, str): args = args.replace_numerals
+    if args and isinstance(args, str): args = xstr(args).replace_numerals()
+
+    if (args and isinstance(args,list) and len(args)>0 and args[0] == 'of'): return evaluate_property(args[1],obj0)
+    if (method == 'of'): return evaluate_property(args,obj0)
     # if args and _try(obj.respond_to) + " " etc!: args=args.strip()
 
-    if callable(method) and method.owner:
-        the.result = method.call(*args)
-        return the.result
-
-    method_name = callable(method) and str(method.name) or str(method)  #todo bettter
+    method_name = callable(method) and str(method) # what for??
     # if obj.respond_to(method_name):
     # elif  obj._try(respond_to) method_name+'s':
-
+    # if callable(method) and obj: # method.owner:
+    #     the.result = method.call(obj,*args)
+    #     return the.result
+    #
+    obj = resolve(obj0)
     the.result = NoMethodError
     if not obj:
-        obj = args0
-        the.result = Object.send(method, args)  #except NoMethodError
+        if not args: return method()
+        if args: return  method(args)
         the.result = args.send(method)  #except NoMethodError #("#{obj).#{op)")
         if (args[0] == 'of' and has_args(method, obj)): the.result = args[1].send(method)  #except NoMethodError #rest of x
     else:
-        if (obj == Object):
-            m = method(method_name)
-            if not has_args(method, obj, False): the.result = m or Nil
-            elif has_args(method, obj, True): the.result = m(args) or Nil
-        else:
-            if is_math(method_name): the.result = do_math(obj,method_name,args)
-            elif not has_args(method, obj, False): the.result = method(obj)
-            elif has_args(method, obj, True): the.result =  method(obj, args) #obj='self'
-
+        if is_math(method_name): the.result = do_math(obj,method_name,args)
+        # if not callable(method): method=method(method_name)
+        if not has_args(method, obj, False): the.result = method(obj) or NILL
+        elif has_args(method, obj, True): the.result = method(obj,args) or NILL
 
     #todo: call FUNCTIONS!
     # puts object_method.parameters #todo MATCH!
@@ -2419,7 +2426,7 @@ def adverb():
 
 def verb():
     no_keyword_except(remove_from_list(system_verbs ,be_words))
-    found_verb = ___(list(other_verbs + system_verbs) - be_words - ['do'])  #verbs,
+    found_verb = ___(xlist(other_verbs + system_verbs) - be_words - ['do'])  #verbs,
     if not found_verb: raise_not_matching("no verb")
     if not angel.use_wordnet: return found_verb
     current_value = found_verb or wordnet_is_verb()  # call_is_verb
@@ -2570,7 +2577,7 @@ def fraction():
     m = starts_with(["¼", "½", "¾", "⅓", "⅔", "⅕", "⅖", "⅗", "⅘", "⅙", "⅚", "⅛", "⅜", "⅝", "⅞"])
     if not m:
         if f!=0:return f
-        raise NotMatching
+        raise NotMatching()
     else:
         next_token()
         m = m.parse_number()
@@ -2588,6 +2595,7 @@ def integer():
     if match:
         current_value = int(match.groups()[0])
         next_token()
+        if current_value == 0 : current_value = ZERO
         return current_value
     raise NotMatching("no integer")
     #plus{tokens('1','2','3','4','5','6','7','8','9','0'))

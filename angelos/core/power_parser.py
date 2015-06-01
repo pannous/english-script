@@ -623,13 +623,13 @@ def do_interpret():
 def dont_interpret():
     if angel.interpret_border < 0:
         angel.interpret_border = caller_depth
-        did_interpret = angel.interpret
+        angel.did_interpret = angel.interpret
     angel.interpret = False
 
 
 def interpreting(n=0):
     if (angel.interpret_border >= caller_depth() - n):
-        angel.interpret = did_interpret
+        angel.interpret = angel.did_interpret
         angel.interpret_border = -1
     return angel.interpret
 
@@ -803,9 +803,9 @@ def maybe(block):
     try:
         old_nodes = list(nodes)#.clone()
         result = block() #yield <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        if(callable(result)):
+        if angel.debug and (callable(result)):
             raise Exception("returned CALLABLE "+str(result))
-        if result:
+        if result or result==0:
             adjust_rollback()
             verbose("GOT result from "+str(block)+" : "+str(result))
         else:

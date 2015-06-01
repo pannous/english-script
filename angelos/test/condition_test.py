@@ -42,6 +42,7 @@ class ConditionTest(ParserBaseTest):
         assert_result_is('if 1<2 then true else 4', True)
         assert_result_is('if 1<2 then "True" else 4', True)
 
+
     def test_else_(self):
         assert_result_is('if(3<2) then 3 else 4', 4)
         assert_result_is('if 3<2 then 5 else 4', 4)
