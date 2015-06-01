@@ -785,6 +785,8 @@ def block():  # type):
 
     the.last_result = the.result
     if interpreting(): return statements[-1]
+    if angel.debug:
+        print_pointer(True)
     return statements #content
     # if angel.use_tree:
     # p=parent_node()
@@ -950,12 +952,15 @@ def parse(s):
         if the.result in ['True','true']: the.result=True
         if the.result in ['False', 'false']: the.result=False
         the.last_result = the.result
+    # except NotMatching as e:
+    #     import traceback
+    #     traceback.print_stack() # backtrace
+    #     the.last_result = the.result = None
+    #     e=filter_backtrace(e)
+    #     error(e)
+    #     print_pointer(True)
     except IgnoreException as e:
-        import traceback
-        traceback.print_stack() # backtrace
-        the.last_result = the.result = None
-        e=filter_backtrace(e)
-        error(e)
+        pass
 
     verbose("PARSED SUCCESSFULLY!!")
     # show_tree()
@@ -981,7 +986,7 @@ def token(t): #_new
     else:
         if throwing: verbose('expected ' + str(result))  #
         print_pointer()
-        raise NotMatching(t)
+        raise NotMatching(t+"\n"+pointer_string())
 
 
 def token_old(t):

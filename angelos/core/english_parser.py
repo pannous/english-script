@@ -183,19 +183,19 @@ def interpretation():
 
 
 def end_expression():
-    return checkEndOfLine() or ___((newline_tokens) or newline)
+    return checkEndOfLine() or token(';')
 
 def raiseSyntaxError():
     raise SyntaxError("incomprehensible input")
 
 def rooty():
-    r=maybe(block) or \
-      maybe(statement) or \
-      maybe(expressions) or\
-      raiseSyntaxError()# raise_not_matching("")
+    maybe(block) or \
+     maybe(statement) or \
+       raiseSyntaxError()# raise_not_matching("")
+      # maybe(expressions) and end_expression() or\
       # maybe(condition) or \
       # maybe(context) or \
-    return r
+    return the.result
     # # maybe( ruby_def )or\ # SHOULD BE just as method_definition !!:
 
 
@@ -454,7 +454,7 @@ def plusPlus():
     pre or _('+') and token('+')
     # if not interpret: return angel.parent_node()
     the.result = do_evaluate(v, v.type) + 1
-    variableValues[v.name] = v.value = the.result
+    the.variableValues[v.name] = v.value = the.result
     return the.result
 
 
@@ -1305,7 +1305,7 @@ def setter():
 
     subnode({'var':var})
     subnode({'val':val})
-    if interpreting(): return val
+    if interpreting() and val!=0: return val
     return var
     # if angel.use_tree: return parent_node()
     # if not interpret: return old-the.string
