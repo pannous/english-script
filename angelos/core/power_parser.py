@@ -773,13 +773,12 @@ def block():  # type):
         def lamb():
             statements.append(statement())
             # content = pointer() - start
-            end_of_statement
-
+            return end_of_statement()
         star(lamb)
         # _try(end_of_statement)
-        end_of_block = end_block()
+        end_block()
 
-    last_result = the.result
+    the.last_result = the.result
     if interpreting(): return statements[-1]
     return statements #content
     # if angel.use_tree:
@@ -948,11 +947,11 @@ def parse(s):
         the.result=english_parser.rooty()
         if the.result in ['True','true']: the.result=True
         if the.result in ['False', 'false']: the.result=False
-        last_result = the.result
+        the.last_result = the.result
     except IgnoreException as e:
         import traceback
         traceback.print_stack() # backtrace
-        last_result = result = None
+        the.last_result = the.result = None
         e=filter_backtrace(e)
         error(e)
 

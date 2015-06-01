@@ -114,7 +114,7 @@ def assert_has_error(x):
     try:
         x()
     except:
-        p("OK, error")
+        print("OK, error")
 
 
 def assert_has_no_error(x):
@@ -126,7 +126,9 @@ def sleep(s):
 
 
 def parse(s):
-    return english_parser.parse(s).result
+    r= english_parser.parse(s).result
+    variables.update(the.variables)
+    return r
 
 
 def init(str):

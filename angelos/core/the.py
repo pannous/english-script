@@ -1,6 +1,6 @@
 global string, last_node, current_value, nodes, depth,rollback_depths,OK
-global verbose,use_wordnet,in_pipe,result,in_args
-global tokenstream,current_token,current_type,current_word,current_line
+global verbose,use_wordnet,in_pipe,result,last_result
+global tokenstream,current_token,current_type,current_word,current_line,in_args
 
 _verbose =  True # False angel.verbose() and not angel.raking()  # false
 very_verbose = _verbose
@@ -40,7 +40,9 @@ builtin_methods = ['puts', 'print']  # "puts"=>x_puts !!!
 core_methods = ['show', 'now', 'yesterday', 'help']  # _try(difference)
 methods = {}  # name->method-node
 OK = 'OK'
-result = ''
+# result = ''
+result=None
+last_result=None
 listeners = []
 nodes = []
 
@@ -58,7 +60,6 @@ current_value=None
 parser=globals()
 context=None
 throwing=False
-result=None
 def is_number(s):            #isint isnum
   return isinstance(s,int) or isinstance(s,float) or isinstance(s,str) and s.isdigit() # is number isnumeric
 

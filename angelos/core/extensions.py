@@ -550,11 +550,11 @@ class xstr(str):
         x = x.replace("thousand ", "*1000")
         x = x.replace("million ", "*1000000")
         x = x.replace("billion ", "*1000000000")
-        return self
+        return x
 
     def parse_integer(self):
-        self = self.replace_numerals
-        i = int(self)  # except 666
+        n = self.replace_numerals()
+        i = int(n)  # except 666
         # i = int(eval(str(self)))  # except 666
         return i
 

@@ -147,8 +147,7 @@ nill_words=['naught', 'nought', 'aught', 'oh', 'None', 'nill', 'nul', 'nothing',
     'zilch', 'nada', 'nuttin', 'nutting', 'zip', 'nix', 'cypher', 'cipher', 'leer', 'empty', 'nirvana', 'void'] #'love',
 
 done_words=['}', 'done', 'ende', 'end', 'okay', 'ok', 'OK', 'O.K.', 'alright', 'alrighty', 'that\'s it', 'thats it', "I'm done", "i'm done",\
-    'fine', 'fi',\
-    'fini', 'all set', 'finished', 'finish', 'fin', 'the end', 'over and out', 'over', 'q.e.d.', 'qed', "<end>"] # NL+ # NL verbium?]
+    'fine', 'fi', 'fini', 'all set', 'finished', 'finish', 'fin', 'the end', 'over and out', 'over', 'q.e.d.', 'qed', "<end>"] # NL+ # NL verbium?]
 
 false_words=['false', 'FALSE', 'False', 'falsch', 'wrong', 'no', 'nein'] #'negative',
 

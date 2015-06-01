@@ -87,7 +87,7 @@ def constant():
 
 def it():
     __(result_words)
-    return angel.last_result
+    return the.last_result
 
 
 def value():
@@ -190,16 +190,12 @@ def raiseSyntaxError():
     raise SyntaxError("incomprehensible input")
 
 def rooty():
-    r=  maybe(statement) or \
-        maybe(expressions) or\
-      maybe(requirements) or \
-      maybe(method_definition) or \
-      maybe(assert_that) or \
-      maybe(block) or \
-      maybe(expressions) or \
-      maybe(condition) or \
-      maybe(context) or \
+    r=maybe(block) or \
+      maybe(expressions) or\
+      maybe(statement) or \
       raiseSyntaxError()# raise_not_matching("")
+      # maybe(condition) or \
+      # maybe(context) or \
     return r
     # # maybe( ruby_def )or\ # SHOULD BE just as method_definition !!:
 
@@ -582,7 +578,7 @@ def expressions(fallback=None):
     # expression)
     if not interpreting() and not angel.use_tree: return pointer() - start
     if ex and interpreting():
-        last_result = the.result = do_evaluate(ex)
+        the.last_result = the.result = do_evaluate(ex)
         # TODO PYTHON except SyntaxError:
     if not the.result or the.result == SyntaxError and not ex == SyntaxError:
         pass
@@ -629,13 +625,17 @@ def statement():
         maybe(declaration) or \
         maybe(setter) or \
         maybe(returns) or \
+        maybe(requirements) or \
+        maybe(method_definition) or \
+        maybe(assert_that) or \
         maybe(breaks) or \
         maybe(constructor) or \
         maybe(action) or \
         maybe(expressions) or \
         raise_not_matching("Not a statement")
          # AS RETURN VALUE! DANGER!
-    if x: the.result = x
+    if x:
+        the.result = x
     check_comment()
     return the.result
 
@@ -718,9 +718,10 @@ def if_then_else():
     #     ok = FALSE
     o = _try(otherwise) or FALSE
     if ok != "OK" and ok !=False: #and ok !=FALSE:
-        return ok
+        the.result=ok
     else:
-        return o
+        the.result=o
+    return the.result
 
 
 def action_if():
@@ -1083,15 +1084,15 @@ def expression_or_block():  # action_or_block):
 
 
 def end_block(type=None):
-    done(type)
+    return done(type)
 
 
-def done(type=None):
-    if type and _try(lambda: close_tag(type)): return OK
+def done(_type=None):
+    if _type and _try(lambda: close_tag(_type)): return OK
     if checkEndOfLine(): return OK
     checkNewline()
     ok = tokens(done_words)
-    if type: token(type)
+    if _type: token(_type)
     ignore_rest_of_line()
     return ok
 
@@ -1125,7 +1126,7 @@ def do_execute_block(b, args={}):
     for arg, val in args.iteritems():
         if arg in block_parser.variables:
             v = block_parser.variables[arg]
-            v = v.clone
+            # v = v.clone
             v.value = val
             block_parser.variables[str(arg)] = v  # to_sym todo NORM in hash!!!
         else:
@@ -1286,7 +1287,8 @@ def setter():
     var.final = mod in const
     var.modifier = mod
     if isinstance(var, Property): var.owner.send(var.name + "=", val)  #todo
-    the.result = val
+    # the.result = var
+    # the.result = val
     # end_expression via statement!
     # if interpret: return var
 
@@ -1931,11 +1933,12 @@ def do_evaluate(x, type=None):
     try:
         if isinstance(x, list) and len(x) == 1: return do_evaluate(x[0])
         if isinstance(x, list) and len(x) != 1: return x
-        if isinstance(x, Variable): return x.value or variableValues[x.name]
+        if isinstance(x, Variable): return x.value or the.variableValues[x.name]
         if isinstance(x, str) and type and isinstance(type, extensions.Numeric): return float(x)
         if x in the.variableValues: return the.variableValues[x]
         if x == True or x == False: return x
-        if isinstance(x, str) and type and isinstance(type, Fixnum): return float(x)
+        if isinstance(x, str) and type and type==float: return float(x)
+        # if isinstance(x, str) and type and is_a(type,float): return float(x)
         if isinstance(x, TreeNode): return x.eval_node(variableValues)
         if isinstance(x, str) and match_path(x): return resolve(x)
         # :. todo METHOD / Function!
@@ -2038,7 +2041,6 @@ def do_send(obj0, method, args0):
         name = str(obj0 or args)#.to_sym()  #
         variables[name].value = the.result  #
         variableValues[name] = the.result
-    end
 
     # todo : None OK, error not!
     if the.result == NoMethodError: msg = "ERROR CALLING #{obj).#{method)(): #{args))"
