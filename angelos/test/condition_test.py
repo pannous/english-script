@@ -8,7 +8,7 @@ class ConditionTest(ParserBaseTest):
 
     def test_eq(self):
         variables['counter'] = 3
-        self.do_assert('counter == 3')
+        self.do_assert('xcounter == 3')
 
     def test_eq1(self):
         variables['counter'] = [3, ]

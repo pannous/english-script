@@ -147,13 +147,14 @@ def name(x):
 
 
 def copy_variables():
-        variable_keys = variables.keys()
-        for name in variable_keys:
-            v_ = variables[name]
-            the.variableValues.update(variables)
-            the.variables[name]=Variable(name=name,value=v_)#,type=type(variables[v]))
-            variableValues.update(variables)
-            variables[name]=Variable(name=name,value=v_)#,type=type(variables[v]))
+    global variableValues
+    variable_keys = variables.keys()
+    for name in variable_keys:
+        v_ = variables[name]
+        the.variableValues.update(variables)
+        the.variables[name]=Variable(name=name,value=v_)#,type=type(variables[v]))
+        variableValues.update(variables)
+        variables[name]=Variable(name=name,value=v_)#,type=type(variables[v]))
 
 
 class ParserBaseTest(unittest.TestCase):

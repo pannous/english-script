@@ -405,7 +405,7 @@ def functionalselector():
     _('{')
     xs = true_variable()
     crit = selector()
-    _(')')
+    _('}')
     return filter(xs, crit)
 
 @Starttokens(['[','(','{'])
@@ -437,7 +437,7 @@ def liste(check=True):
 
 def minusMinus():
     must_contain('--')
-    v = variable()
+    v = variable_name()
     _('--')
     if interpret: the.result = do_evaluate(v, v.type) + 1
     # else:the.result=UnaryOp('--',v)
@@ -447,7 +447,7 @@ def minusMinus():
 
 def plusPlus():
     must_contain('++')
-    v = variable()
+    v = variable_name()
     _('++')
     if not interpret: return angel.parent_node()
     the.result = do_evaluate(v, v.type) + 1
@@ -461,7 +461,7 @@ def selfModify():
 @Starttokens(self_modifying_operators)
 def plusEqual():
     must_contain(self_modifying_operators)
-    v = variable()
+    v = variable_name()
     mod = ___(self_modifying_operators)
     val = v.value
     exp = expressions()  # value
@@ -579,7 +579,7 @@ def expressions(fallback=None):
                       maybe(evaluate_property) or \
                       maybe(selfModify) or \
                       maybe(endNode) or \
-                      raise_not_matching("Not an expression")
+                      print_pointer(True) and raise_not_matching("Not an expression")
     check_comment()
     # or ['one'].has(fallback) ? 1 : false # WTF todo better quantifier one beer vs one==1
     # expression)
@@ -1176,7 +1176,7 @@ def for_i_in_collection():
     maybe_token('repeat')
     ___('for', 'with')
     maybe_token('all')
-    v = variable()  # selector() !
+    v = variable_name()  # selector() !
     ___('in', 'from')
     c = collection()
     b = action_or_block()
@@ -1251,7 +1251,7 @@ def declaration():
     type = typeNameMapped
     ___('var', 'val', 'value of')
     mod = mod or _try(modifier)  # public static :.
-    var = _try(property) or variable(a)
+    var = _try(property) or variable_name(a)
     assure_same_type(var, type)
     # var.type = var.type or type
     var.final = mod in const
@@ -1271,7 +1271,7 @@ def setter():
     _type = _try(typeNameMapped)
     ___('var', 'val', 'value of')
     mod = mod or _try(modifier)  # public static :.
-    var = _try(property) or variable(a)
+    var = _try(property) or variable_name(a)
     # _22("always") => pointer()
     setta = ___('to') or be()  # or not_to_be 	contain -> add or create
     # val = _try(adjective) or expressions()
@@ -1324,7 +1324,7 @@ def current_context():
     pass
 
 
-def variable(a=None):
+def variable_name(a=None):
     a = a or maybe_tokens(articles)
     if a != 'a': a = None  #hack for a variable
     typ = _try(typeNameMapped)  # DOESN'T BELONG HERE! EXPENSIVE e.g. int i++
@@ -1426,7 +1426,7 @@ def number_or_word():
 def arg(position=1):
     pre = _try(preposition) or ""  #  might be superfluous if calling"BY":
     _try(article)  #todo use a vs the ?
-    a = _try(variable)
+    a = _try(variable_name)
     if a: return Argument(name=a.name, type=a.type, preposition=pre, position=position)
     type = _try(typeNameMapped)
     v = endNode()
@@ -1805,13 +1805,24 @@ def verbium():
     return comparison or verb and adverb  # be or have or
 
 
+def resolve_netbase(n):
+    return n # Todo
+
+
 def the_noun_that():
     _try(_the)
     n = noun()
     if not n: raise_not_matching("no noun")
     if the.current_word=="that":
-        star(selector) # todo: apply ;)
-        # raise_not_matching("only 'that' filter for now!")
+        criterium=star(selector) # todo: apply ;)
+        if criterium and interpreting():
+            n=filter(n,criterium)
+        else: n=resolve_netbase(n)
+    else:
+        if n in the.variables.keys():
+            return the.variables[n]
+        raise Exception("Unknown constant "+n)
+        raise_not_matching("only 'that' filtered nouns for now!")
     return n
 
 

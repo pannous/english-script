@@ -178,7 +178,7 @@ def star(block):
             verbose
             "NotMatching star " + str(e)
             # if tokens and len(tokens)>0: verbose "expected any of "+tokens.to_s
-            if verbose: string_pointer
+            if verbose: print_pointer
 
     except EndOfDocument as e:
         # raise e
@@ -222,7 +222,7 @@ def ignore_rest_of_line():
     return the.string.replace(r'.*?\n', "\n")
 
 
-def string_pointer_s():
+def pointer_string():
     if not the.current_token:
         offset=len(the.current_line)
         l=3
@@ -236,9 +236,10 @@ def string_pointer_s():
     return original_string + "\n" + " " * (offset) + "^"*l + "\n"
 
 
-def string_pointer():
-    if(the._verbose):
-        print(string_pointer_s())
+def print_pointer(force=False):
+    if(force or the._verbose):
+        print(pointer_string())
+    return OK
 
 
 def clean_backtrace(x):
@@ -254,7 +255,7 @@ def error(e, force=False):
         # print(e.str(clazz )+" "+e.str(message))
         # print(clean_backtrace e.backtrace)
         # print(e.str( class )+" "+e.str(message))
-        string_pointer()
+        print_pointer()
         if angel.use_tree:
             import TreeBuilder
             TreeBuilder.show_tree()
@@ -662,7 +663,7 @@ def any(block):
 
     if result: verbose("Succeeded with any #{to_source(block)}")
     # if verbose and not result: string_pointer()
-    last_token = string_pointer_s()  #if not last_token:
+    last_token = pointer_string()  #if not last_token:
     if check_rollback_allowed():
         set_token(old)
         # the.string = oldString
@@ -822,7 +823,7 @@ def maybe(block):
         #
         if cc < rb:  #and not cc+2<rb # not check_rollback_allowed:
             error("NO ROLLBACK, GIVING UP!!!")
-            if verbose: print(last_token or string_pointer())  # ALWAYS!
+            if verbose: print(last_token or print_pointer())  # ALWAYS!
             if angel.use_tree:
                 import TreeBuilder
                 TreeBuilder.show_tree()  #Not reached
@@ -960,7 +961,7 @@ def token(t): #_new
         return current_word
     else:
         if throwing: verbose('expected ' + str(result))  #
-        string_pointer()
+        print_pointer()
         raise NotMatching(t)
 
 
@@ -982,7 +983,7 @@ def token_old(t):
             return current_value
     else:
         if throwing: verbose('expected ' + str(result))  #
-        string_pointer()
+        print_pointer()
         raise NotMatching(t)
         #todo: proper token stream, pre-lex'ed
 
