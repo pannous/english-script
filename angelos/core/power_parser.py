@@ -29,9 +29,9 @@ class Starttokens(object):
     def __call__(self, original_func):
         decorator_self = self
         for t in self.starttokens:
-            if t in english_parser.token_map:
-                print("ALREADY mapped %s to %s, now %s"%(t, english_parser.token_map[t],original_func))
-            english_parser.token_map[t]=original_func
+            if t in the.token_map:
+                print("ALREADY mapped %s to %s, now %s"%(t, the.token_map[t],original_func))
+            the.token_map[t]=original_func
         return  original_func
         # def wrappee( *args, **kwargs):
         # print 'in decorator with',decorator_self.flag
@@ -227,9 +227,9 @@ def pointer_string():
         offset=len(the.current_line)
         l=3
     else:
-        offset=the.current_token[2][1]
+        offset=the.current_offset
         l=the.current_token[3][1]-offset
-    return the.current_line + "\n" + " " * (offset) + "^"*l + "\n"
+    return the.current_line[offset:]+"\n"+the.current_line + "\n" + " " * (offset) + "^"*l + "\n"
 
     offset = len(original_string) - len(the.string)
     if offset < 0: offset = 0
@@ -407,7 +407,7 @@ def set_token(token):
     the.current_token= current_token=token
     the.current_type= current_type=token[0]
     the.current_word= current_word=token[1]
-    line_number,_   = token[2]
+    line_number,the.current_offset= token[2]
     end_pointer     = token[3]
     the.current_line= current_line=token[4]
     the.token_number=token_number=token[5]
@@ -627,16 +627,18 @@ def do_interpret():
 
 
 def dont_interpret():
+    depth = caller_depth()
     if angel.interpret_border < 0:
-        angel.interpret_border = caller_depth
+        angel.interpret_border = depth
         angel.did_interpret = angel.interpret
     angel.interpret = False
 
 
 def interpreting(n=0):
-    if (angel.interpret_border >= caller_depth() - n):
+    depth = caller_depth()
+    if (angel.interpret_border > depth - n):
         angel.interpret = angel.did_interpret
-        angel.interpret_border = -1
+        angel.interpret_border = -1 # remove the border
     return angel.interpret
 
 
@@ -776,7 +778,12 @@ def block():  # type):
     if not end_of_block:
         end_of_statement()  # danger might act as block end!
         def lamb():
-            statements.append(statement())
+            try:
+                print_pointer(True)
+                statements.append(statement())
+            except NotMatching as e:
+                print_pointer(True)
+                raise Exception(str(e)+"\nGiving up block\n"+pointer_string())
             # content = pointer() - start
             return end_of_statement()
         star(lamb)
@@ -824,7 +831,7 @@ def maybe(block):
         current_value = None
         set_token(old)
         # the.string = old
-        interpreting(2) #?
+        interpreting(2) # remove the border, if above border
         # if verbose: verbose(e)
         if verbose: verbose("Tried "+to_source(block))
         # if verbose: string_pointer()
@@ -1026,7 +1033,7 @@ def tokens(tokenz):
     raiseEnd()
     ok=maybe_tokens(tokenz)
     if(ok): return ok
-    raise NotMatching(result)
+    raise NotMatching(str(tokenz)+"\n"+pointer_string())
 
 def tokens_old(*tokenz):
     global  throwing

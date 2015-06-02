@@ -70,14 +70,13 @@ class Function:
 class FunctionCall:
 
   #attr_accessor :name, :arguments, :scope, :module, :class, :object
-
-  def __init__(self, **args):
-    self.name     =args['name']
+  def __init__(self,name=None, arguments=None, **args):
+    self.name     =name or args['name']
+    self.arguments=arguments or args['arguments']
     self.scope    =args['scope']
     self.clazz    =args['class']
-    self.clazz   =args['module']
+    self.clazz   = self.clazz or args['module']
     self.object   =args['object']
-    self.arguments=args['arguments']
 
 
 class Argument:

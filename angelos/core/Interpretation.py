@@ -46,3 +46,22 @@ def substitute_variables(args):
     args
 
     # todo : why _try(special) direct eval, rest_of_line
+
+
+def self_modify(v, mod, arg):
+    val = v.value
+    if mod == '|=': the.result = val | arg
+    if mod == '||=': the.result = val or arg
+    if mod == '&=': the.result = val & arg
+    if mod == '&&=': the.result = val and arg
+    if mod == '+=': the.result = val + arg
+    if mod == '-=': the.result = val - arg
+    if mod == '*=': the.result = val * arg
+    if mod == '**=': the.result = val ** arg
+    if mod == '/=': the.result = val / arg
+    if mod == '%=': the.result = val % arg
+    if mod == '^=': the.result = val ^ arg
+    # if mod == '<<': the.result = val.append(arg)
+    if mod == '<<': the.result = val << (arg)
+    if mod == '>>': the.result = val >> arg
+    return the.result

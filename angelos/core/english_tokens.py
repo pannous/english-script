@@ -37,7 +37,11 @@ numbers= "1 2 3 4 5 6 7 8 9 0\
       tenth ninth eighth seventh sixth fifth fourth third second first\
       ten nine eight seven six five four three two one zero".split()
 
-operators= ["+", "*", "-", "/", "plus", "minus", "times"] # DANGER! ambivalent!!   ,"and" 4 and 5 == TROUBLE!!!
+operators= ["+", "*", "-", "/","//","%","|","||","&","&&","^","^^","**", "mod","modulo" "plus", "minus", "times","and","or","xor","power","to the"]
+ # DANGER! ambivalent!!   ,"and" 4 and 5 == TROUBLE!!! really? 4 and 5 == 9 ~= True OK lol
+ # just make sure that 4 and False = False  4 and True == True
+
+special_chars=list("!@#$%^*()+_}{\":?><,./';][=-`'|\\")
 
 NEWLINE="NEWLINE"
 
@@ -131,7 +135,7 @@ be_words=['is an', 'is a', 'is', 'be', 'was', 'are', 'will be', 'were', 'have be
   # nicer, sweeter, ....
   #  '=>' '<=', DANGER
   # OR class_words
-comparison_words=['be', 'is','element of','subset of','in', 'are', 'were',  '>=', '==', '<=',  '=<','=', '>', '<','gt', 'lt', 'eq',\
+comparison_words=['be','is of','is in','is a', 'is','element of','subset of','in', 'are', 'were',  '>=', '==', '<=',  '=<','=', '>', '<','gt', 'lt', 'eq',\
     'identical to', 'smaller or equal','greater or equal', 'equal to', 'bigger', 'greater', 'equals','smaller', 'less','more',  'the same as',\
     'same as', 'similar', 'comes after',\
     'comes before', 'exact', 'exactly', '~>', 'at least', 'at most']
@@ -185,12 +189,16 @@ attributes=['sucks', 'default']
 
 keywords=prepositions+modifiers+be_words+comparison_words+fillers+nill_words+done_words+auxiliary_verbs+conjunctions+type_keywords+otherKeywords+numbers+operators
 
+true=True
+false=False
 TRUE="True"
 FALSE="False"
 NILL="None"
-# Nil="None"
+Nil="None"
 # Nill="None"
 ZERO='0'
+
+start_block_words=[';',':', 'do', '{','begin','start', 'first you ', 'second you ', 'then you ', 'finally you ']
 
 flow_keywords=['next', 'continue', 'break', 'stop']
 request_keywords=['what is', 'evaluate', 'how much', 'what are', 'calculate', 'eval']

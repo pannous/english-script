@@ -1,3 +1,4 @@
+import ast
 import re
 import nodes
 
@@ -138,3 +139,52 @@ class TreeNode:
     self.valid=False
     if self.parent: self.parent.nodes.delete(self)
 
+
+def operator_equals(mod):
+  op = ast.Add()
+  if mod == '|=': op=ast.Or()
+  if mod == '||=':op=ast.Or()
+  if mod == '&=': op=ast.And()
+  if mod == '&&=':op=ast.And()
+  if mod == '+=': op=ast.Add()
+  if mod == '-=': op=ast.Sub()
+  if mod == '*=': op=ast.Mult()
+  if mod == '**=':op=ast.Pow()
+  if mod == '/=': op=ast.Div()
+  if mod == '//=': op=ast.FloorDiv()
+  if mod == '%=': op=ast.Mod()
+  if mod == '^=': op=ast.BitXor()
+  if mod == '<<': op=ast.LShift()
+  if mod == '>>': op=ast.RShift()
+  return op
+
+def operator(mod):
+  op = ast.Add()
+  if mod == 'or': op=ast.Or()
+  if mod == '|': op=ast.Or()
+  if mod == '||':op=ast.Or()
+  if mod == 'and': op=ast.And()
+  if mod == '&': op=ast.And()
+  if mod == '&&':op=ast.And()
+  if mod == 'plus': op=ast.Add()
+  if mod == '+': op=ast.Add()
+  if mod == '-': op=ast.Sub()
+  if mod == 'minus': op=ast.Sub()
+  if mod == 'times': op=ast.Mult()
+  if mod == '*': op=ast.Mult()
+  if mod == '**':op=ast.Pow()
+  if mod == 'divide': op=ast.Div()
+  if mod == 'divided': op=ast.Div()
+  if mod == 'divided by': op=ast.Div()
+  if mod == '/': op=ast.Div()
+  if mod == '//': op=ast.FloorDiv()
+  if mod == 'floor div': op=ast.FloorDiv()
+  if mod == '%': op=ast.Mod()
+  if mod == 'mod': op=ast.Mod()
+  if mod == 'modulus': op=ast.Mod()
+  if mod == 'modulo': op=ast.Mod()
+  if mod == '^': op=ast.BitXor()
+  if mod == 'xor': op=ast.BitXor()
+  if mod == '<<': op=ast.LShift()
+  if mod == '>>': op=ast.RShift()
+  return op

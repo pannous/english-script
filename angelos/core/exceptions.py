@@ -8,6 +8,8 @@ global NotMatching
 
 # class Error(Exception):
 #     pass
+class InternalError(StandardError):
+    pass
 
 class NoMethodError(StandardError):
     pass

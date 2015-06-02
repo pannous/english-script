@@ -93,11 +93,11 @@ def parse_file(x):
 
 
 def assert_equals(a, b, bla=None):
-    pass
+    assert a==b, "%s SHOULD BE %s   %s"%(a,b,bla)
 
 
 def assert_equal(a, b, bla=None):
-    assert a==b
+    assert a==b, "%s SHOULD BE %s   %s"%(a,b,bla)
 
 #
 # def do_assert(a, bla=None):

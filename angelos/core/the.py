@@ -30,8 +30,10 @@ core_methods = ['show', 'now', 'yesterday', 'help']  # _try(difference)
 
 string=""
 tokenstream=[] # tuple:
+token_map={} # directly map tokens to their functions
 token_number=0
 current_type=0
+current_offset=0
 current_word=''
 current_line=''
 current_token=None
@@ -69,3 +71,7 @@ def is_number(s):            #isint isnum
 debug=False # True
 
 svg = []
+
+
+def parent_node():
+  return None

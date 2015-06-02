@@ -16,7 +16,10 @@ contents="\n".join(contents)
 source="(string)" # compile from inline string source:
 # contents="def x():pass"
 # contents="from x import *"
-contents="x.y=1"
+# contents="x.y=1"
+# contents="x=1;x=x+1"
+# contents="x=1;x++" # INVALID!
+contents="x=6;x%=3"
 # contents="x=y[1]"
 # contents="self.x(1)"
 # contents="(1 or 2) and 0" # 0  BoolOp(And(), [BoolOp(Or(), [Num(1), Num(2)]), Num(0)])

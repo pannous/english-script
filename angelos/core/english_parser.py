@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 # encoding: utf-8
+import ast
+import treenode
 
 global inside_list
 inside_list=False
-token_map={} # directly map tokens to their functions
 # import time
 # import traceback
 # import sys
 # import __builtin__ # class function(object) etc
 import inspect
+# import kast
+from kast import *
 import re
 import __builtin__
 import traceback
@@ -189,9 +192,10 @@ def raiseSyntaxError():
     raise SyntaxError("incomprehensible input")
 
 def rooty():
-    maybe(block) or \
-     maybe(statement) or \
-       raiseSyntaxError()# raise_not_matching("")
+    block()
+    # maybe(block) or \
+    #  maybe(statement) or \
+    #    raiseSyntaxError()# raise_not_matching("")
       # maybe(expressions) and end_expression() or\
       # maybe(condition) or \
       # maybe(context) or \
@@ -421,7 +425,7 @@ def liste(check=True):
     if not first: inside_list = False
     if not first: raise_not_matching()
     all = [first]
-    star(lambda: tokens(',', 'and') and all.append(endNode))
+    star(lambda: tokens([',', 'and']) and all.append(endNode))
     # all<<expression
     # danger: and as plus! BAD IDEA!!!
     if start_brace == '[': _(']')
@@ -431,62 +435,56 @@ def liste(check=True):
     current_value = all
     return all
 
-
-def minusMinus():
-    must_contain('--')
-    v = variable_name()
-    _('--')
-    if interpret: the.result = do_evaluate(v, v.type) + 1
-    # else:the.result=UnaryOp('--',v)
-    variableValues[v] = v.value = the.result
-    return the.result
-
-
-def must_contain_substring(param):
-    if not the.current_line.index(param):
+def must_contain_substring(param): # ++ != '+' '+' tokens :(
+    current_statement=re.split(';|\n',the.current_line[the.current_offset:])[0]
+    if not param in current_statement:
         raise_not_matching("must_contain_substring(%s)"%param)
 
 
 def plusPlus():
     must_contain_substring('++')
+    start=pointer()
     pre=maybe_token('+') and token('+')
     v = variable_name()
     pre or _('+') and token('+')
-    # if not interpret: return angel.parent_node()
+    if not interpreting(): return ast.AugAssign(ast.Name(v.name, ast.Store()), ast.Add(), ast.Num(1))
     the.result = do_evaluate(v, v.type) + 1
     the.variableValues[v.name] = v.value = the.result
+    return the.result
+
+
+def minusMinus():
+    must_contain_substring('--')
+    pre=maybe_token('-') and token('-')
+    v = variable_name()
+    pre or _('-') and token('-')
+    if not interpreting():
+        return ast.AugAssign(ast.Name(v.name, ast.Store()), ast.Sub(), ast.Num(1))
+    the.result = do_evaluate(v, v.type) + 1
+    variableValues[v] = v.value = the.result
     return the.result
 
 
 def selfModify():
     return maybe(plusEqual) or maybe(plusPlus) or minusMinus()
 
+#
+# @Interpret
 @Starttokens(self_modifying_operators)
 def plusEqual():
     must_contain(self_modifying_operators)
     v = variable_name()
     mod = ___(self_modifying_operators)
-    val = v.value
-    exp = expressions()  # value
+    exp = expression()  # value
     arg = do_evaluate(exp, v.type)
-    if not interpreting(): return angel.parent_node()
-    if mod == '|=': the.result = val | arg
-    if mod == '||=': the.result = val or arg
-    if mod == '&=': the.result = val & arg
-    if mod == '&&=': the.result = val and arg
-    if mod == '+=': the.result = val + arg
-    if mod == '-=': the.result = val - arg
-    if mod == '*=': the.result = val * arg
-    if mod == '**=': the.result = val ** arg
-    if mod == '/=': the.result = val / arg
-    if mod == '%=': the.result = val % arg
-    if mod == '^=': the.result = val ^ arg
-    # if mod == '<<': the.result = val.append(arg)
-    if mod == '<<': the.result = val << (arg)
-    if mod == '>>': the.result = val >> arg
-    variableValues[v.name] = the.result
-    v.value = the.result
-    return the.result
+    if not interpreting():
+        op=treenode.operator_equals(mod)
+        return ast.AugAssign(ast.Name(v.name, ast.Store()), op, arg)
+    else:
+        the.result=interpretation.self_modify(v,mod,arg)
+        the.variableValues[v.name] = the.result
+        v.value = the.result
+        return the.result
 
 @Starttokens('[')
 def swift_hash():
@@ -500,7 +498,7 @@ def swift_hash():
         _(':')
         inside_list = True
         # h[key] = expression0 # no
-        h[the.result] = expressions()  # no
+        h[the.result] = expression()  # no
 
     star()
     _(']')
@@ -536,7 +534,7 @@ def regular_json_hash():
         ___('=>', '=') or starts_with("{") or ___('=>', ':')
         inside_list = True
         # h[key] = expression0 # no
-        h[the.result] = expressions()
+        h[the.result] = expression()
 
     star(lamb)
     # no_rollback()
@@ -564,32 +562,42 @@ def immediate_json_hash():  # a:{b) OR a{b():c)):
     no_rollback()
     r = regular_json_hash()
     return {str(the.result): r}  # AH! USEFUL FOR NON-symbols !!!
-
-
 # todo PYTHONBUG ^^
 
-# keyword expression is reserved by ruby/rails!!! => use hax0r writing or plural
-def expressions(fallback=None):
-    # raiseNewline ?
+# def postoperations(context):
+#     maybe(
+
+def quick_expression():
+    if the.current_word in the.token_map:
+        fun = the.token_map[the.current_word]
+        the.result = fun()
+        if the.current_word in operators or the.current_word in special_chars: # - ';'
+            raise_not_matching("quick_expression too simplistic")
+        return the.result
+    return False
+
+def expression(fallback=None):
     start = pointer()
-    if the.current_word in token_map:
-        the.result = ex = token_map[the.current_word]()
-    else:
-        the.result = ex = maybe(algebra) or \
-                      maybe(json_hash) or \
-                      maybe(swift_hash) or \
-                      maybe(evaluate_index) or \
-                      maybe(listselector) or \
-                      maybe(liste) or \
-                      maybe(evaluate_property) or \
-                      maybe(selfModify) or \
-                      maybe(endNode) or \
+    the.result = ex = maybe( quick_expression ) or \
+                      maybe( algebra ) or \
+                      maybe( json_hash ) or \
+                      maybe( swift_hash ) or \
+                      maybe( evaluate_index ) or \
+                      maybe( listselector ) or \
+                      maybe( liste ) or \
+                      maybe( evaluate_property ) or \
+                      maybe( selfModify ) or \
+                      maybe( endNode ) or \
                       print_pointer(True) and raise_not_matching("Not an expression")
+
+    # ex=postoperations(ex) or ex
     check_comment()
-    # or ['one'].has(fallback) ? 1 : false # WTF todo better quantifier one beer vs one==1
-    # expression)
-    if not interpreting() and not angel.use_tree:
-        return ( start , pointer())
+
+    if not interpreting():
+        if not angel.use_tree:
+            return ( start , pointer())
+        return the.result
+
     if ex and interpreting():
         the.last_result = the.result = do_evaluate(ex)
         # TODO PYTHON except SyntaxError:
@@ -645,7 +653,7 @@ def statement():
         maybe(breaks) or \
         maybe(constructor) or \
         maybe(action) or \
-        maybe(expressions) or \
+        maybe(expression) or \
         raise_not_matching("Not a statement")
          # AS RETURN VALUE! DANGER!
     if x:
@@ -698,7 +706,9 @@ def raise_not_matching(msg=None):
 
 
 def execute(command):
-    exec(command)
+    import os
+    os.system(command)
+    # NOT: exec(command) !! == eval
 
 @Starttokens('bash')
 def bash_action():
@@ -831,7 +841,7 @@ def spo():
     s = endNoun
     p = verb
     o = nod
-    if interpret: return do_send(s, p, o)
+    if interpreting(): return do_send(s, p, o)
 
 @Starttokens(invoke_keywords)
 def extern_method_call():
@@ -1001,7 +1011,7 @@ def applescript():
 
     # the.result        +="\ntell application \"#{app)\" to activate" # to front
     # -s o r'path'tor'the'script.scpt
-    if interpret: the.result=current_value = execute("r'usr'bin/osascript -ss -e $'#{the.result)'")
+    if interpreting(): the.result = execute("'usr'bin/osascript -ss -e $'#{the.result)'")
     return the.result
 
 @Starttokens('assert')
@@ -1039,7 +1049,7 @@ def constructor():
 @Starttokens(['return','returns'])
 def returns():
     __('return','returns')
-    the.result = _try(expressions)
+    the.result = _try(expression)
     the.result
 
 @Starttokens(flow_keywords)
@@ -1069,14 +1079,14 @@ def action():
     if not the.result: raise NoResult()
     ende = pointer()
     # newline22:
-    if not angel.use_tree and not interpret: return ende - start
+    if not angel.use_tree and not interpreting(): return ende - start
     return the.result
 
 
 def action_or_block():  # expression_or_block ??):
     # dont_interpret  # _try(always)
     # the.string
-    if not starts_with([':', 'do', '{']):
+    if not starts_with([';',':', 'do', '{','begin','start']):
         a = maybe(action)
         if a: return a
     # type=start_block && newline22
@@ -1087,7 +1097,7 @@ def action_or_block():  # expression_or_block ??):
 
 def expression_or_block():  # action_or_block):
     # dont_interpret  # _try(always)
-    a = maybe(action) or maybe(expressions)
+    a = maybe(action) or maybe(expression)
     if a: return a
     b = block()
     return b
@@ -1123,11 +1133,14 @@ def call_function(f, args=None):
 
 
 def do_execute_block(b, args={}):
+    if not interpreting(): return
     global variableValues
     if not b: return False
     if b==True: return True
     if isinstance(b, FunctionCall): return call_function(b)
     if callable(b): return call_function(b, args)
+    if isinstance(b,ast.AST):
+        exec(b) # TODO ARGS???
     if isinstance(b, TreeNode): b = b.content
     if not isinstance(b, str): return b  # OR :. !!!
     block_parser = the# EnglishParser()
@@ -1177,7 +1190,7 @@ def collection():
     return any(lambda:
         maybe(ranger) or
         maybe(true_variable) or
-        action_or_expressions  #of type list !!
+        action_or_expressions()  #of type list !!
         )
 
 @Starttokens('for')
@@ -1247,7 +1260,7 @@ def property():
     must_contain_before(".",' ')
     no_rollback()
     owner = class_constant
-    owner = get_obj(owner) or variables[true_variable()].value  #reference
+    owner = get_obj(owner) or variables[true_variable(False)].value  #reference
     _('.')
     properti = word
     return Property(name=properti, owner=owner)
@@ -1285,13 +1298,13 @@ def setter():
     # _22("always") => pointer()
     setta = ___('to') or be()  # or not_to_be 	contain -> add or create
     # val = _try(adjective) or expressions()
-    val = expressions()
+    val = expression()
     no_rollback()
     if setta == 'are' or setta == 'consist of' or setta == 'consists of': val = [val].flatten()
     if _let: assure_same_type_overwrite(var, val)
     # var.type=var.type or type or type(val) #eval'ed! also x is an integer
     assure_same_type(var, _type or type(val))
-    if not var.name in variableValues or mod != 'default' and interpret:
+    if not var.name in variableValues or mod != 'default' and interpreting():
         the.variableValues[var.name] = val
 
     var.value = val
@@ -1305,6 +1318,9 @@ def setter():
 
     subnode({'var':var})
     subnode({'val':val})
+    the.token_map[var.name]=true_variable
+    if not interpreting(): return ast.Assign(ast.Name(var.name, ast.Store()),val)
+
     if interpreting() and val!=0: return val
     return var
     # if angel.use_tree: return parent_node()
@@ -1711,7 +1727,7 @@ def check_condition(cond=None, negate=False):
 
 
 def action_or_expressions(fallback=None):
-    return maybe(action) or expressions(fallback)
+    return maybe(action) or expression(fallback)
     # maybe(expressions(fallback))
     # expressions(fallback)
 
@@ -1796,7 +1812,7 @@ def otherwise():
     must_contain('else', 'otherwise')
     ___('else', 'otherwise')
     # if :. ! _try(OK): else:
-    e = expressions()
+    e = expression()
     ___('else', 'otherwise')and newline()
     return e
 
@@ -1902,8 +1918,6 @@ def postjective():  # 4 squared , 'bla' inverted, buttons pushed in, mail read b
 
     # TODO: big cleanup!
     # see resolve, eval_string,  do_evaluate, do_evaluate_property, do_s
-
-
 def do_evaluate_property(x, y):
     # todo: REFLECTION / eval NODE !!!
     if not x: return False
@@ -1949,9 +1963,12 @@ def eval_string(x):
 def do_evaluate(x, type=None):
     if not interpreting(): return x
     try:
+        if isinstance(x,ast.AST): exec(x)
         if isinstance(x, list) and len(x) == 1: return do_evaluate(x[0])
         if isinstance(x, list) and len(x) != 1: return x
         if isinstance(x, Variable):
+            if not x.name in the.variableValues:
+                raise InternalError("variableValues broken")
             return x.value or the.variableValues[x.name]
         if x==ZERO: return 0
         if x==TRUE: return True
@@ -1982,8 +1999,8 @@ def resolve(x):
     if not x: return x
     if is_dir(x): return extensions.Directory(x)
     if is_file(x): return extensions.File(x)
-    if isinstance(x, Variable): return x.value
-    if interpret and variableValues.has_key(x): return variableValues[x.strip]
+    if isinstance(x, Variable): return x.value # or ast.Name?
+    if interpreting() and variableValues.has_key(x): return variableValues[x.strip]
     return x
 
 
@@ -2129,7 +2146,7 @@ def selectable():
     ___('every', 'all', 'those')
     xs = resolve(true_variable()) or endNoun()
     s = maybe(selector)  # rhs=xs, lhs implicit! (BAD!)
-    if interpret: x = filter(xs, s)  # except xs
+    if interpreting(): x = filter(xs, s)  # except xs
     return x
 
 
@@ -2161,7 +2178,7 @@ def endNode():
             maybe_token('a') or\
             raise_not_matching("Not an endNode")
     po = maybe(postjective)  # inverted
-    if po and interpret: x = do_send(x, po, None)
+    if po and interpreting(): x = do_send(x, po, None)
     return x
 
 
@@ -2197,7 +2214,7 @@ def start_block(type=None):
         if xmls: _('>')
 
     if checkNewline(): return OK
-    return ___(':', 'do', '{', 'first you ', 'second you ', 'then you ', 'finally you ')
+    return ___(start_block_words)
 
 
 def end_of_statement():
@@ -2233,7 +2250,7 @@ def evaluate_index():
     i = endNode()
     _(']')
     set = maybe_token('=')
-    if set: set = expressions
+    if set: set = expression
     # if interpreting(): the.result=v.send :index,i
     # if interpreting(): the.result=do_send v,:[], i
     # if set and interpreting(): the.result=do_send(v,:[]=, [i, set])
@@ -2253,8 +2270,8 @@ def evaluate_property():
     raiseNewline()
     x = endNoun(type_keywords)
     __('of', 'in')
-    y = expressions()
-    if not interpret: return parent_node()
+    y = expression()
+    if not interpreting(): return parent_node()
     try:  #interpret !:
         the.result = do_evaluate_property(x, y)
     except SyntaxError as e:
@@ -2549,12 +2566,13 @@ def quote():
     return False
 
 
-def true_variable():
+def true_variable(node=True):
     vars = the.variables.keys()
     if(len(vars)==0):raise NotMatching()
     v = tokens(vars)
     v = the.variables[v]  #why _try(later)
     #if interpret #LATER!: variableValues[v]
+    if node and not interpreting(): return ast.Name(v, ast.Load())
     return v
     #for v in the.variables.keys:
     #  if the.string._try(start_with) v:
@@ -2678,9 +2696,7 @@ def linuxPath():
     return False
 
 def loops():
-    # any {#loops }
-    def lamb():
-      maybe( repeat_every_times ) or\
+      return maybe( repeat_every_times ) or\
           maybe( repeat_n_times ) or\
           maybe( n_times_action ) or\
           maybe( action_n_times ) or\
@@ -2690,8 +2706,10 @@ def loops():
           maybe( looped_action_until ) or\
           maybe( repeat_action_while) or\
           maybe( as_long_condition_block ) or\
-          maybe( forever)
-    any(lamb)
+          maybe( forever) or\
+            raise_not_matching("Not a loop")
+
+
 # beep every 4 seconds
 # every 4 seconds beep
 # at 5pm send message to john
@@ -2720,30 +2738,27 @@ def repeat_action_while():
     b=action_or_block()
     _( 'while')
     c=condition()
+    if not interpreting():
+        return ast.While(test=c,body=b)
     while check_condition(c):
-      the.result=do_execute_block(b)
-    if interpret: end()
-    if angel.use_tree: return parent_node()
+        the.result=do_execute_block(b)
     return the.result
 
 def while_loop():
     ___( 'repeat')
     __('while','as long as')
-    dont_interpret()
     no_rollback() #no_rollback 13 # arbitrary value ! :{
+    dont_interpret()
     c=condition()
     no_rollback()
     ___('repeat') # keep gerunding
-    ___('then')
+    ___('then') #,':'
     b=action_or_block() #Danger when interpreting it might contain conditions and breaks
     r=False
-    try:
-        if interpreting():
-         while (check_condition(c)):
-            r=do_execute_block( b)
-    except Error as e:
-      print e
-    _try(end_block)
+    if not interpreting():
+        return ast.While(test=c,body=b)
+    while (check_condition(c)):
+        r=do_execute_block( b)
     return r #or OK
 
 def until_loop():
@@ -2766,7 +2781,7 @@ def looped_action():
     dont_interpret()
     ___('do')
     ___('repeat')
-    a=action # or semi-block
+    a=action() # or semi-block
     __('as long as', 'while')
     c=condition()
     r=False
@@ -2782,7 +2797,7 @@ def looped_action_until():
     dont_interpret()
     ___('do')
     ___('repeat')
-    a=action # or semi-block
+    a=action() # or semi-block
     _('until')
     c=condition()
     r=False
