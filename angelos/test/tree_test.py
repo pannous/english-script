@@ -1,13 +1,8 @@
-import _global
-_global.use_tree = False
+import angle
 from parser_test_helper import *
-
-
-
-
+angle.use_tree=True
 
 class TreeTest(ParserBaseTest):
-
 
     def test_algebra1(self):
         assert_result_is('3 minus one', 2)

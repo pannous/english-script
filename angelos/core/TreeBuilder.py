@@ -1,7 +1,7 @@
 #require File.expand_path(File.dirname(__FILE__) + '/../node.rb')
-import treenode
+import tree
 import extensions
-import angel
+import angle
 
 class MethodInterception:
   #   def __init__(self):
@@ -107,7 +107,7 @@ class MethodInterception:
     for n in node.nodes:
       flat_tree(n)
 
-    if node.name=="statement" or node.name==angel.statement: print ""
+    if node.name=="statement" or node.name==angle.statement: print ""
 
   def flat_tree2(node, collect=[]):
     if node.show_node and node.value:
@@ -121,20 +121,20 @@ class MethodInterception:
 
   #todo: move to interpretation or tree.show
   def show_tree(self):
-    if not self.root or not angel.use_tree: return
+    if not self.root or not angle.use_tree: return
     walk_tree self.root
     print "---------"
     flat_tree self.root
 
   def bad(name):
-    if not angel.use_tree: return True
+    if not angle.use_tree: return True
     if str(name).endswith("_words"): return True
     #if name.to_s.start_with? "test_" # NEEDED for algebra.parent todo!: return True
     #if name.to_s.endswith("?") or bad_name=True:
     ignore.index str(name) # 0 == True ! OK
 
   def parent_node(self):
-    if not angel.use_tree # self.nodes.count==0: return self.original_string-self.string
+    if not angle.use_tree # self.nodes.count==0: return self.original_string-self.string
     for i in 0..(caller.count):
       if not caller[i].match(r'parser'): next
       name=caller[i].match(r'`(.*)'')[1]

@@ -2,7 +2,6 @@
 # nocoding: interpy "string interpolation #{like ruby}"
 import os
 import re
-import math
 import exceptions
 
 # def print(x # debug!):
@@ -179,13 +178,19 @@ class Class:
 # WOW YAY WORKS!!!!!
 # NO, ONLY VIA EXPLICIT CONSTRUCTOR!
 # NO!! isinstance(my_xlist,list) FALSE !!
+def extension(clazz):
+    print(clazz)
+    help(clazz)
+    return clazz
+
+
+@extension
 class xlist(list):
-    def __sub__(self, other):
-        clone=xlist(self)
-        for o in other:
-            if o in clone:
-                clone.remove(o)
-        return clone
+
+    def __sub__(self, other): # xlist-[1]-[2]
+        return xlist(i for i in self if i not in other)
+    def __rsub__(self, other): #[1]-xlist-[2] ok!
+        return xlist(i for i in other if i not in self)
 
     def c(self):
         return map(str.c, self).join(", ")  # leave [] which is not compatible with C
@@ -563,7 +568,21 @@ class xstr(str):
 
     def parse_number(self):
         self = self.replace_numerals
-        return eval(self).to_f
+        return float(self)# eval(self).to_f
+
+    # def __sub__(self, other): # []= MISSING in python!!
+    #     x="abc"
+    #     >>> x[2]='a'
+    #     TypeError: 'str' object does not support item assignment WTF
+
+    def reverse(self):
+        return self[slice(start=None,stop=None,step=-1)]
+        # return self[::-1] #very pythonic,  It works by doing [begin:end:step]
+        # a slower approach is ''.join(reversed(s))
+
+    @staticmethod
+    def reverse_string(str):
+        return xstr(str).reverse()
 
 
 #class Fixnum Float
@@ -843,13 +862,33 @@ def is_dir(x, must_exist=True):
     return must_exist and m and os.path.isdirectory(m[0]) or m
 
 class File:
-    @classmethod
+    import os
+    # @classmethod
+    # def open(cls):return open(cls)
+    # @classmethod
+    # def read(cls):return open(cls)
+    # @classmethod
+    # def ls(cls):
+    #     return os.listdir(cls)
+
+    @staticmethod
     def open(x):return open(x)
-    @classmethod
+    @staticmethod
     def read(x):return open(x)
-    @classmethod
+    @staticmethod
     def ls(mypath):
-        import os
         return os.listdir(mypath)
+
 class Encoding:
     pass
+
+class Math:
+
+    def __getattr__(self, attr):
+        import sys
+        import math
+     # ruby method_missing !!!
+        import inspect
+        for name, obj in inspect.getmembers(sys.modules['math']):
+            if name==attr: return obj
+        return False

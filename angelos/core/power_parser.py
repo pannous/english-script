@@ -13,7 +13,7 @@ from exceptions import *
 from nodes import Pointer
 # from exceptions import NotMatching
 import nodes
-import angel
+import angle
 # from exceptions import *
 from english_tokens import NEWLINE
 from the import *
@@ -139,7 +139,7 @@ def isnumeric(start):
 
 # _try=maybe
 
-def star(block):
+def star(lamb):
     global  throwing,nodes
     # checkEnd
     if (len(nodes) > max_depth):
@@ -161,15 +161,15 @@ def star(block):
     # oldstring = the.string
     # last_string = ""
     try:
-        while not checkEndOfLine():
+        while not checkEndOfLine():# many statements, so ';' is ok! but: MULTILINE!?!
             # if the.string == "" or the.string == last_string: break
             # last_string = the.string
-            match = block() # yield  # <------!!!!!!!!!!!!!!!!!!!
+            match = lamb() # yield  # <------!!!!!!!!!!!!!!!!!!!
             if not match: break
             old=current_token
             # oldstring = the.string  # (partial)  success
             good.append(match)
-            if current > max and throwing: raise " too many occurrences of " + to_source(block)
+            if current > max and throwing: raise " too many occurrences of " + to_source(lamb)
 
     except NotMatching as e:
         set_token(old)
@@ -187,7 +187,7 @@ def star(block):
         #return false
     except IgnoreException as e:
         error(e)
-        error("error in star " + to_source(block))
+        error("error in star " + to_source(lamb))
         # warn e
     # except Exception as e:
     #     error(e)
@@ -256,10 +256,10 @@ def error(e, force=False):
         # print(clean_backtrace e.backtrace)
         # print(e.str( class )+" "+e.str(message))
         print_pointer()
-        if angel.use_tree:
+        if angle.use_tree:
             import TreeBuilder
             TreeBuilder.show_tree()
-        if not angel.verbose: raise e  # SyntaxError(e):
+        if not angle.verbose: raise e  # SyntaxError(e):
         # exit
 
 
@@ -519,25 +519,13 @@ def raiseEnd():
     #     #the.string=lines[++line_number];
     #     raise EndOfLine()
 
-
-def checkEndOfLine():
-    return current_type==_token.NEWLINE or current_type==_token.ENDMARKER or the.token_number>=len(the.tokenstream)
-    #if the.string.blank? # no:try,try,try  see raiseEnd: raise EndOfDocument.new
-    # return not the.string or len(the.string)==0
-
-
-def checkEndOfFile():
-    return current_type==_token.ENDMARKER or the.token_number>=len(the.tokenstream)
-    # return line_number >= len(lines) and not the.string
-
-
 def remove_tokens(*tokenz):
     while(current_word in tokenz):
         next_token()
     # for t in flatten(tokenz):
     #     the.string = the.string.replace(r' *%s *' % t, " ")
 
-def must_contain(*args):
+def must_contain(*args): # before ;\n
     if isinstance(args[-1], dict):
         return must_contain_before(args[0:-2],args[-1]['before'])
     old=current_token
@@ -547,6 +535,8 @@ def must_contain(*args):
                 set_token(old)
                 return x
         next_token()
+        if current_word==';' or current_word=='\n':
+            break
     set_token(old)
     raise NotMatching("must_contain "+str(args))
 
@@ -622,24 +612,24 @@ def caller_name():
 def do_interpret():
     global  interpret,interpret_border,did_interpret
     interpret_border = -1
-    did_interpret = angel.interpret
-    angel.interpret = True
+    did_interpret = angle.interpret
+    angle.interpret = True
 
 
 def dont_interpret():
     depth = caller_depth()
-    if angel.interpret_border < 0:
-        angel.interpret_border = depth
-        angel.did_interpret = angel.interpret
-    angel.interpret = False
+    if angle.interpret_border < 0:
+        angle.interpret_border = depth
+        angle.did_interpret = angle.interpret
+    angle.interpret = False
 
 
 def interpreting(n=0):
     depth = caller_depth()
-    if (angel.interpret_border > depth - n):
-        angel.interpret = angel.did_interpret
-        angel.interpret_border = -1 # remove the border
-    return angel.interpret
+    if (angle.interpret_border > depth - n):
+        angle.interpret = angle.did_interpret
+        angle.interpret_border = -1 # remove the border
+    return angle.interpret
 
 
 def check_rollback_allowed():
@@ -722,33 +712,26 @@ def caller_depth():
     # filter_stack(caller).count #-1
 
 
-def no_rollback11(n=0):
-    global depth,no_rollback_depth
-    depth = caller_depth() - 1
-    while (rollback_depths[-1] or -1) > depth:
-        rollback_depths.pop()
-
-    rollback_depths.push(no_rollback_depth)
-    no_rollback_depth = depth
-    # no_rollback_method=caller #_name
+def no_rollback():
+    depth =caller_depth()-1
+    while len(the.rollback_depths)>0 and the.rollback_depths[-1]>depth:
+      the.rollback_depths.pop()
+    the.rollback_depths.append(the.no_rollback_depth)
+    the.no_rollback_depth =depth
 
 
 def allow_rollback(n=0):
-    global  depth,no_rollback_depth,rollback_depths,original_string
     if n < 0: the.rollback_depths = []
     if len(the.rollback_depths)>1 :
         the.no_rollback_depth = the.rollback_depths.pop()
     else:
          the.no_rollback_depth = -1
-    the.original_string = the.string  #if following(no_rollback11):
-
 
 def adjust_rollback(depth=-10):
     try:
-        global  no_rollback_depth
         if depth==-10: depth=caller_depth()
-        if depth + 2 < no_rollback_depth:
-            no_rollback_depth = rollback_depths.pop() or -1
+        if depth + 2 < the.no_rollback_depth:
+            allow_rollback()
     except (Exception,Error) as e:
         error(e)
 
@@ -780,7 +763,8 @@ def block():  # type):
         def lamb():
             try:
                 print_pointer(True)
-                statements.append(statement())
+                s = statement()
+                statements.append(s)
             except NotMatching as e:
                 print_pointer(True)
                 raise Exception(str(e)+"\nGiving up block\n"+pointer_string())
@@ -792,7 +776,7 @@ def block():  # type):
 
     the.last_result = the.result
     if interpreting(): return statements[-1]
-    if angel.debug:
+    if angle.debug:
         print_pointer(True)
     return statements #content
     # if angel.use_tree:
@@ -814,11 +798,11 @@ def maybe(block):
     try:
         old_nodes = list(nodes)#.clone()
         result = block() #yield <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        if angel.debug and (callable(result)):
+        if angle.debug and (callable(result)):
             raise Exception("returned CALLABLE "+str(result))
         if result or result==0:
-            adjust_rollback()
             verbose("GOT result from "+str(block)+" : "+str(result))
+            adjust_rollback()
         else:
             verbose("No result from "+str(block))
             invalidate_obsolete(old_nodes)
@@ -827,34 +811,25 @@ def maybe(block):
         last_node = current_node
         return result
     except (NotMatching, EndOfLine) as e:
-        # old=original_string # REALLY>??
-        current_value = None
-        set_token(old)
-        # the.string = old
+        if verbose: verbose("Tried "+to_source(block))
         interpreting(2) # remove the border, if above border
         # if verbose: verbose(e)
-        if verbose: verbose("Tried "+to_source(block))
         # if verbose: string_pointer()
-        invalidate_obsolete(old_nodes)
-        # (nodes - old_nodes).each(lambda n: n.destroy())  #n.valid=false;
-        #caller.index(last_try caller)]
-        #puts rollback[len(caller)]
-        #puts len(caller)
-        #puts rollback
         cc = caller_depth()
-        rb = no_rollback_depth - 2
-        # DO NOT TOUCH ! Or replace with a less fragile mechanism
-        # if cc+1<rb #jumped out OK:
-        #   adjust_rollback cc
-        #
+        rb = the.no_rollback_depth - 2
+        if cc >= rb:
+            set_token(old) #OK
+            current_value = None
+            invalidate_obsolete(old_nodes)
         if cc < rb:  #and not cc+2<rb # not check_rollback_allowed:
             error("NO ROLLBACK, GIVING UP!!!")
-            if verbose: print(last_token or print_pointer())  # ALWAYS!
-            if angel.use_tree:
+            # if angle._verbose:
+            #     print(last_token)
+            print_pointer()  # ALWAYS!
+            if angle.use_tree:
                 import TreeBuilder
                 TreeBuilder.show_tree()  #Not reached
-            # bt = filter_stack()
-            ex = GivingUp("Expecting #{m0} in #{m1} ... maybe related: #{attempt}\n#{last_token  or  string_pointer}")
+            ex = GivingUp(to_source(block)+"\n"+pointer_string())
             raise ex
             # error e #exit
             # raise SyntaxError(e)
@@ -1079,10 +1054,21 @@ def raiseNewline():
     if not the.string: raise EndOfLine()
 
 
+# see checkEndOfLine
 def checkNewline():
     if(current_type==_token.NEWLINE):
         return english_tokens.NEWLINE
     return False
+
+def checkEndOfLine():
+    return current_type==_token.NEWLINE or current_type==_token.ENDMARKER or the.token_number>=len(the.tokenstream)
+    #if the.string.blank? # no:try,try,try  see raiseEnd: raise EndOfDocument.new
+    # return not the.string or len(the.string)==0
+
+def checkEndOfFile():
+    return current_type==_token.ENDMARKER or the.token_number>=len(the.tokenstream)
+    # return line_number >= len(lines) and not the.string
+
 
 
 def newline():

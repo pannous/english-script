@@ -1,4 +1,5 @@
 import unittest
+import angle
 import english_parser
 import power_parser
 import test._global
@@ -164,14 +165,6 @@ class ParserBaseTest(unittest.TestCase):
     global p,_p,parser,_parser
     parser=p= english_parser#.EnglishParser() # Module, lol hack
     _parser=_p= english_parser#.EnglishParser
-    def get_parser(self):
-        return p
-    parser=property(get_parser,0)
-
-    def setUp(self):
-        the._verbose=True # False
-        self.parser.do_interpret()
-        pass
         # p=Parser() # CANT BE ASSIGNED without double global
         # global p
         # p=Parser() # CAN BE ASSIGNED!!!
@@ -179,6 +172,13 @@ class ParserBaseTest(unittest.TestCase):
         # self.p=p   # instance!
         # self._p=Parser # generator
         # self.p=Parser()#  fresh  instance!
+
+    parser=property(lambda :p,0)
+
+    def setUp(self):
+        the._verbose=True # False
+        if not angle.use_tree:
+            self.parser.do_interpret()
 
     @classmethod
     def setUpClass(cls):
@@ -191,7 +191,7 @@ class ParserBaseTest(unittest.TestCase):
 
     def __getattr__(self, name):
         if name=='parser':
-            return self.get_parser()
+            return p
         # ruby method_missing !!!
         if name in dir(parser):
             method = getattr(parser, name)  # NOT __getattribute__(name)!!!!

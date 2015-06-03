@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import ast
-import treenode
+import tree
 
-global inside_list
-inside_list=False
+# global inside_list
+# inside_list=False
 # import time
 # import traceback
 # import sys
@@ -25,16 +25,18 @@ from nodes import FunctionCall
 import power_parser
 from power_parser import *
 from english_tokens import *
-from angel import *
+from angle import *
 from extensions import *
 import token as _token
 import the
 # from the import the.string
-from treenode import TreeNode
+from tree import TreeNode
 def parent_node():
     pass
 # ## global the.string
 
+class Todo:
+    pass
 
 def _try(block):
     return maybe(block)
@@ -100,20 +102,19 @@ def value():
         return number()
     current_value = None
     no_keyword_except(constants + numbers + result_words + nill_words + ['+', '-'])
-    x = maybe(quote) or \
+    the.result = maybe(quote) or \
             maybe(nill) or \
             maybe(number) or \
             maybe(true_variable) or \
             maybe(boolean) or \
             maybe(constant) or \
             maybe(it) or \
-            nod()
-    the.result = current_value = x
-    # rest_of_line # TOOBIG HERE!
+            maybe(nod) or \
+            raise_not_matching("Not a value")
     if ___('as'):
         typ = typeNameMapped()
-        x = cast(x, typ)
-    return x
+        the.result = cast(the.result, typ)
+    return the.result
 
 # def maybe(f):
 #     _try(f)
@@ -254,16 +255,6 @@ def package_version():
 # def _try(quote):
 #     pass
 
-
-def no_rollback(depth=0):
-    depth =caller_depth()-1
-    while len(the.rollback_depths)>0 and the.rollback_depths[-1]>depth:
-      the.rollback_depths.pop()
-
-    the.rollback_depths.append(the.no_rollback_depth)
-    the.no_rollback_depth =depth
-
-
 @Starttokens(import_keywords)
 def requirements():
     type = ___(require_types)
@@ -388,7 +379,7 @@ def nth_item():  # Also redundant with property evaluation (But okay as a shortc
     elif isinstance(l,str):
         l = l.split(" ")
     the.result = l[n] #.__getitem__(n)
-    if angel.in_condition:
+    if angle.in_condition:
         return the.result
     if set and _('to'): # or maybe_tokens(be_words): #LATER
         val = endNode()
@@ -436,7 +427,7 @@ def liste(check=True):
     return all
 
 def must_contain_substring(param): # ++ != '+' '+' tokens :(
-    current_statement=re.split(';|\n',the.current_line[the.current_offset:])[0]
+    current_statement=re.split(';|:|\n',the.current_line[the.current_offset:])[0]
     if not param in current_statement:
         raise_not_matching("must_contain_substring(%s)"%param)
 
@@ -478,7 +469,7 @@ def plusEqual():
     exp = expression()  # value
     arg = do_evaluate(exp, v.type)
     if not interpreting():
-        op=treenode.operator_equals(mod)
+        op=tree.operator_equals(mod)
         return ast.AugAssign(ast.Name(v.name, ast.Store()), op, arg)
     else:
         the.result=interpretation.self_modify(v,mod,arg)
@@ -496,13 +487,13 @@ def swift_hash():
         key = word()
         ___('"', "'")
         _(':')
-        inside_list = True
-        # h[key] = expression0 # no
-        h[the.result] = expression()  # no
-
-    star()
+        angle.inside_list = True
+        h[key] = expression()  # no
+        the.result ={key:h[key]}
+        return the.result
+    star(hashy)
     _(']')
-    inside_list = False
+    angle.inside_list = False
     return h
 
 
@@ -594,7 +585,7 @@ def expression(fallback=None):
     check_comment()
 
     if not interpreting():
-        if not angel.use_tree:
+        if not angle.use_tree:
             return ( start , pointer())
         return the.result
 
@@ -658,6 +649,8 @@ def statement():
          # AS RETURN VALUE! DANGER!
     if x:
         the.result = x
+    else:
+        print "WTF?"
     check_comment()
     return the.result
 
@@ -843,6 +836,11 @@ def spo():
     o = nod
     if interpreting(): return do_send(s, p, o)
 
+
+def print_variables():
+    return ''.join(['%s=%s'%(v,k) for v,k in variables.iteritems()])
+
+
 @Starttokens(invoke_keywords)
 def extern_method_call():
     call = __(invoke_keywords)
@@ -893,6 +891,10 @@ def has_args(method, clazz=object, assume=False):
     if method in ['invert', '++', '--']:  # increase by 8:
         return False
     if not callable(method):
+        if method in methods:
+            method = methods[method]
+        # if method in the.methods:
+        #     method = the.methods[method]
         if not isinstance(clazz, type):  #lol:
             clazz = type(clazz)
         if method in dir(clazz):
@@ -919,7 +921,7 @@ def true_method():
     no_keyword()
     should_not_start_with(auxiliary_verbs)
     # _try(lambda:tokens(methods.keys+"ed")) sorted files -> sort files ?
-    v = _try(c_method) or _try(verb) or maybe_tokens(methods.keys) or maybe_tokens(builtin_methods) or maybe_tokens(core_methods) or _try(builtin_method)
+    v = maybe_tokens(c_methods) or maybe_tokens(methods.keys) or maybe_tokens(core_methods) or maybe_tokens(builtin_methods) or _try(builtin_method) or _try(verb)
     if not v: raise NotMatching('no method found')
     return v  #.to_s
 
@@ -958,15 +960,15 @@ def generic_method_call(obj=None):
         obj = obj or object
     else:
         maybe_token('of')
-        if angel.in_args: obj = maybe(_try(nod))
-        if not angel.in_args: obj = _try(nod) or _try(liste)
+        if angle.in_args: obj = maybe(_try(nod))
+        if not angle.in_args: obj = _try(nod) or _try(liste)
         # print(sorted files)
         # if not in_args: obj=maybe( _try(nod)  or  _try(list)  or  expression )
 
     assume_args = True  # not starts_with("of")  # True    #<< Redundant with property eventilation!
     if has_args(method, obj, assume_args):
         current_value = None
-        angel.in_args = True
+        angle.in_args = True
         args = star(arg)
         if not args: args = obj
         # ___( ',','and')
@@ -974,7 +976,7 @@ def generic_method_call(obj=None):
         more = maybe_token(',')
         if more: obj = [obj] + liste(False)
 
-    angel.in_args = False
+    angle.in_args = False
     if start_brace == '(': _(')')
     if start_brace == '[': _(']')
     if start_brace == '{': _(')')
@@ -1060,27 +1062,21 @@ def breaks():
 #	 or 'say' x=(.*) -> 'bash "say $quote"'
 def action():
     start = pointer()
-    _try(bla)
-
-    def lamb():
-        maybe(special_blocks) or \
+    maybe(bla)
+    the.result = maybe(special_blocks) or \
         maybe(applescript) or \
         maybe(bash_action) or \
         maybe(evaluate) or \
         maybe(returns) or \
         maybe(selfModify) or \
         maybe(method_call) or \
-        maybe(spo)
-
-    the.result = any(lamb)  #action()
+        maybe(spo) or \
+        raise_not_matching("Not an action")
     #_try( verb_node ) or
     #_try( verb )
-
-    if not the.result: raise NoResult()
-    ende = pointer()
-    # newline22:
-    if not angel.use_tree and not interpreting(): return ende - start
-    return the.result
+    if not interpreting():
+        if not angle.use_tree: return (start,pointer())
+    return the.result # value or AST
 
 
 def action_or_block():  # expression_or_block ??):
@@ -1299,7 +1295,7 @@ def setter():
     setta = ___('to') or be()  # or not_to_be 	contain -> add or create
     # val = _try(adjective) or expressions()
     val = expression()
-    no_rollback()
+    allow_rollback()
     if setta == 'are' or setta == 'consist of' or setta == 'consists of': val = [val].flatten()
     if _let: assure_same_type_overwrite(var, val)
     # var.type=var.type or type or type(val) #eval'ed! also x is an integer
@@ -1374,7 +1370,8 @@ def variable_name(a=None):
         oldVal = the.variableValues[name]
     else:oldVal=None
     # {variable:{name:name,type:typ,scope:current_node,module:current_context))
-    if name in the.variables: return the.variables[name]
+    if name in the.variables:
+        return the.variables[name]
     # the.result = Variable({name: name, type: typ, _scope: current_node(), module: current_context(), value: oldVal})
     the.result = Variable(name= name, type= typ, scope= current_node(), module= current_context(),value= oldVal)
     the.variables[name] = the.result
@@ -1579,7 +1576,7 @@ def selector():
         maybe(that) or \
         maybe(token('of') and endNode) or \
         preposition and nod  # friends in africa
-    if angel.use_tree:
+    if angle.use_tree:
         return parent_node()
     return x
 
@@ -1599,6 +1596,8 @@ def comparison():  # WEAK _try(pattern)):
     comp = maybe(verb_comparison) or comparation()  # are bigger than
     return comp
 
+def comparation_tree():
+    Todo()
 
 # is more or less
 # is neither :. nor :.
@@ -1625,6 +1624,8 @@ def comparation():
     # if Jens.smaller then ok:
     maybe_token('than')  #, 'then' #_22'then' ;) danger:
     subnode({'comparation':comp})
+    return operator(comp or eq)
+
     return comp or eq
 
 
@@ -1867,7 +1868,7 @@ def the_noun_that():
 def const_defined(c):
     for module in sys.modules:
          for name, obj in inspect.getmembers(sys.modules[module]):
-            if inspect.isclass(obj):
+            if inspect.isclass(obj) and name==c:
                 return obj
     return False
 
@@ -2132,7 +2133,7 @@ def filter(liste, criterion):
     if not criterion: return liste
     mylist = eval_string(liste)
     # if not isinstance(mylist, mylist): mylist = get_iterator(mylist)
-    if angel.use_tree:
+    if angle.use_tree:
         method = criterion['comparative'] or criterion['comparison'] or criterion['adjective']
         args = criterion['endNode'] or criterion['endNoun'] or criterion['expressions']
     else:
@@ -2193,7 +2194,7 @@ def endNoun(included=[]):
         else:
             raise NotMatching('no endNoun')
 
-    if angel.use_tree: return obj
+    if angle.use_tree: return obj
     #return adjs.to_s+" "+obj.to_s # hmmm  hmmm   hmmm  W.T.F.!!!!!!!!!!!!!?????
     if adjs and isinstance(adjs, list): adjs = ' ' + adjs.join(' ')
     return str(obj) + str(adjs)  # hmmm hmmm   hmmm  W.T.F.!!!!!!!!!!!!!????? ( == todo )
@@ -2216,9 +2217,11 @@ def start_block(type=None):
     if checkNewline(): return OK
     return ___(start_block_words)
 
+def check_end_of_statement():
+    return checkEndOfLine() or the.current_word==";" or maybe_tokens(done_words)
 
 def end_of_statement():
-    return checkNewline() or end_expression()
+    return checkEndOfLine() or token(';') # consume ";", but DON'T consume done_words here!
 
 def english_to_math(s):
     s = s.replace_numerals
@@ -2296,7 +2299,7 @@ def jeannie(request):
 
 #  those attributes. _try(hacky) do better / don't use
 def subnode(attributes={}):
-    if not angel.use_tree: return
+    if not angle.use_tree: return
     if not current_node: return
     def lamb():
         name=attributes['name'] or attributes[0]
@@ -2310,9 +2313,9 @@ def subnode(attributes={}):
 
     return attributes  #current_value
 
-@Starttokens(request_keywords)
+@Starttokens(eval_keywords)
 def evaluate():
-    ___(request_keywords)
+    __(eval_keywords)
     no_rollback()
     the_expression = rest_of_line
     subnode({'statement':the_expression})
@@ -2351,7 +2354,7 @@ def svg(x):
 #
 
 def start_shell():
-    angel.verbose = False
+    angle.verbose = False
     print('usage:')
     print("\t./angle 6 plus six")
     print("\t.r'angle examples'test.e")
@@ -2372,7 +2375,7 @@ def start_shell():
             # interpretation= parser.parse input
             interpretation = parse(input)
             if not interpretation: next
-            if angel.use_tree: print(interpretation.tree)
+            if angle.use_tree: print(interpretation.tree)
             print(interpretation.result)
         except IgnoreException as e:
             pass
@@ -2406,7 +2409,7 @@ def startup():
             interpretation = parse(line.encode('utf-8'))
             # interpretation=EnglishParser().parse line.encode('utf-8')
             the.result = interpretation.the.result
-            if angel.use_tree: print(interpretation.tree)
+            if angle.use_tree: print(interpretation.tree)
             if the.result and not not the.result and not the.result == Nil: print(the.result)
         except NotMatching as e:
             print(e)
@@ -2457,7 +2460,7 @@ def adverb():
     no_keyword_except(adverbs)
     found_adverb = ___(adverbs)
     if not found_adverb: raise_not_matching("no adverb")
-    if not angel.use_wordnet: return found_adverb
+    if not angle.use_wordnet: return found_adverb
     current_value = found_adverb or wordnet_is_adverb()  # call_is_verb
     return current_value
 
@@ -2466,13 +2469,13 @@ def verb():
     no_keyword_except(remove_from_list(system_verbs ,be_words))
     found_verb = ___(xlist(other_verbs + system_verbs) - be_words - ['do'])  #verbs,
     if not found_verb: raise_not_matching("no verb")
-    if not angel.use_wordnet: return found_verb
+    if not angle.use_wordnet: return found_verb
     current_value = found_verb or wordnet_is_verb()  # call_is_verb
     return current_value
 
 
 def adjective():
-    if not angel.use_wordnet: return tokens(['funny', 'big', 'small', 'good', 'bad'])
+    if not angle.use_wordnet: return tokens(['funny', 'big', 'small', 'good', 'bad'])
     # if not found_verb: raise_not_matching("no verb")
     return wordnet_is_adjective()
 
@@ -2584,9 +2587,9 @@ def true_variable(node=True):
 
 
 def noun(include=[]):
-    a = the_()
+    a = maybe_tokens(articles)
     if not a: should_not_start_with(keywords)
-    if not angel.use_wordnet:
+    if not angle.use_wordnet:
         return word(include)
     from nltk.corpus import wordnet as wn
     #if true_variable(): return True
@@ -2707,7 +2710,7 @@ def loops():
           maybe( repeat_action_while) or\
           maybe( as_long_condition_block ) or\
           maybe( forever) or\
-            raise_not_matching("Not a loop")
+          raise_not_matching("Not a loop")
 
 
 # beep every 4 seconds
@@ -2777,6 +2780,7 @@ def until_loop():
     return r
 
 def looped_action():
+    must_not_start_with('while')
     must_contain( 'as long as', 'while')
     dont_interpret()
     ___('do')

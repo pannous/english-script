@@ -37,11 +37,19 @@ class Function:
   def __init__(self, **args):
     self.name     =args['name']
     self.body     =args['body']
-    self.scope    =args['scope']
-    self.clazz    =args['clazz'] or type(object)
-    self.clazz   =args['module']
-    self.object   =args['object']
-    self.arguments=args['arguments'] or []
+    self.clazz    =None # dangling ... NOT type(object) as in ruby!
+    self.object   =None # in Python ist dies bis zum Aufruf nicht bekannt!?!
+    self.modifier =None
+    self.arguments =[]
+    self.decorators=[]
+    if 'scope' in args: self.scope   =args['scope']
+    if 'owner' in args: self.object    =args['owner']
+    if 'object' in args: self.object    =args['object']
+    if 'clazz' in args:self.clazz   =args['clazz'] #1st param: self
+    if 'modifier' in args:self.modifier=args['modifier'] # public etc
+    if 'decorators' in args:self.decorators =args['decorators'] # @annotation functions
+    if 'arguments' in args:self.arguments   =args['arguments']
+    # self.scope    =args['scope'] # == class??
 
     # integrate a function between x and y => object = a function (class)
     # if(self.arguments.count>0 and not self.object)
@@ -51,6 +59,11 @@ class Function:
     #   
     # 
     # scope.variables[name]=self
+
+  def is_classmethod(self):
+      return self.clazz!=None or self.modifier=="classmethod"
+  def is_staticmethod(self):
+      return self.clazz!=None and self.modifier=="staticmethod"
 
   def argc(self):
     self.arguments.count
@@ -87,8 +100,8 @@ class Argument:
     self.preposition=args['preposition']
     self.type       =args['type']
     self.position   =args['position']
-    self.default    =args['default']
-    self.value      =args['value']
+    if'default'in args:self.default=args['default']
+    if'value'in args:self.value    =args['value']
     # scope.variables[name]=self
 
   def __eq__(self,x):
@@ -144,7 +157,7 @@ class Variable:
     self.value
 
   def __eq__(self, x):
-    if not isinstance(x,Variable): return self.value == x
+    if not isinstance(x,Variable): return self.value == x or self.name==x
     super == x
     # self.name == x.name &&
     #     self.preposition== x.preposition &&

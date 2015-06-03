@@ -1,6 +1,5 @@
 import _global
 
-Encoding.default_internal = 'UTF-8'
 _global.use_tree = False
 from parser_test_helper import *
 # from extensions import *
@@ -58,10 +57,10 @@ class FunctionTest(ParserBaseTest):
         init('here is how to define a method: done')
 
     def test_block(self):
-        variables['x'] = [1, ]
-        variables['y'] = [2, ]
-        assert_equals(len(self.parser.variables(), ), 2)
+        variables['x'] = Variable(name='x',value=1)
+        variables['y'] = Variable(name='x',value=2)
         z = parse('x+y;')
+        assert_equals(len(self.parser.variables()), 2)
         assert_equals(z, 3)
 
     def test_params(self):
@@ -116,13 +115,13 @@ class FunctionTest(ParserBaseTest):
         assert_result_is('reverse x', 'ih')
 
     def test_rubyThing(self):
-        parse('Math.hypot (3,3)')
+        parse('Math.hypot(3,3)')
         parse('Math.sqrt 8')
         parse('Math.sqrt( 8 )')
         parse('Math.ancestors')
 
     def test_x_name(self):
-        variables['x'] = [Variable({'value': 7, 'name': 'x', }), ]
+        variables['x'] = Variable(name='x',value=7)
         init('x')
         assert_equals(name(self.parser.nod(), ), 'x')
 
@@ -131,7 +130,7 @@ class FunctionTest(ParserBaseTest):
         assert_equals(variables['counter'], 3)
 
     def test_var_check(self):
-        variables['counter'] = [Variable({'name': 'counter', 'value': 3, }), ]
+        variables['counter'] =Variable(name='counter',value=3)
         assert ('the counter is 3')
 
     def test_array_arg(self):

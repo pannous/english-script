@@ -3,7 +3,7 @@ from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 from io import BytesIO
 import os
 # import TreeBuilder
-import angel
+import angle
 from exceptions import *
 import extensions
 # encoding: utf-8
@@ -201,7 +201,7 @@ ZERO='0'
 start_block_words=[';',':', 'do', '{','begin','start', 'first you ', 'second you ', 'then you ', 'finally you ']
 
 flow_keywords=['next', 'continue', 'break', 'stop']
-request_keywords=['what is', 'evaluate', 'how much', 'what are', 'calculate', 'eval']
+eval_keywords=['eval','what is', 'evaluate', 'how much', 'what are', 'calculate']
 nonzero_keywords=['nonzero', 'not null', 'defined', 'existing', 'existant','existent', 'available']
 other_verbs=['increase','decrease','square','invert','test']
 special_verbs=['evaluate', 'eval']

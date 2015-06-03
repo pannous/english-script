@@ -1,7 +1,10 @@
+from __future__ import print_function
+import __builtin__
 import extensions
 
+
 global string, last_node, current_value, nodes, depth,rollback_depths,OK
-global verbose,use_wordnet,result,last_result
+global _verbose,use_wordnet,result,last_result
 global tokenstream,current_token,current_type,current_word,current_line
 global in_condition,in_pipe,in_args
 
@@ -20,8 +23,8 @@ context = ''
 variables = {}
 variableTypes = {}
 variableValues = {}  # ={nill: None)
-
-methods = {'beep': extensions.beep}  # name->method-node
+methods = {'beep': extensions.beep,'puts':print_function,'print':print_function,'reverse':extensions.xstr.reverse}  # name->method-node
+classes = {'list': extensions.xlist,'Math': extensions.Math}
 c_methods = ['printf']
 builtin_methods = ['puts', 'print']  # "puts"=>x_puts !!!
 core_methods = ['show', 'now', 'yesterday', 'help']  # _try(difference)
