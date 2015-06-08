@@ -1,7 +1,7 @@
 ![ENGLISH SCRIPT](English script.png "ENGLISH SCRIPT")
 
 This is English as a programming language.
-The main purpose of this language is to make programming accessible to many more people, more fun and to facilitate programming computers via Voice.
+The main purpose of this language is to make programming accessible to many more people, more fun and to facilitate programming computers via voice.
 
 The guiding philosophy is to have forgiving interfaces yet strict implementations, and to make special chars (braces,colons,etc) completely optional.
 
@@ -76,7 +76,7 @@ The grammar is not meant to be linguistically complete, but [functionality compl
 * [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine) (thanks to Mirah)
 * [.Net/CLR/DLR](https://en.wikipedia.org/wiki/Dynamic_Language_Runtime) (via Cecil), 
 * JavaScript, and 
-* run **natively**, as a final aim, maybe similar to [Vala](https://en.wikipedia.org/wiki/Vala_%28programming_language%29) or RPython
+* As a final aim: run **natively**, maybe similar to [Crystal](https://github.com/manastech/crystal), [Vala](https://en.wikipedia.org/wiki/Vala_%28programming_language%29) or RPython
 
 Having a [self-hosted "bootstrapped" compiler](https://en.wikipedia.org/wiki/Bootstrapping_%28compilers%29) is an important mid-term goal.
 
