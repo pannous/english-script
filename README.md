@@ -40,9 +40,40 @@ To check if person is online on Skype:
 End
 ```
 
-Installation
-------------
-`git clone --recursive https://github.com/pannous/english-script`
+INSTALL
+-------
+`git clone --recursive git@github.com:pannous/english-script.git`
+
+`cd english-script`
+
+`./install.sh`
+
+Start the shell : `./bin/angle` or `rake shell`
+
+EXPERIMENT
+----------
+Run it and see yourself!
+
+**experiment** by typing
+
+`./bin/angle "6 plus six"`
+
+`./bin/angle examples/test.e`
+
+`./bin/angle` (no args to start the shell)
+
+`⦠ 6 plus six`
+
+`⦠ beep three times`
+
+`⦠ x is 2; if all 0,2,4 are smaller 5 then increase x`
+
+**Test**
+
+Run the tests : `rake test`
+
+Run an angle file: `rake run[examples/test.e]`
+
 
 In progress
 -----------
@@ -89,40 +120,6 @@ Having a [self-hosted "bootstrapped" compiler](https://en.wikipedia.org/wiki/Boo
 To check out the current capabilities of English Script have a look at the [tests](https://github.com/pannous/english-script/tree/master/test/unit),
 [keywords](https://github.com/pannous/english-script/blob/master/src/core/english-tokens.rb) and
 [grammar](https://github.com/pannous/english-script/blob/master/src/core/english-parser.rb)
-
-INSTALL
--------
-`git clone git@github.com:pannous/english-script.git`
-
-`cd english-script`
-
-`./install.sh`
-
-Start the shell : `./bin/angle` or `rake shell`
-
-EXPERIMENT
-----------
-Run it and see yourself!
-
-**experiment** by typing
-
-`./bin/angle "6 plus six"`
-
-`./bin/angle examples/test.e`
-
-`./bin/angle` (no args to start the shell)
-
-`⦠ 6 plus six`
-
-`⦠ beep three times`
-
-`⦠ x is 2; if all 0,2,4 are smaller 5 then increase x`
-
-**Test**
-
-Run the tests : `rake test`
-
-Run an angle file: `rake run[examples/test.e]`
 
 Todos
 -----
