@@ -173,7 +173,7 @@ Blocks can be opened in many different ways. We want to add the following keywor
 Once (trigger condition) do (block) end
 As long as...
 As soon as ...
-Repeat the following...
+Repeat ...	# just function, doesn't need keyword
 Infinitly do ... # just function, doesn't need keyword
 ```
 And many more.
@@ -197,7 +197,7 @@ done calculating the volume
 
 ★Gradual Typing★
 ----------------
-Optional typing, merging strongly typed and dynamic languages will be one of the killer features of angle/english-script.
+(Optional typing)[https://en.wikipedia.org/wiki/Gradual_typing], merging strongly typed and dynamic languages, will be one of the killer features of angle/english-script.
 One way of in Achieving this else tell compile multiple variants of one method. 
 
 By default a dynamic method with dynamic dispatch will be compiled for every function definition

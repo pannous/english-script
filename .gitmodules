@@ -4,3 +4,9 @@
 [submodule "betty"]
 	path = betty
 	url = git@github.com:pickhardt/betty.git
+[submodule "cast"]
+	path = cast
+	url = git@github.com:pannous/cast.git
+[submodule "angelos/cast"]
+	path = angelos/cast
+	url = git@github.com:pannous/cast.git

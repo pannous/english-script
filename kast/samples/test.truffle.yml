@@ -1,9 +1,0 @@
-#http://www.chrisseaton.com/rubytruffle/how-method-dispatch-works-in-jruby-truffle/
-#ruby -X+T -J-G:+TraceTruffleExpansion test.rb
-RubyCallNode
-    name: "+"
-    receiver: local variable a
-    arguments: [ local variable b ]
-    block: nil
-    dispatch:
-        UninitializedDispatchNode

@@ -1,8 +1,0 @@
-# class Fixnum(int):pass
-Fixnum: int
-Float:  float
-Integer: int
-# ParserTestHelper:   parser_test_helper
-Array: list
-String: str
-class: type
