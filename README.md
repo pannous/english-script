@@ -40,6 +40,10 @@ To check if person is online on Skype:
 End
 ```
 
+Installation
+------------
+`git clone --recursive https://github.com/pannous/english-script`
+
 In progress
 -----------
 `add one to every odd number in 1,2,3 == 2,2,4`
