@@ -1,4 +1,4 @@
-require_relative '../../kast/kast'
+require_relative '../../cast/cast'
 require_relative 'nodes/argument'
 require_relative 'nodes/function.rb'
 require_relative 'nodes/function-call'
