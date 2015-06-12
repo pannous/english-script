@@ -10,9 +10,6 @@
 [submodule "angelos/cast"]
 	path = angelos/cast
 	url = git@github.com:pannous/cast.git
-[submodule "english-script-samples"]
-	path = english-script-samples
-	url = git@github.com:pannous/english-script-samples.git
 [submodule "samples"]
 	path = samples
 	url = git@github.com:pannous/english-script-samples.git
