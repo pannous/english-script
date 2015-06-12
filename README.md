@@ -58,7 +58,7 @@ Run it and see yourself!
 
 `./bin/angle "6 plus six"`
 
-`./bin/angle samples/test.e`
+`./bin/angle samples/factorial.e`
 
 `./bin/angle` (no args to start the shell)
 
