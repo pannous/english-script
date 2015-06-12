@@ -58,7 +58,7 @@ Run it and see yourself!
 
 `./bin/angle "6 plus six"`
 
-`./bin/angle examples/test.e`
+`./bin/angle samples/test.e`
 
 `./bin/angle` (no args to start the shell)
 
@@ -67,6 +67,8 @@ Run it and see yourself!
 `⦠ beep three times`
 
 `⦠ x is 2; if all 0,2,4 are smaller 5 then increase x`
+
+Check out the [samples](https://github.com/pannous/english-script-samples)
 
 **Test**
 
