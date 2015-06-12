@@ -172,9 +172,9 @@ Blocks can be opened in many different ways. We want to add the following keywor
 ```
 Once (trigger condition) do (block) end
 As long as...
-Infinitly do ...
 As soon as ...
 Repeat the following...
+Infinitly do ... # just function, doesn't need keyword
 ```
 And many more.
 
@@ -193,6 +193,39 @@ Preferably long blocks can be ended by naturally annotating what the block was a
 how to calculate the volume of a mesh object:
 	// Long calculation block goes here
 done calculating the volume
+```
+
+★Gradual Typing★
+----------------
+Optional typing, merging strongly typed and dynamic languages will be one of the killer features of angle/english-script.
+One way of in Achieving this else tell compile multiple variants of one method. 
+
+By default a dynamic method with dynamic dispatch will be compiled for every function definition
+````
+def myadd x,y
+   x+y
+   
+=>   
+def myadd(any x,any y) returns any
+   x+y   
+```
+
+If the compiler figured out a static type pathway then a strongly typed function will be added:
+
+``
+int myadd(x:int,y:int)
+	return x+y
+``
+
+Fortunately multiple method signatures are possible in the JVM and DLR, unfortunately not in Ruby or Python.
+So for now this feature has to be restricted so specific runtime environments.
+https://www.youtube.com/watch?v=2wDvzy6Hgxg
+
+Note type hints can be java style or python style (with braces).
+Or english style:
+```
+to add a number x to a number y
+	return x plus y 
 ```
 
 ★Implementation ★
