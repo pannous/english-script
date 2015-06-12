@@ -14,3 +14,7 @@ out
 build
 ../../../english-script-samples
 english-script-samples
+./main
+main
+./test/unit/main
+./build/
