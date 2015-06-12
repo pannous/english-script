@@ -1080,8 +1080,6 @@ def action():
 
 
 def action_or_block():  # expression_or_block ??):
-    # dont_interpret  # _try(always)
-    # the.string
     if not starts_with([';',':', 'do', '{','begin','start']):
         a = maybe(action)
         if a: return a
@@ -1092,7 +1090,6 @@ def action_or_block():  # expression_or_block ??):
 
 
 def expression_or_block():  # action_or_block):
-    # dont_interpret  # _try(always)
     a = maybe(action) or maybe(expression)
     if a: return a
     b = block()
@@ -1151,18 +1148,13 @@ def do_execute_block(b, args={}):
             block_parser.variables[str(arg)] = v  # to_sym todo NORM in hash!!!
         else:
             block_parser.variables[str(arg)] = Variable(name=arg, value=val)
-
-
     # block_parser.variables+=args
     try:
         the.result = block_parser.parse.result
     except:
         error(traceback.extract_stack())
-
     variableValues = block_parser.variableValues
     return the.result
-    #do_evaluate b
-
 
 def datetime():
     # Complicated stuff!
@@ -1174,7 +1166,7 @@ def datetime():
     # import chronic_duration
     # WAH! every second  VS  every second hour WTF ! lol
     n = _try(number) or 1  # every [1] second
-    _to = maybe(lambda: tokens('to', 'and'))
+    _to = maybe(lambda: tokens(['to', 'and']))
     if _to: _to = number()
     _unit = __(time_words)  # +["am"]
     _to = _to or ___('to', 'and')
@@ -1216,9 +1208,6 @@ def assure_same_type(var, type):
     if oldType and var.type and not var.type <= oldType: raise WrongType("#{var.name} has type {oldType), can't set to #{var.type)")
     if type and var.type and not (var.type <= type or var.type >= type): raise WrongType("#{var.name} has type #{var.type), can't set to  #{type)")
     # if type and var.type and not var.type>=type: raise WrongType.new "#{type) #{var.type)"
-    # except
-    #   p e
-    #
     var.type = type
 
 
@@ -1278,8 +1267,6 @@ def declaration():
     return var
 
 
-#  CAREFUL WITH WATCHES!!! THEY manipulate the current system, especially variable
-#r'*	 let nod be nods *'
 @Starttokens(let)
 def setter():
     must_contain_before(args= be_words + ['set'],before=['>', '<', '+', '-', '|', '/', '*'])
