@@ -62,7 +62,7 @@ To delete mail:
 End
 ```
 Here 'mail' acts as argument name and argument type at once.
-No more Mail mail=new Mail().getMail()
+No more Java style Mail mail=new Mail().getMail();
 
 
 Language Specification
