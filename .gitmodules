@@ -1,6 +1,3 @@
-[submodule "dev"]
-	path = dev
-	url = git@github.com:pickhardt/betty.git
 [submodule "betty"]
 	path = betty
 	url = git@github.com:pickhardt/betty.git
@@ -10,9 +7,6 @@
 [submodule "angelos/cast"]
 	path = angelos/cast
 	url = git@github.com:pannous/cast.git
-[submodule "english-script-samples"]
-	path = english-script-samples
-	url = git@github.com:pannous/english-script-samples.git
 [submodule "samples"]
-	path = english-script-samples
+	path = samples
 	url = git@github.com:pannous/english-script-samples.git
