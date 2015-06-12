@@ -68,7 +68,7 @@ Run it and see yourself!
 
 `⦠ x is 2; if all 0,2,4 are smaller 5 then increase x`
 
-Check out the [samples](https://github.com/pannous/english-script-samples)
+Check out the [samples](https://github.com/pannous/english-script-samples) and [tests](test/unit)!
 
 **Test**
 
