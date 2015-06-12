@@ -4,6 +4,9 @@
 [submodule "cast"]
 	path = cast
 	url = git@github.com:pannous/cast.git
+[submodule "angle"]
+	path = angle
+	url = git@github.com:pannous/angle.git
 [submodule "angelos/cast"]
 	path = angelos/cast
 	url = git@github.com:pannous/cast.git
