@@ -12,6 +12,10 @@ git clone git@github.com:pannous/EnglishScript.tmbundle.git ~/Library/Applicatio
 
 echo INSTALLING DEPENDENCIES... This might take a minute or 10
 
+
+git submodule init git@github.com:pannous/cast.git
+git submodule init git@github.com:pannous/angle.git # the python branch of english script
+git submodule init git@github.com:pannous/english-script-samples.git
 git submodule init git@github.com:pickhardt/betty.git
 git submodule foreach git pull origin master
 

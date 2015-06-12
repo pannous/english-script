@@ -13,3 +13,6 @@
 [submodule "english-script-samples"]
 	path = english-script-samples
 	url = git@github.com:pannous/english-script-samples.git
+[submodule "samples"]
+	path = english-script-samples
+	url = git@github.com:pannous/english-script-samples.git
