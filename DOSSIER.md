@@ -11,7 +11,7 @@ You request the status report from all employees who haven't submitted the statu
 ``
 < Replace this example >
 
-While Siri is already great for retrieving information it falls a bit short in accessing some of the phones capabilities. In some of the existing assistants on android you can already say things like “enable Bluetooth, turn down the volume, open speech input settings” etc.
+While Siri is already great for retrieving information it falls a bit short in accessing some of the phones capabilities. In some of the existing [assistants](http://jeannie-assistant.com/) on android you can already say things like “enable Bluetooth, turn down the volume, open speech input settings” etc.
 But this is only the first step in the evolution of speech control.
 
 ★ Voice operating systems ★
@@ -19,7 +19,7 @@ But this is only the first step in the evolution of speech control.
 
 Next you will not only be able to control some specific apps but most applications on your device.
 Ultimately a voice operating system will enable complete new workflows, from taking pictures to modifying them, to putting them into documents, to sharing them ...
- Of course this requires the operating systems to specify mechanisms in which applications can promote their capabilities. In a Narrow way this is already done with Dragon NaturallySpeaking on Windows machines, where you can access all the functionality which is accessible through the menus by speech. A broader approach will allow applications to reveal patterns , Phrases or keywords for which they can provide a useful action. Alternatively the speech input flow will be forwarded to the active application which can then decide to do something useful with it or not itself.
+ Of course this requires the operating systems to specify mechanisms in which applications can promote their capabilities. In a Narrow way this is already done with Dragon NaturallySpeaking on Windows machines, where you can access all the functionality which is accessible through the menus by speech. A broader approach will allow applications to reveal patterns , Phrases or keywords for which they can provide a useful action. Alternatively the speech input flow will be forwarded to the active application which can then decide to do something useful with it or not.
 
 After that or maybe in parallel the really interesting change in paradigms will occur: People will not only be able to completely control everything they see on their screen by voice, but they will also be able to control the future state of their device. First by single sentences like “enable airplane mode whenever I enter an airplane”. Then by whole sequences of commands, which should be seen as programs or algorithms. Now all we needs is a –functionality complete– set of speakable structures and the fun can really begin:
 
@@ -31,9 +31,14 @@ After that or maybe in parallel the really interesting change in paradigms will 
 `Print all prime numbers that are smaller than 17`
 
 ```
-How to make a beep
+To make a beep
+    on apple say "beep"
 	Print Character 7
 Done
+
+To say something
+    bash "say" something
+End
 ```
 
 ```
@@ -58,28 +63,30 @@ If so, You turn the light bulb in the living room green until I clap my hand.`
 
 * Predecessors *
 ----------------
-Doesn't it remind you of https://en.wikipedia.org/wiki/AppleScript?
-It should, because AppleScript is the predecessor of real speakable programming languages. 
+[AppleScript](https://en.wikipedia.org/wiki/AppleScript) 
 Despite of its many shortcomings it should be a real inspiration to anyone in the language community.
 Many of the patterns in the first version of English script were heavily influenced by the grammar of AppleScript.
 The main shortcomings of AppleScript are:
 1) Siloed environment, not compiling to any cross-platform framework
-2) slow execution
-3) unreliable execution: Things often don't work as expected and crash without warning nor explanation 
+2) Slow execution
+3) Unreliable execution: Things often don't work as expected and crash without warning nor explanation 
+4) Some syntactic oddities ("tell me" to call a local function, Linux paths etc)
 
 Ideally of course we would love to solve/avoid those shortcomings in EnglishScript
 
-In the past people came up with [crazy solutions](http://shorttalk-emacs.sourceforge.net/EmacsListen/from-listen/quickref.pdf) to cope with repetitive strain injuries! In five years programming computers by voice will be as commonplace as dictating emails by voice.
+In the past people came up with [crazy solutions](http://shorttalk-emacs.sourceforge.net/EmacsListen/from-listen/quickref.pdf) to cope with repetitive strain injuries! In five years, programming computers by voice will be as commonplace as dictating emails
+ by voice.
 
 Guiding principles 
 ------------------
-The language is optimized for speakability and readability, without compromising functionality:
+The language is optimized for speakability and readability, without compromising functionality nor rigor:
 Avoid special characters whenever possible
-All English words which are not nouns are keywords, especially prepositions and pronouns.
+All English words which are not nouns or verbs are keywords, especially prepositions and pronouns.
 Solve the block problem ruby style with end keywords: do blah done
   def done_words
     ['done','end','okay','ok','OK','O.K.','}','alright','that\'s it',..]
   end
+Update: now python style dedent is accepted too
 
 Allow optional special characters to increase readability
 
@@ -87,46 +94,63 @@ Design the language for brevity but still allow longer formulations
 Example:
 ``
 To beep
-	Print 0xa
-End
-``
+	Print 7
 
-Vs
+is equally syntactically correct as the following
+
+function beep() returns void:
+    print(0xa)
+end beep
+
 ``
-Here is how to make a beep:
-  Print the ascii character seven to the system output
-Okay finish the beep definition
-``
+This comes without a heavy burden on the parser:
+it just contains some optional character/word patterns.
 
 * Future *
 ----------
-Even in the beginning we are not just trying to bring AppleScript to our environments, but to have a better syntax from the very start.
+Even in the beginning we are not just trying to bring AppleScript to our environments, but to have a better syntax 
+and runtime from the very start.
 We are also introducing new concepts and keywords 
 ◦ **once** / **whenever** / **as long as** / ... keywords, to connect a programming block to the event notification system.
-◦ **My** Keyword to access the synchronized user graph.
-◦ Even Listeners and triggers, “Clap my hand”, to be specified in other programming blocks.
-◦ Clarification dialogs: If one of the mentioned objects or events is unknown, the system can ask things like:
+◦ **my** Keyword to access the synchronized user graph. `search my email for spam. delete all results`
+◦ Event pipeline: Listeners and triggers, “Clap my hand”, to be specified in other programming blocks.
+◦ Library server: we want to make sure that a good package bundler is part of the distribution (a better gem/pip/...)
+◦ AND functional snippets will be uploaded to a function server, to be [retrieved](http://crystal-lang
+.org/2015/04/01/auto.html) by other user.
+◦ Clarification dialogs: If one of the mentioned objects or events is unknown, the system/IDE can ask things like:
 How do I know when you clap your hands
+◦ API to connect with external code and existing libraries. For example you could write a little handclapping detection engine in c and then whenever a handclap occurs you invoke EnglishScript::Event("my.hand.clap") or EnglishScript::EventSPO(Me,"clap","hand")
 
-Side note: Clarification systems are not only useful for this new programming language but also in other contexts:
-A simple clarification system is already part of AIML and a bit more advanced in Jeannie.
-
-◦ Eventually a simple API to connect with external code and existing libraries, For example you could write a little handclapping detection engine in c and then whenever a handclap occurs you'll invoke EnglishScriptEvent("my.hand.clap") or EnglishScriptEventSPO("me clap me.hand")
-
-Our engine should be smart enough to semantically match "I clip my hand" against this event.
+Our engine should be smart enough to semantically match "I clap my hand" against this event.
 ◦ We not only have a Personal graph for the 'my/me/I' keyword but also an active graph for objects around you: 
 "bulb[@living_room].color=green". The bulb object needs to have a method ‘turn green’ or 'set color'.
 
+Event system
+------------
+```
+once(<event>) do <block> end
+once beeped do print 'yay' end
+beep() -> trigger["beeped"] IFF there is a listener
+whenever I clap my hand you toggle the light in the living room
+
+to toggle the light in a room
+    set room.light.on = not room.light.on
+end
+```
 
 * Execution *
 -------------
-These seem like many steps to be done! The complexity of the task demanded that we first introduced these features in an existing language: Ruby
+There are many steps to be taken! The complexity of the task demanded that we first introduced these features in an
+ existing language: Ruby
+Writing an interpreter for these features was relatively easy in a dynamic language like Ruby (a universell DSL if you 
+will). We are currently working on writing a compiler which dumps Python bytecode, thanks to its nice AST. We 
+[generalized](https://github.com/pannous/cast/) this AST a little, so that we can hopefully soon also emit bytecode for
+ the JVM and DLR.
 
-To summarize the requested features:
+
+To summarize the requested runtime features:
+A lightweight semantic event system, with a simple syntax to connect with listeners: 
 A personnel and general object graph with attached methods.
-A semantic event system, with a simple syntax to connect with listeners: once(<enent>) do <block> end
-Ruby's extendable objects and classes provide the perfect playground for English script
-However one must not be tempted to rely on rubies runtime too heavily early on, because it would make it difficult later to compile the script to JVM byte code. (Appropriate equivalent to the method_missing hook in java: proxies? But hard link functions on compile time whenever possible!)
 
 * Difficulties *
 ----------------
