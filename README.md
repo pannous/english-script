@@ -48,21 +48,18 @@ INSTALL
 
 `./install.sh`
 
-Start the shell : `./bin/angle` or `rake shell`
-
-Warning: The project is still in alpha, don't expect all tests to pass!
-
 EXPERIMENT
 ----------
-Run it and see yourself!
+
+Warning: The project is still in alpha, don't expect all tests to pass!
 
 **experiment** by typing
 
 `./bin/angle "6 plus six"`
 
-`./bin/angle samples/factorial.e`
+`./bin/angle samples/factorial.e` or
 
-`./bin/angle` (no args to start the shell)
+Start the shell : `./bin/angle` or `rake shell`
 
 `⦠ 6 plus six`
 
