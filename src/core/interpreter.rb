@@ -225,17 +225,16 @@ end
     # block_parser.classes =@classes
     # block_parser.modules =@modules
     block_parser.variableValues=@variableValues
-    # if not args.is_a? Hash:
-    #   args={'arg': args}
+    args                       ={arg: args} if not args.is_a? Hash
     # see match_arguments for preparation!
-    for arg, val in args.items()
+    for arg, val in args
       v=block_parser.variables[arg]
       if v
         v                               =v.clone
         v.value                         =val
         block_parser.variables[arg.to_s]=v # to_sym todo NORM in hash!!!
       else
-        block_parser.variables[arg.to_s]=Variable.new(name= arg, value=val)
+        block_parser.variables[arg.to_s]=Variable.new name: arg, value: val
       end
     end
     # block_parser.variables+=args
