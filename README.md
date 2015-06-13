@@ -50,6 +50,8 @@ INSTALL
 
 Start the shell : `./bin/angle` or `rake shell`
 
+Warning: The project is still in alpha, don't expect all tests to pass!
+
 EXPERIMENT
 ----------
 Run it and see yourself!
