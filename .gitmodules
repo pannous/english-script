@@ -2,7 +2,7 @@
 	path = betty
 	url = git@github.com:pickhardt/betty.git
 [submodule "cast"]
-	path = cast
+	path = kast
 	url = git@github.com:pannous/cast.git
 [submodule "angle"]
 	path = angle

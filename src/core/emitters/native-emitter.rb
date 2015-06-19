@@ -1,3 +1,61 @@
+# Statically Compiled Ruby "FOUNDRY" HE GAVE UP!
+# http://whitequark.org/blog/2011/12/21/statically-compiled-ruby/
+# http://whitequark.org/blog/2013/07/30/metaprogramming-in-foundry/
+ # evaluating Ruby code is a slow process. Even when you have an expression like 5 + 2 (which is syntactic sugar for 5.+(2)), one cannot safely assume that + method has not been redefined as something completely different. 
+-> FINAL final keyword!! for methods +classes?
+HE GAVE UP!
+Simply put, this is not a language I myself would use. Also, I could not find a way to get rid of global type inference which didn’t involve turning the language into a not invented here version of C#, Rust or what else.
+ don’t use global type inference, it sucks -> Crystal :(
+	
+
+ [ "foo", 42 ].each do |v|
+   print(v + v)
+ end
+ how can such code be typed in the object-language? Turns out there are two obvious solutions:
+     The compiler can infer a union type str | int, wrap it in a tagged container and pass to the closure. Proliferation of union types (and corresponding dispatch tables) generally grows code size exponentially, execution time linearly, and prohibits further inference and optimization.
+     For these reasons, Foundry does not automatically infer union types. They still can be specified explicitly, though, and once specified, will propagate unmodified through the code.
+     The compiler can infer a polytype for the closure. Foundry does not support polytypes in the object-language to avoid placing needless restrictions on the value representation.
+
+
+"Rubinius provides a lot of methods to inspect its internal state, which will prove to be useful for our purpose. Particularly, it allows one to retrieve bytecode for any executable object.
+
+by a common convention, methods named to_s return String, this convention is not enforced
+an array, being strictly heterogenous, is a “typing black hole”: it can accept objects of any type, and it always emits unqualified objects.
+
+I should make a small digression here. While I have mentioned operations on AST, in fact these have a little to do with an actual abstract syntactic tree of a Ruby source file. The syntax of Ruby is notoriously complex—it’s enough to say that none of alternative implementations have their own parser—and the AST, while being a bit simpler, is still too complex to allow for convenient transformations. On the other hand, while bytecode only consists of unique opcodes, it is an internal interface prone to unexpected changes, and in case of Rubinius’ bytecode, it is a bytecode for stack VM, which isn’t easily transformed either. The latter can be trivially solved."
+
+sym = :test
+puts "the symbol is #{sym}"
+
+The directly transformed SSA representation is as follows:
+a = :test
+setlocal(0, a)
+b = "the symbol is "
+c = getlocal(0)
+d = tostring(c)
+e = stringconcat(b, d)
+f = self
+g = send(f, :puts, [e])
+leave(g)
+
+After folding all local variable accesses and propagating constants, it looks like this:
+
+leave(
+  send(self, :puts, [
+    stringconcat(
+      "the symbol is ",
+      tostring(:test))]))
+
+
+def sum(Array[Fixnum] numbers) => Fixnum
+  result = 0
+  numbers.each do |number| result += number end
+  result
+end
+
+Note how the type of a variable result isn’t specified. It is inferred automatically at the point of first assignment and enforced later.
+The return type is specified explicitly, but it could be omitted here, as it can be inferred from the type of variable result.
+
 # via PYTHON:
 
 # Use Cython, which is a Python-like language that is compiled into a Python C extension, Python to C source code translator

@@ -44,6 +44,11 @@ class TypeTest < ParserBaseTest
     assert_equals result, Array
   end
 
+  def test_type22
+    parse "x=1;class of x"
+    assert_equals result, Fixnum
+  end
+
 
   def test_type
     parse "x=1,2,3;"

@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+#  again via AST:
+# https://v8.googlecode.com/svn/trunk/src/ast.h
+
+# Jeremy Ashkenas @ coffeescript -> T800 teescript .tee .t
+
 # OPAL opal = ruby to js
 # http://opalrb.org/try/
 # require 'opal'
@@ -46,6 +51,8 @@
 # f.puts Opal.compile("puts 'wow'")
 # f.puts Opal.compile("x = (1..3).map do |n| n * n * n  end.reduce(:+); puts x")
 # Opal::Builder.build('opal')
+
+# https://github.com/whitequark/coldruby
 
 class JavascriptEmitter < Emitter
   require 'json'
