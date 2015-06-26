@@ -111,7 +111,7 @@ The grammar is not meant to be linguistically complete, but [functionality compl
 * Ruby and [Python](https://github.com/pannous/angle) environment, but will soon compile to the 
 * [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine) (thanks to [Mirah](https://github.com/mirah/mirah))
 * [.Net/CLR/DLR](https://en.wikipedia.org/wiki/Dynamic_Language_Runtime) (via Cecil, maybe Mirah too), 
-* Web (JavaScript or Webasm via EMScripten?), and 
+* Web (JavaScript or [webasm](https://github.com/pannous/webasm) via EMScripten?), and 
 * As a final aim: run **natively**, maybe similar to [Crystal](https://github.com/manastech/crystal), [Vala](https://en.wikipedia.org/wiki/Vala_%28programming_language%29) or RPython
 
 Having a [self-hosted "bootstrapped" compiler](https://en.wikipedia.org/wiki/Bootstrapping_%28compilers%29) is an important mid-term goal.
