@@ -1,14 +1,25 @@
-# see JVM emitter
-# http://openjdk.java.net/projects/graal/
+#
+# S E E    JVM emitter <<<<<<<<<<<<<<<
+# ^^^^^^^^^^^^^^^^^
 
-# javassist
+# https://stackoverflow.com/questions/2261947/are-there-alternatives-to-cglib
+# http://openjdk.java.net/projects/graal/
+# http://www.drgarbage.com/bytecode-visualizer/
+# AST to bytecode toy # git@github.com:jakobehmsen/astava.git
+
+# JAVASSIST for dynamic repl AND bytecode class files!!
 ClassPool pool = ClassPool.getDefault();
 CtClass cc = pool.get("test.Rectangle");
 cc.setSuperclass(pool.get("test.Point"));
 CtField f = new CtField(ClassPool.getDefault().get("java.util.ArrayList"), "someList", cc);
+CtMethod mthd1 = CtNewMethod.make("public Integer getTestInte() { return testInte; }", classe);
+
 cc.addField(f);
 cc.addField(new CtField(CtClass.intType, "z", cc));
 cc.writeFile();
+
+# Javassist can be used with a class loader so that bytecode can be modified at load time.
+# https://jboss-javassist.github.io/javassist/tutorial/tutorial.html
 
 # RubyMotion PLEASE become open source!!
 

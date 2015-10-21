@@ -144,7 +144,7 @@ There are many steps to be taken! The complexity of the task demanded that we fi
  existing language: Ruby
 Writing an interpreter for these features was relatively easy in a dynamic language like Ruby (a universell DSL if you 
 will). We are currently working on writing a compiler which dumps Python bytecode, thanks to its nice AST. We 
-[generalized](https://github.com/pannous/cast/) this AST a little, so that we can hopefully soon also emit bytecode for
+[generalized](https://github.com/pannous/kast/) this AST a little, so that we can hopefully soon also emit bytecode for
  the JVM and DLR.
 
 

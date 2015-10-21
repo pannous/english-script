@@ -93,8 +93,8 @@ Implicit lambda variable '**it**'
 
 The last example also illustrates what we call **matching by type name**.
 ```
-To delete mail:
-  move that mail to trash folder
+To delete an email
+  move that email to the trash folder
 End
 ```
 Here 'mail' acts as argument name and argument type at once.
@@ -131,7 +131,7 @@ Todos
 * IntelliJ plugin
 * Promote
 
-This language might soon be used in our successful beloved Jeannie assistant, which has over 4 million downloads so far:
+This language might soon be used in our successful beloved Jeannie assistant, which has over 5 million downloads so far:
 http://www.voice-actions.com
 
 For a background story/vision/philosophy/future of this project read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md)
