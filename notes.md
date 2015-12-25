@@ -1,5 +1,7 @@
 TODO
 https://github.com/mephux/envdb !
+Fwd: Nixar - Joyable equivalents for existent linux commands  http://nixar.work/
+
 
 
 JVM, .Net (CLR/CIL,msil), llvm , apple CLI, WebCL and NaCl??

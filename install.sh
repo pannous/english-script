@@ -26,4 +26,4 @@ export ENGLISH_SCRIPT_HOME=$PWD
 echo export ENGLISH_SCRIPT_HOME=$PWD
 echo "export ENGLISH_SCRIPT_HOME=$PWD" >> ~/.bashrc
 
-sudo ln -s $ENGLISH_SCRIPT_HOME/bin/angle /usr/bin/angle
+sudo ln -s $ENGLISH_SCRIPT_HOME/bin/angle /usr/local/bin/angle

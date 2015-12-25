@@ -20,6 +20,7 @@ end
 
 def start_shell
   $verbose=false
+  puts 'English Script v1.2'
   puts 'usage:'
   puts "\t./angle 6 plus six"
   puts "\t./angle examples/test.e"
