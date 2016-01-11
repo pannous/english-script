@@ -26,6 +26,8 @@ gem 'rake'
 gem 'minitest-reporters', '>= 0.5.0'
 # gem "minitest", "4.7.5" #if $RUBYMINE
 
+gem 'parser'
+# gem 'parser/current'
 
 
 $RUBYMINE=ENV['RUBYMINE']||true

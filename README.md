@@ -5,8 +5,6 @@ The main purpose of this language is to make programming accessible to many more
 
 The guiding philosophy is to have forgiving interfaces yet strict implementations, and to make special chars (braces,colons,etc) completely optional.
 
-UPDATE: Since we love to compile our language to native or at least bytecode, we focussed on the [python implementation](https://github.com/pannous/angle) of English script. Fortunately finally Ruby now supports bytecode as well, since version [2.3.0](https://www.ruby-lang.org/en/news/2015/12/25/ruby-2-3-0-released/)!
-
 Examples
 --------
 Here are some of our favorite examples from the [tests](test/unit), **working today**:
@@ -110,11 +108,12 @@ Angle is a multi-paradigm programming language with [gradual typing](https://en.
 Read the [DOSSIER](https://github.com/pannous/english-script/blob/master/DOSSIER.md) for a more complete [**language specification**](https://github.com/pannous/english-script/blob/master/DOSSIER.md), vision and some background. 
 
 The grammar is not meant to be linguistically complete, but [functionality complete](https://en.wikipedia.org/wiki/Functional_completeness) and easily extendable. It is currently running in the 
-* Ruby and [Python](https://github.com/pannous/angle) environment, but will soon compile to the 
-* [JVM](https://en.wikipedia.org/wiki/Java_Virtual_Machine) (thanks to [Mirah](https://github.com/mirah/mirah))
-* [.Net/CLR/DLR](https://en.wikipedia.org/wiki/Dynamic_Language_Runtime) (via Cecil, maybe Mirah too), 
-* Web (JavaScript or [webasm](https://github.com/pannous/webasm) via EMScripten?), and 
+* [ruby](https://github.com/pannous/english-script) and [python](https://github.com/pannous/angle) environment, but will soon compile to the 
+* WEB(!!) thanks to [WebAssembly](https://github.com/WebAssembly/design)
+* JVM thanks to [Mirah](https://github.com/mirah/mirah), [zippy](https://bitbucket.org/ssllab/zippy/overview) and [truffle](https://github.com/OracleLabs/Truffle)
+* [.Net/CLR/DLR](https://en.wikipedia.org/wiki/Dynamic_Language_Runtime) (via [Cecil](https://github.com/jbevain/cecil), maybe Mirah too), 
 * As a final aim: run **natively**, maybe similar to [Crystal](https://github.com/manastech/crystal), [Vala](https://en.wikipedia.org/wiki/Vala_%28programming_language%29) or RPython
+
 
 Having a [self-hosted "bootstrapped" compiler](https://en.wikipedia.org/wiki/Bootstrapping_%28compilers%29) is an important mid-term goal.
 
@@ -123,6 +122,10 @@ Having a [self-hosted "bootstrapped" compiler](https://en.wikipedia.org/wiki/Boo
 To check out the current capabilities of English Script have a look at the [tests](https://github.com/pannous/english-script/tree/master/test/unit),
 [keywords](https://github.com/pannous/english-script/blob/master/src/core/english-tokens.rb) and
 [grammar](https://github.com/pannous/english-script/blob/master/src/core/english-parser.rb)
+
+
+UPDATE: Since we love to compile our language to native or at least bytecode, we focussed on the [python implementation](https://github.com/pannous/angle) of English script. 
+Fortunately finally Ruby now supports bytecode as well, since version [2.3.0](https://www.ruby-lang.org/en/news/2015/12/25/ruby-2-3-0-released/)!
 
 Todos
 -----
