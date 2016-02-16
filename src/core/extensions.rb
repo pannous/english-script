@@ -37,6 +37,22 @@ def beep
   'beeped'
 end
 
+# @@hash={}
+def get_hostname ip
+   # return @@hash[ip] if @@hash[ip]
+   hostname=""
+   hostname=`dig +noall +answer -x #{ip}|sed 's/.*PTR.//'|sed 's/\.$//'`.strip
+   #     hostname=`resolveip -s #{ip}`.strip  if hostname == ""
+   hostname = `whois #{ip}|grep 'Email'|head -n1|sed 's/.*@//'`.strip  if hostname == ""
+   begin
+      hostname= Resolv.getname pkt.ip_daddr  if hostname == "" rescue ""
+   rescue => e
+   end
+   # @@hash[ip]=hostname
+   return hostname
+end
+
+
 
 class Class
   def blank?
@@ -192,6 +208,18 @@ class Hash
   #   orig_index(x.to_s)
   # end
 
+
+  # CAREFUL! MESSES with rails etc!!
+  # NORM only through getter
+  # def [] x
+  #   return if not x
+  #   return orig_index(x) || orig_index(x.to_s) if x.is_a? Symbol
+  #   # return orig_index(x) || orig_index(x.to_sym) if x.is_a? String
+  #   # yay! todo: eqls {a:b}=={:a=>b}=={"a"=>b} !!
+  #   orig_index(x)
+  # end
+
+
   # OR:
   def key? key
     return keys.contains(key) || keys.contains(key.to_s) if key.is_a? Symbol
@@ -200,15 +228,6 @@ class Hash
   end
   alias has key?
   alias contains key?
-
-  # NORM only through getter
-  def [] x
-    return if not x
-    return orig_index(x) || orig_index(x.to_s) if x.is_a? Symbol
-    return orig_index(x) || orig_index(x.to_sym) if x.is_a? String
-    # yay! todo: eqls {a:b}=={:a=>b}=={"a"=>b} !!
-    orig_index(x)
-  end
 
   #
   # def has key
@@ -309,9 +328,10 @@ class Array
   #def = x  unexpected '='
   #  is x
   #end
-  #def grep x
-  #  select{|y|y.to_s.match(x)}
-  #end
+  def grep x
+     select{|y|y.to_s.match(x.to_s)}
+  end
+    
   def names
     map &:to_s
   end
@@ -388,6 +408,10 @@ end
 
 class String
 
+  def ls
+    self.split("\n")
+  end
+  
   def fix_encoding
     require 'iconv' unless String.method_defined?(:encode)
     if String.method_defined?(:encode)
@@ -860,9 +884,9 @@ class Object
     false
   end
 
-  def self.throw x
-    raise x
-  end
+  # def self.throw x
+  #   raise x
+  # end
 
   def type
     self.class
@@ -905,3 +929,4 @@ class Object
 
 end
 
+print "extensions loaded!\n"

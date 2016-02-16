@@ -5,6 +5,8 @@ The main purpose of this language is to make programming accessible to many more
 
 The guiding philosophy is to have forgiving interfaces yet strict implementations, and to make special chars (braces,colons,etc) completely optional.
 
+UPDATE: English script now compiles to [python bytecode](https://github.com/pannous/angle) and thanks to Ruby 2.3 possibly soon to ruby  bytecode as well!
+
 Examples
 --------
 Here are some of our favorite examples from the [tests](test/unit), **working today**:
