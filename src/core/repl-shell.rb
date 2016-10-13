@@ -30,6 +30,7 @@ def start_shell
   load_history_why?('~/.english_history')
   # http://www.unicode.org/charts/PDF/U2980.pdf
   while input = Readline.readline('⦠ ', true)
+    $verbose=true and @parser.verbose =true and puts("OK ") and next if input=="verbose"
     # while input = Readline.readline('angle-script⦠ ', true)
     # Readline.write_history_file("~/.english_history")
     # while true
@@ -40,9 +41,9 @@ def start_shell
       next if not interpretation
       puts interpretation.tree if $use_tree
       puts interpretation.result
-    rescue NotMatching
+    rescue Exceptions::NotMatching
       puts 'Syntax Error'
-    rescue GivingUp
+    rescue Exceptions::GivingUp
       puts 'Syntax Error'
     rescue
       puts $!
@@ -70,10 +71,10 @@ def startup
       result        =interpretation.result
       puts interpretation.tree if $use_tree
       puts result if result and not result.empty? and not result==:nill
-    rescue NotMatching
+    rescue Exceptions::NotMatching
       puts $!
       puts 'Syntax Error'
-    rescue GivingUp
+    rescue Exceptions::GivingUp
       puts 'Syntax Error'
     rescue
       puts $!
