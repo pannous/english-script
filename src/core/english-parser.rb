@@ -148,7 +148,7 @@ class EnglishParser < Parser
   def regex x
     match=@string.match(x)
     match||=@string.match(/^\s*#{x}/im)
-    raise NotMatching(x) if not match
+    raise NotMatching.new(x) if not match
     @string       =match.post_match.strip
     @current_value=match
   end
