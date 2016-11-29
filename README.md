@@ -78,7 +78,7 @@ Run the tests : `rake test`
 Run an angle file: `rake run[examples/test.e]`
 
 
-🏺 In progress
+⏳ In progress
 --------------
 `add one to every odd number in 1,2,3 == 2,2,4`
 
@@ -141,5 +141,5 @@ Fortunately finally Ruby now supports bytecode as well, since version [2.3.0](ht
 This language might soon be used in our successful beloved Jeannie assistant, which has over 5 million downloads so far:
 http://www.voice-actions.com
 
-For a background story/vision/philosophy/future of this project read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md) 👾
+For a background story/vision/philosophy/future of this project read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md) 👾🏺
 
