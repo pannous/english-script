@@ -5,7 +5,7 @@ The main purpose of this language is to make programming accessible to many more
 
 The guiding philosophy is to have forgiving interfaces yet strict implementations, and to make sigil special chars (!@#$%^&*[}...) completely optional.
 
-UPDATE: English script now compiles to [python bytecode](https://github.com/pannous/angle) and thanks to Ruby 2.3 possibly soon to ruby  bytecode as well!
+UPDATE: There now is a python implementation of English Script called [angle](https://github.com/pannous/angle), compiling to **bytecode**. Soon: Ruby 2.3 gets bytecode as well!
 
 📓 Examples
 -----------
