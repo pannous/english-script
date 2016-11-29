@@ -7,8 +7,8 @@ The guiding philosophy is to have forgiving interfaces yet strict implementation
 
 UPDATE: English script now compiles to [python bytecode](https://github.com/pannous/angle) and thanks to Ruby 2.3 possibly soon to ruby  bytecode as well!
 
-Examples
---------
+📓 Examples
+-----------
 Here are some of our favorite examples from the [tests](test/unit), **working today**:
 
 `assert two minus 1½ equals 0.5`
@@ -42,16 +42,16 @@ To check if person is online on Skype:
 End
 ```
 
-INSTALL
--------
+🖥 INSTALL
+----------
 `git clone --recursive git@github.com:pannous/english-script.git`
 
 `cd english-script`
 
 `./install.sh`
 
-EXPERIMENT
-----------
+🐁 EXPERIMENT
+-------------
 
 Warning: The project is still in alpha, don't expect all tests to pass!
 
@@ -78,8 +78,8 @@ Run the tests : `rake test`
 Run an angle file: `rake run[examples/test.e]`
 
 
-In progress
------------
+🏺 In progress
+--------------
 `add one to every odd number in 1,2,3 == 2,2,4`
 
 
@@ -103,8 +103,8 @@ Here 'mail' acts as argument name and argument type at once.
 No more Java style Mail mail=new Mail().getMail();
 
 
-Language Specification
-----------------------
+📑 Language Specification
+-------------------------
 Angle is a multi-paradigm programming language with [gradual typing](https://en.m.wikipedia.org/wiki/Gradual_typing).
 
 Read the [DOSSIER](https://github.com/pannous/english-script/blob/master/DOSSIER.md) for a more complete [**language specification**](https://github.com/pannous/english-script/blob/master/DOSSIER.md), vision and some background. 
@@ -126,11 +126,11 @@ To check out the current capabilities of English Script have a look at the [test
 [grammar](https://github.com/pannous/english-script/blob/master/src/core/english-parser.rb)
 
 
-UPDATE: Since we love to compile our language to native or at least bytecode, we focussed on the [python implementation](https://github.com/pannous/angle) of English script. 
+📰UPDATE: Since we love to compile our language to native or at least bytecode, we focussed on the [python implementation](https://github.com/pannous/angle) of English script. 
 Fortunately finally Ruby now supports bytecode as well, since version [2.3.0](https://www.ruby-lang.org/en/news/2015/12/25/ruby-2-3-0-released/)!
 
-Todos
------
+👷 Todos
+--------
 * Use the abstract syntax tree to compile instead of interpret (export via XML and Lisp s-expressions)
 * Better (real) function argument matching: Integrate the sine curve in the interval 1 to 10 with step size .1
 * Implement event system: Beep three times whenever the disc space is over 80%
@@ -141,5 +141,5 @@ Todos
 This language might soon be used in our successful beloved Jeannie assistant, which has over 5 million downloads so far:
 http://www.voice-actions.com
 
-For a background story/vision/philosophy/future of this project read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md)
+For a background story/vision/philosophy/future of this project read the [DOSSIER](https://github.com/pannous/natural-english/tree/master/DOSSIER.md) 👾
 
