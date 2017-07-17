@@ -1,6 +1,6 @@
 DOSSIER
 
-★English as a programming language★
+★ English as a programming language ★
 -----------------------------------
 
 A revolution will break loose. Soon every English speaker will be able to completely control their devices via voice. People will realize that by giving their devices commands, they are actually programming them. Now imagine you could not only say “remind me to take out the trash next Sunday”, but also complicated sequences like:
@@ -61,7 +61,7 @@ Advanced examples
 `Whenever I received an email, You check if it's Sender is my girlfriend.
 If so, You turn the light bulb in the living room green until I clap my hand.`
 
-* Predecessors *
+★ Predecessors ★
 ----------------
 [AppleScript](https://en.wikipedia.org/wiki/AppleScript) 
 Despite of its many shortcomings it should be a real inspiration to anyone in the language community.
@@ -82,10 +82,12 @@ Guiding principles
 The language is optimized for speakability and readability, without compromising functionality nor rigor:
 Avoid special characters whenever possible
 All English words which are not nouns or verbs are keywords, especially prepositions and pronouns.
-Solve the block problem ruby style with end keywords: do blah done
-  def done_words
-    ['done','end','okay','ok','OK','O.K.','}','alright','that\'s it',..]
-  end
+Solve the block problem ruby style with end keywords: `do blah done`
+
+    def done_words
+      ['done','end','okay','ok','OK','O.K.','}','alright','that\'s it',..]
+    end
+   
 Update: now python style dedent is accepted too
 
 Allow optional special characters to increase readability
@@ -106,7 +108,7 @@ end beep
 This comes without a heavy burden on the parser:
 it just contains some optional character/word patterns.
 
-* Future *
+★ Future ★
 ----------
 Even in the beginning we are not just trying to bring AppleScript to our environments, but to have a better syntax 
 and runtime from the very start.
@@ -138,7 +140,7 @@ to toggle the light in a room
 end
 ```
 
-* Execution *
+★ Execution ★
 -------------
 There are many steps to be taken! The complexity of the task demanded that we first introduced these features in an
  existing language: Ruby
@@ -152,7 +154,7 @@ To summarize the requested runtime features:
 A lightweight semantic event system, with a simple syntax to connect with listeners: 
 A personnel and general object graph with attached methods.
 
-* Difficulties *
+Difficulties
 ----------------
 Difficulties in first implementations of such a system
 
@@ -164,7 +166,7 @@ Even if the syntax is in accordance with the specific grammar, users might be di
 But still the use cases for English as a programming language are so incredibly huge and universal, that it might outshine old-fashioned languages quickly.
 
 
-* Ambiguities *
+Ambiguities
 ---------------
 Naturally the phenomenon of ambiguities in English will extend to all our programming language.
  clearly we need mechanisms still results those ambiguities at programming time, at compile time and at runtime.
@@ -225,7 +227,7 @@ done calculating the volume
 One way of in Achieving this else tell compile multiple variants of one method. 
 
 By default a dynamic method with dynamic dispatch will be compiled for every function definition
-````
+```
 def myadd x,y
    x+y
    
