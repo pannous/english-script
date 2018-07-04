@@ -1,4 +1,4 @@
-![ENGLISH SCRIPT](English script.png "ENGLISH SCRIPT")
+![ENGLISH SCRIPT](English script.png)
 
 This is English as a programming language.
 The main purpose of this language is to make programming accessible to many more people, more fun and to facilitate programming computers via voice.
